@@ -1,9 +1,8 @@
-import { HelmetProvider } from "react-helmet-async";
 import { DAppProvider, Config, Mainnet as ETHMain } from "@usedapp/core";
 import React from "react";
 import TransactionStatusProvider from "./transactionContext";
 import { Chain } from "@usedapp/core";
-import {ETHMainnet, GravityTestnet} from "config/networks"
+import {ETHMainnet, GravityTestnet} from "pages/bridge/config/networks"
 import {CantoMainnet as CantoMain} from "cantoui"
 
 interface IProviderProps {
@@ -57,9 +56,7 @@ const config: Config = {
 const Provider = ({ children }: IProviderProps) => {
   return (
     <DAppProvider config={config}>
-      <HelmetProvider>
         <TransactionStatusProvider>{children}</TransactionStatusProvider>
-      </HelmetProvider>
     </DAppProvider>
   );
 };

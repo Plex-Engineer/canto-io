@@ -1,11 +1,17 @@
 import "App.css";
 import styled from "@emotion/styled";
-import { HelmetProvider } from "react-helmet-async";
-import BridgePage from "pages/bridge";
+import BridgePage from "pages/bridge/bridge";
 import "react-toastify/dist/ReactToastify.css";
 import {ToastContainer } from "react-toastify";
 import { Overlay, ScanLine, ScanlinesOverlay, StaticNoiseOverlay } from "cantoui"
 import { CantoNav } from "global/components/cantoNav";
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+} from "react-router-dom";
+import Governance from "pages/governance/governance";
 
 
 //Styling
@@ -21,17 +27,22 @@ const Container = styled.div`
 function App() {
 
   return (
-    <HelmetProvider>
+    <React.Fragment>
       <ToastContainer />
+      <Router>
       <StaticNoiseOverlay/>
       <ScanlinesOverlay />
       <ScanLine/>
       <Overlay/>
       <Container className="App">
       <CantoNav/>
-      <BridgePage />
+        <Routes>
+            <Route path="/" element={<BridgePage />} />
+            <Route path="/governance" element={<Governance />} />
+        </Routes>
       </Container>
-    </HelmetProvider>
+      </Router>
+    </React.Fragment>
   );
 }
 

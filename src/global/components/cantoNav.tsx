@@ -2,8 +2,8 @@ import { useEthers } from "@usedapp/core";
 import { NavBar, useAlert } from "cantoui";
 import { getAccountBalance, getChainIdandAccount } from "global/utils/walletConnect/addCantoToWallet";
 import { useEffect } from "react";
-import { useNetworkInfo } from "stores/networkInfo";
-import { addNetwork } from "utils/addCantoToWallet";
+import { useNetworkInfo } from "global/stores/networkInfo";
+import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import logo from "./../../assets/logo.svg"
 
 export const CantoNav = () => {
@@ -54,7 +54,7 @@ export const CantoNav = () => {
       title="bridge"
       onClick={() => {
         activateBrowserWallet();
-        switchNetwork(1);
+        addNetwork();
       }}
       chainId={Number(netWorkInfo.chainId)}
       account={netWorkInfo.account ?? ""}
