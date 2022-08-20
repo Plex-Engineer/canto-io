@@ -1,5 +1,5 @@
 import { useEthers } from "@usedapp/core";
-import { NavBar, useAlert } from "cantoui";
+import { NavBar } from "cantoui";
 import { getAccountBalance, getChainIdandAccount } from "global/utils/walletConnect/addCantoToWallet";
 import { useEffect } from "react";
 import { useNetworkInfo } from "global/stores/networkInfo";
@@ -8,19 +8,13 @@ import logo from "./../../assets/logo.svg"
 
 export const CantoNav = () => {
   const netWorkInfo = useNetworkInfo();
-  const { activateBrowserWallet, account, switchNetwork } = useEthers();
-  const alert = useAlert();
+  const { activateBrowserWallet, account, chainId } = useEthers();
 
-  async function setChainInfo() {
-    const [chainId, account] = await getChainIdandAccount();
-    netWorkInfo.setChainId(chainId);
-    netWorkInfo.setAccount(account);
-  }
 
   useEffect(() => {
-    setChainInfo();
-   //@ts-ignore
-}, [window.ethereum?.networkVersion]);
+    netWorkInfo.setChainId(chainId?.toString());
+    netWorkInfo.setAccount(account);
+  }, [account, chainId]);
 
   //@ts-ignore
   if (window.ethereum) {
@@ -28,11 +22,6 @@ export const CantoNav = () => {
     window.ethereum.on("accountsChanged", () => {
       window.location.reload();
     });
-
-  //   //@ts-ignore
-  //   window.ethereum.on("networkChanged", () => {
-  //     window.location.reload();
-  //   });
   }
 
   async function getBalance() {
@@ -41,11 +30,6 @@ export const CantoNav = () => {
     }
   }
   useEffect(() => {
-    if (!netWorkInfo.isConnected) {
-      alert.show("Failure", <p>this network is not supported on gravity bridge, please <a onClick={addNetwork} style={{cursor: "pointer", textDecoration: "underline"}}>switch networks</a></p>)
-    } else {
-      alert.close();
-    }
     getBalance();
   },[netWorkInfo.account, netWorkInfo.chainId])
 
@@ -58,11 +42,11 @@ export const CantoNav = () => {
       }}
       chainId={Number(netWorkInfo.chainId)}
       account={netWorkInfo.account ?? ""}
-      isConnected={netWorkInfo.isConnected && account ? true : false}
+      isConnected={netWorkInfo.account ? true : false}
       balance={netWorkInfo.balance}
       currency={netWorkInfo.chainId == "1" ? "ETH" : "CANTO"}
       logo={logo}
       currentPage="bridge"
     />
   );
-};
+}

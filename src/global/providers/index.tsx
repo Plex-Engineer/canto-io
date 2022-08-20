@@ -1,9 +1,9 @@
 import { DAppProvider, Config, Mainnet as ETHMain } from "@usedapp/core";
 import React from "react";
-import TransactionStatusProvider from "./transactionContext";
+import TransactionStatusProvider from "../../providers/transactionContext";
 import { Chain } from "@usedapp/core";
 import {ETHMainnet, GravityTestnet} from "pages/bridge/config/networks"
-import {CantoMainnet as CantoMain} from "cantoui"
+import {CantoMainnet as CantoMain, CantoTestnet as CantoTest} from "cantoui"
 
 interface IProviderProps {
   children: React.ReactNode;
@@ -38,7 +38,18 @@ export const CantoMainnet: Chain = {
   getExplorerAddressLink: getAddressLink("kovanEtherscanUrl"),
   getExplorerTransactionLink: getTransactionLink("kovanEtherscanUrl"),
 }
-
+export const CantoTestnet: Chain = {
+  chainId: CantoTest.chainId,
+  chainName: CantoTest.name,
+  rpcUrl : CantoTest.rpcUrl,
+  isTestChain: CantoTest.isTestChain,
+  isLocalChain: false,
+  multicallAddress: '0x121817438FC9b31ed4D6C4ED22eCde15af261f75',
+  multicall2Address: '0xd546F2aaB14eA4d4Dc083795b3e94D0C471A272f',
+  blockExplorerUrl: CantoTest.blockExplorerUrl,
+  getExplorerAddressLink: getAddressLink("kovanEtherscanUrl"),
+  getExplorerTransactionLink: getTransactionLink("kovanEtherscanUrl"),
+}
 
 
 

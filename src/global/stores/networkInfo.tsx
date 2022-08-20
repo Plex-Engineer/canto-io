@@ -1,13 +1,9 @@
-import { CantoMainnet } from "cantoui";
 import { checkPubKey } from "global/utils/cantoTransactions/publicKey";
 import { getCantoAddressFromMetaMask } from "global/utils/walletConnect/addCantoToWallet";
-import { GravityTestnet, ETHMainnet } from "pages/bridge/config/networks";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
 
 interface NetworkProps {
-  isConnected: boolean;
-  setIsConnected: (connected: boolean) => void;
   chainId: string | undefined;
   setChainId: (chainId: string | undefined) => void;
   account: string | undefined;
@@ -20,21 +16,8 @@ interface NetworkProps {
 
 export const useNetworkInfo = create<NetworkProps>()(
   devtools((set) => ({
-    isConnected: true,
-    setIsConnected: (connected) => set({ isConnected: connected }),
     chainId: undefined,
-    setChainId: (chainId) => {
-      set({ chainId: chainId });
-      if (
-        Number(chainId) == GravityTestnet.chainId ||
-        Number(chainId) == ETHMainnet.chainId ||
-        Number(chainId) == CantoMainnet.chainId
-      ) {
-        set({ isConnected: true });
-      } else {
-        set({ isConnected: false });
-      }
-    },
+    setChainId: (chainId) => set({ chainId: chainId }),
     account: undefined,
     cantoAddress : "",
     hasPubKey: true,

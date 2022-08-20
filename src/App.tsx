@@ -12,6 +12,7 @@ import {
   Route,
 } from "react-router-dom";
 import Governance from "pages/governance/governance";
+import Dex from "pages/dexLP/Dex";
 
 
 //Styling
@@ -39,6 +40,7 @@ function App() {
         <Routes>
             <Route path="/" element={<BridgePage />} />
             <Route path="/governance" element={<Governance />} />
+            <Route path="/lpinterface" element={<Dex />} />
         </Routes>
       </Container>
       </Router>
