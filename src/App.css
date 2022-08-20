@@ -1,0 +1,49 @@
+:root{
+  --primary-color : #06fc99;
+  --primary-color-dark : #05de87;
+  --off-white-color : #EFEFEF;
+  --error-color : #FE4256;
+  scrollbar-color: var(--primary-color);
+  scroll-behavior: smooth;
+  /* width */
+
+}
+  
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #151515;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  box-shadow: inset 2 2 5px var(--primary-color);
+  border-radius: 6px;
+  background: var(--primary-color);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #07e48c;
+}
+.App {
+    background: rgb(0,0,0);
+    background: repeating-linear-gradient(0deg, #010000 0%, #010000 4px, #021911 4px, #021911  8px);
+    background-repeat: repeat-y;
+}
+
+
+.ReactModal__Content{
+  background-color: red;
+}
+
+.web3modal-modal-card{
+  border-radius: 0px !important;
+}
+:root {
+  --toastify-color-progress-light: #06fc99 !important;
+
+}
