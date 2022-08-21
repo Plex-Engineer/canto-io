@@ -56,11 +56,12 @@ export const CantoTestnet: Chain = {
 
 
 const config: Config = {
-  networks: [Gravity, ETHMain, CantoMainnet],
+  networks: [Gravity, ETHMain, CantoMainnet, CantoTestnet],
   readOnlyUrls: {
     [Gravity.chainId]: GravityTestnet.rpcUrl,
     [ETHMain.chainId]: ETHMainnet.rpcUrl,
-    [CantoMainnet.chainId]: CantoMain.rpcUrl
+    [CantoMainnet.chainId]: CantoMain.rpcUrl,
+    [CantoTestnet.chainId]: CantoTest.rpcUrl
   },
   noMetamaskDeactivate: true,
 };

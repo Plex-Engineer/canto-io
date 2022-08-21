@@ -125,7 +125,6 @@ export async function getGravityTokenBalance (gravityAddress: string) {
     .catch((err) => {
       console.log(err);
     });
-    console.log("🚀 ~ file: useCosmosTokens.ts ~ line 130 ~ getGravityTokenBalance ~ result", result)
     return result
 }
     

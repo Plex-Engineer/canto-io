@@ -36,8 +36,6 @@ export const nodeURL = (chain : number | undefined) => {
         headers: { 'Content-Type': 'application/json' },
         body: generatePostBodyBroadcast(raw),
     };
-    console.log(     nodeAddress + generateEndpointBroadcast(),
-    postOptions)
     const broadcastPost = await fetch(
         nodeAddress + generateEndpointBroadcast(),
         postOptions
@@ -93,7 +91,6 @@ function generateRawTx(chain:any, senderObj:any, signature:any, msg:any) {
     })
         .then(response => response.json())
         .then(result => {
-            console.log(result)
             address = result.cosmos_address
             return address;
         })
