@@ -9,7 +9,7 @@ import IconPair from "../components/iconPair";
 import { getTokenAFromB, getTokenBFromA } from "pages/dexLP/utils/utils";
 import useModals, { ModalType } from "../hooks/useModals";
 import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
-import { truncateByZeros } from "global/utils/utils";
+import { truncateNumber } from "global/utils/utils";
 
 const Container = styled.div`
   background-color: #040404;
@@ -90,8 +90,8 @@ const DisabledButton = styled(Button)`
 
 interface AddAllowanceProps {
   pair: AllPairInfo,
-  value1: number,
-  value2: number,
+  value1: string,
+  value2: string,
   slippage: number,
   deadline: number,
   chainId: number | undefined,
@@ -253,16 +253,16 @@ const AddModal = ({ value, onClose, chainId, account }: Props) => {
 
   function getToken1Limit() {
     if ((Number(value.balances.token2) * value.totalSupply.ratio) > Number(value.balances.token1)) {
-      return truncateByZeros(value.balances.token1)
+      return truncateNumber(value.balances.token1)
     } else {
-      return truncateByZeros((Number(value.balances.token2) * value.totalSupply.ratio).toString())
+      return truncateNumber((Number(value.balances.token2) * value.totalSupply.ratio).toString())
     }
   }
   function getToken2Limit() {
     if ((Number(value.balances.token1) / value.totalSupply.ratio) > Number(value.balances.token2)) {
-      return truncateByZeros(value.balances.token2)
+      return truncateNumber(value.balances.token2)
     } else {
-      return truncateByZeros((Number(value.balances.token1) / value.totalSupply.ratio).toString())
+      return truncateNumber((Number(value.balances.token1) / value.totalSupply.ratio).toString())
     }
   }
 
@@ -328,7 +328,7 @@ const AddModal = ({ value, onClose, chainId, account }: Props) => {
             value={value1}
             onChange={(val) => {
               setValue1(val);
-              setValue2(truncateByZeros(getTokenBFromA(Number(val), value.totalSupply.ratio).toString()).toString());
+              setValue2(truncateNumber(getTokenBFromA(Number(val), value.totalSupply.ratio).toString()).toString());
             }}
           />
         </div>
@@ -343,16 +343,16 @@ const AddModal = ({ value, onClose, chainId, account }: Props) => {
             value={value2}
             onChange={(val) => {
               setValue2(val);
-              setValue1(truncateByZeros(getTokenAFromB(Number(val), value.totalSupply.ratio).toString()).toString());
+              setValue1(truncateNumber(getTokenAFromB(Number(val), value.totalSupply.ratio).toString()).toString());
             }}
           />
         </div>
       </div>
       <div style={{ color: "white" }}>
-         {<p style={{textAlign: "right"}}><a>reserve ratio: </a> 1   {value.basePairInfo.token1.symbol} =   {truncateByZeros((1 / value.totalSupply.ratio).toString())} {value.basePairInfo.token2.symbol}</p> }
+         {<p style={{textAlign: "right"}}><a>reserve ratio: </a> 1   {value.basePairInfo.token1.symbol} =   {truncateNumber((1 / value.totalSupply.ratio).toString())} {value.basePairInfo.token2.symbol}</p> }
          <br/>
          {value.basePairInfo.stable ? 
-         <p style={{textAlign: "right"}}><a style={{textAlign: "left"}}>price: </a> 1   {value.basePairInfo.token1.symbol} =   {truncateByZeros(value.prices.token2)} {value.basePairInfo.token2.symbol}</p> 
+         <p style={{textAlign: "right"}}><a style={{textAlign: "left"}}>price: </a> 1   {value.basePairInfo.token1.symbol} =   {truncateNumber(value.prices.token2)} {value.basePairInfo.token2.symbol}</p> 
         : ""}
       </div>
       <div className="fields" style={{
@@ -376,7 +376,7 @@ const AddModal = ({ value, onClose, chainId, account }: Props) => {
           )}
       </PopIn>
       </div>
-      <AddAllowanceButton status1={setToken1AllowanceStatus} status2={setToken2AllowanceStatus} pair={value} value1={Number(value1)} value2={Number(value2)} chainId={chainId} deadline={Number(deadline)} slippage={Number(slippage)}/>
+      <AddAllowanceButton status1={setToken1AllowanceStatus} status2={setToken2AllowanceStatus} pair={value} value1={value1} value2={value2} chainId={chainId} deadline={Number(deadline)} slippage={Number(slippage)}/>
 
 
     </Container>

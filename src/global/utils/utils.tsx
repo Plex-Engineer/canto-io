@@ -14,16 +14,31 @@ export function classNames(...classes: unknown[]): string {
 
 export const noteSymbol:string = "Ꞥ";
 
-export function truncateNumber(value:number, decimals:number) {
-  return (Math.trunc(value * Math.pow(10,decimals))/Math.pow(10,decimals))
+export function truncateNumber(value:string, decimals?: number) {
+  const decimalLocation = value.indexOf('.');
+  if (Number(value) == 0) {
+    return "0";
+  }
+  if (decimalLocation == -1) {
+    return value;
+  }
+  if (!decimals) {
+    if (Number(value) > 1) {
+      return value.slice(0, decimalLocation + 5)
+    }
+    return value.slice(0, findFirstNonZeroAfter(value, decimalLocation) + 5);
+  }
+  return value.slice(0, decimalLocation + decimals)
+
 }
 
-export function truncateByZeros(value:string) {
-  if (Number(value) > 1) {
-      return truncateNumber(Number(value), 4);
+function findFirstNonZeroAfter(value: string, after: number) {
+  for (let i = after + 1 ; i<value.length; i++) {
+    if (value[i] != "0") {
+      return i-1;
+    }
   }
-  return truncateNumber(Number(value), findFirstNonZero(value) + 4);
-
+  return value.length -1;
 }
 
 function findFirstNonZero(value:string) : number{

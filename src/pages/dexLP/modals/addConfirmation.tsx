@@ -11,7 +11,7 @@ import useModals, { ModalType } from "../hooks/useModals";
 
 import { TOKENS, ADDRESSES, CantoMainnet, CantoTestnet } from "cantoui";
 import { useAddLiquidity, useAddLiquidityCANTO } from "../hooks/useTransactions";
-import { truncateByZeros, truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/utils";
 import { getCurrentBlockTimestamp } from "../utils/utils";
 import { routerAbi } from "global/config/abi";
 
@@ -135,8 +135,8 @@ const DisabledButton = styled(Button)`
 
 interface AddConfirmationProps {
     pair: AllPairInfo;
-    value1: number;
-    value2: number;
+    value1: string;
+    value2: string;
     slippage: number;
     deadline: number;
     chainId?: number;
@@ -173,11 +173,11 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
     const WCANTO = props.chainId == CantoTestnet.chainId ? TOKENS.cantoTestnet.WCANTO : TOKENS.cantoMainnet.WCANTO;
     const setModalType = useModals(state => state.setModalType);
     
-    const amountOut1 = truncateNumber(Number(props.value1),props.pair.basePairInfo.token1.decimals).toString();
-    const amountOut2 = truncateNumber(Number(props.value2),props.pair.basePairInfo.token2.decimals).toString();
+    const amountOut1 = truncateNumber(props.value1,props.pair.basePairInfo.token1.decimals).toString();
+    const amountOut2 = truncateNumber(props.value2,props.pair.basePairInfo.token2.decimals).toString();
 
-    const amountMinOut1 = truncateNumber((((Number(props.value1)) * (100 - Number(props.slippage))) / 100),props.pair.basePairInfo.token1.decimals).toString();
-    const amountMinOut2 = truncateNumber((((Number(props.value2)) * (100 - Number(props.slippage))) / 100),props.pair.basePairInfo.token2.decimals).toString();
+    const amountMinOut1 = truncateNumber((((Number(props.value1)) * (100 - Number(props.slippage))) / 100).toString(),props.pair.basePairInfo.token1.decimals).toString();
+    const amountMinOut2 = truncateNumber((((Number(props.value2)) * (100 - Number(props.slippage))) / 100).toString(),props.pair.basePairInfo.token2.decimals).toString();
 
     const [currentBlockTimeStamp, setCurrentBlockTimeStamp] = useState(0);
     
@@ -237,7 +237,7 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
             <p id="position">you will receive</p>
             <IconPair iconLeft={props.pair.basePairInfo.token1.icon} iconRight={props.pair.basePairInfo.token2.icon} />
             <h1>
-                {Number(props.expectedLP) == 0 ? "calculating..." : truncateByZeros(props.expectedLP)}
+                {Number(props.expectedLP) == 0 ? "calculating..." : truncateNumber(props.expectedLP)}
             </h1>
 
             <h4> {props.pair.basePairInfo.token1.symbol +
@@ -266,7 +266,7 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
             }}>
                 <RowCell type={props.pair.basePairInfo.token1.symbol + " deposited : "} value={Number(props.value1).toFixed(4)} />
                 <RowCell type={props.pair.basePairInfo.token2.symbol + " deposited : "} value={Number(props.value2).toFixed(4)} />
-                <RowCell type="share of pool : " value={truncateByZeros(calculateExpectedShareofLP(props.expectedLP, props.pair.userSupply.totalLP, props.pair.totalSupply.totalLP).toString()) + "%"} />
+                <RowCell type="share of pool : " value={truncateNumber(calculateExpectedShareofLP(props.expectedLP, props.pair.userSupply.totalLP, props.pair.totalSupply.totalLP).toString()) + "%"} />
             </div>
 
             {currentBlockTimeStamp == 0 ? <DisabledButton>loading</DisabledButton> : props.pair.basePairInfo.token1.address == WCANTO.address ?

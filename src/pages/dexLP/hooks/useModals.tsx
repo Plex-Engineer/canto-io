@@ -12,6 +12,14 @@ export enum ModalType {
     ENABLE
 }
 
+interface Confirmation {
+    amount1: string,
+    amount2: string,
+    percentage : number,
+    slippage: number,
+    deadline: number,
+}
+
 interface ModalProps {
     loading : boolean;
     setLoading : (val : boolean) => void;
@@ -22,20 +30,8 @@ interface ModalProps {
     modalType : ModalType;
     prevModalType : ModalType;
     setModalType : (modalType : ModalType) => void;
-    confirmationValues : {
-          amount1: number,
-          amount2: number,
-          percentage : number,
-          slippage: number,
-          deadline: number,
-    },
-    setConfirmationValues : (value : {
-        amount1: number,
-        amount2: number,
-        percentage : number,
-        slippage: number,
-        deadline: number,
-  }) => void;
+    confirmationValues : Confirmation,
+    setConfirmationValues : (value : Confirmation) => void;
 }
   
 
@@ -63,8 +59,8 @@ interface ModalProps {
    
   },
     confirmationValues : {
-        amount1 : 0,
-        amount2 : 0,
+        amount1 : "0",
+        amount2 : "0",
         deadline : 0,
         slippage : 0,
         percentage : 0

@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import useModals from "../hooks/useModals";
 import { TOKENS, CantoTestnet } from "cantoui";
-import { truncateByZeros, truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/utils";
 import { getCurrentBlockTimestamp } from "../utils/utils";
 
 
@@ -135,8 +135,8 @@ const DisabledButton = styled.button`
 
 interface RemoveConfirmationProps {
     pair: AllPairInfo;
-    value1: number;
-    value2: number;
+    value1: string;
+    value2: string;
     percentage: number;
     slippage: number;
     deadline: number;
@@ -169,9 +169,9 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
 
     const WCANTO = props.chainId == CantoTestnet.chainId ? TOKENS.cantoTestnet.WCANTO : TOKENS.cantoMainnet.WCANTO;
 
-    const LPOut = props.percentage == 100 ? props.pair.userSupply.totalLP : truncateNumber(((Number((props.pair.userSupply.totalLP)) * Number(props.percentage)) / 100), props.pair.basePairInfo.decimals).toString();
-    const amountMinOut1 = truncateNumber((((Number(props.value1)) * (100 - Number(props.slippage))) / 100), props.pair.basePairInfo.token1.decimals).toString();
-    const amountMinOut2 = truncateNumber((((Number(props.value2)) * (100 - Number(props.slippage))) / 100), props.pair.basePairInfo.token2.decimals).toString();
+    const LPOut = props.percentage == 100 ? props.pair.userSupply.totalLP : truncateNumber(((Number((props.pair.userSupply.totalLP)) * Number(props.percentage)) / 100).toString(), props.pair.basePairInfo.decimals);
+    const amountMinOut1 = truncateNumber((((Number(props.value1)) * (100 - Number(props.slippage))) / 100).toString(), props.pair.basePairInfo.token1.decimals);
+    const amountMinOut2 = truncateNumber((((Number(props.value2)) * (100 - Number(props.slippage))) / 100).toString(), props.pair.basePairInfo.token2.decimals);
 
     //getting current block timestamp to add to the deadline that the user inputs
     const [currentBlockTimeStamp, setCurrentBlockTimeStamp] = useState(0);
@@ -263,9 +263,9 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
             flexDirection: "column",
             gap: "1rem"
         }}>
-            <RowCell type={props.pair.basePairInfo.token1.symbol + " withdrawing: "} value={truncateByZeros(props.value1.toString()).toString()} />
-            <RowCell type={props.pair.basePairInfo.token2.symbol + " withdrawing: "} value={truncateByZeros(props.value2.toString()).toString()} />
-            <RowCell type={"burned: "} value={truncateByZeros(LPOut.toString()).toString()} />
+            <RowCell type={props.pair.basePairInfo.token1.symbol + " withdrawing: "} value={truncateNumber(props.value1.toString()).toString()} />
+            <RowCell type={props.pair.basePairInfo.token2.symbol + " withdrawing: "} value={truncateNumber(props.value2.toString()).toString()} />
+            <RowCell type={"burned: "} value={truncateNumber(LPOut.toString()).toString()} />
             {/* <RowCell type="share of pool : " value={calculateExpectedShareofLP(props.expectedLP, props.pair.userSupply.totalLP, props.pair.totalSupply.totalLP).toFixed(8) + "%"} /> */}
         </div>
         {(currentBlockTimeStamp == 0 ? <DisabledButton>loading...</DisabledButton> : props.pair.basePairInfo.token1.address == WCANTO.address ?

@@ -13,7 +13,7 @@ export const CantoNav = () => {
 
   useEffect(() => {
     netWorkInfo.setChainId(chainId?.toString());
-    netWorkInfo.setAccount(account);
+    account ? netWorkInfo.setAccount(account) : {};
   }, [account, chainId]);
 
   //@ts-ignore

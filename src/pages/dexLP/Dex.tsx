@@ -9,7 +9,7 @@ import { ModalManager } from "./modals/ModalManager";
 import { ethers } from "ethers";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import useDex, { AllPairInfo } from "pages/dexLP/hooks/useTokens"
-import { noteSymbol, truncateByZeros } from "global/utils/utils";
+import { noteSymbol, truncateNumber } from "global/utils/utils";
 
 
 const Container = styled.div`
@@ -258,9 +258,9 @@ const Dex = () => {
                   totalValueLocked={noteSymbol + ethers.utils.commify(pair.totalSupply.tvl)}
                   apr={"23.2"}
                   position={
-                    truncateByZeros(pair.userSupply.totalLP) + " LP Tokens"
+                    truncateNumber(pair.userSupply.totalLP) + " LP Tokens"
                   }
-                  share={truncateByZeros((pair.userSupply.percentOwned * 100).toString()).toString()
+                  share={truncateNumber((pair.userSupply.percentOwned * 100).toString()).toString()
                    }
                 />
               ) : null;
@@ -304,9 +304,9 @@ const Dex = () => {
                   totalValueLocked={noteSymbol + ethers.utils.commify(pair.totalSupply.tvl)}
                   apr={"23.2"}
                   position={
-                    truncateByZeros(pair.userSupply.totalLP) + " LP Tokens"
+                    truncateNumber(pair.userSupply.totalLP) + " LP Tokens"
                   }
-                  share={truncateByZeros((pair.userSupply.percentOwned * 100)
+                  share={truncateNumber((pair.userSupply.percentOwned * 100)
                     .toString()).toString()}
                 />
               );

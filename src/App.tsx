@@ -13,6 +13,7 @@ import {
 } from "react-router-dom";
 import Governance from "pages/governance/governance";
 import Dex from "pages/dexLP/Dex";
+import LendingMarket from "pages/lending/LendingMarket";
 
 
 //Styling
@@ -41,6 +42,7 @@ function App() {
             <Route path="/" element={<BridgePage />} />
             <Route path="/governance" element={<Governance />} />
             <Route path="/lpinterface" element={<Dex />} />
+            <Route path="/lending" element={<LendingMarket />} />
         </Routes>
       </Container>
       </Router>
