@@ -14,17 +14,16 @@ export const cTokensBase = [
   CTOKENS.cantoTestnet.CCantoETH,
 ];
 
-
 export const mainnetBasecTokens = [
-    CTOKENS.cantoMainnet.CCANTO,
-    CTOKENS.cantoMainnet.CNOTE,
-    CTOKENS.cantoMainnet.CETH,
-    CTOKENS.cantoMainnet.CATOM,
-    CTOKENS.cantoMainnet.CUSDC,
-    CTOKENS.cantoMainnet.CUSDT,
-    CTOKENS.cantoMainnet.CCantoNote,
-    CTOKENS.cantoMainnet.CCantoAtom,
-    CTOKENS.cantoMainnet.CNoteUSDC,
-    CTOKENS.cantoMainnet.CNoteUSDT,
-    CTOKENS.cantoMainnet.CCantoETH, 
+  CTOKENS.cantoMainnet.CCANTO,
+  CTOKENS.cantoMainnet.CNOTE,
+  CTOKENS.cantoMainnet.CETH,
+  CTOKENS.cantoMainnet.CATOM,
+  CTOKENS.cantoMainnet.CUSDC,
+  CTOKENS.cantoMainnet.CUSDT,
+  CTOKENS.cantoMainnet.CCantoNote,
+  CTOKENS.cantoMainnet.CCantoAtom,
+  CTOKENS.cantoMainnet.CNoteUSDC,
+  CTOKENS.cantoMainnet.CNoteUSDT,
+  CTOKENS.cantoMainnet.CCantoETH,
 ];

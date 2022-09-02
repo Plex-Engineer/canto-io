@@ -1,9 +1,13 @@
 import styled from "styled-components";
 import { useToken } from "../../providers/activeTokenContext";
-import { Details, useEnterMarkets, useExitMarket } from "../../hooks/useTransaction";
+import {
+  Details,
+  useEnterMarkets,
+  useExitMarket,
+} from "../../hooks/useTransaction";
 import { useEffect } from "react";
-import { DisabledButton } from "../../components/reactiveButton";
-import LoadingModal from "../../components/modals/loadingModal";
+import { DisabledButton } from "../reactiveButton";
+import LoadingModal from "../modals/loadingModal";
 const Container = styled.div`
   background-color: #040404;
   padding: 2rem;
@@ -103,23 +107,22 @@ const CollatModal = (props: Props) => {
   const token = tokenState[0].token;
   const stats = tokenState[0].stats;
 
-
-const details: Details = {
-  name: token.data.underlying.symbol,
-  address: token.data.address,
-  icon: token.data.underlying.icon,
-  amount: "0",
-  type: props.decollateralize ? "Decollateralize" : "Collateralize",
-};
+  const details: Details = {
+    name: token.data.underlying.symbol,
+    address: token.data.address,
+    icon: token.data.underlying.icon,
+    amount: "0",
+    type: props.decollateralize ? "Decollateralize" : "Collateralize",
+  };
 
   const { state: enterState, send: enterSend } = useEnterMarkets(details);
   const { state: exitState, send: exitSend } = useExitMarket(details);
   const LoadingOverlay = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: black;
-`;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+  `;
 
   useEffect(() => {
     // console.log(enterState)
@@ -127,28 +130,34 @@ const details: Details = {
       ["Success", "Fail", "Exception"].includes(enterState.status) ||
       ["Success", "Fail", "Exception"].includes(exitState.status)
     ) {
-        setTimeout(props.onClose, 500);
+      setTimeout(props.onClose, 500);
     }
   }, [enterState.status, exitState.status]);
   if (
     ["Mining", "PendingSignature", "Success"].includes(enterState.status) ||
     ["Mining", "PendingSignature", "Success"].includes(exitState.status)
-  ) {  
-      return (
-        <Container>
+  ) {
+    return (
+      <Container>
         <LoadingOverlay>
-        <LoadingModal
-          isLoading={true}
-          status={["Mining", "PendingSignature", "Success"].includes(enterState.status) ? enterState.status : exitState.status}
-          modalText={""}
-        />
+          <LoadingModal
+            isLoading={true}
+            status={
+              ["Mining", "PendingSignature", "Success"].includes(
+                enterState.status
+              )
+                ? enterState.status
+                : exitState.status
+            }
+            modalText={""}
+          />
         </LoadingOverlay>
-        </Container>
-        // <Container>
-        //   <h1>{enterState.status !== "None" ? enterState.status : null} </h1>
-        //   <h1>{exitState.status !== "None" ? exitState.status : null}</h1>
-        // </Container>
-      );
+      </Container>
+      // <Container>
+      //   <h1>{enterState.status !== "None" ? enterState.status : null} </h1>
+      //   <h1>{exitState.status !== "None" ? exitState.status : null}</h1>
+      // </Container>
+    );
   }
   function withdrawAmount() {
     return (
@@ -157,8 +166,8 @@ const details: Details = {
       token.collateralFactor
     );
   }
-  function ifLimit(){
-    return  withdrawAmount() < token.supplyBalance
+  function ifLimit() {
+    return withdrawAmount() < token.supplyBalance;
   }
   return (
     <Container>
@@ -172,10 +181,14 @@ const details: Details = {
       />
       <h2>{token.data.underlying.name}</h2>
 
-      <h2>{
-        (token.borrowBalance > 0) ? `you cannot uncollateralize an asset that is currently being borrowed. please repay all ${token.data.underlying.name.toLowerCase()} before uncollateralizing.` : (ifLimit() && props.decollateralize) ? "80% of your borrow limit will be used. please repay borrows or increase supply." :    
-        props.decollateralize ? "disabling an asset as collateral will remove it from your borrowing limit, and no longer subject it to liquidation" :
-        "enabling an asset as collateral increases your borrowing limit, but subjects the asset to liquidation"}
+      <h2>
+        {token.borrowBalance > 0
+          ? `you cannot uncollateralize an asset that is currently being borrowed. please repay all ${token.data.underlying.name.toLowerCase()} before uncollateralizing.`
+          : ifLimit() && props.decollateralize
+          ? "80% of your borrow limit will be used. please repay borrows or increase supply."
+          : props.decollateralize
+          ? "disabling an asset as collateral will remove it from your borrowing limit, and no longer subject it to liquidation"
+          : "enabling an asset as collateral increases your borrowing limit, but subjects the asset to liquidation"}
       </h2>
       <div
         style={{
@@ -189,27 +202,30 @@ const details: Details = {
           marginTop: "0rem",
         }}
       >
-        {
-          (token.borrowBalance > 0 || ifLimit()) && props.decollateralize ? <DisabledButton>
-            {token.borrowBalance > 0 ? `currently borrowing ${token.data.underlying.symbol.toLowerCase()}` : `80% borrow limit will be reached`}
-          </DisabledButton> : <Button
-          onClick={() => {
-            props.decollateralize
-              ? exitSend(token.data.address)
-              : enterSend([token.data.address]);
+        {(token.borrowBalance > 0 || ifLimit()) && props.decollateralize ? (
+          <DisabledButton>
+            {token.borrowBalance > 0
+              ? `currently borrowing ${token.data.underlying.symbol.toLowerCase()}`
+              : "80% borrow limit will be reached"}
+          </DisabledButton>
+        ) : (
+          <Button
+            onClick={() => {
+              props.decollateralize
+                ? exitSend(token.data.address)
+                : enterSend([token.data.address]);
 
-            // props.onClose();
-          }}
-          style={{
-            margin: "0rem auto",
-          }}
-        >
-          {props.decollateralize
-            ? `disable ${token.data.underlying.symbol.toLowerCase()} as collateral`
-            : `use ${token.data.underlying.symbol.toLowerCase()} as collateral`}
-        </Button>
-        }
-        
+              // props.onClose();
+            }}
+            style={{
+              margin: "0rem auto",
+            }}
+          >
+            {props.decollateralize
+              ? `disable ${token.data.underlying.symbol.toLowerCase()} as collateral`
+              : `use ${token.data.underlying.symbol.toLowerCase()} as collateral`}
+          </Button>
+        )}
       </APY>
     </Container>
   );

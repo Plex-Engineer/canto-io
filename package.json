@@ -37,6 +37,7 @@
     "react-select": "^5.4.0",
     "react-tabs": "^5.1.0",
     "react-toastify": "^9.0.5",
+    "react-tooltip": "^4.2.21",
     "reactjs-popup": "^2.0.5",
     "rollup-plugin-polyfill-node": "^0.10.2",
     "sass": "^1.54.0",

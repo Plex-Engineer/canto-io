@@ -8,18 +8,19 @@ export function useTransactionStatus() {
 }
 
 export function useTransactionStatusUpdate() {
-    return React.useContext(TransactionStatusUpdateContext);
-  }
+  return React.useContext(TransactionStatusUpdateContext);
+}
 export default function TransactionStatusProvider({ children }: any) {
-  const [transactionStatus, setTransactionStatus] = React.useState<TransactionStatus[]>();
+  const [transactionStatus, setTransactionStatus] =
+    React.useState<TransactionStatus[]>();
 
   function updateTransactionStatus(status: TransactionStatus) {
     setTransactionStatus(transactionStatus);
   }
   return (
     <TransactionStatusContext.Provider value={transactionStatus}>
-        <TransactionStatusUpdateContext.Provider value={updateTransactionStatus}>
-      {children}
+      <TransactionStatusUpdateContext.Provider value={updateTransactionStatus}>
+        {children}
       </TransactionStatusUpdateContext.Provider>
     </TransactionStatusContext.Provider>
   );

@@ -63,7 +63,7 @@ const Button = styled.button`
     cursor: pointer;
   }
 `;
-const LoadingModal = ({ status, modalText }: ILoading) => {
+const LoadingModal = ({ status }: ILoading) => {
   let currentStatus = "";
   switch (status) {
     case "PendingSignature":

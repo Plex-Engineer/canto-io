@@ -7,8 +7,8 @@ export function useToken() {
 }
 
 export function useSetToken() {
-    return React.useContext(TokenUpdateContext);
-  }
+  return React.useContext(TokenUpdateContext);
+}
 export default function TokenProvider({ children }: any) {
   const [token, setToken] = React.useState(null);
 
@@ -17,8 +17,8 @@ export default function TokenProvider({ children }: any) {
   }
   return (
     <TokenContext.Provider value={[token, setToken]}>
-        <TokenUpdateContext.Provider value={updateToken}>
-      {children}
+      <TokenUpdateContext.Provider value={updateToken}>
+        {children}
       </TokenUpdateContext.Provider>
     </TokenContext.Provider>
   );

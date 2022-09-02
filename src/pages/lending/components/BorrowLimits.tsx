@@ -1,13 +1,13 @@
 import styled from "styled-components";
-import { noteSymbol } from "global/utils/utils";
 import CANTO from "assets/icons/canto.png";
+import { noteSymbol } from "global/utils/utils";
 
 enum TrasanctionType {
   SUPPLY,
   WITHDRAW,
   BORROW,
   REPAY,
-  ENABLE
+  ENABLE,
 }
 
 interface IDetailProps {
@@ -48,14 +48,11 @@ const Details = ({
       token.collateralFactor *
       (transactionType == TrasanctionType.SUPPLY ? amount : -amount);
     const additionalBorrowLimitInNote = additionalBorrowLimit * token.price;
-    const totalExpectedBorrowLimit =
-      additionalBorrowLimitInNote + borrowLimit;
-    return totalExpectedBorrowLimit;
+    return additionalBorrowLimitInNote + borrowLimit;
   }
 
   //Hypothetical Borrow Limit Used If About to supply/withdraw
   function ExpectedBorrowLimitUsed(ExpectedBorrowLimit: number) {
-   
     return borrowBalance / ExpectedBorrowLimit;
   }
 
@@ -70,10 +67,8 @@ const Details = ({
 
   //Hypothetical Borrow Limit Used If Borrowing
   function ExpectedBorrowLimitUsedIfBorrowing() {
-    return ((ExpectedBorrowBalanceIfBorrowing()) / borrowLimit)*100;
+    return (ExpectedBorrowBalanceIfBorrowing() / borrowLimit) * 100;
   }
-
- 
 
   const cBorrowLimit = isBorrowing
     ? borrowBalance.toFixed(2)
@@ -84,14 +79,13 @@ const Details = ({
     : ExpectedBorrowLimit().toFixed(2);
 
   const cBorrowLimitUsed = borrowLimitUsed.toFixed(2);
- 
+
   const cBorrowLimitUsedHypo = (
-    isBorrowing 
+    isBorrowing
       ? ExpectedBorrowLimitUsedIfBorrowing()
       : ExpectedBorrowLimitUsed(ExpectedBorrowLimit()) * 100
   ).toFixed(2);
 
-  
   return (
     <div>
       <Limits
@@ -110,13 +104,17 @@ const Details = ({
           />
           <p>
             {!isBorrowing ? "supply apr:" : "borrow rate:"}
-            {!isBorrowing ? <span>{token.supplyAPY.toFixed(2)}%</span> : <span>{token.borrowAPY.toFixed(2)}%</span>}
+            {!isBorrowing ? (
+              <span>{token.supplyAPY.toFixed(2)}%</span>
+            ) : (
+              <span>{token.borrowAPY.toFixed(2)}%</span>
+            )}
           </p>
         </div>
         <div
           style={{
             textAlign: "right",
-            visibility: isBorrowing ? "hidden" : "visible"
+            visibility: isBorrowing ? "hidden" : "visible",
           }}
         >
           <img
@@ -134,21 +132,28 @@ const Details = ({
       </Limits>
       <Limits>
         <p>collateral factor:</p>
-        <p>
-          {token.collateralFactor *100}%
-        </p>
+        <p>{token.collateralFactor * 100}%</p>
       </Limits>
       <Limits>
         <p>borrow {isBorrowing ? "balance" : "limit"}:</p>
         <p>
-          {noteSymbol}{cBorrowLimit} {(amount > 0 && (token.collateral || isBorrowing)) ? <span>-&gt;</span> : null}{" "}
-          {(amount&&(token.collateral || isBorrowing)) > 0 ? noteSymbol + cBorrowLimitHypo : null}
+          {noteSymbol}
+          {cBorrowLimit}{" "}
+          {amount > 0 && (token.collateral || isBorrowing) ? (
+            <span>-&gt;</span>
+          ) : null}{" "}
+          {(amount && (token.collateral || isBorrowing)) > 0
+            ? noteSymbol + cBorrowLimitHypo
+            : null}
         </p>
       </Limits>
       <Limits>
         <p>borrow limit used:</p>
         <p>
-          {isNaN(Number(cBorrowLimitUsed)) ? 0 : cBorrowLimitUsed}% {(amount && (token.collateral || isBorrowing)) > 0 ? <span>-&gt;</span> : null}{" "}
+          {isNaN(Number(cBorrowLimitUsed)) ? 0 : cBorrowLimitUsed}%{" "}
+          {(amount && (token.collateral || isBorrowing)) > 0 ? (
+            <span>-&gt;</span>
+          ) : null}{" "}
           {amount > 0 && (token.collateral || isBorrowing)
             ? (Number(cBorrowLimitUsedHypo) <= 0
                 ? Number(cBorrowLimitUsedHypo)
@@ -156,7 +161,13 @@ const Details = ({
             : null}
         </p>
       </Limits>
-      <LimitBar progress={!(token.collateral || isBorrowing) ? Number(cBorrowLimitUsed) : Number(cBorrowLimitUsedHypo)} />
+      <LimitBar
+        progress={
+          !(token.collateral || isBorrowing)
+            ? Number(cBorrowLimitUsed)
+            : Number(cBorrowLimitUsedHypo)
+        }
+      />
     </div>
   );
 };

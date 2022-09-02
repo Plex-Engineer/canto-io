@@ -1,14 +1,14 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import styled from "styled-components";
-import LendingField from "pages/lending/components/lendingField";
 import { useEffect, useState } from "react";
-import { useToken } from "pages/lending/providers/activeTokenContext";
-import { Details, TrasanctionType } from "pages/lending/components/BorrowLimits";
-import { formatBalance } from "global/utils/utils";
 import { TransactionStatus } from "@usedapp/core";
-import { InputState, ReactiveButton } from "pages/lending/components/reactiveButton";
-import LoadingModal from "pages/lending/components/modals/loadingModal";
 import { LoadingOverlay } from "./supplyModal";
+import { useToken } from "pages/lending/providers/activeTokenContext";
+import { InputState, ReactiveButton } from "../reactiveButton";
+import { formatBalance } from "global/utils/utils";
+import LendingField from "../lendingField";
+import { Details, TrasanctionType } from "../BorrowLimits";
+import LoadingModal from "./loadingModal";
 
 //STYLING
 const Container = styled.div`
@@ -57,10 +57,6 @@ const Container = styled.div`
     border-radius: 1px;
     color: var(--primary-color);
   }
-
-  @media (max-width: 1000px) {
-    width: 100vw;
-  }
 `;
 
 export const Wallet = styled.div`
@@ -82,25 +78,23 @@ export const Wallet = styled.div`
 `;
 
 interface IProps {
-  onClose : () => void;
+  onClose: () => void;
 }
-const BorrowModal = ( { onClose } : IProps) => {
+const BorrowModal = ({ onClose }: IProps) => {
   const tokenState = useToken();
   const token = tokenState[0].token;
   const stats = tokenState[0].stats;
   const [transaction, setTransaction] = useState<TransactionStatus>();
   const [isRepaying, setIsRepaying] = useState(true);
-  
-  const [inputState, setInputState] = useState(
-   InputState.ENTERAMOUNT
-  );
+
+  const [inputState, setInputState] = useState(InputState.ENTERAMOUNT);
 
   const [amount, setAmount] = useState("");
-  const [isMax,setMax] = useState(false);
+  const [isMax, setMax] = useState(false);
 
   function resetInput() {
     //if in repay tab and allowance is true or if borrowing is true
-    console.log("in repay tab " + isRepaying)
+    console.log("in repay tab " + isRepaying);
     if ((isRepaying && token.allowance) || !isRepaying) {
       setInputState(InputState.ENTERAMOUNT);
     } else {
@@ -223,7 +217,7 @@ const BorrowModal = ( { onClose } : IProps) => {
           value={amount}
           onChange={(value) => {
             borrowValidation(value, token.supplyBalance);
-            setMax(false)
+            setMax(false);
           }}
           transactionType={TrasanctionType.BORROW}
           token={token}
@@ -253,7 +247,6 @@ const BorrowModal = ( { onClose } : IProps) => {
           token={token}
           amount={amount}
           isEth={token.data.symbol == "cCANTO"}
-
           max={isMax}
           onTransaction={(e) => {
             setTransaction(e);
@@ -276,7 +269,7 @@ const BorrowModal = ( { onClose } : IProps) => {
         <LendingField
           token={token}
           value={amount}
-          transactionType={ TrasanctionType.REPAY}
+          transactionType={TrasanctionType.REPAY}
           limit={Math.min(token.balanceOf, token.borrowBalance)}
           //repay
           onMax={(value) => {
@@ -293,7 +286,7 @@ const BorrowModal = ( { onClose } : IProps) => {
               value,
               Math.min(token.balanceOf, token.borrowBalance)
             );
-            setMax(false)
+            setMax(false);
           }}
           balance={token.borrowBalance}
         />
@@ -319,11 +312,14 @@ const BorrowModal = ( { onClose } : IProps) => {
           }}
           max={isMax}
           isEth={token.data.symbol == "cCANTO"}
-
           state={inputState}
           token={token}
           amount={amount}
-          transactionType={inputState != InputState.ENABLE ?  TrasanctionType.REPAY : TrasanctionType.ENABLE}
+          transactionType={
+            inputState != InputState.ENABLE
+              ? TrasanctionType.REPAY
+              : TrasanctionType.ENABLE
+          }
         />
 
         {WalletForRepay()}
@@ -332,19 +328,17 @@ const BorrowModal = ( { onClose } : IProps) => {
   };
 
   useEffect(() => {
-   if(['Success' , 'Fail' , 'Exception'].includes(
-    transaction?.status ?? "none"
-  )){
-    setTimeout(onClose, 1000);
-  }
+    if (
+      ["Success", "Fail", "Exception"].includes(transaction?.status ?? "none")
+    ) {
+      setTimeout(onClose, 1000);
+    }
   }, [transaction?.status]);
-
- 
 
   return (
     <Container>
       {/* 'None' , 'PendingSignature' , 'Mining' , 'Success' , 'Fail' , 'Exception' */}
-      {['PendingSignature' , 'Mining' , 'Success' , 'Fail' , 'Exception'].includes(
+      {["PendingSignature", "Mining", "Success", "Fail", "Exception"].includes(
         transaction?.status ?? "none"
       ) ? (
         <LoadingOverlay>

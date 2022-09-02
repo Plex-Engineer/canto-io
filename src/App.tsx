@@ -39,13 +39,13 @@ function App() {
         <Container className="App">
           <CantoNav />
           <Routes>
-            <Route path="/" key={"bridge"} element={<BridgePage />} />
+            {/* <Route path="/" key={"bridge"} element={<BridgePage />} /> */}
             <Route
               path="/governance"
               key="governance"
               element={<Governance />}
             />
-            <Route path="/lpinterface" key="lp interface" element={<Dex />} />
+            {/* <Route path="/lpinterface" key="lp interface" element={<Dex />} /> */}
             <Route path="/lending" key="lending" element={<LendingMarket />} />
             <Route path="/staking" key={"staking"} element={<Staking />} />
           </Routes>

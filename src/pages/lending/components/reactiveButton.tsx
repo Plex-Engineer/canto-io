@@ -14,8 +14,6 @@ import {
   Details,
 } from "../hooks/useTransaction";
 import { Mixpanel } from "mixpanel";
-
-
 //ENUM
 enum InputState {
   ENABLE,
@@ -66,11 +64,11 @@ interface IButton {
   onTransaction: (transaction: TransactionStatus) => void;
 }
 
-function truncateByDecimals(amount:string, decimals: number) {
-  if (amount.indexOf('.') == -1) {
+function truncateByDecimals(amount: string, decimals: number) {
+  if (amount.indexOf(".") == -1) {
     return amount;
   }
-  return amount.slice(0, amount.indexOf('.') + decimals + 1);
+  return amount.slice(0, amount.indexOf(".") + decimals + 1);
 }
 
 const ReactiveButton = ({
@@ -99,15 +97,15 @@ const ReactiveButton = ({
   const { state: repayState, send: repaySend } = useRepay(details);
   const { state: redeemState, send: redeemSend } = useReedem(details);
 
-  const { state: enableState, send: enableSend } = useEnableToken(
-    {  name: token.data.underlying.symbol,
-      address: token.data.underlying.address,
-      icon: token.data.underlying.icon,
-      amount: amount,
-      type: showText(),}
-  );
+  const { state: enableState, send: enableSend } = useEnableToken({
+    name: token.data.underlying.symbol,
+    address: token.data.underlying.address,
+    icon: token.data.underlying.icon,
+    amount: amount,
+    type: showText(),
+  });
 
-  let transaction: TransactionStatus = initTransaction();
+  const transaction: TransactionStatus = initTransaction();
 
   onTransaction(transaction);
 
@@ -167,10 +165,17 @@ const ReactiveButton = ({
           transactionType == TrasanctionType.WITHDRAW) &&
         token.cash < Number(amount)
       ) {
-        return <DisabledButton>no {token.data.underlying.symbol} left</DisabledButton>;
+        return (
+          <DisabledButton>
+            no {token.data.underlying.symbol} left
+          </DisabledButton>
+        );
       }
-      if (transactionType == TrasanctionType.BORROW && token.borrowCap < Number(amount)) {
-        return <DisabledButton>borrow cap has been reached</DisabledButton>
+      if (
+        transactionType == TrasanctionType.BORROW &&
+        token.borrowCap < Number(amount)
+      ) {
+        return <DisabledButton>borrow cap has been reached</DisabledButton>;
       }
       return (
         <Button
@@ -178,28 +183,65 @@ const ReactiveButton = ({
             switch (transactionType) {
               case TrasanctionType.SUPPLY:
                 if (isEth) {
-                  const gas = max ? "1000000000000000" : "0"
+                  const gas = max ? "1000000000000000" : "0";
                   supplySendEth({
                     to: token.data.address,
-                    value: ethers.utils.parseUnits(truncateByDecimals(amount, token.data.underlying.decimals), token.data.underlying.decimals).sub(gas),
+                    value: ethers.utils
+                      .parseUnits(
+                        truncateByDecimals(
+                          amount,
+                          token.data.underlying.decimals
+                        ),
+                        token.data.underlying.decimals
+                      )
+                      .sub(gas),
                   });
                 } else {
-                  supplySend(ethers.utils.parseUnits(truncateByDecimals(amount, token.data.underlying.decimals), token.data.underlying.decimals));
+                  supplySend(
+                    ethers.utils.parseUnits(
+                      truncateByDecimals(
+                        amount,
+                        token.data.underlying.decimals
+                      ),
+                      token.data.underlying.decimals
+                    )
+                  );
                 }
                 Mixpanel.events.lendingMarketActions.supply(
                   token.wallet,
                   token.data.symbol,
-                  ethers.utils.parseUnits(truncateByDecimals(amount, token.data.underlying.decimals), token.data.underlying.decimals).toString(),
+                  ethers.utils
+                    .parseUnits(
+                      truncateByDecimals(
+                        amount,
+                        token.data.underlying.decimals
+                      ),
+                      token.data.underlying.decimals
+                    )
+                    .toString(),
                   token.price
                 );
 
                 break;
               case TrasanctionType.BORROW:
-                borrowSend(ethers.utils.parseUnits(truncateByDecimals(amount, token.data.underlying.decimals), token.data.underlying.decimals));
+                borrowSend(
+                  ethers.utils.parseUnits(
+                    truncateByDecimals(amount, token.data.underlying.decimals),
+                    token.data.underlying.decimals
+                  )
+                );
                 Mixpanel.events.lendingMarketActions.borrow(
                   token.wallet,
                   token.data.symbol,
-                  ethers.utils.parseUnits(truncateByDecimals(amount, token.data.underlying.decimals), token.data.underlying.decimals).toString(),
+                  ethers.utils
+                    .parseUnits(
+                      truncateByDecimals(
+                        amount,
+                        token.data.underlying.decimals
+                      ),
+                      token.data.underlying.decimals
+                    )
+                    .toString(),
                   token.price
                 );
                 break;
@@ -208,28 +250,63 @@ const ReactiveButton = ({
                   repaySendEth({
                     to: token.data.address,
                     data: "0x4e4d9fea",
-                    value: ethers.utils.parseUnits(truncateByDecimals(amount, token.data.underlying.decimals), token.data.underlying.decimals)
+                    value: ethers.utils.parseUnits(
+                      truncateByDecimals(
+                        amount,
+                        token.data.underlying.decimals
+                      ),
+                      token.data.underlying.decimals
+                    ),
                   });
                 } else {
                   repaySend(
-                    max && (Number(token.balanceOf) > (Number(token.borrowBalance) + 0.001))
+                    max &&
+                      Number(token.balanceOf) >
+                        Number(token.borrowBalance) + 0.001
                       ? "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-                      : ethers.utils.parseUnits(truncateByDecimals(amount, token.data.underlying.decimals), token.data.underlying.decimals)
+                      : ethers.utils.parseUnits(
+                          truncateByDecimals(
+                            amount,
+                            token.data.underlying.decimals
+                          ),
+                          token.data.underlying.decimals
+                        )
                   );
                 }
                 Mixpanel.events.lendingMarketActions.repay(
                   token.wallet,
                   token.data.symbol,
-                  ethers.utils.parseUnits(truncateByDecimals(amount, token.data.underlying.decimals), token.data.underlying.decimals).toString(),
+                  ethers.utils
+                    .parseUnits(
+                      truncateByDecimals(
+                        amount,
+                        token.data.underlying.decimals
+                      ),
+                      token.data.underlying.decimals
+                    )
+                    .toString(),
                   token.price
                 );
                 break;
               case TrasanctionType.WITHDRAW:
-                redeemSend(ethers.utils.parseUnits(truncateByDecimals(amount, token.data.underlying.decimals), token.data.underlying.decimals));
+                redeemSend(
+                  ethers.utils.parseUnits(
+                    truncateByDecimals(amount, token.data.underlying.decimals),
+                    token.data.underlying.decimals
+                  )
+                );
                 Mixpanel.events.lendingMarketActions.withdraw(
                   token.wallet,
                   token.data.symbol,
-                  ethers.utils.parseUnits(truncateByDecimals(amount, token.data.underlying.decimals), token.data.underlying.decimals).toString(),
+                  ethers.utils
+                    .parseUnits(
+                      truncateByDecimals(
+                        amount,
+                        token.data.underlying.decimals
+                      ),
+                      token.data.underlying.decimals
+                    )
+                    .toString(),
                   token.price
                 );
             }

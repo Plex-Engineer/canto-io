@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import logo from "assets/logo.svg";
 import { useEffect } from "react";
-import { useClaim } from "pages/lending/hooks/useTransaction";
 import { noteSymbol } from "global/utils/utils";
+import { useClaim } from "pages/lending/hooks/useTransaction";
 const Container = styled.div`
   background-color: #040404;
   height: 36rem;
@@ -150,7 +150,7 @@ const BalanceModal = ({ value, onClose }: Props) => {
         <Button
           onClick={() => {
             if (state.status != "Mining" && state.status != "Success")
-            // console.log(value.wallet)
+              // console.log(value.wallet)
               send(value.wallet);
           }}
         >

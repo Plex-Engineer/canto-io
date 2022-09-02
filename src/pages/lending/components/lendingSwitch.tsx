@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import { ModalManager, ModalType } from "../components/modals/modalManager";
+import { ModalManager, ModalType } from "./modals/modalManager";
 import { useState } from "react";
-
+import { ToolTip } from "./Tooltip";
 const Wrapper = styled.label`
   /* The switch - the box around the slider */
   position: relative;
@@ -125,16 +125,20 @@ const DisabledWrapper = styled(Wrapper)`
 const LendingSwitch = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   if (props.disabled) {
-    return <DisabledWrapper className="switch">
-      <input type="checkbox" checked={props.checked}/>
+    return (
+      <ToolTip data-tooltip="this asset cannot be collateralized">
+        <DisabledWrapper className="switch" data-for="foo">
+          <input type="checkbox" checked={props.checked} />
 
-      <span className="slider"></span>
-    </DisabledWrapper>;
+          <span className="slider"></span>
+        </DisabledWrapper>
+      </ToolTip>
+    );
   }
   return (
     <Wrapper
       className="switch"
-      onClick={(e:any) => {
+      onClick={(e) => {
         e.stopPropagation();
       }}
     >
@@ -146,15 +150,7 @@ const LendingSwitch = (props: Props) => {
           props.onChange();
         }}
       />
-      <ModalManager
-        isOpen={isOpen}
-        modalType={
-          !props.checked ? ModalType.COLLATERAL : ModalType.DECOLLATERAL
-        }
-        onClose={() => {
-          setIsOpen(false);
-        }}
-      />
+      <ModalManager isOpen={isOpen} />
       <span className="slider"></span>
     </Wrapper>
   );

@@ -7,8 +7,8 @@ export function useOverallStats() {
 }
 
 export function useOverallStatsUpdate() {
-    return React.useContext(OverallStatsUpdateContext);
-  }
+  return React.useContext(OverallStatsUpdateContext);
+}
 export default function OverallStatsProvider({ children }: any) {
   const [overallStats, setOverallStats] = React.useState(null);
 
@@ -17,8 +17,8 @@ export default function OverallStatsProvider({ children }: any) {
   }
   return (
     <OverallStatsContext.Provider value={[overallStats, setOverallStats]}>
-        <OverallStatsUpdateContext.Provider value={updateOverallStats}>
-      {children}
+      <OverallStatsUpdateContext.Provider value={updateOverallStats}>
+        {children}
       </OverallStatsUpdateContext.Provider>
     </OverallStatsContext.Provider>
   );

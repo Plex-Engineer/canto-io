@@ -7,7 +7,6 @@ import coinBase from "../../../../assets/wallets/coinbase.svg";
 import ledger from "../../../../assets/wallets/ledger.svg";
 import { useEthers } from "@usedapp/core";
 
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -74,56 +73,58 @@ const Container = styled.div`
 `;
 
 const LoadingBar = styled.div`
-    height: 4px;
-    width: 200px;
-    background-color: #242424;
-    
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
-    &::before {
-        content: "";
-        display: flex;
-        height: 100%;
-        width: 80px;
-        background-color: var(--primary-color);
-        @keyframes slide {
-            0% {
-                transform: translateX(-80px);
+  height: 4px;
+  width: 200px;
+  background-color: #242424;
 
-            }
-            100% {
-                transform: translateX(200px);
-            }
-        }
-        animation: slide 1s linear infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+  &::before {
+    content: "";
+    display: flex;
+    height: 100%;
+    width: 80px;
+    background-color: var(--primary-color);
+    @keyframes slide {
+      0% {
+        transform: translateX(-80px);
+      }
+      100% {
+        transform: translateX(200px);
+      }
     }
-   
-
-`
+    animation: slide 1s linear infinite;
+  }
+`;
 
 interface IProps {
   onClose: () => void;
 }
-const WalletModal = ({onClose}: IProps) => {
-  const {account, activateBrowserWallet, isLoading} = useEthers();
+const WalletModal = ({ onClose }: IProps) => {
+  const { account, activateBrowserWallet, isLoading } = useEthers();
   const isConnected = account !== undefined;
-  
-  if(isConnected) {
 
+  if (isConnected) {
     onClose();
-
   }
   if (isLoading) {
     return (
-        <Container style={{
-          justifyContent : 'center',
-        }}>
-            <LoadingBar/>
-            <p style={{
-                marginTop: '2rem',
-                textAlign: 'center'
-            }}>confirm the transaction<br/> with metamask</p>
-            </Container>
-    )
+      <Container
+        style={{
+          justifyContent: "center",
+        }}
+      >
+        <LoadingBar />
+        <p
+          style={{
+            marginTop: "2rem",
+            textAlign: "center",
+          }}
+        >
+          confirm the transaction
+          <br /> with metamask
+        </p>
+      </Container>
+    );
   } else {
     return (
       <Container>
@@ -131,13 +132,13 @@ const WalletModal = ({onClose}: IProps) => {
         <p>connect wallet to start using canto</p>
 
         <div className="wallet-list">
-          <div className="wallet-item" onClick={()=>{
-                
-                activateBrowserWallet(
-                  
-                )
-                //TODO: fix on cancel go back
-          }}>
+          <div
+            className="wallet-item"
+            onClick={() => {
+              activateBrowserWallet();
+              //TODO: fix on cancel go back
+            }}
+          >
             <img src={metamask} alt="Canto" height={54} />
             <p>metamask</p>
           </div>

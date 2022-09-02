@@ -11,12 +11,14 @@ const Table = styled.table`
   border-collapse: collapse;
   border-spacing: 0;
   text-shadow: none;
-  thead { 
+  thead {
     text-transform: lowercase;
     font-size: 14px;
     background-color: #06fc9a1b;
   }
-
+  td {
+    display: table-cell;
+  }
   th {
     padding: 8px;
     font-weight: 400;
@@ -37,19 +39,17 @@ const Table = styled.table`
     display: flex;
     align-items: center;
     gap: 1rem;
-    text-transform : uppercase;
+    text-transform: uppercase;
   }
   th:first-child {
-    text-transform : lowercase;
-
+    text-transform: lowercase;
   }
   img {
-    
-      height: 30px;
-      /* width: 30px; */
-      /* border-radius: 50%; */
-      /* border: 1px solid var(--primary-color); */
-      /* background-color: #cecece; */
+    height: 30px;
+    /* width: 30px; */
+    /* border-radius: 50%; */
+    /* border: 1px solid var(--primary-color); */
+    /* background-color: #cecece; */
   }
   tbody {
     border: var(--primary-color) solid 1px;
@@ -67,23 +67,23 @@ const Table = styled.table`
 interface Props {
   columns: string[];
   children: React.ReactNode;
-  isLending: boolean
-};
+  isLending: boolean;
+}
 
-const LendingTable = (props : Props) => {
+const LendingTable = (props: Props) => {
   return (
     <div
       style={{
-        overflowX: "auto",
+        // overflowX: "auto",
         width: "100%",
       }}
     >
       <Table>
         <thead>
           <tr>
-            {
-              props.columns.map((heading)=>(<th key={heading}>{heading}</th>))
-            }
+            {props.columns.map((heading) => (
+              <th key={heading}>{heading}</th>
+            ))}
           </tr>
         </thead>
         <tbody>{props.children}</tbody>
@@ -91,7 +91,5 @@ const LendingTable = (props : Props) => {
     </div>
   );
 };
-
-
 
 export default LendingTable;

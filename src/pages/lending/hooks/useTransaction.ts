@@ -1,13 +1,15 @@
-import { useContractFunction, useSendTransaction, useEthers } from "@usedapp/core";
-import {  Contract, utils } from "ethers";
+import {
+  useContractFunction,
+  useSendTransaction,
+  useEthers,
+} from "@usedapp/core";
+import { Contract, utils } from "ethers";
 import { TOKENS, CantoTestnet, ADDRESSES } from "cantoui";
 import { cERC20Abi, comptrollerAbi, ERC20Abi } from "global/config/abi";
 
-
-
 //Ex : DAI 50
-//On enter market : Collateralizing DAI : DAI is being collateralized: DAI has been collateralized 
-//On exit market : Decollateralizing DAI : DAI is being decollateralized: DAI has been decollateralized 
+//On enter market : Collateralizing DAI : DAI is being collateralized: DAI has been collateralized
+//On exit market : Decollateralizing DAI : DAI is being decollateralized: DAI has been decollateralized
 
 //on Enable : enabling DAI : DAI has be enabled : enabled DAI
 
@@ -17,167 +19,148 @@ import { cERC20Abi, comptrollerAbi, ERC20Abi } from "global/config/abi";
 //on withdraw : withdrawing 20 DAI : 20 DAI has been withdrew : Withdrew 20 DAI
 // {type} {amount} {symbol}
 
+export function useEnterMarkets(props: Details) {
+  const { chainId } = useEthers();
+  const comptroller =
+    chainId == CantoTestnet.chainId
+      ? ADDRESSES.testnet.Comptroller
+      : ADDRESSES.cantoMainnet.Comptroller;
 
+  const compInterface = new utils.Interface(comptrollerAbi);
+  const contract = new Contract(comptroller, compInterface);
 
-  export function useEnterMarkets(props : Details) {
-    const { chainId } = useEthers();
-    const comptroller = chainId == CantoTestnet.chainId ? ADDRESSES.testnet.Comptroller : ADDRESSES.cantoMainnet.Comptroller;
+  const { state, send } = useContractFunction(contract, "enterMarkets", {
+    transactionName: JSON.stringify(props),
+  });
 
-    const compInterface = new utils.Interface(comptrollerAbi);
-    const contract = new Contract(comptroller, compInterface)
+  return { state, send };
+}
 
-    const { state, send } = useContractFunction(
-      contract,
-      "enterMarkets",
-      {
-          transactionName: JSON.stringify(props),
-      }
-    );
-  
-    return {state, send};
-  }
+export function useExitMarket(props: Details) {
+  const { chainId } = useEthers();
+  const comptroller =
+    chainId == CantoTestnet.chainId
+      ? ADDRESSES.testnet.Comptroller
+      : ADDRESSES.cantoMainnet.Comptroller;
 
-  export function useExitMarket(props : Details) {
-    const { chainId } = useEthers();
-    const comptroller = chainId == CantoTestnet.chainId ? ADDRESSES.testnet.Comptroller : ADDRESSES.cantoMainnet.Comptroller;
-    
-    const compInterface = new utils.Interface(comptrollerAbi);
-    const contract = new Contract(comptroller, compInterface)
+  const compInterface = new utils.Interface(comptrollerAbi);
+  const contract = new Contract(comptroller, compInterface);
 
-    const { state, send } = useContractFunction(
-      contract,
-      "exitMarket",
-      {
-        transactionName: JSON.stringify(props),
+  const { state, send } = useContractFunction(contract, "exitMarket", {
+    transactionName: JSON.stringify(props),
+  });
+  return { state, send };
+}
+export function useEnableToken(props: Details) {
+  const erc20Interface = new utils.Interface(ERC20Abi);
+
+  const { state, send } = useContractFunction(
+    props.address && new Contract(props.address, erc20Interface),
+    "approve",
+    {
+      transactionName: JSON.stringify(props),
     }
-    );
-    return {state, send};
-  }
-  export function useEnableToken(props : Details) {
+  );
+  return { state, send };
+}
 
-    const erc20Interface = new utils.Interface(ERC20Abi);
-    
+export function useSupplyEth(props: Details) {
+  return useSendTransaction({
+    transactionName: JSON.stringify(props),
+  });
+}
 
-    const { state, send } = useContractFunction(props.address &&
-      new Contract(props.address, erc20Interface),
-      "approve",
-      {
-          transactionName: JSON.stringify(props),
-      }
-    );
-    return {state, send};
-  }
+export function useRepayEth(props: Details) {
+  return useSendTransaction({
+    transactionName: JSON.stringify(props),
+  });
+}
+export function useSupply(props: Details) {
+  const erc20Interface = new utils.Interface(cERC20Abi);
 
-  export function useSupplyEth (props : Details){
-    return useSendTransaction({
-      transactionName : JSON.stringify(props)
-    })
-  }
+  const { state, send } = useContractFunction(
+    props.address && new Contract(props.address, erc20Interface),
+    "mint",
+    {
+      transactionName: JSON.stringify(props),
+    }
+  );
 
-  export function useRepayEth (props : Details){
-    return useSendTransaction({
-      transactionName : JSON.stringify(props)
-    })
-  }
-  export function useSupply(props : Details)  {
-    const erc20Interface = new utils.Interface(cERC20Abi);
-   
-    const { state, send } = useContractFunction(props.address &&
-      new Contract(props.address, erc20Interface),
-      "mint",
-      {
-          transactionName: JSON.stringify(props),
-      }, 
-    );
+  return { state, send };
+}
 
-   
-    return {state, send};
-  }
+export function useClaim(address: string) {
+  const compInterface = new utils.Interface(comptrollerAbi);
 
-  export function useClaim(address : string)  {
-    
-    const compInterface = new utils.Interface(comptrollerAbi);
-   
-    const { state, send } = useContractFunction(address &&
-      new Contract(address, compInterface),
-      "claimComp",
-      {
-          transactionName: JSON.stringify({
-            name : "CANTO",
-            icon : TOKENS.cantoMainnet.CANTO.icon,
-            amount : -1,
-            type : "Claim"
-          }),
-      }, 
+  const { state, send } = useContractFunction(
+    address && new Contract(address, compInterface),
+    "claimComp",
+    {
+      transactionName: JSON.stringify({
+        name: "CANTO",
+        icon: TOKENS.cantoMainnet.CANTO.icon,
+        amount: -1,
+        type: "Claim",
+      }),
+    }
+  );
+  return { state, send };
+}
 
-    );
-    return {state, send};
-  }
+export interface Details {
+  address: string;
+  name: string;
+  icon: string;
+  amount: string;
+  type: string;
+}
 
-  export interface Details {
-    address: string,
-    name : string,
-    icon : string,
-    amount : string,
-    type : string,
-  }
+export function useReedem(props: Details) {
+  const erc20Interface = new utils.Interface(cERC20Abi);
 
+  const { state, send } = useContractFunction(
+    props.address && new Contract(props.address, erc20Interface),
+    "redeemUnderlying",
+    {
+      transactionName: JSON.stringify(props),
+    }
+  );
+  return { state, send };
+}
+export function useReedemToken(props: Details) {
+  const erc20Interface = new utils.Interface(cERC20Abi);
 
-  export function useReedem(props : Details) {
+  const { state, send } = useContractFunction(
+    props.address && new Contract(props.address, erc20Interface),
+    "redeem",
+    {
+      transactionName: JSON.stringify(props),
+    }
+  );
+  return { state, send };
+}
 
-    const erc20Interface = new utils.Interface(cERC20Abi);
+export function useRepay(props: Details) {
+  const erc20Interface = new utils.Interface(cERC20Abi);
 
-    const { state, send } = useContractFunction( props.address &&
-      new Contract(props.address, erc20Interface),
-      "redeemUnderlying",
-      {
-          transactionName: JSON.stringify(props),
-      }
-    );
-    return {state, send};
-  }
-  export function useReedemToken(props : Details) {
+  const { state, send } = useContractFunction(
+    props.address && new Contract(props.address, erc20Interface),
+    "repayBorrow",
+    {
+      transactionName: JSON.stringify(props),
+    }
+  );
+  return { state, send };
+}
 
-    const erc20Interface = new utils.Interface(cERC20Abi);
-    
-
-    const { state, send } = useContractFunction( props.address &&
-      new Contract(props.address, erc20Interface),
-      "redeem",
-      {
-          transactionName: JSON.stringify(props),
-      }
-    );
-    return {state, send};
-  }
-
-  export function useRepay(props : Details) {
-
-    const erc20Interface = new utils.Interface(cERC20Abi);
-   
-
-    const { state, send } = useContractFunction( props.address &&
-      new Contract(props.address, erc20Interface),
-      "repayBorrow",
-      {
-          transactionName: JSON.stringify(props),
-      }
-    );
-    return {state, send};
-  }
-
-  export function useBorrow(props : Details) {
-
-    const erc20Interface = new utils.Interface(cERC20Abi);
-    const { state, send } = useContractFunction( props.address &&
-      new Contract(props.address, erc20Interface),
-      "borrow",
-      {
-          transactionName: JSON.stringify(props),
-      }
-    );
-    return {state, send};
-  }
-  
-  
-
+export function useBorrow(props: Details) {
+  const erc20Interface = new utils.Interface(cERC20Abi);
+  const { state, send } = useContractFunction(
+    props.address && new Contract(props.address, erc20Interface),
+    "borrow",
+    {
+      transactionName: JSON.stringify(props),
+    }
+  );
+  return { state, send };
+}
