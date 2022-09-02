@@ -2,10 +2,9 @@ import { DAppProvider, Config, Mainnet as ETHMain } from "@usedapp/core";
 import React from "react";
 import TransactionStatusProvider from "../../providers/transactionContext";
 import { Chain } from "@usedapp/core";
-import { ETHMainnet, GravityTestnet } from "pages/bridge/config/networks";
+import { ETHMainnet } from "pages/bridge/config/networks";
 import { CantoMainnet as CantoMain, CantoTestnet as CantoTest } from "cantoui";
 import TokenProvider from "pages/lending/providers/activeTokenContext";
-import OverallStatsProvider from "pages/lending/providers/overallStats";
 
 interface IProviderProps {
   children: React.ReactNode;
@@ -69,9 +68,7 @@ const Provider = ({ children }: IProviderProps) => {
   return (
     <DAppProvider config={config}>
       <TokenProvider>
-        <OverallStatsProvider>
-          <TransactionStatusProvider>{children}</TransactionStatusProvider>
-        </OverallStatsProvider>
+        <TransactionStatusProvider>{children}</TransactionStatusProvider>
       </TokenProvider>
     </DAppProvider>
   );

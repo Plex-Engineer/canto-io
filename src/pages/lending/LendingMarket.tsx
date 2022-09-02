@@ -20,13 +20,17 @@ import { toast } from "react-toastify";
 import CypherText from "./components/CypherText";
 import { Details } from "./hooks/useTransaction";
 import Popup from "reactjs-popup";
-import useModalStore from "./stores/useModals";
 import { Container, Button, Hero, TinyTable } from "./components/Container";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { Mixpanel } from "mixpanel";
 import { formatBalance, noteSymbol } from "global/utils/utils";
+import { CantoMainnet } from "cantoui";
 
 const LendingMarket = () => {
+  //this is used to check and set the lending modal is open or not
+  const [isOpen, setIsOpen] = useState(false);
+  //this is used to set the kind of modal to be opened
+  const [modalType, setModalType] = useState<ModalType>(ModalType.LENDING);
   //intialize network store
   const networkInfo = useNetworkInfo();
 
@@ -34,9 +38,10 @@ const LendingMarket = () => {
   const [borrowBalance, setborrowBalance] = useState("00.00");
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);
-  const modalStore = useModalStore();
 
   useEffect(() => {
+    ReactTooltip.rebuild();
+
     notifications.forEach((item) => {
       if (
         item.type == "transactionStarted" &&
@@ -126,7 +131,7 @@ const LendingMarket = () => {
         });
       }
     });
-  }, [notifications, notifs]);
+  }, [notifications]);
 
   //this is used to generate some statistics about the token from the getMarkets
   Mixpanel.events.pageOpened("Lending Market", networkInfo.account);
@@ -134,14 +139,24 @@ const LendingMarket = () => {
   const setToken = useSetToken();
 
   const allData = useTokens(networkInfo.account, Number(networkInfo.chainId));
-  modalStore.setTokens(allData?.LMTokens);
-  modalStore.setBalance(allData?.balances.balance);
-  modalStore.setStats(allData?.balances);
-
-  const tokens = modalStore.tokens;
+  const tokens = allData?.LMTokens;
   const stats = allData?.balances;
-  const walletBalance = modalStore.balance;
+  const walletBalance = stats?.balance;
 
+  function openModalLending() {
+    setModalType(ModalType.LENDING);
+    setIsOpen(true);
+  }
+
+  function openBalance() {
+    setModalType(ModalType.BALANCE);
+    setIsOpen(true);
+  }
+
+  function openModalBorrow() {
+    setModalType(ModalType.BORROW);
+    setIsOpen(true);
+  }
   const borrowPercentage = stats?.totalBorrowLimitUsed
     ? (stats?.totalBorrowLimitUsed / (stats?.totalBorrowLimit ?? 0)) * 100
     : 0;
@@ -169,7 +184,7 @@ const LendingMarket = () => {
                     onClick={() => {
                       setToken({ token, stats });
 
-                      modalStore.open(ModalType.LENDING);
+                      openModalLending();
                     }}
                     assetIcon={token.data.underlying.icon}
                     assetName={token.data.underlying.symbol}
@@ -226,7 +241,7 @@ const LendingMarket = () => {
                     onClick={() => {
                       setToken({ token, stats });
 
-                      modalStore.open(ModalType.BORROW);
+                      openModalBorrow();
                     }}
                     assetIcon={token.data.underlying.icon}
                     assetName={token.data.underlying.symbol}
@@ -282,10 +297,7 @@ const LendingMarket = () => {
                     collaterable={Number(token.collateralFactor) > 0}
                     onClick={() => {
                       setToken({ token: token, stats: stats });
-                      modalStore.open(ModalType.LENDING);
-                      console.log(
-                        "🚀 ~ file: LendingMarket.tsx ~ line 283 ~ SupplyTable ~   modalStore.open(ModalType.LENDING);"
-                      );
+                      openModalLending();
                     }}
                     key={token.data.address + "supply"}
                     assetIcon={token.data.underlying.icon}
@@ -335,7 +347,7 @@ const LendingMarket = () => {
                   <BorrowingRow
                     onClick={() => {
                       setToken({ token, stats });
-                      modalStore.open(ModalType.BORROW);
+                      openModalBorrow();
                     }}
                     key={token.data.address + "borrowing"}
                     assetIcon={token.data.underlying.icon}
@@ -379,7 +391,7 @@ const LendingMarket = () => {
     ReactTooltip.rebuild();
 
     // console.log(stats?.totalBorrow.toFixed(6))
-  }, [stats?.totalBorrow, stats?.totalSupply, tokens]);
+  }, [tokens]);
 
   useEffect(() => {
     ReactTooltip.rebuild();
@@ -387,13 +399,22 @@ const LendingMarket = () => {
 
   return (
     <Container className="lendingMarket">
-      <ModalManager isOpen={modalStore.currentModal != ModalType.NONE} />
+      <ReactTooltip id="foo" />
+
+      <ModalManager
+        isOpen={isOpen}
+        modalType={modalType}
+        onClose={() => {
+          setIsOpen(false);
+        }}
+        data={walletBalance}
+      />
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        {networkInfo.isConnected ? (
+        {Number(networkInfo.chainId) == CantoMainnet.chainId ? (
           <Button
             onClick={() => {
               if (networkInfo.account) {
-                modalStore.open(ModalType.BALANCE);
+                openBalance();
               }
             }}
             style={{ width: "15rem", alignSelf: "right" }}
@@ -436,19 +457,19 @@ const LendingMarket = () => {
         trigger={
           <TinyTable>
             {/* <div className="tables">
-              <div className="table">
-                <h1>Assets</h1>
-                <p>{supplyBalance}</p>
-                <p>apy:23%</p>
-                <p>$37</p>
-              </div>
-              <div className="table alt">
-                <h1>Liabilities</h1>
-                <p>{borrowBalance}</p>
-                <p>apy:21%</p>
-                <p>$23</p>
-              </div>
-            </div> */}
+            <div className="table">
+              <h1>Assets</h1>
+              <p>{supplyBalance}</p>
+              <p>apy:23%</p>
+              <p>$37</p>
+            </div>
+            <div className="table alt">
+              <h1>Liabilities</h1>
+              <p>{borrowBalance}</p>
+              <p>apy:21%</p>
+              <p>$23</p>
+            </div>
+          </div> */}
             <div>
               <p>borrow limit</p>
             </div>
@@ -633,6 +654,7 @@ const SpecialTabs = () => {
       cursor: pointer;
     }
   `;
+  const [showSupply, setShowSupply] = useState(true);
 
   return (
     <TabBar>

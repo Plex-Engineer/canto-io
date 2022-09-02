@@ -65,6 +65,7 @@ export function useEnableToken(props: Details) {
 }
 
 export function useSupplyEth(props: Details) {
+  console.log("");
   return useSendTransaction({
     transactionName: JSON.stringify(props),
   });
