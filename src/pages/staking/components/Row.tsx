@@ -105,7 +105,8 @@ function AcccessibleTable(validator?: validators) {
                 {moment
                   .utc(lockout.complete_time_stamp)
                   .local()
-                  .format("LLLL UTC").toLowerCase()}
+                  .format("LLLL UTC")
+                  .toLowerCase()}
               </TableCell>
               <TableCell style={textColor} align="right">
                 {formatNumber(lockout.value_of_coin, 18)}
@@ -153,7 +154,6 @@ function Row(props: props) {
     if (delegation.delegation.validator_address == validator.operator_address) {
       hasDelegatedToValidator = true;
       staked = BigNumber.from(delegation.balance.amount);
-      return;
     }
   });
 

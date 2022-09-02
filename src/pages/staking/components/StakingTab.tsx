@@ -2,7 +2,6 @@ import { DelegationResponse, Validator, UndelegationMap } from "../utils/utils";
 import styled from "styled-components";
 import ValidatorTable from "./ValidatorTable";
 
-
 const Button = styled.button`
   font-weight: 300;
   font-size: 18px;
@@ -26,39 +25,49 @@ const Button = styled.button`
 const ValidatorContainer = styled.div``;
 
 type props = {
-    setIsOpen: (v: boolean) => void,
-    setValidatorModal: (v: Validator) => void,
-    setViewAllDelegations: (v: boolean) => void,
-    viewAllDelegations: boolean,
-    delegations: DelegationResponse[],
-    validators: Validator[],
-    fetchNewData: () => void,
-    undelegations: UndelegationMap
-}
+  setIsOpen: (v: boolean) => void;
+  setValidatorModal: (v: Validator) => void;
+  setViewAllDelegations: (v: boolean) => void;
+  viewAllDelegations: boolean;
+  delegations: DelegationResponse[];
+  validators: Validator[];
+  fetchNewData: () => void;
+  undelegations: UndelegationMap;
+};
 
 const StakingTab = (props: props) => {
-    const { setIsOpen, setValidatorModal, setViewAllDelegations,
-        viewAllDelegations, delegations, validators, fetchNewData, undelegations } = props;
+  const {
+    setIsOpen,
+    setValidatorModal,
+    setViewAllDelegations,
+    viewAllDelegations,
+    delegations,
+    validators,
+    fetchNewData,
+    undelegations,
+  } = props;
 
-    return (
-        !viewAllDelegations ? (
-            <Button onClick={() => setViewAllDelegations(!viewAllDelegations)}>view my delegations</Button>
-        ) : (
-            <div style={{width : '100%'}}>
-                <ValidatorContainer>
-                    <ValidatorTable
-                        setIsOpen={setIsOpen}
-                        setValidatorModal={setValidatorModal}
-                        validators={validators}
-                        delegations={delegations}
-                        fetchNewData={fetchNewData}
-                        undelegations={undelegations}
-                    />
-                </ValidatorContainer>
-                <Button onClick={() => setViewAllDelegations(!viewAllDelegations)}>minimize</Button>
-            </div>
-        )
-    );
+  return !viewAllDelegations ? (
+    <Button onClick={() => setViewAllDelegations(!viewAllDelegations)}>
+      view my delegations
+    </Button>
+  ) : (
+    <div style={{ width: "100%" }}>
+      <ValidatorContainer>
+        <ValidatorTable
+          setIsOpen={setIsOpen}
+          setValidatorModal={setValidatorModal}
+          validators={validators}
+          delegations={delegations}
+          fetchNewData={fetchNewData}
+          undelegations={undelegations}
+        />
+      </ValidatorContainer>
+      <Button onClick={() => setViewAllDelegations(!viewAllDelegations)}>
+        minimize
+      </Button>
+    </div>
+  );
 };
 
 export default StakingTab;

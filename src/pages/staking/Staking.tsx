@@ -20,9 +20,7 @@ import {
   getDistributionRewards,
   txClaimRewards,
   getUndelegationsForAddress,
-} from 
-//@ts-ignore
-"./utils/transactions";
+} from "./utils/transactions";
 import { useEffect } from "react";
 import { DelegationResponse } from "@tharsis/provider";
 import StakingTab from "./components/StakingTab";
@@ -206,13 +204,11 @@ const Staking = () => {
 
   // DATA USESTATES (request for user data)
   // get all of the validators
-  const [validators, setValidators] = useState<Validator[]>(new Array());
+  const [validators, setValidators] = useState<Validator[]>([]);
   // get the canto balance of the user
   const [balance, setBalance] = useState<BigNumber>(BigNumber.from("0"));
   // get all of the validators the user has staked to
-  const [delegations, setDelegations] = useState<DelegationResponse[]>(
-    new Array()
-  );
+  const [delegations, setDelegations] = useState<DelegationResponse[]>([]);
   // get all of the undelegations for the user
   const [undelegations, setUndelegations] = useState<UndelegationMap>({
     total_unbonding: BigNumber.from("0"),
@@ -235,7 +231,10 @@ const Staking = () => {
     transactionType: number,
     currentValidator?: string
   ) => {
-    const currentBalance = await getCantoBalance(CantoMainnet.cosmosAPIEndpoint, account);
+    const currentBalance = await getCantoBalance(
+      CantoMainnet.cosmosAPIEndpoint,
+      account
+    );
     const delegations: DelegationResponse[] = await getDelegationsForAddress(
       CantoMainnet.cosmosAPIEndpoint,
       account
@@ -248,7 +247,6 @@ const Staking = () => {
     delegations.forEach((delegation: any) => {
       if (delegation.delegation.validator_address.includes(currentValidator)) {
         delegatedTo = BigNumber.from(delegation.balance.amount);
-        return;
       }
     });
 
@@ -344,10 +342,21 @@ const Staking = () => {
     setValidators(await getValidators(CantoMainnet.cosmosAPIEndpoint));
     setStakingApr(await getStakingApr());
     if (account != undefined) {
-      setBalance(await getCantoBalance(CantoMainnet.cosmosAPIEndpoint, account));
-      setDelegations(await getDelegationsForAddress(CantoMainnet.cosmosAPIEndpoint, account));
-      setRewards(await getDistributionRewards(CantoMainnet.cosmosAPIEndpoint, account));
-      setUndelegations(await getUndelegationsForAddress(CantoMainnet.cosmosAPIEndpoint, account));
+      setBalance(
+        await getCantoBalance(CantoMainnet.cosmosAPIEndpoint, account)
+      );
+      setDelegations(
+        await getDelegationsForAddress(CantoMainnet.cosmosAPIEndpoint, account)
+      );
+      setRewards(
+        await getDistributionRewards(CantoMainnet.cosmosAPIEndpoint, account)
+      );
+      setUndelegations(
+        await getUndelegationsForAddress(
+          CantoMainnet.cosmosAPIEndpoint,
+          account
+        )
+      );
     }
   };
   useEffect(() => {

@@ -1,5 +1,6 @@
 import { useEthers } from "@usedapp/core";
-import { NavBar } from "cantoui";
+import { NavBar } from "../../../../canto/src/components/organisms/Navbar";
+//TODO: navbar
 import { getAccountBalance } from "global/utils/walletConnect/addCantoToWallet";
 import { useEffect } from "react";
 import { useNetworkInfo } from "global/stores/networkInfo";
@@ -41,9 +42,31 @@ export const CantoNav = () => {
     getBalance();
   }, [netWorkInfo.account, netWorkInfo.chainId]);
 
+  const pageList = [
+    {
+      name: "bridge",
+      link: "/",
+    },
+    {
+      name: "governance",
+      link: "/governance",
+    },
+    {
+      name: "lending",
+      link: "/lending",
+    },
+    {
+      name: "lp interface",
+      link: "/lpinterface",
+    },
+    {
+      name: "staking",
+      link: "/staking",
+    },
+  ];
+
   return (
     <NavBar
-      title={getTitle(location.pathname.slice(1))}
       onClick={() => {
         activateBrowserWallet();
         addNetwork();
@@ -54,6 +77,7 @@ export const CantoNav = () => {
       balance={netWorkInfo.balance}
       currency={netWorkInfo.chainId == "1" ? "ETH" : "CANTO"}
       logo={logo}
+      pageList={pageList}
       currentPage={getTitle(location.pathname.slice(1))}
     />
   );

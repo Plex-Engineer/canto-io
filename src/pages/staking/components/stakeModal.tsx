@@ -7,15 +7,13 @@ import {
   calculateTotalStaked,
 } from "pages/staking/utils/utils";
 import { fee, unbondingFee, reDelegateFee } from "../config/fees";
-import {chain, memo} from "global/config/cosmosConstants"
-import { txRedelegate, txStake, txUnstake } from 
-//@ts-ignore
-"../utils/transactions.js";
+import { chain, memo } from "global/config/cosmosConstants";
+import { txRedelegate, txStake, txUnstake } from "../utils/transactions.js";
 import { useState } from "react";
 import { BigNumber, ethers } from "ethers";
 import { OutlinedButton, PrimaryButton, Text } from "cantoui";
 import Select from "react-select";
-import { parse } from "@ethersproject/transactions";
+import { userTxMessages } from "../config/messages";
 
 const Container = styled.div`
   background-color: #040404;
@@ -244,44 +242,8 @@ const Container = styled.div`
   }
 `;
 
-const Button = styled.button`
-  font-weight: 400;
-  width: 10rem;
-  font-size: 18px;
-  color: black;
-  background-color: var(--primary-color);
-  padding: 0.6rem;
-  border: 1px solid var(--primary-color);
-  margin: 2rem;
-  /* margin: 3rem auto; */
-
-  &:hover {
-    background-color: #028a39;
-    color: black;
-    cursor: pointer;
-  }
-`;
-
-const DeButton = styled.button`
-  font-weight: 400;
-  width: 10rem;
-  font-size: 18px;
-  color: var(--primary-color);
-  background-color: black;
-  padding: 0.6rem;
-  border: 1px solid var(--primary-color);
-  margin: 2rem;
-  /* margin: 3rem auto; */
-
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-
 type props = {
-  account: String;
+  account: string;
   validator: Validator;
   validators: Validator[];
   balance: BigNumber;
@@ -329,14 +291,13 @@ const StakeModal = (props: props) => {
       )
     ) {
       delegatedTo = BigNumber.from(delegation.balance.amount);
-      return;
     }
   });
 
   const handleDelegate = async () => {
     const parsedAmount = ethers.utils.parseUnits(amount, 18);
     if (!parsedAmount.eq(BigNumber.from("0")) && parsedAmount.lte(balance)) {
-      setConfirmation("waiting for the metamask transaction to be signed...");
+      setConfirmation(userTxMessages.waitSign);
       setIsOpen(false);
       await txStake(
         account,
@@ -347,7 +308,7 @@ const StakeModal = (props: props) => {
         chain,
         memo
       );
-      setConfirmation("waiting for the transaction to be verified...");
+      setConfirmation(userTxMessages.waitVerify);
       setTimeout(
         () => isTransactionSuccessful(name, parsedAmount, balance, 0),
         REFRESH_RATE
@@ -361,7 +322,7 @@ const StakeModal = (props: props) => {
       !parsedAmount.eq(BigNumber.from("0")) &&
       parsedAmount.lte(delegatedTo)
     ) {
-      setConfirmation("waiting for the metamask transaction to be signed...");
+      setConfirmation(userTxMessages.waitSign);
       setIsOpen(false);
       await txUnstake(
         account,
@@ -372,7 +333,7 @@ const StakeModal = (props: props) => {
         chain,
         memo
       );
-      setConfirmation("waiting for the transaction to be verified...");
+      setConfirmation(userTxMessages.waitVerify);
       setTimeout(
         () =>
           isTransactionSuccessful(
@@ -393,7 +354,7 @@ const StakeModal = (props: props) => {
       parsedAmount.lte(delegatedTo) &&
       newValidator !== ""
     ) {
-      setConfirmation("waiting for the metamask transaction to be signed...");
+      setConfirmation(userTxMessages.waitSign);
       setIsOpen(false);
       await txRedelegate(
         account,
@@ -405,7 +366,7 @@ const StakeModal = (props: props) => {
         validatorAddress,
         newValidator
       );
-      setConfirmation("waiting for the transaction to be verified...");
+      setConfirmation(userTxMessages.waitVerify);
       setTimeout(
         () =>
           isTransactionSuccessful(
@@ -420,7 +381,7 @@ const StakeModal = (props: props) => {
     }
   };
 
-  let options: any[] = [];
+  const options: any[] = [];
   validators.forEach((val) => {
     options.push({
       value: val.operator_address,

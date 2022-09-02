@@ -1,26 +1,7 @@
 import Row from "./Row";
-import styled from "styled-components";
 import { Validator, DelegationResponse, UndelegationMap } from "../utils/utils";
 import LendingTable from "pages/lending/components/lendingTable";
 import { BigNumber } from "ethers";
-
-const Button = styled.button`
-  font-weight: 300;
-  font-size: 18px;
-  background-color: black;
-  color: var(--primary-color);
-  padding: 0.2rem 2rem;
-  border: 1px solid var(--primary-color);
-  margin: 3rem auto;
-  display: flex;
-  align-self: center;
-
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
 
 type props = {
   setIsOpen: (isOpen: boolean) => void;
