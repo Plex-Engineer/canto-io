@@ -1,6 +1,5 @@
 import { useEthers } from "@usedapp/core";
-import { NavBar } from "../../../../canto/src/components/organisms/Navbar";
-//TODO: navbar
+import { NavBar } from "cantoui";
 import { getAccountBalance } from "global/utils/walletConnect/addCantoToWallet";
 import { useEffect } from "react";
 import { useNetworkInfo } from "global/stores/networkInfo";
