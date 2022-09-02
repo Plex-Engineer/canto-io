@@ -16,6 +16,7 @@ import Governance from "pages/governance/governance";
 import Dex from "pages/dexLP/Dex";
 import LendingMarket from "pages/lending/LendingMarket";
 import Staking from "pages/staking/Staking";
+import { BalanceSheet } from "pages/lending/balanceSheet/BalanceSheet";
 // import landing from "pages/landing_page/index.html"
 
 //Styling
@@ -47,6 +48,11 @@ function App() {
             />
             {/* <Route path="/lpinterface" key="lp interface" element={<Dex />} /> */}
             <Route path="/lending" key="lending" element={<LendingMarket />} />
+            <Route
+              path="/lending/balanceSheet"
+              key={"balanceSheet"}
+              element={<BalanceSheet />}
+            />
             <Route path="/staking" key={"staking"} element={<Staking />} />
           </Routes>
         </Container>

@@ -1,4 +1,4 @@
-import { CTOKENS } from "cantoui";
+import { CTOKENS, TOKENS } from "cantoui";
 
 export const cTokensBase = [
   CTOKENS.cantoTestnet.CCANTO,
@@ -26,4 +26,13 @@ export const mainnetBasecTokens = [
   CTOKENS.cantoMainnet.CNoteUSDC,
   CTOKENS.cantoMainnet.CNoteUSDT,
   CTOKENS.cantoMainnet.CCantoETH,
+];
+
+export const mainnetTokens = [
+  TOKENS.cantoMainnet.CANTO,
+  TOKENS.cantoMainnet.NOTE,
+  TOKENS.cantoMainnet.ETH,
+  TOKENS.cantoMainnet.ATOM,
+  TOKENS.cantoMainnet.USDC,
+  TOKENS.cantoMainnet.USDT,
 ];

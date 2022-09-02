@@ -82,7 +82,9 @@ const LendingTable = (props: Props) => {
         <thead>
           <tr>
             {props.columns.map((heading) => (
-              <th key={heading}>{heading}</th>
+              <th key={heading + (Math.random() + 1).toString(36).substring(7)}>
+                {heading}
+              </th>
             ))}
           </tr>
         </thead>
