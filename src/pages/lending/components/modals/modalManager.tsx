@@ -1,12 +1,12 @@
 import Popup from "reactjs-popup";
 import styled from "styled-components";
-import close from "assets/close.svg";
-import { Mixpanel } from "mixpanel";
-import { useToken } from "pages/lending/providers/activeTokenContext";
 import WalletModal from "./walletModal";
-import SupplyModal from "./supplyModal";
-import BorrowModal from "./borrowModal";
+import close from "assets/close.svg";
 import CollatModal from "./enableCollateral";
+import SupplyModal from "./supplyModal";
+import BorrowModal from ".//borrowModal";
+import { Mixpanel } from "mixpanel";
+import { useToken } from "../../providers/activeTokenContext";
 import BalanceModal from "./balanceModal";
 //enum for modal types and states such a wallet connection, lending and dex
 enum ModalType {
@@ -66,11 +66,11 @@ const StyledPopup = styled(Popup)`
     }
   }
 
-  /* @media (max-width: 1000px) {
+  @media (max-width: 1000px) {
     &-content {
       width: 100vw;
     }
-  } */
+  }
 `;
 
 interface Props {
