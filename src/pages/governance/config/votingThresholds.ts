@@ -7,7 +7,7 @@
 */
 
 export const votingThresholds = {
-    quorum: "40%",
-    threshold: "50%",
-    veto: "33.4%"
-}
+  quorum: "40%",
+  threshold: "50%",
+  veto: "33.4%",
+};

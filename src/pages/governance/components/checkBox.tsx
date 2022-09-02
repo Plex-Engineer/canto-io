@@ -7,7 +7,6 @@ const Container = styled.div`
   align-items: center;
   justify-content: start;
   width: 100%;
- 
 
   .selected {
     background: rgba(6, 252, 153, 0.15);
@@ -26,37 +25,33 @@ const Container = styled.div`
   }
 `;
 
-
 interface checkProps {
-    values : string[];
-    onChange : (value : string)=>void
+  values: string[];
+  onChange: (value: string) => void;
 }
 
-const CheckBox = ({values, onChange} : checkProps) => {
+const CheckBox = ({ values, onChange }: checkProps) => {
   const [option, setOption] = useState("none");
 
   const handleChange = (value: string) => {
     setOption(value);
   };
 
-  
   return (
     <Container>
-        {
-            values.map((value)=>{
-                return <GovRadioButton
-                key={value}
-                selected={option === value}
-                name={value}
-                onChange={(val)=>{
-                    onChange(val);
-                    handleChange(val);
-                }}
-              />
-            })
-        }
-    
-
+      {values.map((value) => {
+        return (
+          <GovRadioButton
+            key={value}
+            selected={option === value}
+            name={value}
+            onChange={(val) => {
+              onChange(val);
+              handleChange(val);
+            }}
+          />
+        );
+      })}
     </Container>
   );
 };
@@ -87,7 +82,6 @@ const GovRadioStyle = styled.div`
     background-color: #06fc9a1d;
     .unchecked {
       border: 1px solid var(--primary-color);
-
     }
   }
 

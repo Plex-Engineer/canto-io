@@ -7,9 +7,11 @@ import CheckBox from "./components/checkBox";
 import { GraphBar } from "./components/govBar";
 import { votingThresholds } from "./config/votingThresholds";
 import { ProposalData } from "./stores/proposals";
-import { convertDateToString, convertToVoteNumber } from "./utils/formattingStrings";
+import {
+  convertDateToString,
+  convertToVoteNumber,
+} from "./utils/formattingStrings";
 import { getAccountVote, voteOnProposal } from "./utils/voting";
-
 
 const Container = styled.div`
   overflow-wrap: break-word;
@@ -144,11 +146,11 @@ interface ProposalWithChain {
 }
 
 const Proposal = (props: ProposalWithChain) => {
-  let yes = Number(props.proposal.final_tally_result.yes);
-  let no = Number(props.proposal.final_tally_result.no);
-  let abstain = Number(props.proposal.final_tally_result.abstain);
-  let veto = Number(props.proposal.final_tally_result.no_with_veto);
-  let totalVotes = yes + no + abstain + veto;
+  const yes = Number(props.proposal.final_tally_result.yes);
+  const no = Number(props.proposal.final_tally_result.no);
+  const abstain = Number(props.proposal.final_tally_result.abstain);
+  const veto = Number(props.proposal.final_tally_result.no_with_veto);
+  const totalVotes = yes + no + abstain + veto;
 
   const [accountVote, setAccountVote] = useState("NONE");
   const [voteSuccess, setVoteSuccess] = useState<number | undefined>(undefined);
@@ -255,11 +257,26 @@ const Proposal = (props: ProposalWithChain) => {
       <RowCell type="QUORUM:" value={votingThresholds.quorum} />
       <RowCell type="THRESHOLD:" value={votingThresholds.threshold} />
       <RowCell type="VETO THRESHOLD:" value={votingThresholds.veto} />
-      {accountVote != "NONE" ? <p style={{color: "white"}}>YOUR VOTE: <a style={
-        accountVote == "YES" ? {color: "#06fc99"} : 
-        accountVote == "NO" ? {color: "#ff4646"} : 
-        accountVote == "VETO" ? {color: "#710808"} : 
-        {color: "#fbea51"}}>{accountVote}</a></p>  : ""}
+      {accountVote != "NONE" ? (
+        <p style={{ color: "white" }}>
+          YOUR VOTE:{" "}
+          <a
+            style={
+              accountVote == "YES"
+                ? { color: "#06fc99" }
+                : accountVote == "NO"
+                ? { color: "#ff4646" }
+                : accountVote == "VETO"
+                ? { color: "#710808" }
+                : { color: "#fbea51" }
+            }
+          >
+            {accountVote}
+          </a>
+        </p>
+      ) : (
+        ""
+      )}
       {voteSuccess == 0 ? (
         <div style={{ color: "red" }}>vote could not be placed</div>
       ) : voteSuccess == 1 ? (

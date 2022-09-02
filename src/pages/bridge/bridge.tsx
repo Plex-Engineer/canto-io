@@ -93,6 +93,7 @@ const [tempPubKeyMsg, setTempPubKeyMsg] = useState("")
       // alert.close();
     }
   },[networkInfo.hasPubKey])
+
   //send function
   const send = () => {
     //Checking if amount enter is greater than balance available in wallet and token has been approved.

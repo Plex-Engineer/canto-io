@@ -1,19 +1,26 @@
-//@ts-nocheck
-import { generateEndpointAccount, generateEndpointBroadcast, generatePostBodyBroadcast } from '@tharsis/provider';
-import { createTxRawEIP712, signatureToWeb3Extension } from '@tharsis/transactions';
-import {signatureToPubkey} from "@hanchon/signature-to-pubkey"
-import { ethers } from 'ethers';
-import {Buffer} from 'buffer'
-import { CantoMainnet, CantoTestnet } from 'cantoui';
+import {
+  generateEndpointAccount,
+  generateEndpointBroadcast,
+  generatePostBodyBroadcast,
+} from "@tharsis/provider";
+import {
+  createTxRawEIP712,
+  signatureToWeb3Extension,
+} from "@tharsis/transactions";
+import { signatureToPubkey } from "@hanchon/signature-to-pubkey";
+import { ethers } from "ethers";
+import { Buffer } from "buffer";
+import { CantoMainnet, CantoTestnet } from "cantoui";
+import { BigNumber } from "ethers";
 
+export const nodeURL = (chain: number | undefined) => {
+  if (chain == CantoTestnet.chainId) {
+    return CantoTestnet.cosmosAPIEndpoint;
+  }
+  return CantoMainnet.cosmosAPIEndpoint;
+};
 
-export const nodeURL = (chain : number | undefined) => {    
-    if (chain == CantoTestnet.chainId) {
-        return CantoTestnet.cosmosAPIEndpoint;
-    }
-    return CantoMainnet.cosmosAPIEndpoint;
-}
-
+const JSONHeader = "application/json";
 /**
  * Signs msg using metamask and broadcasts to node
  * @param {object} msg msg object
@@ -22,59 +29,62 @@ export const nodeURL = (chain : number | undefined) => {
  * @param {string} nodeAddress ip address and port of node
  * @param {string} account eth hex address
  */
- export async function signAndBroadcastTxMsg(msg:any, senderObj:any, chain:any, nodeAddress:string, account:string) {
-    // @ts-ignore
-    const signature = await window.ethereum.request({
-        method: 'eth_signTypedData_v4',
-        params: [account, JSON.stringify(msg.eipToSign)],
-    });
-    
-    const raw = generateRawTx(chain, senderObj, signature, msg);
+export async function signAndBroadcastTxMsg(
+  msg: any,
+  senderObj: any,
+  chain: any,
+  nodeAddress: string,
+  account: string
+) {
+  // @ts-ignore
+  const signature = await window.ethereum.request({
+    method: "eth_signTypedData_v4",
+    params: [account, JSON.stringify(msg.eipToSign)],
+  });
 
-    const postOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: generatePostBodyBroadcast(raw),
-    };
-    const broadcastPost = await fetch(
-        nodeAddress + generateEndpointBroadcast(),
-        postOptions
-    );
-    const response = await broadcastPost.json();
-    return response
+  const raw = generateRawTx(chain, senderObj, signature, msg);
+
+  const postOptions = {
+    method: "POST",
+    headers: { "Content-Type": JSONHeader },
+    body: generatePostBodyBroadcast(raw),
+  };
+  const broadcastPost = await fetch(
+    nodeAddress + generateEndpointBroadcast(),
+    postOptions
+  );
+  return await broadcastPost.json();
 }
 
-function generateRawTx(chain:any, senderObj:any, signature:any, msg:any) {
-    let extension = signatureToWeb3Extension(chain, senderObj, signature)
-    let rawTx = createTxRawEIP712(msg.legacyAmino.body, msg.legacyAmino.authInfo, extension)
-    return rawTx;
+function generateRawTx(chain: any, senderObj: any, signature: any, msg: any) {
+  const extension = signatureToWeb3Extension(chain, senderObj, signature);
+  return createTxRawEIP712(
+    msg.legacyAmino.body,
+    msg.legacyAmino.authInfo,
+    extension
+  );
 }
 
 /**
- * Uses the eth hex address, converts it to a canto address, 
- * then gets the sender object. 
+ * Uses the eth hex address, converts it to a canto address,
+ * then gets the sender object.
  * @param {string} address The eth address
  * @param {string} nodeAddress The address of the node: xxx.xxx.x.xx:1317
  * @return {string} The sender object
  */
- export async function getSenderObj(address:string, nodeAddress:string) {
-    const accountCanto = await ethToCanto(address, nodeAddress);
-    const endPointAccount = generateEndpointAccount(accountCanto??"");
-    
-    const options = {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-    }
-    
-    const addressRawData = await fetch(
-        nodeAddress + endPointAccount,
-        options
-    );
-    
-    const addressData = await addressRawData.json();
-    const senderObj = reformatSender(addressData['account']['base_account']);
+export async function getSenderObj(address: string, nodeAddress: string) {
+  const accountCanto = await ethToCanto(address, nodeAddress);
+  const endPointAccount = generateEndpointAccount(accountCanto ?? "");
 
-    return senderObj;
+  const options = {
+    method: "GET",
+    headers: { "Content-Type": JSONHeader },
+  };
+
+  const addressRawData = await fetch(nodeAddress + endPointAccount, options);
+
+  const addressData = await addressRawData.json();
+  return reformatSender(addressData["account"]["base_account"]);
 }
 
 /**
@@ -82,19 +92,19 @@ function generateRawTx(chain:any, senderObj:any, signature:any, msg:any) {
  * @param {string} address The eth address to convert into a canto address
  * @return {string} The converted address
  */
- export async function ethToCanto(address:string, nodeAddress:string) {
-    return fetch(nodeAddress+ "/ethermint/evm/v1/cosmos_account/" + address, {
-        method: "GET",
-        headers: {
-            "Accept": "application/json"
-        }
+export async function ethToCanto(address: string, nodeAddress: string) {
+  return fetch(nodeAddress + "/ethermint/evm/v1/cosmos_account/" + address, {
+    method: "GET",
+    headers: {
+      Accept: JSONHeader,
+    },
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      address = result.cosmos_address;
+      return address;
     })
-        .then(response => response.json())
-        .then(result => {
-            address = result.cosmos_address
-            return address;
-        })
-        .catch(error => console.log("error", error));
+    .catch((error) => console.log("error", error));
 }
 
 /**
@@ -103,29 +113,54 @@ function generateRawTx(chain:any, senderObj:any, signature:any, msg:any) {
  * @return {string} The sender object
  */
 
- async function reformatSender(addressData : string) {
-    let pubkey;
-    if (addressData['pub_key'] == null) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
-        await provider.send("eth_requestAccounts", [1]);
-        const signer = provider.getSigner();
-        const signature = await signer.signMessage('generate_pubkey');
+async function reformatSender(addressData: any) {
+  let pubkey;
+  if (addressData["pub_key"] == null) {
+    //@ts-ignore
+    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    await provider.send("eth_requestAccounts", [1]);
+    const signer = provider.getSigner();
+    const signature = await signer.signMessage("generate_pubkey");
 
-        pubkey = signatureToPubkey(
-            signature,
-            Buffer.from([
-                50, 215, 18, 245, 169, 63, 252, 16, 225, 169, 71, 95, 254, 165, 146, 216,
-                40, 162, 115, 78, 147, 125, 80, 182, 25, 69, 136, 250, 65, 200, 94, 178,
-            ]),
-        );
-    } else {
-        pubkey = addressData['pub_key']['key'];
+    pubkey = signatureToPubkey(
+      signature,
+      Buffer.from([
+        50, 215, 18, 245, 169, 63, 252, 16, 225, 169, 71, 95, 254, 165, 146,
+        216, 40, 162, 115, 78, 147, 125, 80, 182, 25, 69, 136, 250, 65, 200, 94,
+        178,
+      ])
+    );
+  } else {
+    pubkey = addressData["pub_key"]["key"];
+  }
+  return {
+    accountNumber: addressData["account_number"],
+    pubkey: pubkey,
+    sequence: addressData["sequence"],
+    accountAddress: addressData["address"],
+  };
+}
+
+export async function checkCantoBalance(bech32Address: string) {
+  const nodeURLMain = CantoMainnet.cosmosAPIEndpoint;
+  const result = await fetch(
+    nodeURLMain +
+      "/cosmos/bank/v1beta1/balances/" +
+      bech32Address +
+      "/by_denom?denom=acanto",
+    {
+      method: "GET",
+      headers: {
+        Accept: JSONHeader,
+      },
     }
-    return {
-        accountNumber: addressData['account_number'],
-        pubkey: pubkey,
-        sequence: addressData['sequence'],
-        accountAddress: addressData['address'],
-    }
-    
+  );
+  const balance = BigNumber.from((await result.json()).balance.amount);
+  console.log(balance);
+
+  if (balance.lt(BigNumber.from("300000000000000000"))) {
+    console.log("0 balance");
+    return false;
+  }
+  return true;
 }

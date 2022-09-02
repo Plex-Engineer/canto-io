@@ -18,25 +18,25 @@ export const pubKeyFee = {
 };
 
 export const votingFee = {
-    amount: "100000000000000000",
-    denom: "acanto",
-    gas: '1000000',
-  };
+  amount: "100000000000000000",
+  denom: "acanto",
+  gas: "1000000",
+};
 
 export interface Fee {
-    amount: string;
-    denom: string;
-    gas: string;
-  }
-  
-  export interface Sender {
-    accountAddress: string;
-    sequence: number;
-    accountNumber: number;
-    pubkey: string;
-  }
-  
-  export interface Chain {
-    chainId: number;
-    cosmosChainId: string;
-  }
+  amount: string;
+  denom: string;
+  gas: string;
+}
+
+export interface Sender {
+  accountAddress: string;
+  sequence: number;
+  accountNumber: number;
+  pubkey: string;
+}
+
+export interface Chain {
+  chainId: number;
+  cosmosChainId: string;
+}

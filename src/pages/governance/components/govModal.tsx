@@ -20,7 +20,7 @@ const Container = styled.div`
     text-transform: lowercase;
     color: #efefef;
     margin-bottom: 2rem;
-    margin-top: .3rem;
+    margin-top: 0.3rem;
   }
 
   .selected {
@@ -128,7 +128,6 @@ const GovRadioStyle = styled.div`
     background-color: #06fc9a1d;
     .unchecked {
       border: 1px solid var(--primary-color);
-
     }
   }
 

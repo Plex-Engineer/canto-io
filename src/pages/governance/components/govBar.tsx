@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -46,7 +45,6 @@ const Container = styled.div`
 
 const GovBar = (props: barProps) => {
   return (
-
     <Container onClick={props.onClick}>
       <div
         style={{
@@ -55,9 +53,13 @@ const GovBar = (props: barProps) => {
         }}
       >
         <p className="number">#{props.proposalID}</p>
-        <p className="number">{props.status == "PROPOSAL_STATUS_VOTING_PERIOD" ? "Voting" : props.status == "PROPOSAL_STATUS_PASSED"
-              ? "Passed"
-              : "Rejected"}</p>
+        <p className="number">
+          {props.status == "PROPOSAL_STATUS_VOTING_PERIOD"
+            ? "Voting"
+            : props.status == "PROPOSAL_STATUS_PASSED"
+            ? "Passed"
+            : "Rejected"}
+        </p>
       </div>
       <h1>{props.name}</h1>
 
@@ -73,17 +75,22 @@ const GovBar = (props: barProps) => {
             gap: "1rem",
           }}
         >
-          <BlobText color="#06fc99">yes {props.yesPecterage.toFixed(2)}%</BlobText>
-          <BlobText color="#ff4646">no {props.noPecterage.toFixed(2)}%</BlobText>
+          <BlobText color="#06fc99">
+            yes {props.yesPecterage.toFixed(2)}%
+          </BlobText>
+          <BlobText color="#ff4646">
+            no {props.noPecterage.toFixed(2)}%
+          </BlobText>
           <BlobText color="#710808">
             no with veto {props.vetoPecterage.toFixed(2)}%
           </BlobText>
-          <BlobText color="#fbea51">abstain {props.abstainPecterage.toFixed(2)}%</BlobText>
+          <BlobText color="#fbea51">
+            abstain {props.abstainPecterage.toFixed(2)}%
+          </BlobText>
         </div>
       </div>
-      <GraphBar {...props} /> 
+      <GraphBar {...props} />
     </Container>
-    
   );
 };
 interface barProps {
@@ -91,11 +98,11 @@ interface barProps {
   noPecterage: number;
   vetoPecterage: number;
   abstainPecterage: number;
-  name : string;
+  name: string;
   proposalID: string;
-  startDate : string;
-  endDate : string;
-  status: string,
+  startDate: string;
+  endDate: string;
+  status: string;
   onClick: () => void;
 }
 interface minibarProps {

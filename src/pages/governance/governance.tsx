@@ -92,8 +92,8 @@ const Governance = () => {
   }, [networkInfo.chainId]);
 
   useEffect(() => {
-    Mixpanel.events.pageOpened("governance", networkInfo.account)
-  })
+    Mixpanel.events.pageOpened("governance", networkInfo.account);
+  });
 
   const emptyProposal: ProposalData = {
     content: {
@@ -129,11 +129,11 @@ const Governance = () => {
           ? ""
           : proposals.proposals
               .map((proposal: ProposalData) => {
-                let yes = Number(proposal.final_tally_result.yes);
-                let no = Number(proposal.final_tally_result.no);
-                let abstain = Number(proposal.final_tally_result.abstain);
-                let veto = Number(proposal.final_tally_result.no_with_veto);
-                let totalVotes = yes + no + abstain + veto;
+                const yes = Number(proposal.final_tally_result.yes);
+                const no = Number(proposal.final_tally_result.no);
+                const abstain = Number(proposal.final_tally_result.abstain);
+                const veto = Number(proposal.final_tally_result.no_with_veto);
+                const totalVotes = yes + no + abstain + veto;
                 return (
                   <GovBar
                     key={proposal.proposal_id}
