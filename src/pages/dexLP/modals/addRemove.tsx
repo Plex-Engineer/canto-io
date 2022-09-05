@@ -87,6 +87,10 @@ const Container = styled.div`
     text-align: center;
     /* margin: .4rem; */
   }
+
+  @media (max-width: 1000px) {
+    width: 100%;
+  }
 `;
 
 const SecondaryButton = styled.button`
@@ -120,8 +124,6 @@ interface Props {
 }
 const AddRemoveModal = ({ value, onClose, chainId, account }: Props) => {
   const setModalType = useModals((state) => state.setModalType);
-
-
 
   return (
     <Container>

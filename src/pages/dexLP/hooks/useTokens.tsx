@@ -1,11 +1,14 @@
 import { useCalls, useEtherBalance } from "@usedapp/core";
-import { BigNumber, Contract} from "ethers";
+import { BigNumber, Contract, ethers } from "ethers";
 import { formatUnits, formatEther } from "ethers/lib/utils";
-import { TOKENS as ALLTOKENS, ADDRESSES, CantoTestnet } from "cantoui";
-import { MAINPAIRS, PAIR, TESTPAIRS } from "../config/pairs";
+import { PAIR, TESTPAIRS, MAINPAIRS } from "../config/pairs";
+import {
+  TOKENS as ALLTOKENS,
+  ADDRESSES,
+  CantoTestnet,
+  CantoMainnet,
+} from "cantoui";
 import { cERC20Abi, ERC20Abi, routerAbi } from "global/config/abi";
-
-
 
 export interface AllPairInfo {
   basePairInfo: PAIR;
@@ -38,20 +41,29 @@ export interface AllPairInfo {
     LPtoken: string;
   };
 }
-const useTokens = (account: string | undefined, chainId: number | undefined) => {
-  const routerAddress = chainId == CantoTestnet.chainId ? ADDRESSES.testnet.PriceFeed : ADDRESSES.cantoMainnet.PriceFeed
+const useTokens = (
+  account: string | undefined,
+  chainId: number | undefined
+) => {
+  const routerAddress =
+    chainId == CantoTestnet.chainId
+      ? ADDRESSES.testnet.PriceFeed
+      : ADDRESSES.cantoMainnet.PriceFeed;
   const RouterContract = new Contract(routerAddress, routerAbi);
 
-  const PAIRS: PAIR[] = chainId == CantoTestnet.chainId ?  TESTPAIRS : MAINPAIRS
-  const TOKENS = chainId == CantoTestnet.chainId ? ALLTOKENS.cantoTestnet : ALLTOKENS.cantoMainnet
- 
-  const CANTOBalance = formatEther(useEtherBalance(account)??0);
+  const PAIRS: PAIR[] = chainId == CantoTestnet.chainId ? TESTPAIRS : MAINPAIRS;
+  const TOKENS =
+    chainId == CantoTestnet.chainId
+      ? ALLTOKENS.cantoTestnet
+      : ALLTOKENS.cantoMainnet;
+
+  const CANTOBalance = formatEther(useEtherBalance(account) ?? 0);
 
   const calls = PAIRS.map((pair) => {
     const ERC20Contract = new Contract(pair.address, ERC20Abi);
     const ERC20ContractA = new Contract(pair.token1.address, ERC20Abi);
     const ERC20ContractB = new Contract(pair.token2.address, ERC20Abi);
-    const cLPToken = new Contract(pair.cLPaddress, cERC20Abi)
+    const cLPToken = new Contract(pair.cLPaddress, cERC20Abi);
 
     return [
       {
@@ -113,7 +125,7 @@ const useTokens = (account: string | undefined, chainId: number | undefined) => 
       {
         contract: cLPToken,
         method: "balanceOf",
-        args: [account]
+        args: [account],
       },
       //12
       {
@@ -134,7 +146,7 @@ const useTokens = (account: string | undefined, chainId: number | undefined) => 
   let processedTokens: Array<any>;
   const array_chunks = (array: any[], chunk_size: number) => {
     const rep = array.map((array) => array?.value);
-    let chunks = [];
+    const chunks = [];
 
     //array length minus 2, since we are ading the global functions that will increase the array size by 2
     for (let i = 0; i < array.length; i += chunk_size) {
@@ -148,8 +160,7 @@ const useTokens = (account: string | undefined, chainId: number | undefined) => 
   }
   if (chuckSize > 0 && results?.[0] != undefined && !results?.[0].error) {
     processedTokens = array_chunks(results, chuckSize);
-    const val = processedTokens.map((tokenData, idx) => {
-
+    return processedTokens.map((tokenData, idx) => {
       const totalSupply = formatUnits(tokenData[2][0], PAIRS[idx].decimals);
       const reserves = tokenData[1];
       // console.log(reserves)
@@ -161,22 +172,32 @@ const useTokens = (account: string | undefined, chainId: number | undefined) => 
         reserves.reserveB.toString(),
         PAIRS[idx].token2.decimals
       );
-      const ratio = Number((Number(reserveA) / Number(reserveB)).toFixed(6));    
+      const ratio = Number((Number(reserveA) / Number(reserveB)).toFixed(6));
       const userLP = formatUnits(tokenData[0][0], PAIRS[idx].decimals);
-      
+
       let token1Balance;
       if (PAIRS[idx].token1.address == TOKENS.WCANTO.address) {
         token1Balance = CANTOBalance;
       } else {
-        token1Balance = formatUnits(tokenData[3][0], PAIRS[idx].token1.decimals);
+        token1Balance = formatUnits(
+          tokenData[3][0],
+          PAIRS[idx].token1.decimals
+        );
       }
-      const token2Balance = formatUnits(tokenData[4][0], PAIRS[idx].token2.decimals);
+      const token2Balance = formatUnits(
+        tokenData[4][0],
+        PAIRS[idx].token2.decimals
+      );
 
       //if the user has supplied in the market, we can get this balance from the cLP tokens and exchange rate stored
-      const userLPSupplyBalance = formatUnits(BigNumber.from(tokenData[11][0]).mul(tokenData[12][0]), 18 + PAIRS[idx].decimals)
-      const percentOwnedWithCLPConverted = (Number(userLP) + Number(userLPSupplyBalance)) / Number(totalSupply);
-      
-      const percentOwned = Number(userLP)  / Number(totalSupply);
+      const userLPSupplyBalance = formatUnits(
+        BigNumber.from(tokenData[11][0]).mul(tokenData[12][0]),
+        18 + PAIRS[idx].decimals
+      );
+      const percentOwnedWithCLPConverted =
+        (Number(userLP) + Number(userLPSupplyBalance)) / Number(totalSupply);
+
+      const percentOwned = Number(userLP) / Number(totalSupply);
       const userTokensA = percentOwned * Number(reserveA);
       const userTokensB = percentOwned * Number(reserveB);
 
@@ -200,17 +221,17 @@ const useTokens = (account: string | undefined, chainId: number | undefined) => 
       const LPTokenAllowance = formatUnits(
         tokenData[9][0],
         PAIRS[idx].decimals
-      )
-        // console.log(tokenData[9][0])
+      );
+      // console.log(tokenData[9][0])
       const LPUnderlyingPriceInNote = formatUnits(
-        tokenData[10][0], 
-        36 - PAIRS[idx].decimals);
+        tokenData[10][0],
+        36 - PAIRS[idx].decimals
+      );
 
-      const totalValueLocked = Number(LPUnderlyingPriceInNote) * Number(totalSupply);
+      const totalValueLocked =
+        Number(LPUnderlyingPriceInNote) * Number(totalSupply);
 
-      let moreData: AllPairInfo;
-
-      moreData = {
+      const moreData: AllPairInfo = {
         basePairInfo: PAIRS[idx],
         totalSupply: {
           totalLP: totalSupply,
@@ -232,7 +253,7 @@ const useTokens = (account: string | undefined, chainId: number | undefined) => 
         allowance: {
           token1: tokenAAllowance,
           token2: tokenBAllowance,
-          LPtoken: LPTokenAllowance
+          LPtoken: LPTokenAllowance,
         },
         balances: {
           token1: token1Balance,
@@ -241,7 +262,6 @@ const useTokens = (account: string | undefined, chainId: number | undefined) => 
       };
       return moreData;
     });
-    return val;
   }
 };
 

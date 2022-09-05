@@ -15,7 +15,9 @@ const Container = styled.table`
     text-transform: lowercase;
     font-size: 14px;
     background-color: #06fc9a1b;
-
+    tr {
+      border-bottom: var(--primary-color) solid 1px !important;
+    }
   }
   th {
     padding: 8px;
@@ -27,43 +29,55 @@ const Container = styled.table`
     font-size: 14px;
     font-weight: 400;
     line-height: 4rem;
-    border-bottom: var(--primary-color) solid 1px;
+    border-bottom: transparent solid 1px;
+
+    animation-fill-mode: forwards;
+
+    @keyframes fader {
+      from {
+        border-bottom: transparent solid 1px;
+      }
+      to {
+        border-bottom: var(--primary-color) solid 1px;
+      }
+    }
   }
 
   tbody {
     border: var(--primary-color) solid 1px;
 
     tr:hover {
-      
       background-color: #06fc9a1b;
       cursor: pointer;
-    
     }
   }
-  @media (max-width: 1000px){
-   width: 800px;
-   margin: 0 2rem;
+  @media (max-width: 1000px) {
+    width: 800px;
+    margin: 0 2rem;
   }
- 
 `;
 type Props = {
   children: React.ReactNode;
-  columns : string[];
+  columns: string[];
 };
 
-const Table: React.FC<Props> = (props) => {
+const Table: React.FC<Props> = (props: Props) => {
   return (
-    <div style={{
-      overflowX: "auto",
-    }}>
+    <div
+      style={{
+        overflowX: "auto",
+      }}
+    >
       <Container>
-      <thead>
-        <tr>
-          {props.columns.map((item)=><th>{item}</th>)}
-        </tr>
-      </thead>
-      <tbody>{props.children}</tbody>
-    </Container>
+        <thead>
+          <tr>
+            {props.columns.map((item) => (
+              <th key={item}>{item}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>{props.children}</tbody>
+      </Container>
     </div>
   );
 };

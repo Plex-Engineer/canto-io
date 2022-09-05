@@ -2,10 +2,11 @@ import styled from "@emotion/styled";
 import { formatBalance } from "global/utils/utils";
 import { useEffect, useState } from "react";
 
-
 type styleProps = {
   focused: boolean;
 };
+
+const primaryColor = "var(--primary-color)";
 const Container = styled.div<styleProps>`
   display: flex;
   flex-direction: column;
@@ -32,7 +33,7 @@ const Container = styled.div<styleProps>`
     width: 100%;
     border: none;
     font-weight: 300;
-    color: ${(props) => (props.focused ? "var(--primary-color)" : "#efefef")};
+    color: ${(props) => (props.focused ? primaryColor : "#efefef")};
     &:focus {
       outline: none;
     }
@@ -66,15 +67,15 @@ const IconName = styled.div<styleProps>`
   margin-bottom: 0px;
   border: 2px solid #191919;
   border-bottom: none;
-  background-color: ${(props) => (props.focused ? "black" : "black")};
-  border-bottom: 1px solid ${(props) => (props.focused ? "var(--primary-color)" : "black")};
+  background-color: black;
+  border-bottom: 1px solid
+    ${(props) => (props.focused ? primaryColor : "black")};
   /* background-color: #8bff8945; */
   p {
-    color: ${(props) => (props.focused ? "var(--primary-color)" : "#efefef")};
+    color: ${(props) => (props.focused ? primaryColor : "#efefef")};
 
     padding: 0;
     margin: 0;
-
   }
 `;
 
@@ -94,17 +95,15 @@ type Props = {
 const Field = (props: Props) => {
   const [isFocused, setIsFocused] = useState(false);
   const [remaining, setRemaining] = useState(props.balance);
-  const [cursorPosition, setCursorPosition] = useState(0)
+  const [cursorPosition, setCursorPosition] = useState(0);
 
   useEffect(() => {
-    if (
-      props.remaining < 0 || isNaN(props.remaining)
-    ) {
+    if (props.remaining < 0 || isNaN(props.remaining)) {
       setRemaining(0);
     } else {
       setRemaining(props.remaining);
     }
-  }, [props.remaining])
+  }, [props.remaining]);
   const InputValue = () => (
     <input
       type="text"
@@ -113,13 +112,12 @@ const Field = (props: Props) => {
       value={props.value}
       onFocus={(e) => {
         //move cursor back to user edit
-        e.target.setSelectionRange(cursorPosition, cursorPosition)
+        e.target.setSelectionRange(cursorPosition, cursorPosition);
         setIsFocused(true);
       }}
-
       onChange={(e) => {
         //save cursor position to be moved back later
-        setCursorPosition(e.target.selectionStart ?? 0)
+        setCursorPosition(e.target.selectionStart ?? 0);
         props.onChange(e.target.value);
       }}
       onBlur={() => {
@@ -151,7 +149,7 @@ const Field = (props: Props) => {
         <p>
           <Max
             onClick={() => {
-                props.onChange(props.limit.toString());
+              props.onChange(props.limit.toString());
             }}
           >
             max

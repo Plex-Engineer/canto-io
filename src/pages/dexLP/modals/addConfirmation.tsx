@@ -10,12 +10,13 @@ import { useEffect, useState } from "react";
 import useModals, { ModalType } from "../hooks/useModals";
 
 import { TOKENS, ADDRESSES, CantoMainnet, CantoTestnet } from "cantoui";
-import { useAddLiquidity, useAddLiquidityCANTO } from "../hooks/useTransactions";
+import {
+  useAddLiquidity,
+  useAddLiquidityCANTO,
+} from "../hooks/useTransactions";
 import { truncateNumber } from "global/utils/utils";
 import { getCurrentBlockTimestamp } from "../utils/utils";
 import { routerAbi } from "global/config/abi";
-
-
 
 const Container = styled.div`
   background-color: #040404;
@@ -25,7 +26,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: start;
-  gap: .7rem;
+  gap: 0.7rem;
 
   /* padding: 1rem; */
   .title {
@@ -61,7 +62,6 @@ const Container = styled.div`
     letter-spacing: -0.02em;
     text-transform: lowercase;
     color: #606060;
-
   }
 
   #position {
@@ -85,11 +85,16 @@ const Container = styled.div`
     border-radius: 50%;
     margin-bottom: 1.2rem;
   }
+  .box {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+  }
 
   .fields {
     display: flex;
     padding: 1rem;
-    gap : .3rem;
+    gap: 0.3rem;
   }
 
   .rowCell {
@@ -101,8 +106,14 @@ const Container = styled.div`
       color: white;
     }
   }
-`;
+  @media (max-width: 1000px) {
+    width: 100%;
 
+    .box {
+      width: 100%;
+    }
+  }
+`;
 
 const Button = styled.button`
   font-weight: 400;
@@ -125,7 +136,7 @@ const DisabledButton = styled(Button)`
   background-color: black;
   color: #939393;
   border: 1px solid #939393;
-  
+
   &:hover {
     cursor: not-allowed;
     background-color: black;
@@ -134,232 +145,355 @@ const DisabledButton = styled(Button)`
 `;
 
 interface AddConfirmationProps {
-    pair: AllPairInfo;
-    value1: string;
-    value2: string;
-    slippage: number;
-    deadline: number;
-    chainId?: number;
-    account?: string;
-    expectedLP: string;
+  pair: AllPairInfo;
+  value1: number;
+  value2: number;
+  slippage: number;
+  deadline: number;
+  chainId?: number;
+  account?: string;
+  expectedLP: string;
 }
 
-function calculateExpectedShareofLP(expectedLPOut:string, currentLP:string, totalLP:string,) {
-    return (Number(expectedLPOut) + Number(currentLP)) / (Number(expectedLPOut) + Number(totalLP)) * 100;
+function calculateExpectedShareofLP(
+  expectedLPOut: string,
+  currentLP: string,
+  totalLP: string
+) {
+  return (
+    ((Number(expectedLPOut) + Number(currentLP)) /
+      (Number(expectedLPOut) + Number(totalLP))) *
+    100
+  );
 }
 
 const AddLiquidityButton = (props: AddConfirmationProps) => {
-    const { state: addLiquidityState, send: addLiquiditySend } = useAddLiquidity(props.chainId, {
-        type : "add",
-        address : "",
-        amount : "-1",
-        icon : {
-            icon1 : props.pair.basePairInfo.token1.icon,
-            icon2 : props.pair.basePairInfo.token2.icon
-        },
-        name : props.pair.basePairInfo.token1.symbol + "/" + props.pair.basePairInfo.token2.symbol
+  const { state: addLiquidityState, send: addLiquiditySend } = useAddLiquidity(
+    props.chainId,
+    {
+      type: "add",
+      address: "",
+      amount: "-1",
+      icon: {
+        icon1: props.pair.basePairInfo.token1.icon,
+        icon2: props.pair.basePairInfo.token2.icon,
+      },
+      name:
+        props.pair.basePairInfo.token1.symbol +
+        "/" +
+        props.pair.basePairInfo.token2.symbol,
+    }
+  );
+  const { state: addLiquidityCANTOState, send: addLiquidityCANTOSend } =
+    useAddLiquidityCANTO(props.chainId, {
+      type: "add",
+      address: "",
+      amount: "-1",
+      icon: {
+        icon1: props.pair.basePairInfo.token1.icon,
+        icon2: props.pair.basePairInfo.token2.icon,
+      },
+      name:
+        props.pair.basePairInfo.token1.symbol +
+        "/" +
+        props.pair.basePairInfo.token2.symbol,
     });
-    const { state: addLiquidityCANTOState, send: addLiquidityCANTOSend } = useAddLiquidityCANTO(props.chainId,{
-        type : "add",
-        address : "",
-        amount : "-1",
-        icon : {
-            icon1 : props.pair.basePairInfo.token1.icon,
-            icon2 : props.pair.basePairInfo.token2.icon
-        },
-        name : props.pair.basePairInfo.token1.symbol + "/" + props.pair.basePairInfo.token2.symbol
-    });
 
-    const WCANTO = props.chainId == CantoTestnet.chainId ? TOKENS.cantoTestnet.WCANTO : TOKENS.cantoMainnet.WCANTO;
-    const setModalType = useModals(state => state.setModalType);
-    
-    const amountOut1 = truncateNumber(props.value1,props.pair.basePairInfo.token1.decimals).toString();
-    const amountOut2 = truncateNumber(props.value2,props.pair.basePairInfo.token2.decimals).toString();
+  const WCANTO =
+    props.chainId == CantoTestnet.chainId
+      ? TOKENS.cantoTestnet.WCANTO
+      : TOKENS.cantoMainnet.WCANTO;
+  const setModalType = useModals((state) => state.setModalType);
 
-    const amountMinOut1 = truncateNumber((((Number(props.value1)) * (100 - Number(props.slippage))) / 100).toString(),props.pair.basePairInfo.token1.decimals).toString();
-    const amountMinOut2 = truncateNumber((((Number(props.value2)) * (100 - Number(props.slippage))) / 100).toString(),props.pair.basePairInfo.token2.decimals).toString();
+  const amountOut1 = truncateNumber(
+    props.value1.toString(),
+    props.pair.basePairInfo.token1.decimals
+  );
+  const amountOut2 = truncateNumber(
+    props.value2.toString(),
+    props.pair.basePairInfo.token2.decimals
+  );
 
-    const [currentBlockTimeStamp, setCurrentBlockTimeStamp] = useState(0);
-    
-   async function blockTimeStamp() {
-        setCurrentBlockTimeStamp(await getCurrentBlockTimestamp(props.chainId))
-   }
+  const amountMinOut1 = truncateNumber(
+    ((Number(props.value1) * (100 - Number(props.slippage))) / 100).toString(),
+    props.pair.basePairInfo.token1.decimals
+  );
+  const amountMinOut2 = truncateNumber(
+    ((Number(props.value2) * (100 - Number(props.slippage))) / 100).toString(),
+    props.pair.basePairInfo.token2.decimals
+  );
 
-    useEffect(() => {
-        blockTimeStamp()
-    }, [])
+  const [currentBlockTimeStamp, setCurrentBlockTimeStamp] = useState(0);
 
+  async function blockTimeStamp() {
+    setCurrentBlockTimeStamp(await getCurrentBlockTimestamp(props.chainId));
+  }
 
-    useEffect(() => {
-        if (addLiquidityState.status == "Success" || addLiquidityCANTOState.status == "Success") {
-            setTimeout(() => {
-                setModalType(ModalType.NONE);
-            }, 500)
-        }
-    }, [addLiquidityState.status, addLiquidityCANTOState.status])
-    return (
-        <Container>
-            <DexLoadingOverlay isLoading={["Mining", "PendingSignature", "Success"].includes(addLiquidityState.status)} >
-                <LoadingModal
-                 icons={
-                    {
-                      icon1 : props.pair.basePairInfo.token1.icon,
-                      icon2 : props.pair.basePairInfo.token2.icon
-                    }
-                  }
-                  name={
-                    props.pair.basePairInfo.token1.symbol + " / " + props.pair.basePairInfo.token2.symbol
-                  }
-                  amount={"0"}
-                  type="add"
-                    status={addLiquidityState.status}
-                />
-            </DexLoadingOverlay>
+  useEffect(() => {
+    blockTimeStamp();
+  }, []);
 
-            <DexLoadingOverlay isLoading={["Mining", "PendingSignature", "Success"].includes(addLiquidityCANTOState.status)} >
-                <LoadingModal
-                 icons={
-                    {
-                      icon1 : props.pair.basePairInfo.token1.icon,
-                      icon2 : props.pair.basePairInfo.token2.icon
-                    }
-                  }
-                  name={
-                    props.pair.basePairInfo.token1.symbol + "/ " + props.pair.basePairInfo.token2.symbol
-                  }
-                  amount={"0"}
-                  type="add"
-                    status={addLiquidityCANTOState.status}
-                />
-            </DexLoadingOverlay>
+  useEffect(() => {
+    if (
+      addLiquidityState.status == "Success" ||
+      addLiquidityCANTOState.status == "Success"
+    ) {
+      setTimeout(() => {
+        setModalType(ModalType.NONE);
+      }, 500);
+    }
+  }, [addLiquidityState.status, addLiquidityCANTOState.status]);
+  return (
+    <Container>
+      <DexLoadingOverlay
+        isLoading={["Mining", "PendingSignature", "Success"].includes(
+          addLiquidityState.status
+        )}
+      >
+        <LoadingModal
+          icons={{
+            icon1: props.pair.basePairInfo.token1.icon,
+            icon2: props.pair.basePairInfo.token2.icon,
+          }}
+          name={
+            props.pair.basePairInfo.token1.symbol +
+            " / " +
+            props.pair.basePairInfo.token2.symbol
+          }
+          amount={"0"}
+          type="add"
+          status={addLiquidityState.status}
+        />
+      </DexLoadingOverlay>
 
-            <div className="title">{props.pair.basePairInfo.token1.symbol + " / " + props.pair.basePairInfo.token2.symbol}</div>
-            <p id="position">you will receive</p>
-            <IconPair iconLeft={props.pair.basePairInfo.token1.icon} iconRight={props.pair.basePairInfo.token2.icon} />
-            <h1>
-                {Number(props.expectedLP) == 0 ? "calculating..." : truncateNumber(props.expectedLP)}
-            </h1>
+      <DexLoadingOverlay
+        isLoading={["Mining", "PendingSignature", "Success"].includes(
+          addLiquidityCANTOState.status
+        )}
+      >
+        <LoadingModal
+          icons={{
+            icon1: props.pair.basePairInfo.token1.icon,
+            icon2: props.pair.basePairInfo.token2.icon,
+          }}
+          name={
+            props.pair.basePairInfo.token1.symbol +
+            "/ " +
+            props.pair.basePairInfo.token2.symbol
+          }
+          amount={"0"}
+          type="add"
+          status={addLiquidityCANTOState.status}
+        />
+      </DexLoadingOverlay>
 
-            <h4> {props.pair.basePairInfo.token1.symbol +
-                "/" +
-                props.pair.basePairInfo.token2.symbol} liquidity pool tokens</h4>
-            <div style={{
-                width: "80%",
-                display: "flex",
-                flexDirection: "column",
-                gap: "1rem"
-            }}>
-                <RowCell type={props.pair.basePairInfo.token1.symbol + " rate : "} value={"1 " + props.pair.basePairInfo.token1.symbol + " = " + (1/Number(props.pair.totalSupply.ratio)).toFixed(3) + " " + props.pair.basePairInfo.token2.symbol} />
-                <RowCell type={props.pair.basePairInfo.token2.symbol + " rate : "} value={"1 " + props.pair.basePairInfo.token2.symbol + " = " + (Number(props.pair.totalSupply.ratio)).toFixed(3) + " " + props.pair.basePairInfo.token1.symbol} />
-            </div>
-            <div style={{
-                borderBottom: "1px solid #222",
-                width: "90%",
+      <div className="title">
+        {props.pair.basePairInfo.token1.symbol +
+          " / " +
+          props.pair.basePairInfo.token2.symbol}
+      </div>
+      <p id="position">you will receive</p>
+      <IconPair
+        iconLeft={props.pair.basePairInfo.token1.icon}
+        iconRight={props.pair.basePairInfo.token2.icon}
+      />
+      <h1>
+        {Number(props.expectedLP) == 0
+          ? "calculating..."
+          : truncateNumber(props.expectedLP)}
+      </h1>
 
+      <h4>
+        {" "}
+        {props.pair.basePairInfo.token1.symbol +
+          "/" +
+          props.pair.basePairInfo.token2.symbol}{" "}
+        liquidity pool tokens
+      </h4>
+      <div
+        className="box"
+        style={{
+          gap: "1rem",
+        }}
+      >
+        <RowCell
+          type={props.pair.basePairInfo.token1.symbol + " rate : "}
+          value={
+            "1 " +
+            props.pair.basePairInfo.token1.symbol +
+            " = " +
+            (1 / Number(props.pair.totalSupply.ratio)).toFixed(3) +
+            " " +
+            props.pair.basePairInfo.token2.symbol
+          }
+        />
+        <RowCell
+          type={props.pair.basePairInfo.token2.symbol + " rate : "}
+          value={
+            "1 " +
+            props.pair.basePairInfo.token2.symbol +
+            " = " +
+            Number(props.pair.totalSupply.ratio).toFixed(3) +
+            " " +
+            props.pair.basePairInfo.token1.symbol
+          }
+        />
+      </div>
+      <div
+        style={{
+          borderBottom: "1px solid #222",
+          width: "90%",
+        }}
+      ></div>
+      <div
+        className="box"
+        style={{
+          gap: "1rem",
+        }}
+      >
+        <RowCell
+          type={props.pair.basePairInfo.token1.symbol + " deposited : "}
+          value={Number(props.value1).toFixed(4)}
+        />
+        <RowCell
+          type={props.pair.basePairInfo.token2.symbol + " deposited : "}
+          value={Number(props.value2).toFixed(4)}
+        />
+        <RowCell
+          type="share of pool : "
+          value={
+            truncateNumber(
+              calculateExpectedShareofLP(
+                props.expectedLP,
+                props.pair.userSupply.totalLP,
+                props.pair.totalSupply.totalLP
+              ).toString()
+            ) + "%"
+          }
+        />
+      </div>
 
-            }}></div>
-            <div style={{
-                width: "80%",
-                display: "flex",
-                flexDirection: "column",
-                gap: "1rem"
-            }}>
-                <RowCell type={props.pair.basePairInfo.token1.symbol + " deposited : "} value={Number(props.value1).toFixed(4)} />
-                <RowCell type={props.pair.basePairInfo.token2.symbol + " deposited : "} value={Number(props.value2).toFixed(4)} />
-                <RowCell type="share of pool : " value={truncateNumber(calculateExpectedShareofLP(props.expectedLP, props.pair.userSupply.totalLP, props.pair.totalSupply.totalLP).toString()) + "%"} />
-            </div>
-
-            {currentBlockTimeStamp == 0 ? <DisabledButton>loading</DisabledButton> : props.pair.basePairInfo.token1.address == WCANTO.address ?
-
-
-                <Button onClick={() => {
-                    addLiquidityCANTOSend(
-                        props.pair.basePairInfo.token2.address,
-                        props.pair.basePairInfo.stable,
-                        parseUnits(amountOut2, props.pair.basePairInfo.token2.decimals),
-                        parseUnits(amountMinOut2, props.pair.basePairInfo.token2.decimals),
-                        parseUnits(amountMinOut1, props.pair.basePairInfo.token1.decimals),
-                        props.account,
-                        currentBlockTimeStamp + (Number(props.deadline) * 60),
-                        { value: parseUnits(amountOut1, props.pair.basePairInfo.token1.decimals) }
-                    )
-                }}>
-                    confirm
-                </Button> :
-                <Button onClick={() => {
-                    addLiquiditySend(
-                        props.pair.basePairInfo.token1.address,
-                        props.pair.basePairInfo.token2.address,
-                        props.pair.basePairInfo.stable,
-                        parseUnits(amountOut1, props.pair.basePairInfo.token1.decimals),
-                        parseUnits(amountOut2, props.pair.basePairInfo.token2.decimals),
-                        parseUnits(amountMinOut1, props.pair.basePairInfo.token1.decimals),
-                        parseUnits(amountMinOut2, props.pair.basePairInfo.token2.decimals),
-                        props.account,
-                        currentBlockTimeStamp + (Number(props.deadline) * 60)
-                    )
-                }}>
-                    confirm
-                </Button>}
-        </Container>
-    )
-}
-
+      {currentBlockTimeStamp == 0 ? (
+        <DisabledButton>loading</DisabledButton>
+      ) : props.pair.basePairInfo.token1.address == WCANTO.address ? (
+        <Button
+          onClick={() => {
+            addLiquidityCANTOSend(
+              props.pair.basePairInfo.token2.address,
+              props.pair.basePairInfo.stable,
+              parseUnits(amountOut2, props.pair.basePairInfo.token2.decimals),
+              parseUnits(
+                amountMinOut2,
+                props.pair.basePairInfo.token2.decimals
+              ),
+              parseUnits(
+                amountMinOut1,
+                props.pair.basePairInfo.token1.decimals
+              ),
+              props.account,
+              currentBlockTimeStamp + Number(props.deadline) * 60,
+              {
+                value: parseUnits(
+                  amountOut1,
+                  props.pair.basePairInfo.token1.decimals
+                ),
+              }
+            );
+          }}
+        >
+          confirm
+        </Button>
+      ) : (
+        <Button
+          onClick={() => {
+            addLiquiditySend(
+              props.pair.basePairInfo.token1.address,
+              props.pair.basePairInfo.token2.address,
+              props.pair.basePairInfo.stable,
+              parseUnits(amountOut1, props.pair.basePairInfo.token1.decimals),
+              parseUnits(amountOut2, props.pair.basePairInfo.token2.decimals),
+              parseUnits(
+                amountMinOut1,
+                props.pair.basePairInfo.token1.decimals
+              ),
+              parseUnits(
+                amountMinOut2,
+                props.pair.basePairInfo.token2.decimals
+              ),
+              props.account,
+              currentBlockTimeStamp + Number(props.deadline) * 60
+            );
+          }}
+        >
+          confirm
+        </Button>
+      )}
+    </Container>
+  );
+};
 
 interface Props {
-    value: AllPairInfo;
-    onClose: () => void;
-    chainId?: number;
-    account?: string;
-
+  value: AllPairInfo;
+  onClose: () => void;
+  chainId?: number;
+  account?: string;
 }
 
 export const AddLiquidityConfirmation = (props: Props) => {
-    const [modalType, confirmValues] = useModals(state => [state.modalType, state.confirmationValues]);
-    const [expectedLP, setExpectedLP] = useState("0");
+  const [modalType, confirmValues] = useModals((state) => [
+    state.modalType,
+    state.confirmationValues,
+  ]);
+  const [expectedLP, setExpectedLP] = useState("0");
 
-    const amountOut1 = Number(confirmValues.amount1).toFixed(props.value.basePairInfo.token1.decimals);
-    const amountOut2 = Number(confirmValues.amount2).toFixed(props.value.basePairInfo.token2.decimals);
+  const amountOut1 = Number(confirmValues.amount1).toFixed(
+    props.value.basePairInfo.token1.decimals
+  );
+  const amountOut2 = Number(confirmValues.amount2).toFixed(
+    props.value.basePairInfo.token2.decimals
+  );
 
+  async function getExpectedLP() {
+    const providerURL =
+      CantoTestnet.chainId == props.chainId
+        ? CantoTestnet.rpcUrl
+        : CantoMainnet.rpcUrl;
+    const provider = new ethers.providers.JsonRpcProvider(providerURL);
+    const routerAddress =
+      CantoTestnet.chainId == props.chainId
+        ? ADDRESSES.testnet.PriceFeed
+        : ADDRESSES.cantoMainnet.PriceFeed;
+    const RouterContract = new Contract(routerAddress, routerAbi, provider);
 
-    async function getExpectedLP() {
-        const providerURL = CantoTestnet.chainId == props.chainId ? CantoTestnet.rpcUrl : CantoMainnet.rpcUrl;
-        const provider = new ethers.providers.JsonRpcProvider(providerURL);
-        const routerAddress = CantoTestnet.chainId == props.chainId ? ADDRESSES.testnet.PriceFeed : ADDRESSES.cantoMainnet.PriceFeed;
-        const RouterContract = new Contract(routerAddress, routerAbi, provider);
+    const LPOut = await RouterContract.quoteAddLiquidity(
+      props.value.basePairInfo.token1.address,
+      props.value.basePairInfo.token2.address,
+      props.value.basePairInfo.stable,
+      parseUnits(amountOut1, props.value.basePairInfo.token1.decimals),
+      parseUnits(amountOut2, props.value.basePairInfo.token2.decimals)
+    );
+    const formattedLPOut = ethers.utils.formatUnits(
+      LPOut.liquidity ?? 0,
+      props.value.basePairInfo.decimals
+    );
+    setExpectedLP(formattedLPOut);
+  }
+  useEffect(() => {
+    getExpectedLP();
+  }, []);
 
-        const LPOut = await RouterContract.quoteAddLiquidity(
-            props.value.basePairInfo.token1.address,
-            props.value.basePairInfo.token2.address,
-            props.value.basePairInfo.stable,
-            parseUnits(amountOut1, props.value.basePairInfo.token1.decimals),
-            parseUnits(amountOut2, props.value.basePairInfo.token2.decimals)
-        )
-        const formattedLPOut = ethers.utils.formatUnits(LPOut.liquidity ?? 0, props.value.basePairInfo.decimals)
-        setExpectedLP(formattedLPOut);
-
-    }
-    useEffect(() => {
-        getExpectedLP();
-    }, [])
-
-
-
-
-
-
-    return (
-        <div>
-            <AddLiquidityButton
-                pair={props.value}
-                value1={confirmValues.amount1}
-                value2={confirmValues.amount2}
-                slippage={confirmValues.slippage}
-                deadline={confirmValues.deadline}
-                chainId={props.chainId}
-                account={props.account}
-                expectedLP={expectedLP}
-            ></AddLiquidityButton>
-        </div>
-    )
-}
+  return (
+    <div>
+      <AddLiquidityButton
+        pair={props.value}
+        value1={confirmValues.amount1}
+        value2={confirmValues.amount2}
+        slippage={confirmValues.slippage}
+        deadline={confirmValues.deadline}
+        chainId={props.chainId}
+        account={props.account}
+        expectedLP={expectedLP}
+      ></AddLiquidityButton>
+    </div>
+  );
+};

@@ -301,7 +301,8 @@ export async function getUndelegationsForAddress(nodeAddressIP, address) {
  * @param {string} nodeAddressIP node ip with port 1317
  */
 export async function getValidators(nodeAddressIP) {
-  const url = nodeAddressIP + generateEndpointGetValidators();
+  const url =
+    nodeAddressIP + "/cosmos/staking/v1beta1/validators?pagination.limit=150";
 
   const options = {
     method: "GET",

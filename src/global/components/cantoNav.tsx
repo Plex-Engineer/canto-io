@@ -1,19 +1,28 @@
 import { useEthers } from "@usedapp/core";
 import { NavBar } from "cantoui";
 import { getAccountBalance } from "global/utils/walletConnect/addCantoToWallet";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import logo from "./../../assets/logo.svg";
 import { useLocation } from "react-router-dom";
+import { getBaseTokenName } from "global/utils/walletConnect/getTokenSymbol";
 
 export const CantoNav = () => {
   const netWorkInfo = useNetworkInfo();
   const { activateBrowserWallet, account, chainId } = useEthers();
   const location = useLocation();
+  const [tokenName, setTokenName] = useState("");
+
+  async function grabTokenName() {
+    setTokenName(await getBaseTokenName(chainId));
+  }
+  useEffect(() => {
+    grabTokenName();
+  }, [chainId]);
 
   function getTitle(location: string) {
-    if (location == "lpinterface") {
+    if (location == "lp") {
       return "lp interface";
     }
     return location;
@@ -44,7 +53,7 @@ export const CantoNav = () => {
   const pageList = [
     {
       name: "bridge",
-      link: "/",
+      link: "/bridge",
     },
     {
       name: "governance",
@@ -74,7 +83,7 @@ export const CantoNav = () => {
       account={netWorkInfo.account ?? ""}
       isConnected={netWorkInfo.account ? true : false}
       balance={netWorkInfo.balance}
-      currency={netWorkInfo.chainId == "1" ? "ETH" : "CANTO"}
+      currency={tokenName}
       logo={logo}
       pageList={pageList}
       currentPage={getTitle(location.pathname.slice(1))}

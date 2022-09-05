@@ -73,6 +73,9 @@ const Container = styled.div`
       color: white;
     }
   }
+  @media (max-width: 1000px) {
+    width: 100%;
+  }
 `;
 
 const Button = styled.button`
@@ -129,8 +132,8 @@ export const RowCell = (props: RowCellProps) => {
 interface ConfirmButtonProps {
   pair: AllPairInfo;
   percentage: number;
-  amount1: string;
-  amount2: string;
+  amount1: number;
+  amount2: number;
   slippage: number;
   deadline: number;
   chainId?: number;
@@ -257,14 +260,14 @@ const RemoveModal = ({ value, onClose, chainId, account }: Props) => {
         )}
       >
         <LoadingModal
-          icons={
-            {
-              icon1 : value.basePairInfo.token1.icon,
-              icon2 : value.basePairInfo.token2.icon
-            }
-          }
+          icons={{
+            icon1: value.basePairInfo.token1.icon,
+            icon2: value.basePairInfo.token2.icon,
+          }}
           name={
-            value.basePairInfo.token1.symbol + " / " + value.basePairInfo.token2.symbol
+            value.basePairInfo.token1.symbol +
+            " / " +
+            value.basePairInfo.token2.symbol
           }
           amount={"0"}
           type="remove"
@@ -336,23 +339,37 @@ const RemoveModal = ({ value, onClose, chainId, account }: Props) => {
             marginBottom: "1rem",
           }}
         >
-          you'll receive
+          you&apos;ll receive
         </p>
         <RowCell
-          type={truncateNumber(value1.toString()) + " " + value.basePairInfo.token1.symbol}
-          value={noteSymbol + truncateNumber((value1 * Number(value.prices.token1)).toString())}
+          type={
+            truncateNumber(value1.toString()) +
+            " " +
+            value.basePairInfo.token1.symbol
+          }
+          value={
+            noteSymbol +
+            truncateNumber((value1 * Number(value.prices.token1)).toString())
+          }
         />
         <RowCell
-          type={truncateNumber(value2.toString()) + " " + value.basePairInfo.token2.symbol}
-          value={noteSymbol + truncateNumber((value2 * Number(value.prices.token2)).toString())}
+          type={
+            truncateNumber(value2.toString()) +
+            " " +
+            value.basePairInfo.token2.symbol
+          }
+          value={
+            noteSymbol +
+            truncateNumber((value2 * Number(value.prices.token2)).toString())
+          }
         />
       </div>
       <ConfirmButton
         status={setTokenAllowanceStatus}
         pair={value}
         percentage={Number(percentage)}
-        amount1={value1.toString()}
-        amount2={value2.toString()}
+        amount1={value1}
+        amount2={value2}
         slippage={Number(slippage)}
         deadline={Number(deadline)}
         chainId={chainId}

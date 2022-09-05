@@ -1,0 +1,60 @@
+#root {
+    width: 100%;
+    --primary-color : #06fc99;
+    --primary-color : #06fc99;
+    --primary-color-dark : #05de87;
+    --off-white-color : #EFEFEF;
+    --error-color : #FE4256;
+    --toastify-color-progress-light: var(--primary-color) !important;
+  }
+  
+  :root{
+    --primary-color : #06fc99;
+    --primary-color-dark : #05de87;
+    --off-white-color : #EFEFEF;
+    --error-color : #FE4256;
+    --toastify-color-progress-light: var(--primary-color) !important;
+    scrollbar-color: var(--primary-color);
+    scroll-behavior: smooth;
+  
+  }
+    /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #151515;
+  
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    box-shadow: inset 2 2 5px var(--primary-color);
+    border-radius: 6px;
+    width: 6px;
+    background: var(--primary-color);
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #07e48c;
+  }
+  .App {
+      background: repeating-linear-gradient(0deg, #010000 0%, #010000 4px, #021911 4px, #021911  8px);
+      background-repeat: repeat-y;
+      text-shadow: 0 0 4px #2cffab, 0 0 20px var(--primary-color);
+      display: flex;
+      flex-direction: column;
+  }

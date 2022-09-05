@@ -1,8 +1,9 @@
-import "App.css";
+import "App.scss";
 import styled from "@emotion/styled";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import {
+  ADDRESSES,
   GlobalStyle,
   Overlay,
   ScanLine,
@@ -18,6 +19,7 @@ import LendingMarket from "pages/lending/LendingMarket";
 import Staking from "pages/staking/Staking";
 import { BalanceSheet } from "pages/lending/balanceSheet/BalanceSheet";
 import BridgingPage from "pages/bridge/Bridging";
+import { useCoingeckoTokenPrice } from "@usedapp/coingecko";
 // import landing from "pages/landing_page/index.html"
 
 //Styling
@@ -30,6 +32,7 @@ const Container = styled.div`
 `;
 
 function App() {
+  // const CantoPrice = useCoingeckoTokenPrice(ADDRESSES.cantoMainnet.WCANTO, "usd", "canto");
   return (
     <React.Fragment>
       <ToastContainer />
@@ -42,13 +45,13 @@ function App() {
           <CantoNav />
           <GlobalStyle />
           <Routes>
-            <Route path="/" key={"bridge"} element={<BridgingPage />} />
+            <Route path="/bridge" key={"bridge"} element={<BridgingPage />} />
             <Route
               path="/governance"
               key="governance"
               element={<Governance />}
             />
-            {/* <Route path="/lpinterface" key="lp interface" element={<Dex />} /> */}
+            <Route path="/lp" key="lp interface" element={<Dex />} />
             <Route path="/lending" key="lending" element={<LendingMarket />} />
             <Route
               path="/lending/balanceSheet"

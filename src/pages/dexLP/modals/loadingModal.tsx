@@ -86,7 +86,7 @@ const LoadingModal = (props: ILoading) => {
         case "remove":
           currentStatus = "please sign to remove liquidity";
           break;
-          default :
+        default:
           currentStatus = "waiting for confirmation";
       }
       break;
@@ -101,7 +101,7 @@ const LoadingModal = (props: ILoading) => {
         case "remove":
           currentStatus = "removing liquidity";
           break;
-          default :
+        default:
           currentStatus = "validating";
       }
       break;
@@ -116,7 +116,7 @@ const LoadingModal = (props: ILoading) => {
         case "remove":
           currentStatus = "successfully removed";
           break;
-          default :
+        default:
           currentStatus = "successful";
       }
       break;
@@ -131,7 +131,7 @@ const LoadingModal = (props: ILoading) => {
         case "remove":
           currentStatus = "unable to remove";
           break;
-          default :
+        default:
           currentStatus = "cancelled";
       }
       break;
@@ -144,7 +144,7 @@ const LoadingModal = (props: ILoading) => {
         <img src={props.icons} height={40} />
       )} */}
       <img src={loading} className="loading" height={60} />
-      <h3 style={{marginTop: "2rem"}}>{props.name}</h3>
+      <h3 style={{ marginTop: "2rem" }}>{props.name}</h3>
       <p>{currentStatus}</p>
       {currentStatus == "mining" ? (
         <Button>view on etherscan</Button>
