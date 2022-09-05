@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import backBtn from "../../../assets/back-btn.svg";
-import emptyToken from "assets/empty.svg"
+import emptyToken from "assets/empty.svg";
 
 const Container = styled.div`
   display: flex;
@@ -94,10 +94,8 @@ const Container = styled.div`
 
 interface Props {
   onClose: (value?: any) => void;
-  tokens : any[]
+  tokens: any[];
 }
-
-
 
 const TokenModal = (props: Props) => {
   return (
@@ -106,13 +104,13 @@ const TokenModal = (props: Props) => {
         <img
           onClick={() => {
             props.onClose({
-              data : {
-                "icon" : emptyToken,
-                "name" : "select token",
-                "address" : "0x0412C7c846bb6b7DC462CF6B453f76D8440b2609"
+              data: {
+                icon: emptyToken,
+                name: "select token",
+                address: "0x0412C7c846bb6b7DC462CF6B453f76D8440b2609",
               },
-              allowance : -1,
-              balanceOf : -1
+              allowance: -1,
+              balanceOf: -1,
             });
           }}
           src={backBtn}
@@ -134,16 +132,13 @@ const TokenModal = (props: Props) => {
       <div className="token-list">
         {props.tokens.map((token) => (
           <div
-          key={token.data.icon}
+            key={token.data.icon}
             className="token-item"
             onClick={() => {
               props.onClose(token);
             }}
           >
-            <img
-              src={token.data.icon}
-              alt=""
-            />
+            <img src={token.data.icon} alt="" />
             <p>{token.data.name}</p>
           </div>
         ))}

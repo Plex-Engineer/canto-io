@@ -2,9 +2,9 @@ import styled from "@emotion/styled";
 import down from "assets/down.svg";
 import Popup from "reactjs-popup";
 import { useState } from "react";
-import TokenModal from "pages/bridge/components/tokenModal";
-import { useTokenStore } from "pages/bridge/stores/tokens";
-import { GTokens } from "pages/bridge/hooks/useGravityTokens";
+import TokenModal from "../components/tokenModal";
+import { useTokenStore } from "../stores/tokens";
+import { GTokens } from "../hooks/useGravityTokens";
 
 interface ITokenSelect {
   activeToken: GTokens;
@@ -28,7 +28,10 @@ export const StyledPopup = styled(Popup)`
 `;
 export const TokenWallet = ({ onSelect, tokens }: ITokenSelect) => {
   const [isOpen, setOpen] = useState(false);
-  const [activeToken, setActiveToken] = useTokenStore(state => [state.selectedToken, state.setSelectedToken])
+  const [activeToken, setActiveToken] = useTokenStore((state) => [
+    state.selectedToken,
+    state.setSelectedToken,
+  ]);
 
   const Box = styled.div`
     background-color: #1c1c1c;
@@ -54,7 +57,8 @@ export const TokenWallet = ({ onSelect, tokens }: ITokenSelect) => {
         src={activeToken.data.icon}
         alt={activeToken.data.name}
         height={30}
-        width={30} />
+        width={30}
+      />
       <span
         style={{
           flex: "2",
@@ -75,7 +79,8 @@ export const TokenWallet = ({ onSelect, tokens }: ITokenSelect) => {
               border: "0px",
               borderBottom: "1px solid #00502C",
               marginBottom: "1rem",
-            }} />
+            }}
+          />
           <TokenModal
             tokens={tokens}
             onClose={(value) => {
@@ -83,7 +88,8 @@ export const TokenWallet = ({ onSelect, tokens }: ITokenSelect) => {
                 onSelect(value);
               }
               setOpen(false);
-            }} />
+            }}
+          />
         </StyledPopup>
       ) : null}
     </Box>

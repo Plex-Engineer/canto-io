@@ -1,9 +1,9 @@
 import "App.css";
 import styled from "@emotion/styled";
-import BridgePage from "pages/bridge/bridge";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import {
+  GlobalStyle,
   Overlay,
   ScanLine,
   ScanlinesOverlay,
@@ -17,6 +17,7 @@ import Dex from "pages/dexLP/Dex";
 import LendingMarket from "pages/lending/LendingMarket";
 import Staking from "pages/staking/Staking";
 import { BalanceSheet } from "pages/lending/balanceSheet/BalanceSheet";
+import BridgingPage from "pages/bridge/Bridging";
 // import landing from "pages/landing_page/index.html"
 
 //Styling
@@ -39,8 +40,9 @@ function App() {
         <Overlay />
         <Container className="App">
           <CantoNav />
+          <GlobalStyle />
           <Routes>
-            {/* <Route path="/" key={"bridge"} element={<BridgePage />} /> */}
+            <Route path="/" key={"bridge"} element={<BridgingPage />} />
             <Route
               path="/governance"
               key="governance"

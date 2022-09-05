@@ -1,27 +1,20 @@
 import { useCalls } from "@usedapp/core";
 import { Contract } from "ethers";
-import { GravityTestnet } from "pages/bridge/config/networks";
-import {
-  CantoGravityTokens,
-  gravityTokenBase,
-  mainnetGravityTokensBase,
-} from "pages/bridge/config/gravityBridgeTokens";
-import { abi } from "pages/bridge/config/abi";
+import { CantoGravityTokens } from "../config/gravityBridgeTokens";
 import { ethers } from "ethers";
-import { ADDRESSES, CantoMainnet } from "cantoui";
 import { GTokens } from "./useGravityTokens";
 import { generateEndpointBalances } from "@tharsis/provider";
+import { CantoMainnet } from "cantoui";
+import { ERC20Abi } from "global/config/abi";
 
-export function useCosmosTokens(
-  account: string | undefined,
-  chainId: number
-): { cantoTokens: GTokens[] | undefined } {
-  const tokens =
-    chainId == CantoMainnet.chainId ? CantoGravityTokens : CantoGravityTokens;
+export function useCosmosTokens(account: string | undefined): {
+  gravityTokens: GTokens[] | undefined;
+} {
+  const tokens = CantoGravityTokens;
 
   const calls =
     tokens?.map((token) => {
-      const ERC20Contract = new Contract(token.address, abi.Erc20);
+      const ERC20Contract = new Contract(token.address, ERC20Abi);
 
       return [
         {
@@ -31,19 +24,21 @@ export function useCosmosTokens(
         },
       ];
     }) ?? [];
-  const results = useCalls(calls.flat()) ?? {};
+  const results =
+    useCalls(tokens ? calls.flat() : [], { chainId: CantoMainnet.chainId }) ??
+    {};
 
   if (account == undefined) {
-    return { cantoTokens: undefined };
+    return { gravityTokens: undefined };
   }
   if (tokens == undefined) {
-    return { cantoTokens: [] };
+    return { gravityTokens: [] };
   }
   const chuckSize = results.length / tokens.length;
   let processedTokens: Array<any>;
   const array_chunks = (array: any[], chunk_size: number) => {
     const rep = array.map((array) => array?.value);
-    let chunks = [];
+    const chunks = [];
 
     for (let i = 0; i < array.length; i += chunk_size) {
       chunks.push(rep.slice(i, i + chunk_size));
@@ -53,9 +48,9 @@ export function useCosmosTokens(
   if (chuckSize > 0 && results?.[0] != undefined && !results?.[0].error) {
     processedTokens = array_chunks(results, chuckSize);
     const val = processedTokens.map((tokenData, idx) => {
-      const balanceOf = 
+      const balanceOf = Number(
         ethers.utils.formatUnits(tokenData[0][0], tokens[idx].decimals)
-
+      );
       const allowance = Number.MAX_SAFE_INTEGER;
       return {
         data: tokens[idx],
@@ -65,18 +60,23 @@ export function useCosmosTokens(
       };
     });
 
-    if (val[0].balanceOf == undefined) return { cantoTokens: undefined };
+    if (val[0].balanceOf == undefined) return { gravityTokens: undefined };
 
-    return { cantoTokens: val };
+    return { gravityTokens: val };
   }
 
-  return { cantoTokens: undefined };
+  return { gravityTokens: undefined };
+}
+
+export interface NativeGTokens extends GTokens {
+  nativeBalanceOf: string;
 }
 
 export async function getCantoBalance(
   nodeAddressIP: string,
-  cantoAddress: string
-) {
+  cantoAddress: string,
+  gravityTokens: GTokens[]
+): Promise<NativeGTokens[]> {
   const url = nodeAddressIP + "/" + generateEndpointBalances(cantoAddress);
   const options = {
     method: "GET",
@@ -93,31 +93,33 @@ export async function getCantoBalance(
     .catch((err) => {
       console.log(err);
     });
-
-  let processedTokens = CantoGravityTokens.map((token) => {
-    let allowance = Number.MAX_SAFE_INTEGER;
-    let balanceOf = result.find((data : any) => data.denom == token.nativeName)?.amount ?? "0";
+  //   console.log(result);
+  return gravityTokens.map((token) => {
+    // console.log(token);
+    const nativeBalanceOf =
+      result.find((data: any) => data.denom == token.data.nativeName)?.amount ??
+      "0";
 
     return {
-      data: token,
-      wallet: cantoAddress,
-      balanceOf: ethers.utils.formatUnits(balanceOf, token.decimals),
-      allowance,
+      ...token,
+      nativeBalanceOf: ethers.utils.formatUnits(
+        nativeBalanceOf,
+        token.data.decimals
+      ),
     };
   });
-
-  return processedTokens;
 }
 
-export async function getGravityTokenBalance (gravityAddress: string) {
-    const url = "https://gravitychain.io:1317/" + generateEndpointBalances(gravityAddress);
-    const options = {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-        },
-      };
-      const result = await fetch(url, options)
+export async function getGravityTokenBalance(gravityAddress: string) {
+  const url =
+    "https://gravitychain.io:1317/" + generateEndpointBalances(gravityAddress);
+  const options = {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+  };
+  return await fetch(url, options)
     .then((response) => response.json())
     .then((result) => {
       return result["balances"];
@@ -125,7 +127,4 @@ export async function getGravityTokenBalance (gravityAddress: string) {
     .catch((err) => {
       console.log(err);
     });
-    return result
 }
-    
-  

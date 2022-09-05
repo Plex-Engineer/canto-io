@@ -1,38 +1,38 @@
-import { useCalls} from "@usedapp/core";
+import { useCalls } from "@usedapp/core";
 import { Contract } from "ethers";
-import { GravityTestnet } from "pages/bridge/config/networks";
-import { gravityTokenBase, mainnetGravityTokensBase } from "pages/bridge/config/gravityBridgeTokens";
-import {abi } from "pages/bridge/config/abi"
+import { ETHGravityTokens } from "../config/gravityBridgeTokens";
 import { ethers } from "ethers";
 import { ADDRESSES } from "cantoui";
+import { ERC20Abi } from "global/config/abi";
 
-
-export interface GTokens  {
+export interface GTokens {
   data: {
-      symbol: string;
-      name: string;
-      decimals: number;
-      address: string;
-      isERC20: boolean;
-      isLP: boolean;
-      icon: string;
-      cTokenAddress: string;
-      nativeName?: string
+    symbol: string;
+    name: string;
+    decimals: number;
+    address: string;
+    isERC20: boolean;
+    isLP: boolean;
+    icon: string;
+    cTokenAddress: string;
+    nativeName: string;
   };
   wallet: string;
-  balanceOf: string;
+  balanceOf: number;
   allowance: number;
-}[]
+}
+[];
 
-export function useGravityTokens(
-  account: string | undefined, chainId:number
-): { gravityTokens : GTokens[] | undefined, gravityAddress: string| undefined} {
-  const tokens = chainId == GravityTestnet.chainId ? gravityTokenBase : mainnetGravityTokensBase
-  const gravityAddress = chainId == GravityTestnet.chainId ? ADDRESSES.gravityBridgeTest.GravityBridge : ADDRESSES.ETHMainnet.GravityBridge;
+export function useGravityTokens(account: string | undefined): {
+  gravityTokens: GTokens[] | undefined;
+  gravityAddress: string | undefined;
+} {
+  const tokens = ETHGravityTokens;
+  const gravityAddress = ADDRESSES.ETHMainnet.GravityBridge;
 
   const calls =
     tokens?.map((token) => {
-      const ERC20Contract = new Contract(token.address, abi.Erc20);
+      const ERC20Contract = new Contract(token.address, ERC20Abi);
 
       return [
         {
@@ -47,19 +47,19 @@ export function useGravityTokens(
         },
       ];
     }) ?? [];
-  const results = useCalls(typeof tokens == typeof mainnetGravityTokensBase ? calls.flat(): []) ?? {};
+  const results = useCalls(tokens ? calls.flat() : [], { chainId: 1 }) ?? {};
 
   if (account == undefined) {
-    return {gravityTokens: undefined, gravityAddress: undefined};
+    return { gravityTokens: undefined, gravityAddress: undefined };
   }
-  if(tokens == undefined){
-    return {gravityTokens: [], gravityAddress: undefined }
+  if (tokens == undefined) {
+    return { gravityTokens: [], gravityAddress: undefined };
   }
   const chuckSize = results.length / tokens.length;
   let processedTokens: Array<any>;
   const array_chunks = (array: any[], chunk_size: number) => {
     const rep = array.map((array) => array?.value);
-    let chunks = [];
+    const chunks = [];
 
     for (let i = 0; i < array.length; i += chunk_size) {
       chunks.push(rep.slice(i, i + chunk_size));
@@ -69,9 +69,13 @@ export function useGravityTokens(
   if (chuckSize > 0 && results?.[0] != undefined && !results?.[0].error) {
     processedTokens = array_chunks(results, chuckSize);
     const val = processedTokens.map((tokenData, idx) => {
-      const balanceOf = ethers.utils.formatUnits(tokenData[0][0], tokens[idx].decimals)
-      const allowance = Number(ethers.utils.formatUnits(tokenData[1][0], tokens[idx].decimals));
-     
+      const balanceOf = Number(
+        ethers.utils.formatUnits(tokenData[0][0], tokens[idx].decimals)
+      );
+      const allowance = Number(
+        ethers.utils.formatUnits(tokenData[1][0], tokens[idx].decimals)
+      );
+
       return {
         data: tokens[idx],
         wallet: account,
@@ -80,11 +84,11 @@ export function useGravityTokens(
       };
     });
 
-    if(val[0].balanceOf == undefined)
-    return {gravityTokens: undefined, gravityAddress: gravityAddress}
+    if (val[0].balanceOf == undefined)
+      return { gravityTokens: undefined, gravityAddress: gravityAddress };
 
-    return {gravityTokens: val, gravityAddress: gravityAddress};
+    return { gravityTokens: val, gravityAddress: gravityAddress };
   }
 
-  return {gravityTokens: undefined, gravityAddress: undefined};
+  return { gravityTokens: undefined, gravityAddress: undefined };
 }

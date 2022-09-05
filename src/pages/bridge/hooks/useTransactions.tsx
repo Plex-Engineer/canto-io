@@ -1,10 +1,10 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import { Contract, utils } from "ethers";
-import { abi } from "pages/bridge/config/abi";
 import { useContractFunction } from "@usedapp/core";
-
+import { ERC20Abi } from "global/config/abi";
 
 export function useApprove(tokenAddress: string) {
-  const erc20Interface = new utils.Interface(abi.Erc20);
+  const erc20Interface = new utils.Interface(ERC20Abi);
   const contract = new Contract(tokenAddress, erc20Interface);
 
   const { state, send, resetState } = useContractFunction(contract, "approve", {
@@ -560,8 +560,12 @@ export function useCosmos(gravityAddress: string) {
   ]);
   const contract = new Contract(gravityAddress, cosmosInterface);
 
-  const { state, send, resetState } = useContractFunction(contract, "sendToCosmos", {
-    transactionName: "sending to cosmos",
-  });
+  const { state, send, resetState } = useContractFunction(
+    contract,
+    "sendToCosmos",
+    {
+      transactionName: "sending to cosmos",
+    }
+  );
   return { state, send, resetState };
 }

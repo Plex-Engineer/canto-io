@@ -84,9 +84,9 @@ export const Container = styled.div`
     width: 100%;
     position: absolute;
     z-index: 1;
-    hr{
+    hr {
       border: none;
-      border-bottom : 1px solid #444;
+      border-bottom: 1px solid #444;
       position: absolute;
       width: 100%;
       top: 50%;
@@ -105,7 +105,7 @@ export const Container = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    border : 1px solid #444;
+    border: 1px solid #444;
     padding: 1rem;
     width: 80%;
     margin-top: 2rem;
@@ -120,17 +120,16 @@ export const Container = styled.div`
     align-items: center;
     width: 100%;
     padding: 1rem;
-    &>* {
+    & > * {
       width: 100%;
-      
     }
-   
+
     .center {
       width: 60rem;
       justify-content: center;
       align-items: center;
     }
-    
+
     img {
       width: 30px;
     }
@@ -140,7 +139,6 @@ export const Container = styled.div`
       color: white;
     }
   }
-
 `;
 export const Balance = styled.div`
   display: flex;
@@ -160,42 +158,12 @@ export const Balance = styled.div`
   }
 `;
 
-export const Button = styled.button`
-  font-weight: 300;
-  font-size: 22px;
-  background-color: black;
-  color: var(--primary-color);
-  padding: 0.4rem 2rem;
-  border: 1px solid var(--primary-color);
-  margin: 3rem auto;
-  margin-bottom: 0;
-  display: flex;
-  align-self: center;
-  justify-content: center;
-  width: 22rem;
-  text-align: center;
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
 export const Center = styled.div`
   display: flex;
   justify-content: center;
   justify-items: center;
-`
-export const DisabledButton = styled(Button)`
-  background-color: #222;
-  color: #999;
-  border: none;
-  &:hover {
-    cursor: default;
-    background-color: #111;
-    color: #444;
-  }
-  cursor: default;
 `;
+
 const DestInput = styled.input`
   border: 1px solid #333;
   padding: 1rem;

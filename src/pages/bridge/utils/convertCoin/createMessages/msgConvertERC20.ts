@@ -8,10 +8,8 @@ import {
   createMsgConvertERC20,
   MSG_CONVERT_ERC20_TYPES,
 } from "@tharsis/eip712";
-import * as erc20 from '../prototypes/proto-tx';
-import { Chain, Fee, Sender } from "global/config/cosmosConstants";
-
-
+import * as erc20 from "../prototypes/proto-tx";
+import { Chain, Fee, Sender } from "../../../config/networks";
 
 /* eslint-disable camelcase */
 export interface MessageMsgConvertERC20 {
@@ -86,19 +84,19 @@ export function createTxMsgConvertERC20(
 }
 
 export function protoMsgConvertERC20(
-    contractAddress: string,
-    amount: string,
-    receiver: string,
-    sender: string,
-  ) {
-    const msg = new erc20.evmos.erc20.v1.MsgConvertERC20({
-      contract_address: contractAddress,
-      amount,
-      receiver,
-      sender,
-    })
-    return {
-      message: msg,
-      path: 'canto.erc20.v1.MsgConvertERC20',
-    }
-  }
+  contractAddress: string,
+  amount: string,
+  receiver: string,
+  sender: string
+) {
+  const msg = new erc20.evmos.erc20.v1.MsgConvertERC20({
+    contract_address: contractAddress,
+    amount,
+    receiver,
+    sender,
+  });
+  return {
+    message: msg,
+    path: "canto.erc20.v1.MsgConvertERC20",
+  };
+}
