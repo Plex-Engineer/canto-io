@@ -15,7 +15,7 @@ export const CantoNav = () => {
   const [tokenName, setTokenName] = useState("");
 
   async function grabTokenName() {
-    setTokenName(await getBaseTokenName(chainId));
+    setTokenName(await getBaseTokenName(chainId?.toString() ?? ""));
   }
   useEffect(() => {
     grabTokenName();
