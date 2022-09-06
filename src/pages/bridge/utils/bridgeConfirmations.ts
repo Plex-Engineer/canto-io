@@ -12,7 +12,7 @@ export function checkBridgeAmountConfirmation(amount: number, max: number) {
 }
 
 export function checkGravityAddress(address: string) {
-  return address.slice(0, 7) != "gravity" || address.length != 46;
+  return address.slice(0, 7) == "gravity" && address.length == 46;
 }
 
 export function toastBridge(success: boolean) {
@@ -39,4 +39,47 @@ export function toastBridge(success: boolean) {
       },
     });
   }
+}
+
+const increaseAllowanceString = "increase allowance";
+const sendTokenString = "send token";
+const approveString = "approve";
+
+export function getStatus(value: string, status: string) {
+  switch (status) {
+    case "None":
+      return value;
+    case "Mining":
+      switch (value) {
+        case increaseAllowanceString:
+          return "increasing allowance";
+        case approveString:
+          return "approving";
+        case sendTokenString:
+          return "sending token";
+      }
+      break;
+    case "Success":
+      switch (value) {
+        case increaseAllowanceString:
+          return "allowance increased";
+        case approveString:
+          return "approved";
+        case sendTokenString:
+          return "token sent";
+      }
+      break;
+    case "Exception":
+      return "couldn't " + value;
+    case "Fail":
+      return "couldn't " + value;
+    case "PendingSignature":
+      switch (value) {
+        case increaseAllowanceString:
+        case approveString:
+        case sendTokenString:
+          return "waiting for confirmation";
+      }
+  }
+  return value;
 }

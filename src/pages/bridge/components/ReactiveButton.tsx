@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useTokenStore } from "../stores/tokens";
 import loading from "assets/loading.svg";
 import { PrimaryButton } from "cantoui";
+import { getStatus } from "../utils/bridgeConfirmations";
 
 interface RBProps {
   amount: string;
@@ -31,48 +32,6 @@ export const ReactiveButton = ({
   }, [approveStatus]);
   if (token == undefined) {
     return <PrimaryButton>Loading</PrimaryButton>;
-  }
-
-  const increaseAllowanceString = "increase allowance";
-  const sendTokenString = "send token";
-  const approveString = "approve";
-
-  function getStatus(value: string, status: string) {
-    switch (status) {
-      case "None":
-        return value;
-      case "Mining":
-        switch (value) {
-          case increaseAllowanceString:
-            return "increasing allowance";
-          case approveString:
-            return "approving";
-          case sendTokenString:
-            return "sending token";
-        }
-        break;
-      case "Success":
-        switch (value) {
-          case increaseAllowanceString:
-            return "allowance increased";
-          case approveString:
-            return "approved";
-          case sendTokenString:
-            return "token sent";
-        }
-        break;
-      case "Exception":
-        return "couldn't " + value;
-      case "Fail":
-        return "couldn't " + value;
-      case "PendingSignature":
-        switch (value) {
-          case increaseAllowanceString:
-          case approveString:
-          case sendTokenString:
-            return "waiting for confirmation";
-        }
-    }
   }
 
   //? refactor this into a single component
