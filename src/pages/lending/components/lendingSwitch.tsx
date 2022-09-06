@@ -150,7 +150,15 @@ const LendingSwitch = (props: Props) => {
           props.onChange();
         }}
       />
-      <ModalManager isOpen={isOpen} />
+      <ModalManager
+        isOpen={isOpen}
+        modalType={
+          !props.checked ? ModalType.COLLATERAL : ModalType.DECOLLATERAL
+        }
+        onClose={() => {
+          setIsOpen(false);
+        }}
+      />
       <span className="slider"></span>
     </Wrapper>
   );
