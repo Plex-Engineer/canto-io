@@ -3,12 +3,12 @@ import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { TransactionStatus } from "@usedapp/core";
 import { LoadingOverlay } from "./supplyModal";
-import { useToken } from "pages/lending/providers/activeTokenContext";
 import { InputState, ReactiveButton } from "../reactiveButton";
 import { formatBalance } from "global/utils/utils";
 import LendingField from "../lendingField";
 import { Details, TrasanctionType } from "../BorrowLimits";
 import LoadingModal from "./loadingModal";
+import useModalStore from "pages/lending/stores/useModals";
 
 //STYLING
 const Container = styled.div`
@@ -81,9 +81,9 @@ interface IProps {
   onClose: () => void;
 }
 const BorrowModal = ({ onClose }: IProps) => {
-  const tokenState = useToken();
-  const token = tokenState[0].token;
-  const stats = tokenState[0].stats;
+  const modalStore = useModalStore();
+  const stats: any = modalStore.stats;
+  const token: any = modalStore.activeToken;
   const [transaction, setTransaction] = useState<TransactionStatus>();
   const [isRepaying, setIsRepaying] = useState(true);
 

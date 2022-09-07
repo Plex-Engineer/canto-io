@@ -12,7 +12,7 @@ export function checkBridgeAmountConfirmation(amount: number, max: number) {
 }
 
 export function checkGravityAddress(address: string) {
-  return address.slice(0, 7) != "gravity" || address.length != 46;
+  return address.slice(0, 7) == "gravity" && address.length == 46;
 }
 
 export function toastBridge(success: boolean) {

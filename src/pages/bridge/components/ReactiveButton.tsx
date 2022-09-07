@@ -2,6 +2,10 @@ import { useEffect } from "react";
 import { useTokenStore } from "../stores/tokens";
 import loading from "assets/loading.svg";
 import { PrimaryButton } from "cantoui";
+import {
+  getTransactionStatusString,
+  transactionStatusActions,
+} from "global/utils/utils";
 
 interface RBProps {
   amount: string;
@@ -33,48 +37,6 @@ export const ReactiveButton = ({
     return <PrimaryButton>Loading</PrimaryButton>;
   }
 
-  const increaseAllowanceString = "increase allowance";
-  const sendTokenString = "send token";
-  const approveString = "approve";
-
-  function getStatus(value: string, status: string) {
-    switch (status) {
-      case "None":
-        return value;
-      case "Mining":
-        switch (value) {
-          case increaseAllowanceString:
-            return "increasing allowance";
-          case approveString:
-            return "approving";
-          case sendTokenString:
-            return "sending token";
-        }
-        break;
-      case "Success":
-        switch (value) {
-          case increaseAllowanceString:
-            return "allowance increased";
-          case approveString:
-            return "approved";
-          case sendTokenString:
-            return "token sent";
-        }
-        break;
-      case "Exception":
-        return "couldn't " + value;
-      case "Fail":
-        return "couldn't " + value;
-      case "PendingSignature":
-        switch (value) {
-          case increaseAllowanceString:
-          case approveString:
-          case sendTokenString:
-            return "waiting for confirmation";
-        }
-    }
-  }
-
   //? refactor this into a single component
   //if the token hasn't been approved
   if (token?.allowance == -1) {
@@ -92,14 +54,33 @@ export const ReactiveButton = ({
   if (disabled) {
     return <PrimaryButton disabled>enter gravity address</PrimaryButton>;
   }
+  const increaseAllowanceActions =
+    transactionStatusActions("increase allowance");
+  const enableActions = transactionStatusActions("enable");
+  const sendTokenActions = transactionStatusActions("send token");
 
   return (
     <PrimaryButton onClick={onClick}>
       {Number(amount) > token.allowance && token.allowance != 0
-        ? getStatus("increase allowance", approveStatus)
+        ? getTransactionStatusString(
+            increaseAllowanceActions.action,
+            increaseAllowanceActions.inAction,
+            increaseAllowanceActions.postAction,
+            approveStatus
+          )
         : token.allowance == 0
-        ? getStatus("approve", approveStatus)
-        : getStatus("send token", cosmosStatus)}
+        ? getTransactionStatusString(
+            enableActions.action,
+            enableActions.inAction,
+            enableActions.postAction,
+            approveStatus
+          )
+        : getTransactionStatusString(
+            sendTokenActions.action,
+            sendTokenActions.inAction,
+            sendTokenActions.postAction,
+            cosmosStatus
+          )}
       {approveStatus == "Mining" || cosmosStatus == "Mining" ? (
         <img
           style={{

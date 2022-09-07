@@ -1,6 +1,9 @@
 import styled from "@emotion/styled";
 import loading from "assets/loading.svg";
-import IconPair from "../components/iconPair";
+import {
+  getTransactionStatusString,
+  transactionStatusActions,
+} from "global/utils/utils";
 interface ILoading {
   status: string | undefined;
   name: string;
@@ -73,69 +76,15 @@ const Button = styled.button`
 `;
 
 const LoadingModal = (props: ILoading) => {
-  let currentStatus = "";
-  switch (props.status) {
-    case "PendingSignature":
-      switch (props.type) {
-        case "enable":
-          currentStatus = "please sign to enable tokens";
-          break;
-        case "add":
-          currentStatus = "please sign to add liquidity";
-          break;
-        case "remove":
-          currentStatus = "please sign to remove liquidity";
-          break;
-        default:
-          currentStatus = "waiting for confirmation";
-      }
-      break;
-    case "Mining":
-      switch (props.type) {
-        case "enable":
-          currentStatus = "enabling tokens";
-          break;
-        case "add":
-          currentStatus = "adding liquidity";
-          break;
-        case "remove":
-          currentStatus = "removing liquidity";
-          break;
-        default:
-          currentStatus = "validating";
-      }
-      break;
-    case "Success":
-      switch (props.type) {
-        case "enable":
-          currentStatus = "successfully enabled";
-          break;
-        case "add":
-          currentStatus = "successfully added";
-          break;
-        case "remove":
-          currentStatus = "successfully removed";
-          break;
-        default:
-          currentStatus = "successful";
-      }
-      break;
-    case "Exception":
-      switch (props.type) {
-        case "enable":
-          currentStatus = "unable to enable";
-          break;
-        case "add":
-          currentStatus = "unable to add";
-          break;
-        case "remove":
-          currentStatus = "unable to remove";
-          break;
-        default:
-          currentStatus = "cancelled";
-      }
-      break;
-  }
+  const actionObj = transactionStatusActions(props.type, "tokens");
+
+  const currentStatus = getTransactionStatusString(
+    actionObj.action,
+    actionObj.inAction,
+    actionObj.postAction,
+    props.status
+  );
+
   return (
     <Progress>
       {/* {typeof props.icons != "string" ? (
