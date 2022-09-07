@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { Noise } from '../../assets/noise';
+import styled from "styled-components";
+import Noise from "assets/bg-noise.gif";
 const StaticNoiseOverlay = styled.div`
   -webkit-font-smoothing: antialiased;
   background-attachment: fixed;
@@ -48,7 +48,12 @@ const Overlay = styled.div`
   width: 100%;
   height: 100%;
   opacity: 40%;
-  background: repeating-linear-gradient(180deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0) 100%);
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 0.3) 50%,
+    rgba(0, 0, 0, 0) 100%
+  );
   background-size: auto 4px;
   z-index: 1;
 `;
