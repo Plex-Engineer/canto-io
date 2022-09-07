@@ -85,3 +85,71 @@ export function convertFromScientificNotation(value: string) {
   }
   return value;
 }
+
+export function getTransactionStatusString(
+  action: string,
+  inAction: string,
+  postAction: string,
+  status?: string
+) {
+  switch (status) {
+    case "None":
+      return action;
+    case "PendingSignature":
+      return "please sign to " + action;
+    case "Mining":
+      return inAction;
+    case "Success":
+      return "successfully " + postAction;
+    case "Exception":
+    case "Fail":
+      return "unable to " + action;
+    default:
+      return action;
+  }
+}
+
+export const transactionStatusActions = (
+  actionType: string,
+  tokenName?: string
+) => {
+  const token = tokenName ?? "token";
+  switch (actionType) {
+    case "enable":
+      return {
+        action: `enable  ${token}`,
+        inAction: `enabling  ${token}`,
+        postAction: "enabled",
+      };
+    case "increase allowance":
+      return {
+        action: "increase allowance",
+        inAction: "increasing allowance",
+        postAction: "allowance increased",
+      };
+    case "send token":
+      return {
+        action: `send ${token}`,
+        inAction: `sending ${token}`,
+        postAction: `${token} sent`,
+      };
+    case "add":
+      return {
+        action: "add liquidity",
+        inAction: "adding liquidity",
+        postAction: "added liquidity",
+      };
+    case "remove":
+      return {
+        action: "remove liquidity",
+        inAction: "removing liquidity",
+        postAction: "removed liquidity",
+      };
+    default:
+      return {
+        action: "confirm",
+        inAction: "validating",
+        postAction: "validated",
+      };
+  }
+};

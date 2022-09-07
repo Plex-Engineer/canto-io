@@ -2,7 +2,10 @@ import { useEffect } from "react";
 import { useTokenStore } from "../stores/tokens";
 import loading from "assets/loading.svg";
 import { PrimaryButton } from "cantoui";
-import { getStatus } from "../utils/bridgeConfirmations";
+import {
+  getTransactionStatusString,
+  transactionStatusActions,
+} from "global/utils/utils";
 
 interface RBProps {
   amount: string;
@@ -51,14 +54,33 @@ export const ReactiveButton = ({
   if (disabled) {
     return <PrimaryButton disabled>enter gravity address</PrimaryButton>;
   }
+  const increaseAllowanceActions =
+    transactionStatusActions("increase allowance");
+  const enableActions = transactionStatusActions("enable");
+  const sendTokenActions = transactionStatusActions("send token");
 
   return (
     <PrimaryButton onClick={onClick}>
       {Number(amount) > token.allowance && token.allowance != 0
-        ? getStatus("increase allowance", approveStatus)
+        ? getTransactionStatusString(
+            increaseAllowanceActions.action,
+            increaseAllowanceActions.inAction,
+            increaseAllowanceActions.postAction,
+            approveStatus
+          )
         : token.allowance == 0
-        ? getStatus("approve", approveStatus)
-        : getStatus("send token", cosmosStatus)}
+        ? getTransactionStatusString(
+            enableActions.action,
+            enableActions.inAction,
+            enableActions.postAction,
+            approveStatus
+          )
+        : getTransactionStatusString(
+            sendTokenActions.action,
+            sendTokenActions.inAction,
+            sendTokenActions.postAction,
+            cosmosStatus
+          )}
       {approveStatus == "Mining" || cosmosStatus == "Mining" ? (
         <img
           style={{
