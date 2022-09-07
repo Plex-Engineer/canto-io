@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { formatBigNumber } from '../../utils/formatNumbers';
-import { BurgerMenu } from './BurgerMenu';
-import Glitch from '../../components/molecules/Glitch';
-import { OutlinedButton } from '../atoms/Button';
-import { Text } from '../atoms/Text';
-import Alert from '../atoms/Alert';
-import styled from 'styled-components';
+import { useEffect, useState } from "react";
+import { formatBigNumber } from "../../utils/formatNumbers";
+import { BurgerMenu } from "./BurgerMenu";
+import Glitch from "../../components/molecules/Glitch";
+import { OutlinedButton } from "../atoms/Button";
+import { Text } from "../atoms/Text";
+import Alert from "../atoms/Alert";
+import styled from "styled-components";
 
 export interface Page {
   name: string;
@@ -24,7 +24,17 @@ interface Props {
 }
 
 export const NavBar = (props: Props) => {
-  const { onClick, chainId, account, balance, isConnected, currency, logo, currentPage, pageList } = props;
+  const {
+    onClick,
+    chainId,
+    account,
+    balance,
+    isConnected,
+    currency,
+    logo,
+    currentPage,
+    pageList,
+  } = props;
 
   const [onScroll, setOnScroll] = useState(false);
 
@@ -36,18 +46,22 @@ export const NavBar = (props: Props) => {
     }
   };
   useEffect(() => {
-    window.addEventListener('scroll', changeNavbarColor);
+    window.addEventListener("scroll", changeNavbarColor);
   }, []);
 
   return (
     <Container>
       <Alert />
-      <nav className={onScroll ? 'scroll' : ''}>
+      <nav className={onScroll ? "scroll" : ""}>
         <div className="menu">
-          <BurgerMenu chainId={chainId} currentPage={currentPage} pageList={pageList} />
+          <BurgerMenu
+            chainId={chainId}
+            currentPage={currentPage}
+            pageList={pageList}
+          />
           <a id="logo" href="https://canto.io">
             <img src={logo} />
-            <Glitch title={'canto'} />
+            <Glitch title={"canto"} />
           </a>
         </div>
         <Text id="title" type="title">
@@ -120,7 +134,7 @@ function ConnectionButton(
   balance: string,
   currency: string,
   account: string,
-  onClick: () => void,
+  onClick: () => void
 ) {
   return (
     <div className="wallet">
@@ -131,12 +145,14 @@ function ConnectionButton(
             // setIsModalOpen(true)
           }}
         >
-          <span className="hide-on-mobile">{formatBigNumber(balance)}&nbsp;</span>
+          <span className="hide-on-mobile">
+            {formatBigNumber(balance)}&nbsp;
+          </span>
           <span
             className="hide-on-mobile"
             style={{
-              fontWeight: '600',
-              gap: '10px',
+              fontWeight: "600",
+              gap: "10px",
             }}
           >
             {currency}
@@ -144,13 +160,13 @@ function ConnectionButton(
           <div
             className="hide-on-mobile"
             style={{
-              marginLeft: '4px',
-              marginRight: '2px',
+              marginLeft: "4px",
+              marginRight: "2px",
             }}
           >
             |
           </div>
-          {account?.substring(0, 5) + '...'}
+          {account?.substring(0, 5) + "..."}
         </OutlinedButton>
       ) : (
         <OutlinedButton onClick={onClick}>

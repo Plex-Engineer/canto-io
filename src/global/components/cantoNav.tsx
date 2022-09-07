@@ -65,7 +65,7 @@ export const CantoNav = () => {
     },
     {
       name: "lp interface",
-      link: "/lpinterface",
+      link: "/lp",
     },
     {
       name: "staking",
