@@ -9,7 +9,8 @@ import {
   ScanLine,
   ScanlinesOverlay,
   StaticNoiseOverlay,
-} from "cantoui";
+} from "./global/packages/src";
+
 import { CantoNav } from "global/components/cantoNav";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -36,11 +37,11 @@ function App() {
   return (
     <React.Fragment>
       <ToastContainer />
+      <StaticNoiseOverlay />
+      <ScanlinesOverlay />
+      <ScanLine />
+      <Overlay />
       <Router>
-        <StaticNoiseOverlay />
-        <ScanlinesOverlay />
-        <ScanLine />
-        <Overlay />
         <Container className="App">
           <CantoNav />
           <GlobalStyle />
