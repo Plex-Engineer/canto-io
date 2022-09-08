@@ -95,14 +95,9 @@ export const Hero = styled.div`
     color: var(--primary-color);
   }
   @media (max-width: 1000px) {
-    flex-direction: column;
-    margin: 0;
-    justify-content: center;
-    align-items: flex-start;
+    margin-top: 2rem;
     gap: 0.3rem;
-    div {
-      text-align: left !important;
-    }
+
     .balance {
       font-size: 48px;
     }
