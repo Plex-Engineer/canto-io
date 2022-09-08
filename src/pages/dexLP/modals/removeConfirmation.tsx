@@ -412,10 +412,7 @@ interface Props {
 }
 
 export const RemoveLiquidityConfirmation = (props: Props) => {
-  const [modalType, confirmValues] = useModals((state) => [
-    state.modalType,
-    state.confirmationValues,
-  ]);
+  const [confirmValues] = useModals((state) => [state.confirmationValues]);
 
   return (
     <RemoveLiquidityButton

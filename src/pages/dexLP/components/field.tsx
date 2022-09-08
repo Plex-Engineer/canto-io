@@ -84,7 +84,7 @@ type Props = {
   balance: number;
   type?: string;
   hasToken?: boolean;
-  token?: any;
+  token?: string;
   limit: number;
   onChange: (value: string) => void;
   value: string;
