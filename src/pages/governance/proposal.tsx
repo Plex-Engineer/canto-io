@@ -168,7 +168,7 @@ const Proposal = (props: ProposalWithChain) => {
   }, []);
 
   const chain = {
-    chainId: props.chainId,
+    chainId: props.chainId ?? 0,
     cosmosChainId: `canto_${props.chainId}-1`,
   };
 

@@ -6,11 +6,12 @@ import {
   getTransactionStatusString,
   transactionStatusActions,
 } from "global/utils/utils";
+import { NativeGTokens } from "../hooks/useCosmosTokens";
 
 interface RBProps {
   amount: string;
   account: string | undefined;
-  token: any | undefined;
+  token: NativeGTokens | undefined;
   destination: string | undefined;
   gravityAddress: string | undefined;
   onClick: () => void;

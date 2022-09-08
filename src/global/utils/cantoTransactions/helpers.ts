@@ -156,11 +156,7 @@ export async function checkCantoBalance(bech32Address: string) {
     }
   );
   const balance = BigNumber.from((await result.json()).balance.amount);
-  console.log(balance);
+  // console.log(balance);
 
-  if (balance.lt(BigNumber.from("300000000000000000"))) {
-    console.log("0 balance");
-    return false;
-  }
-  return true;
+  return !balance.lt(BigNumber.from("300000000000000000"));
 }
