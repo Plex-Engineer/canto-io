@@ -99,7 +99,7 @@ const BridgeOut = () => {
         tokens={cantoGravityTokens}
         activeToken={tokenStore.selectedToken}
         onSelect={(value) => {
-          tokenStore.setSelectedToken(value);
+          tokenStore.setSelectedToken(value ?? selectedEmptyToken);
           setBridgeConfirmation(
             checkBridgeAmountConfirmation(
               Number(bridgeAmount),
