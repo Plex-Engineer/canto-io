@@ -139,6 +139,12 @@ export const transactionStatusActions = (
         inAction: "adding liquidity",
         postAction: "added liquidity",
       };
+    case "claim":
+      return {
+        action: "claim",
+        inAction: "claiming",
+        postAction: "claimed",
+      };
     case "remove":
       return {
         action: "remove liquidity",
