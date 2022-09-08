@@ -7,7 +7,7 @@ export const Footer = () => {
       <div className="social-wrapper">
         <ul>
           <li>
-            <a href="#" target="_blank">
+            <a href="https://twitter.com/CantoPublic">
               <img
                 src="https://cdn1.iconfinder.com/data/icons/logotypes/32/twitter-128.png"
                 alt="Twitter Logo"
@@ -16,21 +16,17 @@ export const Footer = () => {
             </a>
           </li>
           <li>
-            <a href="#" target="_blank">
+            <a href="https://discord.gg/N3BxQhRx">
               <img
                 src={discordIcon}
-                alt="Twitter Logo"
+                alt="Discord Logo"
                 className="social-icon"
               />
             </a>
           </li>
           <li>
-            <a href="#" target="_blank">
-              <img
-                src={gitHubIcon}
-                alt="Twitter Logo"
-                className="social-icon"
-              />
+            <a href="https://github.com/Plex-Engineer/cantomaster">
+              <img src={gitHubIcon} alt="Github Logo" className="social-icon" />
             </a>
           </li>
         </ul>
