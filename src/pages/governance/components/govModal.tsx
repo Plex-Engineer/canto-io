@@ -65,9 +65,6 @@ const GovModal = () => {
     setOption(value);
   };
 
-  const resetRadioState = () => {
-    setOption("");
-  };
   return (
     <Container>
       <p

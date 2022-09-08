@@ -109,13 +109,10 @@ interface AddAllowanceProps {
 }
 
 const AddAllowanceButton = (props: AddAllowanceProps) => {
-  const [setModalType, setConfirmationValues, activePair] = useModals(
-    (state) => [
-      state.setModalType,
-      state.setConfirmationValues,
-      state.activePair,
-    ]
-  );
+  const [setModalType, setConfirmationValues] = useModals((state) => [
+    state.setModalType,
+    state.setConfirmationValues,
+  ]);
 
   const routerAddress = getRouterAddress(props.chainId);
   const needToken1Allowance =
@@ -359,17 +356,22 @@ const AddModal = ({ value, chainId }: Props) => {
           zIndex: "10",
         }}
       >
-        <img
-          src={SettingsIcon}
-          height="30px"
-          style={{
-            cursor: "pointer",
-            zIndex: "5",
-          }}
+        <div
+          role="button"
+          tabIndex={0}
           onClick={() => {
             setOpenSettings(!openSettings);
           }}
-        />
+        >
+          <img
+            src={SettingsIcon}
+            height="30px"
+            style={{
+              cursor: "pointer",
+              zIndex: "5",
+            }}
+          />
+        </div>
       </div>
       <div className="fields">
         <div className="field">

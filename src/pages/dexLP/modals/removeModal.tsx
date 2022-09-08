@@ -229,7 +229,7 @@ interface Props {
   chainId?: number;
   account?: string;
 }
-const RemoveModal = ({ value, onClose, chainId, account }: Props) => {
+const RemoveModal = ({ value, chainId }: Props) => {
   const [percentage, setPercentage] = useState("1");
 
   const [slippage, setSlippage] = useState("1");
@@ -288,15 +288,19 @@ const RemoveModal = ({ value, onClose, chainId, account }: Props) => {
           zIndex: "10",
         }}
       >
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            setOpenSettings(!openSettings);
+          }}
+        ></div>
         <img
           src={SettingsIcon}
           height="30px"
           style={{
             cursor: "pointer",
             zIndex: "5",
-          }}
-          onClick={() => {
-            setOpenSettings(!openSettings);
           }}
         />
       </div>

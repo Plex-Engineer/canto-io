@@ -2,9 +2,9 @@ import { CantoMainnet, NodeAddresses } from "cantoui";
 import { ethers } from "ethers";
 
 export function addNetwork() {
-  //@ts-ignore
-  window.ethereum
-    .request({
+  try {
+    //@ts-ignore
+    window.ethereum.request({
       method: "wallet_addEthereumChain",
       params: [
         {
@@ -15,14 +15,14 @@ export function addNetwork() {
             symbol: "CANTO",
             decimals: 18,
           },
-          rpcUrls: [NodeAddresses.CantoMainnet.ChandraRPC],
+          rpcUrls: [NodeAddresses.CantoMainnet.Plex],
           blockExplorerUrls: [CantoMainnet.blockExplorerUrl],
         },
       ],
-    })
-    .catch((error: any) => {
-      console.log(error);
     });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export async function getChainIdandAccount(): Promise<string[] | undefined[]> {
@@ -68,7 +68,6 @@ export async function getCantoAddressFromMetaMask(address: string | undefined) {
       },
     }
   );
-  console.log("setting canto address");
   return (await result.json()).cosmos_address;
 }
 

@@ -1,13 +1,8 @@
 import { useCalls, useEtherBalance } from "@usedapp/core";
-import { BigNumber, Contract, ethers } from "ethers";
+import { BigNumber, Contract } from "ethers";
 import { formatUnits, formatEther } from "ethers/lib/utils";
 import { PAIR, TESTPAIRS, MAINPAIRS } from "../config/pairs";
-import {
-  TOKENS as ALLTOKENS,
-  ADDRESSES,
-  CantoTestnet,
-  CantoMainnet,
-} from "cantoui";
+import { TOKENS as ALLTOKENS, ADDRESSES, CantoTestnet } from "cantoui";
 import { cERC20Abi, ERC20Abi, routerAbi } from "global/config/abi";
 
 export interface AllPairInfo {
@@ -41,6 +36,37 @@ export interface AllPairInfo {
     LPtoken: string;
   };
 }
+export const emptyPairInfo = {
+  basePairInfo: MAINPAIRS[0],
+  totalSupply: {
+    totalLP: "",
+    tvl: "",
+    token1: "",
+    token2: "",
+    //ratio is token1/token2
+    ratio: 0,
+  },
+  userSupply: {
+    totalLP: "",
+    token1: "",
+    token2: "",
+    percentOwned: 0,
+  },
+  balances: {
+    token1: "",
+    token2: "",
+  },
+  prices: {
+    //prices are in terms of Note for 1 unit of token (scaled by decimals)
+    token1: "",
+    token2: "",
+  },
+  allowance: {
+    token1: "",
+    token2: "",
+    LPtoken: "",
+  },
+};
 const useTokens = (
   account: string | undefined,
   chainId: number | undefined
@@ -263,6 +289,7 @@ const useTokens = (
       return moreData;
     });
   }
+  return undefined;
 };
 
 export default useTokens;

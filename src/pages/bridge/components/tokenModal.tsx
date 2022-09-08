@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import backBtn from "../../../assets/back-btn.svg";
-import emptyToken from "assets/empty.svg";
+import { NativeGTokens } from "../hooks/useCosmosTokens";
+import { selectedEmptyToken } from "../stores/tokens";
 
 const Container = styled.div`
   display: flex;
@@ -93,28 +94,23 @@ const Container = styled.div`
 `;
 
 interface Props {
-  onClose: (value?: any) => void;
-  tokens: any[];
+  onClose: (value?: NativeGTokens) => void;
+  tokens: NativeGTokens[] | undefined;
 }
 
 const TokenModal = (props: Props) => {
   return (
     <Container>
       <header>
-        <img
+        <div
+          role="button"
+          tabIndex={0}
           onClick={() => {
-            props.onClose({
-              data: {
-                icon: emptyToken,
-                name: "select token",
-                address: "0x0412C7c846bb6b7DC462CF6B453f76D8440b2609",
-              },
-              allowance: -1,
-              balanceOf: -1,
-            });
+            props.onClose(selectedEmptyToken);
           }}
-          src={backBtn}
-        />
+        >
+          <img src={backBtn} />
+        </div>
         <h1>select a token</h1>
         <span
           style={{
@@ -130,8 +126,10 @@ const TokenModal = (props: Props) => {
         placeholder="type name or paste address..."
       /> */}
       <div className="token-list">
-        {props.tokens.map((token) => (
+        {props.tokens?.map((token) => (
           <div
+            role="button"
+            tabIndex={0}
             key={token.data.icon}
             className="token-item"
             onClick={() => {

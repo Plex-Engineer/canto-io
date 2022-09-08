@@ -10,7 +10,6 @@ export const GenPubKey = () => {
 
   return (
     <p
-      hidden={networkInfo.hasPubKey}
       style={{
         color: "#b73d3d",
         fontWeight: "bold",
@@ -19,6 +18,8 @@ export const GenPubKey = () => {
     >
       please{" "}
       <a
+        role="button"
+        tabIndex={0}
         style={{ color: "red", textDecoration: "underline", cursor: "pointer" }}
         onClick={() => {
           if (Number(networkInfo.chainId) != CantoMainnet.chainId) {
