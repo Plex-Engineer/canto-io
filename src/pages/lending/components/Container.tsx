@@ -72,7 +72,8 @@ export const Container = styled.div`
         width: 100%;
       }
       table {
-        width: 500px;
+        min-width: 600px;
+        width: 100%;
       }
     }
   }
