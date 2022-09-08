@@ -1,5 +1,4 @@
 import { useEthers } from "@usedapp/core";
-import { NavBar } from "../packages/src";
 import { getAccountBalance } from "global/utils/walletConnect/addCantoToWallet";
 import { useEffect, useState } from "react";
 import { useNetworkInfo } from "global/stores/networkInfo";
@@ -7,9 +6,12 @@ import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import logo from "./../../assets/logo.svg";
 import { useLocation } from "react-router-dom";
 import { getBaseTokenName } from "global/utils/walletConnect/getTokenSymbol";
+import { useAlert, NavBar } from "cantoui";
+import { GenPubKey } from "./genPubKey";
 
 export const CantoNav = () => {
   const netWorkInfo = useNetworkInfo();
+  const alert = useAlert();
   const { activateBrowserWallet, account, chainId } = useEthers();
   const location = useLocation();
   const [tokenName, setTokenName] = useState("");
@@ -50,6 +52,17 @@ export const CantoNav = () => {
     getBalance();
   }, [netWorkInfo.account, netWorkInfo.chainId]);
 
+  useEffect(() => {
+    if (!netWorkInfo.hasPubKey) {
+      alert.show("Failure", <GenPubKey />);
+    } else if (!netWorkInfo.account) {
+      alert.show("Warning", <p> please connect your wallet to use canto</p>);
+    } else {
+      alert.close();
+    }
+    getBalance();
+  }, [netWorkInfo.account, netWorkInfo.chainId, netWorkInfo.hasPubKey]);
+
   const pageList = [
     {
       name: "bridge",
@@ -81,7 +94,7 @@ export const CantoNav = () => {
       }}
       chainId={Number(netWorkInfo.chainId)}
       account={netWorkInfo.account ?? ""}
-      isConnected={netWorkInfo.account ? true : false}
+      isConnected={!!netWorkInfo.account}
       balance={netWorkInfo.balance}
       currency={tokenName}
       logo={logo}

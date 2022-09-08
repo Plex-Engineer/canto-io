@@ -4,12 +4,12 @@ import Popup from "reactjs-popup";
 import { useState } from "react";
 import TokenModal from "../components/tokenModal";
 import { useTokenStore } from "../stores/tokens";
-import { GTokens } from "../hooks/useGravityTokens";
+import { NativeGTokens } from "../hooks/useCosmosTokens";
 
 interface ITokenSelect {
-  activeToken: GTokens;
-  tokens: GTokens[] | undefined;
-  onSelect: (value: any) => void;
+  activeToken: NativeGTokens;
+  tokens: NativeGTokens[] | undefined;
+  onSelect: (value: NativeGTokens | undefined) => void;
 }
 
 export const StyledPopup = styled(Popup)`
@@ -28,10 +28,7 @@ export const StyledPopup = styled(Popup)`
 `;
 export const TokenWallet = ({ onSelect, tokens }: ITokenSelect) => {
   const [isOpen, setOpen] = useState(false);
-  const [activeToken, setActiveToken] = useTokenStore((state) => [
-    state.selectedToken,
-    state.setSelectedToken,
-  ]);
+  const [activeToken] = useTokenStore((state) => [state.selectedToken]);
 
   const Box = styled.div`
     background-color: #1c1c1c;

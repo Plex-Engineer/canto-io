@@ -8,12 +8,11 @@ import {
 interface IWallet {
   image?: string;
   name: string;
-  onSelect?: (value: any) => void;
   networkSwitch: number;
 }
 
 export const ImageButton = ({ image, name, networkSwitch }: IWallet) => {
-  const { activateBrowserWallet, switchNetwork } = useEthers();
+  const { activateBrowserWallet } = useEthers();
   const networkInfo = useNetworkInfo();
 
   return (
