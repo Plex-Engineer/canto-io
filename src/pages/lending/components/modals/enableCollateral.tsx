@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { useToken } from "../../providers/activeTokenContext";
 import {
   Details,
   useEnterMarkets,
@@ -8,6 +7,7 @@ import {
 import { useEffect } from "react";
 import { DisabledButton } from "../reactiveButton";
 import LoadingModal from "../modals/loadingModal";
+import useModalStore from "pages/lending/stores/useModals";
 const Container = styled.div`
   background-color: #040404;
   padding: 2rem;
@@ -101,11 +101,9 @@ interface Props {
 }
 
 const CollatModal = (props: Props) => {
-  const tokenState = useToken();
-  // console.log("token is this ", tokenState);
-
-  const token = tokenState[0].token;
-  const stats = tokenState[0].stats;
+  const modalStore = useModalStore();
+  const stats: any = modalStore.stats;
+  const token: any = modalStore.activeToken;
 
   const details: Details = {
     name: token.data.underlying.symbol,

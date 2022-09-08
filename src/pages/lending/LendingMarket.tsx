@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useNotifications, Notification } from "@usedapp/core";
 import { useState, useEffect } from "react";
 import LendingTable from "./components/lendingTable";
-import { useSetToken } from "./providers/activeTokenContext";
 import ReactTooltip from "react-tooltip";
 import {
   SupplyRow,
@@ -25,12 +24,9 @@ import { useNetworkInfo } from "global/stores/networkInfo";
 import { Mixpanel } from "mixpanel";
 import { formatBalance, noteSymbol } from "global/utils/utils";
 import { CantoMainnet } from "cantoui";
+import useModalStore from "./stores/useModals";
 
 const LendingMarket = () => {
-  //this is used to check and set the lending modal is open or not
-  const [isOpen, setIsOpen] = useState(false);
-  //this is used to set the kind of modal to be opened
-  const [modalType, setModalType] = useState<ModalType>(ModalType.LENDING);
   //intialize network store
   const networkInfo = useNetworkInfo();
 
@@ -38,10 +34,9 @@ const LendingMarket = () => {
   const [borrowBalance, setborrowBalance] = useState("00.00");
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);
+  const modalStore = useModalStore();
 
   useEffect(() => {
-    ReactTooltip.rebuild();
-
     notifications.forEach((item) => {
       if (
         item.type == "transactionStarted" &&
@@ -131,32 +126,23 @@ const LendingMarket = () => {
         });
       }
     });
-  }, [notifications]);
+  }, [notifications, notifs]);
 
   //this is used to generate some statistics about the token from the getMarkets
   Mixpanel.events.pageOpened("Lending Market", networkInfo.account);
-  //this is used to set the active token for the context
-  const setToken = useSetToken();
 
   const allData = useTokens(networkInfo.account, Number(networkInfo.chainId));
   const tokens = allData?.LMTokens;
   const stats = allData?.balances;
-  const walletBalance = stats?.balance;
 
-  function openModalLending() {
-    setModalType(ModalType.LENDING);
-    setIsOpen(true);
-  }
+  useEffect(() => {
+    setborrowBalance(stats?.totalBorrow?.toFixed(2) ?? "000.00");
+    setSupplyBalance(stats?.totalSupply?.toFixed(2) ?? "000.00");
+    modalStore.setBalance(allData?.balances.balance);
+    modalStore.setStats(allData?.balances);
+    ReactTooltip.rebuild();
+  }, [stats?.totalBorrow, stats?.totalSupply, tokens?.length]);
 
-  function openBalance() {
-    setModalType(ModalType.BALANCE);
-    setIsOpen(true);
-  }
-
-  function openModalBorrow() {
-    setModalType(ModalType.BORROW);
-    setIsOpen(true);
-  }
   const borrowPercentage = stats?.totalBorrowLimitUsed
     ? (stats?.totalBorrowLimitUsed / (stats?.totalBorrowLimit ?? 0)) * 100
     : 0;
@@ -182,9 +168,8 @@ const LendingMarket = () => {
                     collaterable={Number(token.collateralFactor) > 0}
                     key={token.data.address + "supplying"}
                     onClick={() => {
-                      setToken({ token, stats });
-
-                      openModalLending();
+                      modalStore.setActiveToken(token);
+                      modalStore.open(ModalType.LENDING);
                     }}
                     assetIcon={token.data.underlying.icon}
                     assetName={token.data.underlying.symbol}
@@ -196,7 +181,10 @@ const LendingMarket = () => {
                     collateral={token.collateral}
                     rewards={token.rewards}
                     onToggle={() => {
-                      setToken({ token, stats });
+                      modalStore.setActiveToken(token);
+                      token.collateral
+                        ? modalStore.open(ModalType.DECOLLATERAL)
+                        : modalStore.open(ModalType.COLLATERAL);
                     }}
                   />
                 ) : null
@@ -239,9 +227,9 @@ const LendingMarket = () => {
                   <BorrowedRow
                     key={token.data.address + "borrowed"}
                     onClick={() => {
-                      setToken({ token, stats });
+                      modalStore.setActiveToken(token);
 
-                      openModalBorrow();
+                      modalStore.open(ModalType.BORROW);
                     }}
                     assetIcon={token.data.underlying.icon}
                     assetName={token.data.underlying.symbol}
@@ -255,7 +243,7 @@ const LendingMarket = () => {
                       100
                     }
                     onToggle={() => {
-                      setToken({ token, stats });
+                      modalStore.setActiveToken(token);
                     }}
                   />
                 ) : null
@@ -296,8 +284,11 @@ const LendingMarket = () => {
                   <SupplyRow
                     collaterable={Number(token.collateralFactor) > 0}
                     onClick={() => {
-                      setToken({ token: token, stats: stats });
-                      openModalLending();
+                      modalStore.setActiveToken(token);
+                      modalStore.open(ModalType.LENDING);
+                      console.log(
+                        "🚀 ~ file: LendingMarket.tsx ~ line 283 ~ SupplyTable ~   modalStore.open(ModalType.LENDING);"
+                      );
                     }}
                     key={token.data.address + "supply"}
                     assetIcon={token.data.underlying.icon}
@@ -308,7 +299,10 @@ const LendingMarket = () => {
                     symbol={token.data.underlying.symbol}
                     collateral={token.collateral}
                     onToggle={() => {
-                      setToken({ token, stats });
+                      modalStore.setActiveToken(token);
+                      token.collateral
+                        ? modalStore.open(ModalType.DECOLLATERAL)
+                        : modalStore.open(ModalType.COLLATERAL);
                     }}
                   />
                 ) : null
@@ -346,8 +340,8 @@ const LendingMarket = () => {
                 !token.inBorrowMarket && !token.data.underlying.isLP ? (
                   <BorrowingRow
                     onClick={() => {
-                      setToken({ token, stats });
-                      openModalBorrow();
+                      modalStore.setActiveToken(token);
+                      modalStore.open(ModalType.BORROW);
                     }}
                     key={token.data.address + "borrowing"}
                     assetIcon={token.data.underlying.icon}
@@ -357,7 +351,7 @@ const LendingMarket = () => {
                     symbol={token.data.underlying.symbol}
                     liquidity={Number(token.liquidity)}
                     onToggle={() => {
-                      setToken({ token, stats });
+                      modalStore.setActiveToken(token);
                     }}
                   />
                 ) : null
@@ -386,35 +380,18 @@ const LendingMarket = () => {
   //and this only updates if the account changes (logs in or out)
 
   useEffect(() => {
-    setborrowBalance(stats?.totalBorrow?.toFixed(2) ?? "000.00");
-    setSupplyBalance(stats?.totalSupply?.toFixed(2) ?? "000.00");
-    ReactTooltip.rebuild();
-
-    // console.log(stats?.totalBorrow.toFixed(6))
-  }, [tokens]);
-
-  useEffect(() => {
     ReactTooltip.rebuild();
   });
 
   return (
     <Container className="lendingMarket">
-      <ReactTooltip id="foo" />
-
-      <ModalManager
-        isOpen={isOpen}
-        modalType={modalType}
-        onClose={() => {
-          setIsOpen(false);
-        }}
-        data={walletBalance}
-      />
+      <ModalManager isOpen={modalStore.currentModal != ModalType.NONE} />
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
         {Number(networkInfo.chainId) == CantoMainnet.chainId ? (
           <Button
             onClick={() => {
               if (networkInfo.account) {
-                openBalance();
+                modalStore.open(ModalType.BALANCE);
               }
             }}
             style={{ width: "15rem", alignSelf: "right" }}
@@ -457,19 +434,19 @@ const LendingMarket = () => {
         trigger={
           <TinyTable>
             {/* <div className="tables">
-            <div className="table">
-              <h1>Assets</h1>
-              <p>{supplyBalance}</p>
-              <p>apy:23%</p>
-              <p>$37</p>
-            </div>
-            <div className="table alt">
-              <h1>Liabilities</h1>
-              <p>{borrowBalance}</p>
-              <p>apy:21%</p>
-              <p>$23</p>
-            </div>
-          </div> */}
+              <div className="table">
+                <h1>Assets</h1>
+                <p>{supplyBalance}</p>
+                <p>apy:23%</p>
+                <p>$37</p>
+              </div>
+              <div className="table alt">
+                <h1>Liabilities</h1>
+                <p>{borrowBalance}</p>
+                <p>apy:21%</p>
+                <p>$23</p>
+              </div>
+            </div> */}
             <div>
               <p>borrow limit</p>
             </div>
@@ -654,7 +631,6 @@ const SpecialTabs = () => {
       cursor: pointer;
     }
   `;
-  const [showSupply, setShowSupply] = useState(true);
 
   return (
     <TabBar>

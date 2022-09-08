@@ -1,5 +1,5 @@
 import { useEthers } from "@usedapp/core";
-import { NavBar } from "cantoui";
+import { NavBar } from "../packages/src";
 import { getAccountBalance } from "global/utils/walletConnect/addCantoToWallet";
 import { useEffect, useState } from "react";
 import { useNetworkInfo } from "global/stores/networkInfo";
@@ -65,7 +65,7 @@ export const CantoNav = () => {
     },
     {
       name: "lp interface",
-      link: "/lpinterface",
+      link: "/lp",
     },
     {
       name: "staking",

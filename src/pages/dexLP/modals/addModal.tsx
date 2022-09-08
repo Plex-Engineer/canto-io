@@ -6,7 +6,12 @@ import { useEffect, useState } from "react";
 import LoadingModal from "./loadingModal";
 import SettingsIcon from "assets/settings.svg";
 import IconPair from "../components/iconPair";
-import { getTokenAFromB, getTokenBFromA } from "pages/dexLP/utils/utils";
+import {
+  getToken1Limit,
+  getToken2Limit,
+  getTokenAFromB,
+  getTokenBFromA,
+} from "pages/dexLP/utils/utils";
 import useModals, { ModalType } from "../hooks/useModals";
 import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
 import { truncateNumber } from "global/utils/utils";
@@ -279,7 +284,7 @@ export const PopIn = styled.div<showProps>`
   left: 0;
   z-index: 1;
 `;
-const AddModal = ({ value, onClose, chainId, account }: Props) => {
+const AddModal = ({ value, chainId }: Props) => {
   const [value1, setValue1] = useState("");
   const [value2, setValue2] = useState("");
   const [slippage, setSlippage] = useState("1");
@@ -287,31 +292,6 @@ const AddModal = ({ value, onClose, chainId, account }: Props) => {
   const [token1AllowanceStatus, setToken1AllowanceStatus] = useState("None");
   const [token2AllowanceStatus, setToken2AllowanceStatus] = useState("None");
   const [openSettings, setOpenSettings] = useState(false);
-
-  function getToken1Limit() {
-    if (
-      Number(value.balances.token2) * value.totalSupply.ratio >
-      Number(value.balances.token1)
-    ) {
-      return truncateNumber(value.balances.token1);
-    } else {
-      return truncateNumber(
-        (Number(value.balances.token2) * value.totalSupply.ratio).toString()
-      );
-    }
-  }
-  function getToken2Limit() {
-    if (
-      Number(value.balances.token1) / value.totalSupply.ratio >
-      Number(value.balances.token2)
-    ) {
-      return truncateNumber(value.balances.token2);
-    } else {
-      return truncateNumber(
-        (Number(value.balances.token1) / value.totalSupply.ratio).toString()
-      );
-    }
-  }
 
   return (
     <Container>
@@ -398,7 +378,13 @@ const AddModal = ({ value, onClose, chainId, account }: Props) => {
             icon={value.basePairInfo.token1.icon}
             remaining={Number(value.balances.token1)}
             balance={Number(value.balances.token1)}
-            limit={Number(getToken1Limit())}
+            limit={Number(
+              getToken1Limit(
+                Number(value.balances.token1),
+                Number(value.balances.token2),
+                value.totalSupply.ratio
+              )
+            )}
             placeholder="0.00"
             value={value1}
             onChange={(val) => {
@@ -420,7 +406,13 @@ const AddModal = ({ value, onClose, chainId, account }: Props) => {
             token={value.basePairInfo.token2.symbol}
             remaining={Number(value.balances.token2)}
             balance={Number(value.balances.token2)}
-            limit={Number(getToken2Limit())}
+            limit={Number(
+              getToken2Limit(
+                Number(value.balances.token1),
+                Number(value.balances.token2),
+                value.totalSupply.ratio
+              )
+            )}
             placeholder="0.00"
             value={value2}
             onChange={(val) => {

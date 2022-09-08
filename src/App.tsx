@@ -9,7 +9,8 @@ import {
   ScanLine,
   ScanlinesOverlay,
   StaticNoiseOverlay,
-} from "cantoui";
+} from "./global/packages/src";
+
 import { CantoNav } from "global/components/cantoNav";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -20,6 +21,7 @@ import Staking from "pages/staking/Staking";
 import { BalanceSheet } from "pages/lending/balanceSheet/BalanceSheet";
 import BridgingPage from "pages/bridge/Bridging";
 import { useCoingeckoTokenPrice } from "@usedapp/coingecko";
+import { Footer } from "global/components/Footer";
 // import landing from "pages/landing_page/index.html"
 
 //Styling
@@ -36,11 +38,11 @@ function App() {
   return (
     <React.Fragment>
       <ToastContainer />
+      <StaticNoiseOverlay />
+      <ScanlinesOverlay />
+      <ScanLine />
+      <Overlay />
       <Router>
-        <StaticNoiseOverlay />
-        <ScanlinesOverlay />
-        <ScanLine />
-        <Overlay />
         <Container className="App">
           <CantoNav />
           <GlobalStyle />
@@ -61,6 +63,7 @@ function App() {
             <Route path="/staking" key={"staking"} element={<Staking />} />
           </Routes>
         </Container>
+        <Footer />
       </Router>
     </React.Fragment>
   );

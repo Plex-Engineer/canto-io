@@ -6,8 +6,8 @@ import { Details, TrasanctionType } from "../BorrowLimits";
 import { TransactionStatus } from "@usedapp/core";
 import { InputState, ReactiveButton } from "../reactiveButton";
 import LoadingModal from "./loadingModal";
-import { useToken } from "pages/lending/providers/activeTokenContext";
 import { formatBalance } from "global/utils/utils";
+import useModalStore from "pages/lending/stores/useModals";
 
 //STYLING
 export const LoadingOverlay = styled.div`
@@ -93,9 +93,9 @@ interface IProps {
 }
 
 const SupplyModal = ({ onClose }: IProps) => {
-  const tokenState = useToken();
-  const token = tokenState[0].token;
-  const stats = tokenState[0].stats;
+  const modalStore = useModalStore();
+  const stats: any = modalStore.stats;
+  const token: any = modalStore.activeToken;
   const [transaction, setTransaction] = useState<TransactionStatus>();
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isMax, setMax] = useState(false);

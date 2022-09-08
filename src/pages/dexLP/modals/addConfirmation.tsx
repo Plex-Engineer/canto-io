@@ -15,7 +15,10 @@ import {
   useAddLiquidityCANTO,
 } from "../hooks/useTransactions";
 import { truncateNumber } from "global/utils/utils";
-import { getCurrentBlockTimestamp } from "../utils/utils";
+import {
+  calculateExpectedShareofLP,
+  getCurrentBlockTimestamp,
+} from "../utils/utils";
 import { routerAbi } from "global/config/abi";
 
 const Container = styled.div`
@@ -153,18 +156,6 @@ interface AddConfirmationProps {
   chainId?: number;
   account?: string;
   expectedLP: string;
-}
-
-function calculateExpectedShareofLP(
-  expectedLPOut: string,
-  currentLP: string,
-  totalLP: string
-) {
-  return (
-    ((Number(expectedLPOut) + Number(currentLP)) /
-      (Number(expectedLPOut) + Number(totalLP))) *
-    100
-  );
 }
 
 const AddLiquidityButton = (props: AddConfirmationProps) => {
