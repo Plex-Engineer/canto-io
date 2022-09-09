@@ -74,6 +74,10 @@ const Container = styled.div`
     line-height: 120%;
     color: #cdcdcd;
   }
+
+  @media (max-width: 1000px) {
+    width: 100%;
+  }
 `;
 
 const Button = styled.button`
