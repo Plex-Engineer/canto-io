@@ -28,16 +28,8 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
-::-webkit-scrollbar {
-  width: 6px;
-}
 
-/* Track */
-::-webkit-scrollbar-track {
-  background: #151515;
-}
-
-/* Handle */
+// /* Handle */
 ::-webkit-scrollbar-thumb {
   box-shadow: inset 2 2 5px var(--primary-color);
   border-radius: 6px;
@@ -45,9 +37,23 @@ input[type="number"] {
   background: var(--primary-color);
 }
 
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #151515;
+}
+
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #07e48c;
+}
+
+:hover::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
 }
 .App {
   background: repeating-linear-gradient(
