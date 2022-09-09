@@ -35,7 +35,7 @@ const LendingMarket = () => {
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);
   const modalStore = useModalStore();
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 1000);
 
   function handleWindowSizeChange() {
     setIsMobile(window.innerWidth <= 1000);
