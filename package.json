@@ -1,6 +1,6 @@
 {
-  "name": "canto-bridge",
-  "description": "This is a bridge application.",
+  "name": "canto-mono",
+  "description": "This project consists of all the first party supported apps for canto network.",
   "version": "0.3.3",
   "private": true,
   "author": {
