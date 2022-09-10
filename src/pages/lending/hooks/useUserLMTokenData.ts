@@ -2,9 +2,21 @@ import { formatEther } from "@ethersproject/units";
 import { CallResult, useCalls, useEtherBalance } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { ethers } from "ethers";
-import { CTOKENS, CTOKEN, CantoTestnet, ADDRESSES } from "cantoui";
+import {
+  CTOKENS,
+  CTOKEN,
+  CantoTestnet,
+  ADDRESSES,
+  CantoMainnet,
+} from "cantoui";
 import { cTokensBase, mainnetBasecTokens } from "../config/lendingMarketTokens";
-import { UserRewards, LMToken, UserLMPosition } from "../config/interfaces";
+import {
+  UserRewards,
+  LMToken,
+  UserLMPosition,
+  UserLMTokenDetails,
+  LMTokenDetails1,
+} from "../config/interfaces";
 import {
   cERC20Abi,
   comptrollerAbi,
@@ -14,48 +26,21 @@ import {
 
 const formatUnits = ethers.utils.formatUnits;
 
-export function useTokens(
+export function useUserLMTokenData(
+  LMTokens: LMTokenDetails1[],
   account: string | undefined,
-  chainId: number
-):
-  | {
-      LMTokens: LMToken[];
-      balances: UserLMPosition;
-    }
-  | undefined {
-  const tokens: CTOKEN[] =
-    chainId == CantoTestnet.chainId ? cTokensBase : mainnetBasecTokens;
+  chainId?: string
+): {
+  LMTokens: UserLMTokenDetails[];
+  balances: UserLMPosition;
+} {
+  const onCanto =
+    Number(chainId) == CantoMainnet.chainId ||
+    Number(chainId) == CantoTestnet.chainId;
   const address =
-    chainId == CantoTestnet.chainId
+    Number(chainId) == CantoTestnet.chainId
       ? ADDRESSES.testnet
       : ADDRESSES.cantoMainnet;
-
-  const secondsPerBlock = 5.8;
-  const blocksPerDay = 86400 / secondsPerBlock;
-  const daysPerYear = 365;
-
-  function getAPY(blockRate: number): number {
-    return (
-      (Math.pow(Number(blockRate) * blocksPerDay + 1, daysPerYear) - 1) * 100
-    );
-  }
-
-  function getDistributionAPY(
-    compSpeed: number,
-    tokensupply: number,
-    tokenPrice: number,
-    priceOfCanto: number
-  ) {
-    // ((compspeed*blocksperyear)/LPTOKEN SUPPLY)*PRICEOF CANTO/PRICEOFLPTOKEN
-    if (tokensupply == 0 || tokenPrice == 0) {
-      return 0;
-    }
-    return (
-      100 *
-      ((compSpeed * (blocksPerDay * daysPerYear)) / tokensupply) *
-      (priceOfCanto / tokenPrice)
-    );
-  }
 
   const bal = formatEther(useEtherBalance(account) ?? 0);
   //comptroller contract
@@ -63,88 +48,56 @@ export function useTokens(
   //canto contract
   const priceFeedContract = new Contract(address?.PriceFeed, routerAbi);
   const calls =
-    tokens?.map((token) => {
-      const ERC20Contract = new Contract(token.underlying.address, ERC20Abi);
+    LMTokens?.map((token) => {
+      const ERC20Contract = new Contract(
+        token.data.underlying.address,
+        ERC20Abi
+      );
 
       //canto contract
-      const cERC20Contract = new Contract(token.address, cERC20Abi);
+      const cERC20Contract = new Contract(token.data.address, cERC20Abi);
       return [
+        //0
         {
           contract: cERC20Contract,
           method: "balanceOf",
           args: [account],
         },
+        //1
         {
           contract: ERC20Contract,
           method: "balanceOf",
           args: [account],
         },
+        //2
         {
           contract: cERC20Contract,
           method: "borrowBalanceStored",
           args: [account],
         },
-        {
-          contract: cERC20Contract,
-          method: "getCash",
-          args: [],
-        },
-        {
-          contract: cERC20Contract,
-          method: "exchangeRateStored",
-          args: [],
-        },
-        {
-          contract: cERC20Contract,
-          method: "supplyRatePerBlock",
-          args: [],
-        },
-        {
-          contract: cERC20Contract,
-          method: "borrowRatePerBlock",
-          args: [],
-        },
+        //3
         {
           contract: ERC20Contract,
           method: "allowance",
-          args: [account, token.address],
+          args: [account, token.data.address],
         },
-        {
-          contract: comptroller,
-          method: "markets",
-          args: [token.address],
-        },
+        //4
         {
           contract: comptroller,
           method: "checkMembership",
-          args: [account, token.address],
+          args: [account, token.data.address],
         },
-        {
-          contract: priceFeedContract,
-          method: "getUnderlyingPrice",
-          args: [token.address],
-        },
-        {
-          contract: comptroller,
-          method: "compSupplySpeeds",
-          args: [token.address],
-        },
-        {
-          contract: comptroller,
-          method: "borrowCaps",
-          args: [token.address],
-        },
-        //13
+        //5
         {
           contract: comptroller,
           method: "compSupplierIndex",
-          args: [token.address, account],
+          args: [token.data.address, account],
         },
-        //14
+        //6
         {
           contract: comptroller,
           method: "compSupplyState",
-          args: [token.address],
+          args: [token.data.address],
         },
       ];
     }) ?? [];
@@ -156,19 +109,10 @@ export function useTokens(
       method: "compAccrued",
       args: [account],
     },
-    {
-      contract: priceFeedContract,
-      method: "getUnderlyingPrice",
-      args: [tokens?.find((token) => token.symbol == "cCANTO")?.address],
-    },
   ];
 
-  const results =
-    useCalls(typeof tokens == typeof CTOKENS ? globalCalls : []) ?? {};
-  if (account == undefined) {
-    return undefined;
-  }
-  const chuckSize = !tokens ? 0 : (results.length - 2) / tokens.length;
+  const results = useCalls(LMTokens && onCanto ? globalCalls : []) ?? {};
+  const chuckSize = !LMTokens ? 0 : (results.length - 1) / LMTokens.length;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let processedTokens: Array<any>;
   const array_chunks = (
@@ -178,72 +122,57 @@ export function useTokens(
     const rep = array.map((array) => array?.value);
     const chunks = [];
 
-    //array length minus 2, since we are ading the global functions that will increase the array size by 2
-    for (let i = 0; i < array.length - 2; i += chunk_size) {
+    //array length minus 1, since we are ading the global functions that will increase the array size by 1
+    for (let i = 0; i < array.length - 1; i += chunk_size) {
       chunks.push(rep.slice(i, i + chunk_size));
     }
     return chunks;
   };
-  if (!tokens) {
-    return undefined;
-  }
   if (chuckSize > 0 && results?.[0] != undefined && !results?.[0].error) {
     processedTokens = array_chunks(results, chuckSize);
     const LMTokens = processedTokens.map((tokenData, idx) => {
-      const cash: string = formatUnits(
-        tokenData[3][0],
-        tokens[idx].underlying.decimals
-      );
-      const price: string =
-        tokens[idx].symbol == "cNOTE" ||
-        tokens[idx].symbol == "cUSDC" ||
-        tokens[idx].symbol == "cUSDT"
-          ? "1"
-          : formatUnits(tokenData[10][0], 36 - tokens[idx].underlying.decimals);
-      const liquidity: string = formatUnits(
-        ethers.BigNumber.from(tokenData[3][0]).mul(tokenData[10][0]),
-        36
-      );
       const balanceOfC: string = formatUnits(
         tokenData[0][0],
-        tokens[idx].decimals
+        LMTokens[idx].data.decimals
       );
       const balanceOf: string =
-        tokens[idx].symbol === "cCANTO"
+        LMTokens[idx].data.symbol === "cCANTO"
           ? bal
           : ethers.utils.formatUnits(
               tokenData[1][0],
-              tokens[idx].underlying.decimals
+              LMTokens[idx].data.underlying.decimals
             );
-      const exchangeRate: string = formatUnits(
-        tokenData[4][0],
-        18 + tokens[idx].underlying.decimals - tokens[idx].decimals
+      const borrowBalance: string = formatUnits(
+        tokenData[2][0],
+        LMTokens[idx].data.underlying.decimals
       );
+      const inSupplyMarket: boolean = Number(balanceOfC) > 0;
+      const inBorrowMarket: boolean = Number(borrowBalance) > 0;
       const allowance: boolean =
-        tokens[idx].symbol === "cCANTO"
+        LMTokens[idx].data.symbol === "cCANTO"
           ? true
           : Number(
               ethers.utils.formatUnits(
-                tokenData[7][0],
-                tokens[idx].underlying.decimals
+                tokenData[3][0],
+                LMTokens[idx].data.underlying.decimals
               )
             ) > 0;
-      const collateralFactor: string = formatEther(tokenData[8][1]);
-      const isListed: boolean = tokenData[8][0];
-      const borrowBalance: string = formatUnits(
-        tokenData[2][0],
-        tokens[idx].underlying.decimals
+
+
+
+      const exchangeRate: string = formatUnits(
+        tokenData[4][0],
+        18 + LMTokens[idx].underlying.decimals - LMTokens[idx].decimals
       );
       const supplyBalance1: string = formatUnits(
         BigNumber.from(tokenData[4][0]).mul(tokenData[0][0]),
-        18 + tokens[idx].underlying.decimals
+        18 + LMTokens[idx].underlying.decimals
       );
       const supplyBalance: string = supplyBalance1.slice(
         0,
         supplyBalance1.indexOf(".") + tokens[idx].decimals + 1
       );
-      const inSupplyMarket: boolean = Number(balanceOfC) > 0;
-      const inBorrowMarket: boolean = Number(borrowBalance) > 0;
+
       const supplyBalanceinNote: string = (
         Number(supplyBalance) * Number(price)
       ).toFixed(18);

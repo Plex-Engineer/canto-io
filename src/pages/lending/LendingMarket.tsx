@@ -25,6 +25,8 @@ import { Mixpanel } from "mixpanel";
 import { formatBalance, noteSymbol } from "global/utils/utils";
 import { CantoMainnet } from "cantoui";
 import useModalStore from "./stores/useModals";
+import { useLMTokenData } from "./hooks/useLMTokenData";
+import { LMTokenDetails1 } from "./config/interfaces";
 
 const LendingMarket = () => {
   //intialize network store
@@ -134,6 +136,8 @@ const LendingMarket = () => {
   const allData = useTokens(networkInfo.account, Number(networkInfo.chainId));
   const tokens = allData?.LMTokens;
   const stats = allData?.balances;
+
+  const newData: LMTokenDetails1[] = useLMTokenData(networkInfo.chainId);
 
   useEffect(() => {
     setborrowBalance(stats?.totalBorrow?.toFixed(2) ?? "000.00");
