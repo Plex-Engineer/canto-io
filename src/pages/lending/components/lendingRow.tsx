@@ -8,7 +8,7 @@ interface SupplyProps {
   assetIcon: string;
   apy: string;
   distAPY: string;
-  wallet: number;
+  wallet: string;
   symbol?: string;
   collateral?: boolean;
   onClick?: () => void;

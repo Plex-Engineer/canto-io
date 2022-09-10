@@ -1,4 +1,9 @@
-import { UserRewards, LMToken, UserLMPosition } from "../config/interfaces";
+import {
+  UserLMPosition,
+  UserLMRewards,
+  EmptyUserRewards,
+  UserLMTokenDetails,
+} from "../config/interfaces";
 import create from "zustand";
 
 export enum ModalType {
@@ -18,12 +23,10 @@ interface ModalState {
   close: () => void;
   isOpen: (modal: ModalType) => boolean;
   redirect: (modal: ModalType) => void;
-  activeToken: LMToken | null;
-  setActiveToken: (token: LMToken | null) => void;
-  tokens: LMToken[] | undefined;
-  setTokens: (tokens: LMToken[] | undefined) => void;
-  balance: UserRewards | undefined;
-  setBalance: (balance: UserRewards | undefined) => void;
+  activeToken: UserLMTokenDetails | undefined;
+  setActiveToken: (token: UserLMTokenDetails) => void;
+  rewards: UserLMRewards;
+  setRewards: (rewards: UserLMRewards) => void;
   stats: UserLMPosition | undefined;
   setStats: (stats: UserLMPosition | undefined) => void;
 }
@@ -35,12 +38,10 @@ const useModalStore = create<ModalState>((set, get) => ({
   redirect: (modal) => {
     set({ currentModal: modal });
   },
-  activeToken: null,
+  activeToken: undefined,
   setActiveToken: (token) => set({ activeToken: token }),
-  tokens: undefined,
-  setTokens: (tokens) => set({ tokens }),
-  balance: undefined,
-  setBalance: (balance) => set({ balance }),
+  rewards: EmptyUserRewards,
+  setRewards: (rewards) => set({ rewards }),
   stats: undefined,
   setStats: (stats) => set({ stats }),
 }));

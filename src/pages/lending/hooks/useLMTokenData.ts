@@ -10,13 +10,13 @@ import {
   CantoMainnet,
 } from "cantoui";
 import { cTokensBase, mainnetBasecTokens } from "../config/lendingMarketTokens";
-import { LMTokenDetails1 } from "../config/interfaces";
+import { LMTokenDetails } from "../config/interfaces";
 import { cERC20Abi, comptrollerAbi, routerAbi } from "global/config/abi";
 
 const formatUnits = ethers.utils.formatUnits;
 const parseUnits = ethers.utils.parseUnits;
 
-export function useLMTokenData(chainId?: string): LMTokenDetails1[] {
+export function useLMTokenData(chainId?: string): LMTokenDetails[] {
   const onCanto =
     Number(chainId) == CantoMainnet.chainId ||
     Number(chainId) == CantoTestnet.chainId;
@@ -176,7 +176,7 @@ export function useLMTokenData(chainId?: string): LMTokenDetails1[] {
         Number(formatEther(results[results.length - 1]?.value[0]))
       );
 
-      const rust: LMTokenDetails1 = {
+      const rust: LMTokenDetails = {
         data: tokens?.[idx],
         cash: tokenData[0][0],
         exchangeRate: tokenData[1][0],

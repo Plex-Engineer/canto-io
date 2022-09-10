@@ -1,31 +1,5 @@
 import { BigNumber } from "ethers";
 
-export interface LMToken {
-  data: TokenData;
-  wallet: string;
-  balanceOf: string;
-  balanceOfC: string;
-  borrowBalance: string;
-  exchangeRate: string;
-  supplyBalance: string;
-  liquidity: string;
-  cash: string;
-  allowance: boolean;
-  collateralFactor: string;
-  inSupplyMarket: boolean;
-  inBorrowMarket: boolean;
-  supplyBalanceinNote: string;
-  borrowBalanceinNote: string;
-  collateral: boolean;
-  price: string;
-  supplyAPY: number;
-  borrowAPY: number;
-  isListed: boolean;
-  compSpeed: number;
-  distAPY: number;
-  borrowCap: string | number;
-  rewards: string;
-}
 export interface TokenData {
   symbol: string;
   name: string;
@@ -45,7 +19,7 @@ export interface Underlying {
   cTokenAddress: string;
 }
 
-export interface LMTokenDetails1 {
+export interface LMTokenDetails {
   data: TokenData;
   cash: BigNumber;
   exchangeRate: BigNumber;
@@ -58,7 +32,7 @@ export interface LMTokenDetails1 {
   borrowAPY: number;
   distAPY: number;
 }
-export interface UserLMTokenDetails extends LMTokenDetails1 {
+export interface UserLMTokenDetails extends LMTokenDetails {
   wallet?: string;
   balanceOf: BigNumber;
   balanceOfC: BigNumber;
@@ -70,36 +44,20 @@ export interface UserLMTokenDetails extends LMTokenDetails1 {
   inSupplyMarket: boolean;
   inBorrowMarket: boolean;
   collateral: boolean;
-  rewards: string;
+  rewards: BigNumber;
 }
 
 export interface UserLMPosition {
-  totalSupply: number;
-  totalBorrow: number;
-  totalBorrowLimit: number;
-  totalBorrowLimitUsed: number;
-  balance: UserRewards;
-}
-
-export interface UserRewards {
-  walletBalance: string | undefined;
-  price: string | undefined;
-  accrued: number;
-  cantroller: string;
-  wallet: string;
-}
-
-export interface BNUserLMPosition {
   totalSupply: BigNumber;
   totalBorrow: BigNumber;
   totalBorrowLimit: BigNumber;
-  rewards: BNUserRewards;
+  rewards: UserLMRewards;
 }
 
-export interface BNUserRewards {
+export interface UserLMRewards {
   walletBalance: BigNumber;
   price: BigNumber;
-  accrued: number;
+  accrued: BigNumber;
   cantroller: string;
   wallet?: string;
 }
@@ -115,7 +73,7 @@ export const EmptyUserLMDetails = {
   supplyBalanceinNote: BigNumber.from(0),
   borrowBalanceinNote: BigNumber.from(0),
   collateral: false,
-  rewards: "0",
+  rewards: BigNumber.from(0),
 };
 
 export const EmptyUserPosition = {
@@ -127,6 +85,6 @@ export const EmptyUserPosition = {
 export const EmptyUserRewards = {
   walletBalance: BigNumber.from(0),
   price: BigNumber.from(0),
-  accrued: 0,
+  accrued: BigNumber.from(0),
   cantroller: "",
 };

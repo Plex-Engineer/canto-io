@@ -6,7 +6,7 @@ import CollatModal from "./enableCollateral";
 import SupplyModal from "./supplyModal";
 import BorrowModal from ".//borrowModal";
 import { Mixpanel } from "mixpanel";
-import BalanceModal from "./balanceModal";
+import RewardsModal from "./rewardsModal";
 import useModalStore, { ModalType } from "pages/lending/stores/useModals";
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
@@ -56,11 +56,10 @@ interface Props {
 
 const ModalManager = ({ isOpen }: Props) => {
   const modalStore = useModalStore();
-  console.log(modalStore.currentModal);
 
   if (modalStore.currentModal !== ModalType.NONE && modalStore.activeToken) {
     Mixpanel.events.lendingMarketActions.modalInteraction(
-      modalStore.activeToken.wallet,
+      modalStore.activeToken.wallet ?? "",
       modalStore.currentModal.toString(),
       modalStore.activeToken.data.symbol,
       true
@@ -115,9 +114,9 @@ const ModalManager = ({ isOpen }: Props) => {
         <CollatModal onClose={modalStore.close} decollateralize />
       )}
       {modalStore.currentModal === ModalType.BALANCE && (
-        <BalanceModal
+        <RewardsModal
           // passin LMBalance to this
-          value={modalStore.balance}
+          rewardsObj={modalStore.rewards}
           onClose={modalStore.close}
         />
       )}

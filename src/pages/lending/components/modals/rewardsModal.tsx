@@ -5,8 +5,11 @@ import {
   getTransactionStatusString,
   noteSymbol,
   transactionStatusActions,
+  truncateNumber,
 } from "global/utils/utils";
 import { useClaim } from "pages/lending/hooks/useTransaction";
+import { UserLMRewards } from "pages/lending/config/interfaces";
+import { ethers } from "ethers";
 const Container = styled.div`
   background-color: #040404;
   height: 36rem;
@@ -109,11 +112,12 @@ const DisabledButton = styled(Button)`
   }
 `;
 interface Props {
-  value: any | undefined;
+  rewardsObj: UserLMRewards;
   onClose: () => void;
 }
-const BalanceModal = ({ value, onClose }: Props) => {
-  const { send, state } = useClaim(value.cantroller);
+const formatUnits = ethers.utils.formatUnits;
+const RewardsModal = ({ rewardsObj, onClose }: Props) => {
+  const { send, state } = useClaim(rewardsObj.cantroller);
 
   useEffect(() => {
     // console.log(enterState)
@@ -128,35 +132,46 @@ const BalanceModal = ({ value, onClose }: Props) => {
       <div className="logo">
         <img src={logo} height={30} />
       </div>
-      <p className="mainBalance">{Number(value.walletBalance).toFixed(2)}</p>
+      <p className="mainBalance">
+        {truncateNumber(formatUnits(rewardsObj.walletBalance, 18))}
+      </p>
       <p className="secondaryBalance">
         {noteSymbol}
-        {Number(value.price * value.walletBalance).toFixed(2)}
+        {truncateNumber(
+          formatUnits(rewardsObj.price.mul(rewardsObj.walletBalance), 36)
+        )}
       </p>
       <div className="balances">
         <div className="bal line">
           <p className="type">wallet balance</p>
-          <p className="value">{Number(value.walletBalance).toFixed(2)}</p>
+          <p className="value">
+            {truncateNumber(formatUnits(rewardsObj.walletBalance, 18))}
+          </p>
         </div>
         <div className="bal line">
           <p className="type">unclaimed balance</p>
-          <p className="value">{Number(value.accrued).toFixed(2)}</p>
+          <p className="value">
+            {truncateNumber(formatUnits(rewardsObj.accrued, 18))}
+          </p>
         </div>
         <div className="bal">
           <p className="type">value</p>
           <p className="value">
-            {noteSymbol} {Number(value.price * value.accrued).toFixed(2)}
+            {noteSymbol}{" "}
+            {truncateNumber(
+              formatUnits(rewardsObj.price.mul(rewardsObj.accrued), 36)
+            )}
           </p>
         </div>
       </div>
-      {Number(value.accrued) == 0 ? (
-        <DisabledButton>Nothing to claim</DisabledButton>
+      {Number(rewardsObj.accrued) == 0 ? (
+        <DisabledButton>nothing to claim</DisabledButton>
       ) : (
         <Button
           onClick={() => {
             if (state.status != "Mining" && state.status != "Success")
               // console.log(value.wallet)
-              send(value.wallet);
+              send(rewardsObj.wallet);
           }}
         >
           {getTransactionStatusString(
@@ -173,4 +188,4 @@ const BalanceModal = ({ value, onClose }: Props) => {
 
 // 'None' | 'PendingSignature' | 'Mining' | 'Success' | 'Fail' | 'Exception'
 
-export default BalanceModal;
+export default RewardsModal;

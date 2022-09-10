@@ -10,11 +10,9 @@ import {
   BorrowingRow,
   BorrowedRow,
   TransactionRow,
-  LoadingRow,
 } from "./components/lendingRow";
 
 import { ModalType, ModalManager } from "./components/modals/modalManager";
-import { useTokens } from "./hooks/useTokens";
 import { toast } from "react-toastify";
 import CypherText from "./components/CypherText";
 import { Details } from "./hooks/useTransaction";
@@ -22,20 +20,20 @@ import Popup from "reactjs-popup";
 import { Container, Button, Hero, TinyTable } from "./components/Container";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { Mixpanel } from "mixpanel";
-import { formatBalance, noteSymbol } from "global/utils/utils";
-import { CantoMainnet } from "cantoui";
+import { noteSymbol, truncateNumber } from "global/utils/utils";
 import useModalStore from "./stores/useModals";
 import { useLMTokenData } from "./hooks/useLMTokenData";
-import { LMTokenDetails1, UserLMTokenDetails } from "./config/interfaces";
+import { LMTokenDetails } from "./config/interfaces";
 import { useUserLMTokenData } from "./hooks/useUserLMTokenData";
 import { BigNumber } from "ethers";
+import { formatUnits } from "ethers/lib/utils";
 
 const LendingMarket = () => {
   //intialize network store
   const networkInfo = useNetworkInfo();
 
-  const [supplyBalance, setSupplyBalance] = useState("00.00");
-  const [borrowBalance, setborrowBalance] = useState("00.00");
+  const [supplyBalance, setSupplyBalance] = useState(BigNumber.from(0));
+  const [borrowBalance, setborrowBalance] = useState(BigNumber.from(0));
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);
   const modalStore = useModalStore();
@@ -135,32 +133,32 @@ const LendingMarket = () => {
   //this is used to generate some statistics about the token from the getMarkets
   Mixpanel.events.pageOpened("Lending Market", networkInfo.account);
 
-  const allData = useTokens(networkInfo.account, Number(networkInfo.chainId));
-  const tokens = allData?.LMTokens;
-  const stats = allData?.balances;
-
-  const newData: LMTokenDetails1[] = useLMTokenData(networkInfo.chainId);
+  const lmTokenData: LMTokenDetails[] = useLMTokenData(networkInfo.chainId);
   const { userLMTokens, position } = useUserLMTokenData(
-    newData,
+    lmTokenData,
     networkInfo.account,
     networkInfo.chainId
   );
-  console.log(userLMTokens, position);
-  useEffect(() => {
-    setborrowBalance(stats?.totalBorrow?.toFixed(2) ?? "000.00");
-    setSupplyBalance(stats?.totalSupply?.toFixed(2) ?? "000.00");
-    modalStore.setBalance(allData?.balances.balance);
-    modalStore.setStats(allData?.balances);
-    ReactTooltip.rebuild();
-  }, [stats?.totalBorrow, stats?.totalSupply, tokens?.length]);
 
-  const borrowPercentage = stats?.totalBorrowLimitUsed
-    ? (stats?.totalBorrowLimitUsed / (stats?.totalBorrowLimit ?? 0)) * 100
-    : 0;
+  //Useffect for calling data per block
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setborrowBalance(position.totalBorrow);
+      setSupplyBalance(position.totalSupply);
+      modalStore.setRewards(position.rewards);
+      modalStore.setStats(position);
+      ReactTooltip.rebuild();
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [position]);
+
+  const borrowPercentage = !position.totalBorrowLimit.isZero()
+    ? position.totalBorrow.mul(100).div(position.totalBorrowLimit)
+    : BigNumber.from(0);
 
   function SupplyingTable() {
     //this should prevent the table from showing up if there are not items to be displayed
-    if (tokens?.filter((token) => token.inSupplyMarket).length == 0)
+    if (userLMTokens?.filter((token) => token.inSupplyMarket).length == 0)
       return null;
 
     return (
@@ -171,43 +169,44 @@ const LendingMarket = () => {
           columns={["asset", "apr", "rewards", "balance", "collateral"]}
           isLending
         >
-          {tokens ? (
-            tokens
-              .map((token) =>
-                token.inSupplyMarket ? (
-                  <SupplyingRow
-                    collaterable={Number(token.collateralFactor) > 0}
-                    key={token.data.address + "supplying"}
-                    onClick={() => {
-                      modalStore.setActiveToken(token);
-                      modalStore.open(ModalType.LENDING);
-                    }}
-                    assetIcon={token.data.underlying.icon}
-                    assetName={token.data.underlying.symbol}
-                    apy={token.supplyAPY.toFixed(2)}
-                    distAPY={token.distAPY.toFixed(2)}
-                    wallet={formatBalance(token.supplyBalance)}
-                    balance={formatBalance(Number(token.supplyBalanceinNote))}
-                    symbol={token.data.underlying.symbol}
-                    collateral={token.collateral}
-                    rewards={token.rewards}
-                    onToggle={() => {
-                      modalStore.setActiveToken(token);
-                      token.collateral
-                        ? modalStore.open(ModalType.DECOLLATERAL)
-                        : modalStore.open(ModalType.COLLATERAL);
-                    }}
-                  />
-                ) : null
-              )
-              .sort((a, b) => {
-                return String(a?.props.symbol).localeCompare(b?.props.symbol);
-              })
-          ) : (
-            <tr>
-              <LoadingRow colSpan={5}>loading</LoadingRow>
-            </tr>
-          )}
+          {userLMTokens
+            .map((token) =>
+              token.inSupplyMarket ? (
+                <SupplyingRow
+                  collaterable={!token.collateralFactor.isZero()}
+                  key={token.data.address + "supplying"}
+                  onClick={() => {
+                    modalStore.setActiveToken(token);
+                    modalStore.open(ModalType.LENDING);
+                  }}
+                  assetIcon={token.data.underlying.icon}
+                  assetName={token.data.underlying.symbol}
+                  apy={token.supplyAPY.toFixed(2)}
+                  distAPY={token.distAPY.toFixed(2)}
+                  wallet={truncateNumber(
+                    formatUnits(
+                      token.supplyBalance,
+                      token.data.underlying.decimals
+                    )
+                  )}
+                  balance={truncateNumber(
+                    formatUnits(token.supplyBalanceinNote)
+                  )}
+                  symbol={token.data.underlying.symbol}
+                  collateral={token.collateral}
+                  rewards={truncateNumber(formatUnits(token.rewards))}
+                  onToggle={() => {
+                    modalStore.setActiveToken(token);
+                    token.collateral
+                      ? modalStore.open(ModalType.DECOLLATERAL)
+                      : modalStore.open(ModalType.COLLATERAL);
+                  }}
+                />
+              ) : null
+            )
+            .sort((a, b) => {
+              return String(a?.props.symbol).localeCompare(b?.props.symbol);
+            })}
         </LendingTable>
       </div>
     );
@@ -215,7 +214,7 @@ const LendingMarket = () => {
 
   function BorrowingTable() {
     //this should prevent the table from showing up if there are not items to be displayed
-    if (tokens?.filter((token) => token.inBorrowMarket).length == 0)
+    if (userLMTokens?.filter((token) => token.inBorrowMarket).length == 0)
       return null;
 
     return (
@@ -231,42 +230,41 @@ const LendingMarket = () => {
           columns={["asset", "apr/accrued", "balance", "% of limit"]}
           isLending={false}
         >
-          {tokens ? (
-            tokens
-              .map((token) =>
-                token.inBorrowMarket ? (
-                  <BorrowedRow
-                    key={token.data.address + "borrowed"}
-                    onClick={() => {
-                      modalStore.setActiveToken(token);
-
-                      modalStore.open(ModalType.BORROW);
-                    }}
-                    assetIcon={token.data.underlying.icon}
-                    assetName={token.data.underlying.symbol}
-                    apy={token.borrowAPY.toFixed(2)}
-                    balance={formatBalance(token.borrowBalanceinNote)}
-                    symbol={token.data.underlying.symbol}
-                    wallet={formatBalance(token.borrowBalance)}
-                    liquidity={
-                      (Number(token.borrowBalanceinNote) /
-                        (stats?.totalBorrowLimit ?? 0)) *
-                      100
-                    }
-                    onToggle={() => {
-                      modalStore.setActiveToken(token);
-                    }}
-                  />
-                ) : null
-              )
-              .sort((a, b) => {
-                return String(a?.props.symbol).localeCompare(b?.props.symbol);
-              })
-          ) : (
-            <tr>
-              <LoadingRow colSpan={4}>loading</LoadingRow>
-            </tr>
-          )}
+          {userLMTokens
+            .map((token) =>
+              token.inBorrowMarket ? (
+                <BorrowedRow
+                  key={token.data.address + "borrowed"}
+                  onClick={() => {
+                    modalStore.setActiveToken(token);
+                    modalStore.open(ModalType.BORROW);
+                  }}
+                  assetIcon={token.data.underlying.icon}
+                  assetName={token.data.underlying.symbol}
+                  apy={token.borrowAPY.toFixed(2)}
+                  balance={truncateNumber(
+                    formatUnits(token.borrowBalanceinNote)
+                  )}
+                  symbol={token.data.underlying.symbol}
+                  wallet={truncateNumber(
+                    formatUnits(
+                      token.borrowBalance,
+                      token.data.underlying.decimals
+                    )
+                  )}
+                  liquidity={token.borrowBalanceinNote
+                    .mul(100)
+                    .div(position.totalBorrowLimit)
+                    .toNumber()}
+                  onToggle={() => {
+                    modalStore.setActiveToken(token);
+                  }}
+                />
+              ) : null
+            )
+            .sort((a, b) => {
+              return String(a?.props.symbol).localeCompare(b?.props.symbol);
+            })}
         </LendingTable>
       </div>
     );
@@ -288,44 +286,37 @@ const LendingMarket = () => {
           columns={["asset", "apr", "wallet", "collateral"]}
           isLending
         >
-          {tokens ? (
-            tokens
-              .map((token) =>
-                !token.inSupplyMarket ? (
-                  <SupplyRow
-                    collaterable={Number(token.collateralFactor) > 0}
-                    onClick={() => {
-                      modalStore.setActiveToken(token);
-                      modalStore.open(ModalType.LENDING);
-                      console.log(
-                        "🚀 ~ file: LendingMarket.tsx ~ line 283 ~ SupplyTable ~   modalStore.open(ModalType.LENDING);"
-                      );
-                    }}
-                    key={token.data.address + "supply"}
-                    assetIcon={token.data.underlying.icon}
-                    assetName={token.data.underlying.symbol}
-                    apy={token.supplyAPY.toFixed(2)}
-                    distAPY={token.distAPY.toFixed(2)}
-                    wallet={Number(formatBalance(token.balanceOf))}
-                    symbol={token.data.underlying.symbol}
-                    collateral={token.collateral}
-                    onToggle={() => {
-                      modalStore.setActiveToken(token);
-                      token.collateral
-                        ? modalStore.open(ModalType.DECOLLATERAL)
-                        : modalStore.open(ModalType.COLLATERAL);
-                    }}
-                  />
-                ) : null
-              )
-              .sort((a, b) => {
-                return String(a?.props.symbol).localeCompare(b?.props.symbol);
-              })
-          ) : (
-            <tr>
-              <LoadingRow colSpan={4}>loading</LoadingRow>
-            </tr>
-          )}
+          {userLMTokens
+            .map((token) =>
+              !token.inSupplyMarket ? (
+                <SupplyRow
+                  collaterable={!token.collateralFactor.isZero()}
+                  onClick={() => {
+                    modalStore.setActiveToken(token);
+                    modalStore.open(ModalType.LENDING);
+                  }}
+                  key={token.data.address + "supply"}
+                  assetIcon={token.data.underlying.icon}
+                  assetName={token.data.underlying.symbol}
+                  apy={token.supplyAPY.toFixed(2)}
+                  distAPY={token.distAPY.toFixed(2)}
+                  wallet={truncateNumber(
+                    formatUnits(token.balanceOf, token.data.underlying.decimals)
+                  )}
+                  symbol={token.data.underlying.symbol}
+                  collateral={token.collateral}
+                  onToggle={() => {
+                    modalStore.setActiveToken(token);
+                    token.collateral
+                      ? modalStore.open(ModalType.DECOLLATERAL)
+                      : modalStore.open(ModalType.COLLATERAL);
+                  }}
+                />
+              ) : null
+            )
+            .sort((a, b) => {
+              return String(a?.props.symbol).localeCompare(b?.props.symbol);
+            })}
         </LendingTable>
       </div>
     );
@@ -345,36 +336,32 @@ const LendingMarket = () => {
           columns={["asset", "apr", "wallet", "liquidity"]}
           isLending={false}
         >
-          {tokens ? (
-            tokens
-              .map((token) =>
-                !token.inBorrowMarket && !token.data.underlying.isLP ? (
-                  <BorrowingRow
-                    onClick={() => {
-                      modalStore.setActiveToken(token);
-                      modalStore.open(ModalType.BORROW);
-                    }}
-                    key={token.data.address + "borrowing"}
-                    assetIcon={token.data.underlying.icon}
-                    assetName={token.data.underlying.symbol}
-                    apy={token.borrowAPY.toFixed(2)}
-                    wallet={formatBalance(token.balanceOf)}
-                    symbol={token.data.underlying.symbol}
-                    liquidity={Number(token.liquidity)}
-                    onToggle={() => {
-                      modalStore.setActiveToken(token);
-                    }}
-                  />
-                ) : null
-              )
-              .sort((a, b) => {
-                return String(a?.props.symbol).localeCompare(b?.props.symbol);
-              })
-          ) : (
-            <tr>
-              <LoadingRow colSpan={4}>loading</LoadingRow>
-            </tr>
-          )}
+          {userLMTokens
+            .map((token) =>
+              !token.inBorrowMarket && !token.data.underlying.isLP ? (
+                <BorrowingRow
+                  onClick={() => {
+                    modalStore.setActiveToken(token);
+                    modalStore.open(ModalType.BORROW);
+                  }}
+                  key={token.data.address + "borrowing"}
+                  assetIcon={token.data.underlying.icon}
+                  assetName={token.data.underlying.symbol}
+                  apy={token.borrowAPY.toFixed(2)}
+                  wallet={truncateNumber(
+                    formatUnits(token.balanceOf, token.data.underlying.decimals)
+                  )}
+                  symbol={token.data.underlying.symbol}
+                  liquidity={Number(token.liquidity)}
+                  onToggle={() => {
+                    modalStore.setActiveToken(token);
+                  }}
+                />
+              ) : null
+            )
+            .sort((a, b) => {
+              return String(a?.props.symbol).localeCompare(b?.props.symbol);
+            })}
         </LendingTable>
       </div>
     );
@@ -398,22 +385,18 @@ const LendingMarket = () => {
     <Container className="lendingMarket">
       <ModalManager isOpen={modalStore.currentModal != ModalType.NONE} />
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        {Number(networkInfo.chainId) == CantoMainnet.chainId ? (
-          <Button
-            onClick={() => {
-              if (networkInfo.account) {
-                modalStore.open(ModalType.BALANCE);
-              }
-            }}
-            style={{ width: "15rem", alignSelf: "right" }}
-          >
-            claim LM rewards
-          </Button>
-        ) : null}
+        <Button
+          onClick={() => {
+            modalStore.open(ModalType.BALANCE);
+          }}
+          style={{ width: "15rem", alignSelf: "right" }}
+        >
+          claim LM rewards
+        </Button>
       </div>
       <div style={{ textAlign: "right" }}>
-        {stats?.balance.accrued
-          ? Number(stats.balance.accrued).toFixed(2) + " WCANTO "
+        {!position.rewards.accrued.isZero()
+          ? truncateNumber(formatUnits(position.rewards.accrued)) + " WCANTO "
           : ""}
       </div>
 
@@ -423,7 +406,13 @@ const LendingMarket = () => {
           {/* <h1 className="balance">{noteSymbol}{stats?.totalSupply.toFixed(2)??"000.00000"}</h1> */}
           <h1 className="balance">
             {noteSymbol}
-            <CypherText text={supplyBalance} />
+            <CypherText
+              text={
+                supplyBalance.isZero()
+                  ? "000.00"
+                  : truncateNumber(formatUnits(supplyBalance, 18))
+              }
+            />
           </h1>
         </div>
 
@@ -436,7 +425,13 @@ const LendingMarket = () => {
           {/* <h1 className="balance">{noteSymbol}{stats?.totalBorrow.toFixed(2)??"000.00000"}</h1> */}
           <h1 className="balance">
             {noteSymbol}
-            <CypherText text={borrowBalance} />
+            <CypherText
+              text={
+                borrowBalance.isZero()
+                  ? "000.00"
+                  : truncateNumber(formatUnits(borrowBalance, 18))
+              }
+            />
           </h1>
         </div>
       </Hero>
@@ -462,26 +457,26 @@ const LendingMarket = () => {
               <p>borrow limit</p>
             </div>
             <div className="bar">
-              {borrowPercentage < 80 ? (
+              {borrowPercentage.lte(80) ? (
                 <div
                   className="green"
-                  style={{ width: borrowPercentage + "%" }}
+                  style={{ width: borrowPercentage.toNumber() + "%" }}
                 ></div>
               ) : (
                 <div
                   className="red"
-                  style={{ width: borrowPercentage + "%" }}
+                  style={{ width: borrowPercentage.toNumber() + "%" }}
                 ></div>
               )}
               <div
                 className="gray"
                 style={{
-                  width: 100 - borrowPercentage + "%",
+                  width: 100 - borrowPercentage.toNumber() + "%",
                 }}
               ></div>
             </div>
             <p style={{ width: "100%", textAlign: "right" }}>
-              {noteSymbol + (stats?.totalBorrowLimit?.toFixed(2) ?? "000.00")}
+              {noteSymbol + formatUnits(position.totalBorrowLimit)}
             </p>
           </TinyTable>
         }
@@ -490,22 +485,26 @@ const LendingMarket = () => {
         arrow={true}
       >
         <ToolTipL>
-          {borrowPercentage < 80 ? (
+          {borrowPercentage.lt(80) ? (
             <p>
               you will be liquidated if you go above your borrow limit <br></br>
               Liquidity Cushion:{" "}
               {noteSymbol +
-                (
-                  (stats?.totalBorrowLimit ?? 0) - (stats?.totalBorrow ?? 0)
-                ).toFixed(2)}
+                truncateNumber(
+                  formatUnits(
+                    position.totalBorrowLimit.sub(position.totalBorrow)
+                  )
+                )}
             </p>
           ) : (
             <p>
               you will be liquidated soon<br></br> Liquidity Cushion:{" "}
               {noteSymbol +
-                (
-                  (stats?.totalBorrowLimit ?? 0) - (stats?.totalBorrow ?? 0)
-                ).toFixed(2)}
+                truncateNumber(
+                  formatUnits(
+                    position.totalBorrowLimit.sub(position.totalBorrow)
+                  )
+                )}
             </p>
           )}
         </ToolTipL>

@@ -5,25 +5,23 @@ import { ethers } from "ethers";
 import { CantoTestnet, ADDRESSES, CantoMainnet } from "cantoui";
 import {
   UserLMTokenDetails,
-  LMTokenDetails1,
-  BNUserRewards,
-  BNUserLMPosition,
+  LMTokenDetails,
+  UserLMRewards,
+  UserLMPosition,
   EmptyUserLMDetails,
   EmptyUserPosition,
   EmptyUserRewards,
 } from "../config/interfaces";
 import { cERC20Abi, comptrollerAbi, ERC20Abi } from "global/config/abi";
-
-const formatUnits = ethers.utils.formatUnits;
-const parseUnits = ethers.utils.parseUnits;
+import { parseUnits } from "ethers/lib/utils";
 
 export function useUserLMTokenData(
-  LMTokens: LMTokenDetails1[],
+  LMTokens: LMTokenDetails[],
   account: string | undefined,
   chainId?: string
 ): {
   userLMTokens: UserLMTokenDetails[];
-  position: BNUserLMPosition;
+  position: UserLMPosition;
 } {
   const onCanto =
     Number(chainId) == CantoMainnet.chainId ||
@@ -151,7 +149,9 @@ export function useUserLMTokenData(
 
       //supplierDiff = comptroller.supplyState().index - comptroller.compSupplierIndex(cToken.address, supplier.address)
       const supplierDIff = BigNumber.from(tokenData[6][0]).sub(tokenData[5][0]);
-      const rewards = formatUnits(supplierDIff.mul(tokenData[0][0]), 54);
+      const rewards = supplierDIff
+        .mul(tokenData[0][0])
+        .div(BigNumber.from(10).pow(36));
       return {
         ...LMTokens[idx],
         wallet: account,
@@ -171,7 +171,7 @@ export function useUserLMTokenData(
     let totalSupply = BigNumber.from(0);
     let totalBorrow = BigNumber.from(0);
     let totalBorrowLimit = BigNumber.from(0);
-    let totalRewards = 0;
+    let totalRewards = BigNumber.from(0);
     userLMTokens?.forEach((token) => {
       if (token?.inSupplyMarket) {
         totalSupply = totalSupply.add(token.supplyBalanceinNote);
@@ -187,25 +187,23 @@ export function useUserLMTokenData(
             .div(BigNumber.from(10).pow(18))
         );
       }
-      totalRewards += Number(token.rewards);
+      totalRewards = totalRewards.add(token.rewards);
     });
     //results.length-1 will get comp accrued method
     //canto accrued must be added to total rewards for each token, so that distributed rewards are included
-    const cantoAccrued = formatEther(
-      results[results.length - 1]?.value[0] ?? 0
-    );
+    const cantoAccrued = results[results.length - 1]?.value[0];
 
     const canto = userLMTokens.find((item) => item.data.symbol == "cCANTO");
 
-    const rewards: BNUserRewards = {
+    const rewards: UserLMRewards = {
       walletBalance: canto?.balanceOf ?? parseUnits("0"),
       price: canto?.price ?? parseUnits("0"),
-      accrued: totalRewards + Number(cantoAccrued),
+      accrued: totalRewards.add(cantoAccrued),
       cantroller: address.Comptroller,
       wallet: account,
     };
 
-    const position: BNUserLMPosition = {
+    const position: UserLMPosition = {
       totalSupply,
       totalBorrow,
       totalBorrowLimit,
