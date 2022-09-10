@@ -35,7 +35,6 @@ interface BorrowingProps {
   balance: string;
   liquidity: number;
   onClick: () => void;
-  onToggle: (state: boolean) => void;
 }
 interface SupplyingProps {
   assetName: string;

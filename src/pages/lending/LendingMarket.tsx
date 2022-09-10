@@ -6,9 +6,7 @@ import LendingTable from "./components/lendingTable";
 import ReactTooltip from "react-tooltip";
 import {
   SupplyRow,
-  SupplyingRow,
   BorrowingRow,
-  BorrowedRow,
   TransactionRow,
 } from "./components/lendingRow";
 
@@ -27,6 +25,7 @@ import { LMTokenDetails } from "./config/interfaces";
 import { useUserLMTokenData } from "./hooks/useUserLMTokenData";
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
+import { BorrowingTable, SupplyingTable } from "./components/LMTables";
 
 const LendingMarket = () => {
   //intialize network store
@@ -155,120 +154,6 @@ const LendingMarket = () => {
   const borrowPercentage = !position.totalBorrowLimit.isZero()
     ? position.totalBorrow.mul(100).div(position.totalBorrowLimit)
     : BigNumber.from(0);
-
-  function SupplyingTable() {
-    //this should prevent the table from showing up if there are not items to be displayed
-    if (userLMTokens?.filter((token) => token.inSupplyMarket).length == 0)
-      return null;
-
-    return (
-      <div className="left">
-        <p>supplying</p>
-
-        <LendingTable
-          columns={["asset", "apr", "rewards", "balance", "collateral"]}
-          isLending
-        >
-          {userLMTokens
-            .map((token) =>
-              token.inSupplyMarket ? (
-                <SupplyingRow
-                  collaterable={!token.collateralFactor.isZero()}
-                  key={token.data.address + "supplying"}
-                  onClick={() => {
-                    modalStore.setActiveToken(token);
-                    modalStore.open(ModalType.LENDING);
-                  }}
-                  assetIcon={token.data.underlying.icon}
-                  assetName={token.data.underlying.symbol}
-                  apy={token.supplyAPY.toFixed(2)}
-                  distAPY={token.distAPY.toFixed(2)}
-                  wallet={truncateNumber(
-                    formatUnits(
-                      token.supplyBalance,
-                      token.data.underlying.decimals
-                    )
-                  )}
-                  balance={truncateNumber(
-                    formatUnits(token.supplyBalanceinNote)
-                  )}
-                  symbol={token.data.underlying.symbol}
-                  collateral={token.collateral}
-                  rewards={truncateNumber(formatUnits(token.rewards))}
-                  onToggle={() => {
-                    modalStore.setActiveToken(token);
-                    token.collateral
-                      ? modalStore.open(ModalType.DECOLLATERAL)
-                      : modalStore.open(ModalType.COLLATERAL);
-                  }}
-                />
-              ) : null
-            )
-            .sort((a, b) => {
-              return String(a?.props.symbol).localeCompare(b?.props.symbol);
-            })}
-        </LendingTable>
-      </div>
-    );
-  }
-
-  function BorrowingTable() {
-    //this should prevent the table from showing up if there are not items to be displayed
-    if (userLMTokens?.filter((token) => token.inBorrowMarket).length == 0)
-      return null;
-
-    return (
-      <div className="right">
-        <p
-          style={{
-            textAlign: "right",
-          }}
-        >
-          borrowing
-        </p>
-        <LendingTable
-          columns={["asset", "apr/accrued", "balance", "% of limit"]}
-          isLending={false}
-        >
-          {userLMTokens
-            .map((token) =>
-              token.inBorrowMarket ? (
-                <BorrowedRow
-                  key={token.data.address + "borrowed"}
-                  onClick={() => {
-                    modalStore.setActiveToken(token);
-                    modalStore.open(ModalType.BORROW);
-                  }}
-                  assetIcon={token.data.underlying.icon}
-                  assetName={token.data.underlying.symbol}
-                  apy={token.borrowAPY.toFixed(2)}
-                  balance={truncateNumber(
-                    formatUnits(token.borrowBalanceinNote)
-                  )}
-                  symbol={token.data.underlying.symbol}
-                  wallet={truncateNumber(
-                    formatUnits(
-                      token.borrowBalance,
-                      token.data.underlying.decimals
-                    )
-                  )}
-                  liquidity={token.borrowBalanceinNote
-                    .mul(100)
-                    .div(position.totalBorrowLimit)
-                    .toNumber()}
-                  onToggle={() => {
-                    modalStore.setActiveToken(token);
-                  }}
-                />
-              ) : null
-            )
-            .sort((a, b) => {
-              return String(a?.props.symbol).localeCompare(b?.props.symbol);
-            })}
-        </LendingTable>
-      </div>
-    );
-  }
 
   const ToolTipL = styled.div`
     border: 1px solid var(--primary-color);
@@ -519,9 +404,28 @@ const LendingMarket = () => {
             marginBottom: "4rem",
           }}
         >
-          {SupplyingTable()}
+          <SupplyingTable
+            userLMTokens={userLMTokens}
+            onClick={(token) => {
+              modalStore.setActiveToken(token);
+              modalStore.open(ModalType.LENDING);
+            }}
+            onToggle={(token) => {
+              modalStore.setActiveToken(token);
+              token.collateral
+                ? modalStore.open(ModalType.DECOLLATERAL)
+                : modalStore.open(ModalType.COLLATERAL);
+            }}
+          />
 
-          {BorrowingTable()}
+          <BorrowingTable
+            userLMTokens={userLMTokens}
+            position={position}
+            onClick={(token) => {
+              modalStore.setActiveToken(token);
+              modalStore.open(ModalType.BORROW);
+            }}
+          />
         </div>
 
         {/* This table is used for showing transaction status */}
