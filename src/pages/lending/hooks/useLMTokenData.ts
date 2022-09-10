@@ -1,6 +1,6 @@
 import { formatEther } from "@ethersproject/units";
 import { CallResult, useCalls } from "@usedapp/core";
-import { Contract } from "ethers";
+import { BigNumber, Contract } from "ethers";
 import { ethers } from "ethers";
 import {
   CTOKENS,
@@ -14,6 +14,7 @@ import { LMTokenDetails1 } from "../config/interfaces";
 import { cERC20Abi, comptrollerAbi, routerAbi } from "global/config/abi";
 
 const formatUnits = ethers.utils.formatUnits;
+const parseUnits = ethers.utils.parseUnits;
 
 export function useLMTokenData(chainId?: string): LMTokenDetails1[] {
   const onCanto =
@@ -149,55 +150,44 @@ export function useLMTokenData(chainId?: string): LMTokenDetails1[] {
   if (chuckSize > 0 && results?.[0] != undefined && !results?.[0].error) {
     processedTokens = array_chunks(results, chuckSize);
     return processedTokens.map((tokenData, idx) => {
-      const cash: string = formatUnits(
-        tokenData[0][0],
-        tokens[idx].underlying.decimals
-      );
+      const price =
+        tokens[idx].symbol == "cNOTE" ||
+        tokens[idx].symbol == "cUSDC" ||
+        tokens[idx].symbol == "cUSDT"
+          ? parseUnits("1", 18)
+          : tokenData[5][0];
+      const borrowCap = tokenData[7][0].eq(ethers.BigNumber.from("0"))
+        ? BigNumber.from(Number.MAX_SAFE_INTEGER - 1)
+        : tokenData[7][0];
+
       const liquidity: string = formatUnits(
         ethers.BigNumber.from(tokenData[0][0]).mul(tokenData[5][0]),
         36
       );
-      const exchangeRate: string = formatUnits(
-        tokenData[1][0],
-        18 + tokens[idx].underlying.decimals - tokens[idx].decimals
-      );
       const supplyAPY = getAPY(Number(formatEther(tokenData[2][0])));
       const borrowAPY = getAPY(Number(formatEther(tokenData[3][0])));
-      const isListed: boolean = tokenData[4][0];
-      const collateralFactor: string = formatEther(tokenData[4][1]);
-      const price: string =
-        tokens[idx].symbol == "cNOTE" ||
-        tokens[idx].symbol == "cUSDC" ||
-        tokens[idx].symbol == "cUSDT"
-          ? "1"
-          : formatUnits(tokenData[5][0], 36 - tokens[idx].underlying.decimals);
       const compSpeed = Number(formatEther(tokenData[6][0]));
-      const borrowCap = ethers.BigNumber.from(tokenData[7][0]).eq(
-        ethers.BigNumber.from("0")
-      )
-        ? Number.MAX_SAFE_INTEGER
-        : formatUnits(tokenData[7][0], tokens[idx].underlying.decimals);
-
       const distAPY = getDistributionAPY(
         compSpeed,
-        Number(cash),
-        Number(price),
+        Number(formatUnits(tokenData[0][0], tokens[idx].underlying.decimals)),
+        Number(
+          formatUnits(tokenData[5][0], 36 - tokens[idx].underlying.decimals)
+        ),
         Number(formatEther(results[results.length - 1]?.value[0]))
       );
 
       const rust: LMTokenDetails1 = {
         data: tokens?.[idx],
-        exchangeRate,
-        liquidity,
-        cash,
-        collateralFactor,
+        cash: tokenData[0][0],
+        exchangeRate: tokenData[1][0],
+        isListed: tokenData[4][0],
+        collateralFactor: tokenData[4][1],
         price,
+        borrowCap,
+        liquidity,
         supplyAPY,
         borrowAPY,
-        isListed,
-        compSpeed,
         distAPY,
-        borrowCap,
       };
       return rust;
     });

@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 export interface LMToken {
   data: TokenData;
   wallet: string;
@@ -45,29 +47,28 @@ export interface Underlying {
 
 export interface LMTokenDetails1 {
   data: TokenData;
-  exchangeRate: string;
+  cash: BigNumber;
+  exchangeRate: BigNumber;
+  collateralFactor: BigNumber;
+  price: BigNumber;
+  borrowCap: BigNumber;
+  isListed: boolean;
   liquidity: string;
-  cash: string;
-  collateralFactor: string;
-  price: string;
   supplyAPY: number;
   borrowAPY: number;
-  isListed: boolean;
-  compSpeed: number;
   distAPY: number;
-  borrowCap: string | number;
 }
 export interface UserLMTokenDetails extends LMTokenDetails1 {
-  wallet: string;
-  balanceOf: string;
-  balanceOfC: string;
-  borrowBalance: string;
-  supplyBalance: string;
+  wallet?: string;
+  balanceOf: BigNumber;
+  balanceOfC: BigNumber;
+  borrowBalance: BigNumber;
+  supplyBalance: BigNumber;
+  supplyBalanceinNote: BigNumber;
+  borrowBalanceinNote: BigNumber;
   allowance: boolean;
   inSupplyMarket: boolean;
   inBorrowMarket: boolean;
-  supplyBalanceinNote: string;
-  borrowBalanceinNote: string;
   collateral: boolean;
   rewards: string;
 }
@@ -88,23 +89,44 @@ export interface UserRewards {
   wallet: string;
 }
 
+export interface BNUserLMPosition {
+  totalSupply: BigNumber;
+  totalBorrow: BigNumber;
+  totalBorrowLimit: BigNumber;
+  rewards: BNUserRewards;
+}
+
+export interface BNUserRewards {
+  walletBalance: BigNumber;
+  price: BigNumber;
+  accrued: number;
+  cantroller: string;
+  wallet?: string;
+}
+
 export const EmptyUserLMDetails = {
-  wallet: "0",
-  balanceOf: "0",
-  balanceOfC: "0",
-  borrowBalance: "0",
-  supplyBalance: "0",
+  balanceOf: BigNumber.from(0),
+  balanceOfC: BigNumber.from(0),
+  borrowBalance: BigNumber.from(0),
+  supplyBalance: BigNumber.from(0),
   allowance: false,
   inSupplyMarket: false,
   inBorrowMarket: false,
-  supplyBalanceinNote: "0",
-  borrowBalanceinNote: "0",
+  supplyBalanceinNote: BigNumber.from(0),
+  borrowBalanceinNote: BigNumber.from(0),
   collateral: false,
   rewards: "0",
 };
 
+export const EmptyUserPosition = {
+  totalSupply: BigNumber.from(0),
+  totalBorrow: BigNumber.from(0),
+  totalBorrowLimit: BigNumber.from(0),
+  totalBorrowLimitUsed: BigNumber.from(0),
+};
 export const EmptyUserRewards = {
-  walletBalance: "0",
+  walletBalance: BigNumber.from(0),
+  price: BigNumber.from(0),
   accrued: 0,
-  wallet: "0",
+  cantroller: "",
 };

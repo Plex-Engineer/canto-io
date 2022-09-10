@@ -2,37 +2,28 @@ import { formatEther } from "@ethersproject/units";
 import { CallResult, useCalls, useEtherBalance } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { ethers } from "ethers";
+import { CantoTestnet, ADDRESSES, CantoMainnet } from "cantoui";
 import {
-  CTOKENS,
-  CTOKEN,
-  CantoTestnet,
-  ADDRESSES,
-  CantoMainnet,
-} from "cantoui";
-import { cTokensBase, mainnetBasecTokens } from "../config/lendingMarketTokens";
-import {
-  UserRewards,
-  LMToken,
-  UserLMPosition,
   UserLMTokenDetails,
   LMTokenDetails1,
+  BNUserRewards,
+  BNUserLMPosition,
+  EmptyUserLMDetails,
+  EmptyUserPosition,
+  EmptyUserRewards,
 } from "../config/interfaces";
-import {
-  cERC20Abi,
-  comptrollerAbi,
-  ERC20Abi,
-  routerAbi,
-} from "global/config/abi";
+import { cERC20Abi, comptrollerAbi, ERC20Abi } from "global/config/abi";
 
 const formatUnits = ethers.utils.formatUnits;
+const parseUnits = ethers.utils.parseUnits;
 
 export function useUserLMTokenData(
   LMTokens: LMTokenDetails1[],
   account: string | undefined,
   chainId?: string
 ): {
-  LMTokens: UserLMTokenDetails[];
-  balances: UserLMPosition;
+  userLMTokens: UserLMTokenDetails[];
+  position: BNUserLMPosition;
 } {
   const onCanto =
     Number(chainId) == CantoMainnet.chainId ||
@@ -42,11 +33,10 @@ export function useUserLMTokenData(
       ? ADDRESSES.testnet
       : ADDRESSES.cantoMainnet;
 
-  const bal = formatEther(useEtherBalance(account) ?? 0);
+  const bal = useEtherBalance(account) ?? BigNumber.from(0);
   //comptroller contract
   const comptroller = new Contract(address?.Comptroller, comptrollerAbi);
   //canto contract
-  const priceFeedContract = new Contract(address?.PriceFeed, routerAbi);
   const calls =
     LMTokens?.map((token) => {
       const ERC20Contract = new Contract(
@@ -130,24 +120,14 @@ export function useUserLMTokenData(
   };
   if (chuckSize > 0 && results?.[0] != undefined && !results?.[0].error) {
     processedTokens = array_chunks(results, chuckSize);
-    const LMTokens = processedTokens.map((tokenData, idx) => {
-      const balanceOfC: string = formatUnits(
-        tokenData[0][0],
-        LMTokens[idx].data.decimals
-      );
-      const balanceOf: string =
-        LMTokens[idx].data.symbol === "cCANTO"
-          ? bal
-          : ethers.utils.formatUnits(
-              tokenData[1][0],
-              LMTokens[idx].data.underlying.decimals
-            );
-      const borrowBalance: string = formatUnits(
-        tokenData[2][0],
-        LMTokens[idx].data.underlying.decimals
-      );
-      const inSupplyMarket: boolean = Number(balanceOfC) > 0;
-      const inBorrowMarket: boolean = Number(borrowBalance) > 0;
+    const userLMTokens = processedTokens.map((tokenData, idx) => {
+      const balanceOf: BigNumber =
+        LMTokens[idx].data.symbol === "cCANTO" ? bal : tokenData[1][0];
+      const balanceOfC: BigNumber = tokenData[0][0];
+      const borrowBalance: BigNumber = tokenData[2][0];
+
+      const inSupplyMarket = !balanceOfC.isZero();
+      const inBorrowMarket = !borrowBalance.isZero();
       const allowance: boolean =
         LMTokens[idx].data.symbol === "cCANTO"
           ? true
@@ -158,123 +138,94 @@ export function useUserLMTokenData(
               )
             ) > 0;
 
+      const supplyBalance = LMTokens[idx].exchangeRate
+        .mul(balanceOfC)
+        .div(BigNumber.from(10).pow(18));
 
-
-      const exchangeRate: string = formatUnits(
-        tokenData[4][0],
-        18 + LMTokens[idx].underlying.decimals - LMTokens[idx].decimals
-      );
-      const supplyBalance1: string = formatUnits(
-        BigNumber.from(tokenData[4][0]).mul(tokenData[0][0]),
-        18 + LMTokens[idx].underlying.decimals
-      );
-      const supplyBalance: string = supplyBalance1.slice(
-        0,
-        supplyBalance1.indexOf(".") + tokens[idx].decimals + 1
-      );
-
-      const supplyBalanceinNote: string = (
-        Number(supplyBalance) * Number(price)
-      ).toFixed(18);
-      const borrowBalanceinNote: string = (
-        Number(borrowBalance) * Number(price)
-      ).toFixed(18);
-      const supplyAPY = getAPY(Number(formatEther(tokenData[5][0])));
-      const borrowAPY = getAPY(Number(formatEther(tokenData[6][0])));
-      const compSpeed = Number(formatEther(tokenData[11][0]));
-      const distAPY = getDistributionAPY(
-        compSpeed,
-        Number(cash),
-        Number(price),
-        Number(formatEther(results[results.length - 1]?.value[0]))
-      );
-      const borrowCap = ethers.BigNumber.from(tokenData[12][0]).eq(
-        ethers.BigNumber.from("0")
-      )
-        ? Number.MAX_SAFE_INTEGER
-        : formatUnits(tokenData[12][0], tokens[idx].underlying.decimals);
+      const supplyBalanceinNote = supplyBalance
+        .mul(LMTokens[idx].price)
+        .div(BigNumber.from(10).pow(LMTokens[idx].data.underlying.decimals));
+      const borrowBalanceinNote = borrowBalance
+        .mul(LMTokens[idx].price)
+        .div(BigNumber.from(10).pow(LMTokens[idx].data.underlying.decimals));
 
       //supplierDiff = comptroller.supplyState().index - comptroller.compSupplierIndex(cToken.address, supplier.address)
-      const supplierDIff = BigNumber.from(tokenData[14][0]).sub(
-        tokenData[13][0]
-      );
+      const supplierDIff = BigNumber.from(tokenData[6][0]).sub(tokenData[5][0]);
       const rewards = formatUnits(supplierDIff.mul(tokenData[0][0]), 54);
-      const rust: LMToken = {
-        data: tokens?.[idx],
+      return {
+        ...LMTokens[idx],
         wallet: account,
         balanceOf,
         balanceOfC,
         borrowBalance,
-        exchangeRate,
         supplyBalance,
-        liquidity,
-        cash,
         allowance,
-        collateralFactor,
         inSupplyMarket,
         inBorrowMarket,
         supplyBalanceinNote,
         borrowBalanceinNote,
-        collateral: tokenData[9][0],
-        price,
-        supplyAPY,
-        borrowAPY,
-        isListed,
-        compSpeed,
-        distAPY,
-        borrowCap,
+        collateral: tokenData[4][0],
         rewards,
       };
-      return rust;
     });
-    let totalSupply = 0;
-    let totalBorrow = 0;
-    let totalBorrowLimit = 0;
-    let totalBorrowLimitUsed = 0;
+    let totalSupply = BigNumber.from(0);
+    let totalBorrow = BigNumber.from(0);
+    let totalBorrowLimit = BigNumber.from(0);
     let totalRewards = 0;
-    LMTokens?.forEach((token) => {
+    userLMTokens?.forEach((token) => {
       if (token?.inSupplyMarket) {
-        totalSupply += Number(token.supplyBalanceinNote);
+        totalSupply = totalSupply.add(token.supplyBalanceinNote);
       }
       if (token?.inBorrowMarket) {
-        totalBorrow += Number(token.borrowBalanceinNote);
+        totalBorrow = totalBorrow.add(token.borrowBalanceinNote);
       }
 
       if (token?.collateral) {
-        totalBorrowLimit +=
-          Number(token.collateralFactor) * Number(token.supplyBalanceinNote);
-        if (token?.inBorrowMarket) {
-          totalBorrowLimitUsed += Number(token.borrowBalanceinNote);
-        }
+        totalBorrowLimit = totalBorrowLimit.add(
+          token.collateralFactor
+            .mul(token.supplyBalanceinNote)
+            .div(BigNumber.from(10).pow(18))
+        );
       }
       totalRewards += Number(token.rewards);
     });
-    //results.length-2 will get comp accrued method
+    //results.length-1 will get comp accrued method
     //canto accrued must be added to total rewards for each token, so that distributed rewards are included
     const cantoAccrued = formatEther(
-      results[results.length - 2]?.value[0] ?? 1
+      results[results.length - 1]?.value[0] ?? 0
     );
 
-    const canto = LMTokens.find((item) => item.data.symbol == "cCANTO");
+    const canto = userLMTokens.find((item) => item.data.symbol == "cCANTO");
 
-    const balance: UserRewards = {
-      walletBalance: canto?.balanceOf,
-      price: canto?.price,
+    const rewards: BNUserRewards = {
+      walletBalance: canto?.balanceOf ?? parseUnits("0"),
+      price: canto?.price ?? parseUnits("0"),
       accrued: totalRewards + Number(cantoAccrued),
       cantroller: address.Comptroller,
       wallet: account,
     };
 
-    const balances: UserLMPosition = {
+    const position: BNUserLMPosition = {
       totalSupply,
       totalBorrow,
       totalBorrowLimit,
-      totalBorrowLimitUsed,
-      balance,
+      rewards,
     };
 
-    return { LMTokens, balances };
+    return { userLMTokens, position };
   }
-
-  return undefined;
+  const noUserLMTokens = LMTokens.map((token) => {
+    return {
+      ...token,
+      ...EmptyUserLMDetails,
+    };
+  });
+  const noUserPosition = {
+    ...EmptyUserPosition,
+    rewards: EmptyUserRewards,
+  };
+  return {
+    userLMTokens: noUserLMTokens,
+    position: noUserPosition,
+  };
 }

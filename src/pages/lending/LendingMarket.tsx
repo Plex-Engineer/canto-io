@@ -26,7 +26,9 @@ import { formatBalance, noteSymbol } from "global/utils/utils";
 import { CantoMainnet } from "cantoui";
 import useModalStore from "./stores/useModals";
 import { useLMTokenData } from "./hooks/useLMTokenData";
-import { LMTokenDetails1 } from "./config/interfaces";
+import { LMTokenDetails1, UserLMTokenDetails } from "./config/interfaces";
+import { useUserLMTokenData } from "./hooks/useUserLMTokenData";
+import { BigNumber } from "ethers";
 
 const LendingMarket = () => {
   //intialize network store
@@ -138,7 +140,12 @@ const LendingMarket = () => {
   const stats = allData?.balances;
 
   const newData: LMTokenDetails1[] = useLMTokenData(networkInfo.chainId);
-
+  const { userLMTokens, position } = useUserLMTokenData(
+    newData,
+    networkInfo.account,
+    networkInfo.chainId
+  );
+  console.log(userLMTokens, position);
   useEffect(() => {
     setborrowBalance(stats?.totalBorrow?.toFixed(2) ?? "000.00");
     setSupplyBalance(stats?.totalSupply?.toFixed(2) ?? "000.00");
