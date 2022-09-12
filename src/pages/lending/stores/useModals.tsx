@@ -28,7 +28,7 @@ interface ModalState {
   rewards: UserLMRewards;
   setRewards: (rewards: UserLMRewards) => void;
   stats: UserLMPosition | undefined;
-  setStats: (stats: UserLMPosition | undefined) => void;
+  setStats: (stats: UserLMPosition) => void;
 }
 const useModalStore = create<ModalState>((set, get) => ({
   currentModal: ModalType.NONE,
