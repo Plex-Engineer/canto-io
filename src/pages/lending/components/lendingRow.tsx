@@ -2,53 +2,34 @@ import styled from "styled-components";
 import LendingSwitch from "./lendingSwitch";
 import { noteSymbol } from "global/utils/utils";
 import { ToolTip } from "./Tooltip";
+import React from "react";
+import { formatLiquidity } from "../utils/utils";
 
-interface SupplyProps {
-  assetName: string;
-  assetIcon: string;
-  apy: string;
-  distAPY: string;
-  wallet: string;
-  symbol?: string;
-  collateral?: boolean;
-  onClick?: () => void;
-  onToggle: (state: boolean) => void;
-  collaterable: boolean;
-}
-
-interface BorrowProps {
-  assetName: string;
-  assetIcon: string;
-  apy: string;
-  wallet: string;
-  symbol?: string;
-  liquidity: number;
-  onClick: () => void;
-  onToggle: (state: boolean) => void;
-}
 interface BorrowingProps {
+  borrowing: boolean;
   assetName: string;
   assetIcon: string;
   apy: string;
-  wallet: string;
+  amount: string;
+  amountInNote: string;
   symbol?: string;
-  balance: string;
   liquidity: number;
   onClick: () => void;
 }
-interface SupplyingProps {
+interface SupplyProps {
+  supplying: boolean;
   assetName: string;
   assetIcon: string;
   apy: string;
   distAPY: string;
-  wallet: string;
   symbol?: string;
   collateral?: boolean;
-  balance: string;
+  amount: string;
+  amountInNote: string;
   onToggle: (state: boolean) => void;
   onClick?: () => void;
   collaterable: boolean;
-  rewards: string;
+  rewards?: string;
 }
 
 interface ITransactionProps {
@@ -58,82 +39,6 @@ interface ITransactionProps {
   onClick?: () => void;
   date: Date;
 }
-
-const SupplyRow = (props: SupplyProps) => {
-  return (
-    <tr onClick={props.onClick}>
-      <td>
-        <img
-          style={{
-            padding: props.assetName.slice(-2) == "LP" ? "0" : "0 10px",
-          }}
-          src={props.assetIcon}
-          alt=""
-        />{" "}
-        <span>{props.assetName}</span>
-      </td>
-      <td>
-        <DualRow top={props.apy + " %"} bottom={props.distAPY + "%"}></DualRow>
-      </td>
-      <td>
-        {props.wallet} {props.symbol}
-      </td>
-      <td>
-        {
-          <LendingSwitch
-            disabled={!props.collaterable}
-            checked={props.collateral ?? false}
-            onChange={() => {
-              props.onToggle(!props.collateral);
-            }}
-          />
-        }
-      </td>
-    </tr>
-  );
-};
-
-function formatLiquidity(liquidity: number) {
-  if (liquidity < 2) {
-    return liquidity.toFixed(4);
-  }
-  if (liquidity < 10000) {
-    return liquidity.toFixed(2);
-  }
-  if (liquidity < 1000000) {
-    return (liquidity / 1000).toFixed(1) + "k";
-  }
-  if (liquidity < 1000000000) return (liquidity / 1000000).toFixed(1) + "M";
-
-  return (liquidity / 1000000000).toFixed(1) + "B";
-}
-
-const BorrowingRow = (props: BorrowProps) => {
-  return (
-    <tr onClick={props.onClick}>
-      <td>
-        <img src={props.assetIcon} alt="" /> <span>{props.assetName}</span>
-      </td>
-      <td>{props.apy} %</td>
-      <td>
-        {props.wallet} {props.symbol}
-      </td>
-      {props.assetName == "NOTE" ? (
-        // <Popup trigger={<td>N/A</td>} on={["hover", "focus"]}>
-        //   <ToolTip>Note Liquidity Is Infinite</ToolTip>
-        // </Popup>
-        <ToolTip as={"td"} data-tooltip="Note Liquidity Is Infinite">
-          N/A
-        </ToolTip>
-      ) : (
-        <td>
-          {noteSymbol}
-          {formatLiquidity(props.liquidity)}
-        </td>
-      )}
-    </tr>
-  );
-};
 
 interface Iitems {
   top: string;
@@ -161,27 +66,43 @@ const DualRow = ({ top, bottom }: Iitems) => {
   );
 };
 //TODO: figure out what do to with the props
-const BorrowedRow = (props: BorrowingProps) => {
+const BorrowRow = (props: BorrowingProps) => {
   return (
     <tr onClick={props.onClick}>
       <td>
         <img src={props.assetIcon} alt="" /> <span>{props.assetName}</span>
       </td>
-      <td>
-        <DualRow top={props.apy + " %"} bottom={""}></DualRow>
-      </td>
-      <td>
-        <DualRow
-          bottom={noteSymbol + props.balance}
-          top={props.wallet + " " + props.symbol}
-        ></DualRow>
-      </td>
-      <td>{props.liquidity.toFixed(0) + " %"}</td>
+      <td>{props.apy + " %"}</td>
+      {props.borrowing ? (
+        <React.Fragment>
+          <td>
+            <DualRow
+              top={props.amount + " " + props.symbol}
+              bottom={noteSymbol + props.amountInNote}
+            ></DualRow>
+          </td>
+          <td>{props.liquidity.toFixed(0) + " %"}</td>
+        </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <td>{props.amount + " " + props.symbol}</td>
+          {props.assetName == "NOTE" ? (
+            <ToolTip as={"td"} data-tooltip="Note Liquidity Is Infinite">
+              N/A
+            </ToolTip>
+          ) : (
+            <td>
+              {noteSymbol}
+              {formatLiquidity(props.liquidity)}
+            </td>
+          )}
+        </React.Fragment>
+      )}
     </tr>
   );
 };
 
-const SupplyingRow = (props: SupplyingProps) => {
+const SupplyRow = (props: SupplyProps) => {
   return (
     <tr onClick={props.onClick}>
       <td>
@@ -197,13 +118,19 @@ const SupplyingRow = (props: SupplyingProps) => {
       <td>
         <DualRow top={props.apy + " %"} bottom={props.distAPY + "%"}></DualRow>
       </td>
-      <td>{Number(props.rewards).toFixed(2)} WCANTO</td>
-      <td>
-        <DualRow
-          bottom={noteSymbol + props.balance}
-          top={props.wallet + " " + props.symbol}
-        ></DualRow>
-      </td>
+      {props.supplying ? (
+        <React.Fragment>
+          <td>{Number(props.rewards).toFixed(2)} WCANTO</td>
+          <td>
+            <DualRow
+              top={props.amount + " " + props.symbol}
+              bottom={noteSymbol + props.amountInNote}
+            ></DualRow>
+          </td>
+        </React.Fragment>
+      ) : (
+        <td>{props.amount + " " + props.symbol}</td>
+      )}
 
       <td>
         {
@@ -238,11 +165,4 @@ const LoadingRow = styled.td`
   text-align: center !important;
 `;
 
-export {
-  SupplyRow,
-  SupplyingRow,
-  BorrowingRow,
-  BorrowedRow,
-  TransactionRow,
-  LoadingRow,
-};
+export { SupplyRow, BorrowRow, TransactionRow, LoadingRow };
