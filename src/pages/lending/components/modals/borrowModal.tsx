@@ -82,7 +82,7 @@ interface IProps {
 }
 const BorrowModal = ({ onClose }: IProps) => {
   const modalStore = useModalStore();
-  const stats: any = modalStore.stats;
+  const stats: any = modalStore.position;
   const token: any = modalStore.activeToken;
   const [transaction, setTransaction] = useState<TransactionStatus>();
   const [isRepaying, setIsRepaying] = useState(true);

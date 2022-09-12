@@ -51,7 +51,6 @@ export interface UserLMPosition {
   totalSupply: BigNumber;
   totalBorrow: BigNumber;
   totalBorrowLimit: BigNumber;
-  rewards: UserLMRewards;
 }
 
 export interface UserLMRewards {
@@ -61,6 +60,46 @@ export interface UserLMRewards {
   cantroller: string;
   wallet?: string;
 }
+
+export const EmptyActiveLMToken: UserLMTokenDetails = {
+  data: {
+    symbol: "",
+    name: "",
+    decimals: 0,
+    address: "",
+    underlying: {
+      symbol: "",
+      name: "",
+      decimals: 0,
+      address: "",
+      isERC20: false,
+      isLP: false,
+      icon: "",
+      cTokenAddress: "",
+    },
+  },
+  cash: BigNumber.from(0),
+  exchangeRate: BigNumber.from(0),
+  collateralFactor: BigNumber.from(0),
+  price: BigNumber.from(0),
+  borrowCap: BigNumber.from(0),
+  isListed: false,
+  liquidity: "",
+  supplyAPY: 0,
+  borrowAPY: 0,
+  distAPY: 0,
+  balanceOf: BigNumber.from(0),
+  balanceOfC: BigNumber.from(0),
+  borrowBalance: BigNumber.from(0),
+  supplyBalance: BigNumber.from(0),
+  allowance: false,
+  inSupplyMarket: false,
+  inBorrowMarket: false,
+  supplyBalanceinNote: BigNumber.from(0),
+  borrowBalanceinNote: BigNumber.from(0),
+  collateral: false,
+  rewards: BigNumber.from(0),
+};
 
 export const EmptyUserLMDetails = {
   balanceOf: BigNumber.from(0),
@@ -76,13 +115,12 @@ export const EmptyUserLMDetails = {
   rewards: BigNumber.from(0),
 };
 
-export const EmptyUserPosition = {
+export const EmptyUserPosition: UserLMPosition = {
   totalSupply: BigNumber.from(0),
   totalBorrow: BigNumber.from(0),
   totalBorrowLimit: BigNumber.from(0),
-  totalBorrowLimitUsed: BigNumber.from(0),
 };
-export const EmptyUserRewards = {
+export const EmptyUserRewards: UserLMRewards = {
   walletBalance: BigNumber.from(0),
   price: BigNumber.from(0),
   accrued: BigNumber.from(0),

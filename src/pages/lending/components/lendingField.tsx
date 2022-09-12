@@ -2,6 +2,8 @@ import styled from "styled-components";
 import { useState } from "react";
 import { TrasanctionType } from "./BorrowLimits";
 import { formatBalance } from "global/utils/utils";
+import { BigNumber } from "ethers";
+import { UserLMTokenDetails } from "../config/interfaces";
 
 type styleProps = {
   focused: boolean;
@@ -57,21 +59,16 @@ const Max = styled.span`
 
 type Props = {
   balance: string;
-  type?: string;
-  hasToken?: boolean;
-  token?: any;
-  limit?: number;
+  token: UserLMTokenDetails;
+  limit?: BigNumber;
   transactionType: TrasanctionType;
-  onChange?: (value: string) => void;
-  onMax: (value: string) => void;
+  onChange: (value: string) => void;
+  onMax: () => void;
   value: string;
 };
 
 const LendingField = (props: Props) => {
   const [isFocused, setIsFocused] = useState(false);
-  //used for showing whatever max value they can input
-  const [remaining, setRemaining] = useState(props.balance);
-  const [value, setValue] = useState(props.value);
   const [cursorPosition, setCursorPosition] = useState(0);
 
   const InputValue = () => (
@@ -80,7 +77,7 @@ const LendingField = (props: Props) => {
       type="text"
       placeholder={"0.00"}
       autoFocus={isFocused}
-      value={value}
+      value={props.value}
       onFocus={(e) => {
         //move cursor back to where user made the edit
         e.target.setSelectionRange(cursorPosition, cursorPosition);
@@ -89,22 +86,7 @@ const LendingField = (props: Props) => {
       onChange={(e) => {
         //capture cursor position
         setCursorPosition(e.target.selectionStart ?? 0);
-
-        setValue(e.target.value);
-
-        if (
-          Number(e.target.value) > Number(props.balance) ||
-          isNaN(Number(e.target.value))
-        ) {
-          setRemaining("0");
-        } else {
-          setRemaining(
-            (Number(props.balance) - Number(e.target.value)).toString()
-          );
-        }
-        if (props.onChange != undefined) {
-          props.onChange(e.target.value);
-        }
+        props.onChange(e.target.value);
       }}
       onBlur={() => {
         setIsFocused(false);
@@ -127,20 +109,9 @@ const LendingField = (props: Props) => {
           justifyContent: "space-between",
         }}
       >
-        <p>{formatBalance(props.balance)}</p>
+        <p>{props.balance}</p>
         <p>
-          <Max
-            onClick={() => {
-              if (props.limit != undefined) {
-                setValue(props.limit.toString());
-              } else {
-                setValue(props.balance.toString());
-              }
-              props.onMax(props.balance);
-
-              setRemaining("0");
-            }}
-          >
+          <Max onClick={() => props.onMax()}>
             {(props.transactionType != TrasanctionType.BORROW &&
               props.limit === undefined) ||
             props.transactionType == TrasanctionType.REPAY

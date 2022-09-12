@@ -3,6 +3,8 @@ import {
   UserLMRewards,
   EmptyUserRewards,
   UserLMTokenDetails,
+  EmptyUserPosition,
+  EmptyActiveLMToken,
 } from "../config/interfaces";
 import create from "zustand";
 
@@ -23,12 +25,12 @@ interface ModalState {
   close: () => void;
   isOpen: (modal: ModalType) => boolean;
   redirect: (modal: ModalType) => void;
-  activeToken: UserLMTokenDetails | undefined;
+  activeToken: UserLMTokenDetails;
   setActiveToken: (token: UserLMTokenDetails) => void;
   rewards: UserLMRewards;
   setRewards: (rewards: UserLMRewards) => void;
-  stats: UserLMPosition | undefined;
-  setStats: (stats: UserLMPosition) => void;
+  position: UserLMPosition;
+  setPosition: (stats: UserLMPosition) => void;
 }
 const useModalStore = create<ModalState>((set, get) => ({
   currentModal: ModalType.NONE,
@@ -38,12 +40,12 @@ const useModalStore = create<ModalState>((set, get) => ({
   redirect: (modal) => {
     set({ currentModal: modal });
   },
-  activeToken: undefined,
+  activeToken: EmptyActiveLMToken,
   setActiveToken: (token) => set({ activeToken: token }),
   rewards: EmptyUserRewards,
   setRewards: (rewards) => set({ rewards }),
-  stats: undefined,
-  setStats: (stats) => set({ stats }),
+  position: EmptyUserPosition,
+  setPosition: (stats) => set({ position: stats }),
 }));
 
 export default useModalStore;

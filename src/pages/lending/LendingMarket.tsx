@@ -126,7 +126,7 @@ const LendingMarket = () => {
   Mixpanel.events.pageOpened("Lending Market", networkInfo.account);
 
   const lmTokenData: LMTokenDetails[] = useLMTokenData(networkInfo.chainId);
-  const { userLMTokens, position } = useUserLMTokenData(
+  const { userLMTokens, position, rewards } = useUserLMTokenData(
     lmTokenData,
     networkInfo.account,
     networkInfo.chainId
@@ -135,8 +135,8 @@ const LendingMarket = () => {
   //Useffect for calling data per block
   useEffect(() => {
     const interval = setInterval(() => {
-      modalStore.setRewards(position.rewards);
-      modalStore.setStats(position);
+      modalStore.setRewards(rewards);
+      modalStore.setPosition(position);
       ReactTooltip.rebuild();
     }, 6000);
     return () => clearInterval(interval);
@@ -160,8 +160,8 @@ const LendingMarket = () => {
         </Button>
       </div>
       <div style={{ textAlign: "right" }}>
-        {!position.rewards.accrued.isZero()
-          ? truncateNumber(formatUnits(position.rewards.accrued)) + " WCANTO "
+        {!rewards.accrued.isZero()
+          ? truncateNumber(formatUnits(rewards.accrued)) + " WCANTO "
           : ""}
       </div>
 

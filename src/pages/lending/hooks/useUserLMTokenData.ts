@@ -22,6 +22,7 @@ export function useUserLMTokenData(
 ): {
   userLMTokens: UserLMTokenDetails[];
   position: UserLMPosition;
+  rewards: UserLMRewards;
 } {
   const onCanto =
     Number(chainId) == CantoMainnet.chainId ||
@@ -207,10 +208,9 @@ export function useUserLMTokenData(
       totalSupply,
       totalBorrow,
       totalBorrowLimit,
-      rewards,
     };
 
-    return { userLMTokens, position };
+    return { userLMTokens, position, rewards };
   }
   const noUserLMTokens = LMTokens.map((token) => {
     return {
@@ -218,12 +218,10 @@ export function useUserLMTokenData(
       ...EmptyUserLMDetails,
     };
   });
-  const noUserPosition = {
-    ...EmptyUserPosition,
-    rewards: EmptyUserRewards,
-  };
+
   return {
     userLMTokens: noUserLMTokens,
-    position: noUserPosition,
+    position: EmptyUserPosition,
+    rewards: EmptyUserRewards,
   };
 }

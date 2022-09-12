@@ -12,7 +12,7 @@ import {
   UserLMPosition,
   UserLMTokenDetails,
 } from "pages/lending/config/interfaces";
-import { willWithdrawalGoOverLimit } from "pages/lending/utils/utils";
+import { willWithdrawalGoOverLimit } from "pages/lending/utils/supplyWithdrawLimits";
 const Container = styled.div`
   background-color: #040404;
   padding: 2rem;
@@ -107,13 +107,13 @@ interface Props {
 
 const CollatModal = (props: Props) => {
   const modalStore = useModalStore();
-  const stats: UserLMPosition | undefined = modalStore.stats;
-  const token: UserLMTokenDetails | undefined = modalStore.activeToken;
+  const position: UserLMPosition = modalStore.position;
+  const token: UserLMTokenDetails = modalStore.activeToken;
 
   const details: Details = {
-    name: token?.data.underlying.symbol ?? "",
-    address: token?.data.address ?? "",
-    icon: token?.data.underlying.icon ?? "",
+    name: token.data.underlying.symbol ?? "",
+    address: token.data.address ?? "",
+    icon: token.data.underlying.icon ?? "",
     amount: "0",
     type: props.decollateralize ? "Decollateralize" : "Collateralize",
   };
@@ -162,31 +162,29 @@ const CollatModal = (props: Props) => {
       // </Container>
     );
   }
-  const willGoOverLimit =
-    stats && token
-      ? willWithdrawalGoOverLimit(
-          stats?.totalBorrow,
-          stats?.totalBorrowLimit,
-          token?.collateralFactor,
-          80,
-          token?.supplyBalanceinNote
-        )
-      : true;
-
+  const willGoOverLimit = willWithdrawalGoOverLimit(
+    position.totalBorrow,
+    position.totalBorrowLimit,
+    token.collateralFactor,
+    80,
+    token.supplyBalance,
+    token.price,
+    token.data.underlying.decimals
+  );
   return (
     <Container>
       <img
-        src={token?.data.underlying.icon}
+        src={token.data.underlying.icon}
         height={50}
         style={{
           marginBottom: "2rem",
         }}
         alt="canto"
       />
-      <h2>{token?.data.underlying.name}</h2>
+      <h2>{token.data.underlying.name}</h2>
 
       <h2>
-        {!token?.borrowBalance.isZero()
+        {!token.borrowBalance.isZero()
           ? `you cannot uncollateralize an asset that is currently being borrowed. please repay all ${token?.data.underlying.name.toLowerCase()} before uncollateralizing.`
           : willGoOverLimit && props.decollateralize
           ? "80% of your borrow limit will be used. please repay borrows or increase supply."
@@ -206,19 +204,19 @@ const CollatModal = (props: Props) => {
           marginTop: "0rem",
         }}
       >
-        {(!token?.borrowBalance.isZero() || willGoOverLimit) &&
+        {(!token.borrowBalance.isZero() || willGoOverLimit) &&
         props.decollateralize ? (
           <DisabledButton>
-            {!token?.borrowBalance.isZero()
-              ? `currently borrowing ${token?.data.underlying.symbol.toLowerCase()}`
+            {!token.borrowBalance.isZero()
+              ? `currently borrowing ${token.data.underlying.symbol.toLowerCase()}`
               : "80% borrow limit will be reached"}
           </DisabledButton>
         ) : (
           <Button
             onClick={() => {
               props.decollateralize
-                ? exitSend(token?.data.address)
-                : enterSend([token?.data.address]);
+                ? exitSend(token.data.address)
+                : enterSend([token.data.address]);
 
               // props.onClose();
             }}
@@ -227,8 +225,8 @@ const CollatModal = (props: Props) => {
             }}
           >
             {props.decollateralize
-              ? `disable ${token?.data.underlying.symbol.toLowerCase()} as collateral`
-              : `use ${token?.data.underlying.symbol.toLowerCase()} as collateral`}
+              ? `disable ${token.data.underlying.symbol.toLowerCase()} as collateral`
+              : `use ${token.data.underlying.symbol.toLowerCase()} as collateral`}
           </Button>
         )}
       </APY>
