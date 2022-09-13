@@ -17,7 +17,7 @@ export const formatBalance = (num: string | number) => {
 export const noteSymbol = "Ꞥ";
 
 export function truncateNumber(value: string, decimals?: number) {
-  if (!value) {
+  if (!value || isNaN(Number(value))) {
     return "";
   }
   value = removeLeadingZeros(value);

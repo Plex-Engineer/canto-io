@@ -101,7 +101,6 @@ const BorrowModal = ({ onClose }: IProps) => {
 
   function resetInput() {
     //if in repay tab and allowance is true or if borrowing is true
-    console.log("in repay tab " + isRepaying);
     if ((isRepaying && token.allowance) || !isRepaying) {
       setInputState(InputState.ENTERAMOUNT);
     } else {
@@ -112,6 +111,7 @@ const BorrowModal = ({ onClose }: IProps) => {
   }
 
   function inputValidation(value: string, max: BigNumber) {
+    value = truncateNumber(value, token.data.underlying.decimals);
     if (inputState !== InputState.ENABLE) {
       if (isNaN(Number(value))) {
         setInputState(InputState.INVALID);
@@ -184,19 +184,19 @@ const BorrowModal = ({ onClose }: IProps) => {
           canDoMax={false}
           onMax={() => {
             if (inputState != InputState.ENABLE) {
-              setUserAmount(
-                formatUnits(borrowLimit80, token.data.underlying.decimals)
-              );
               setMax(true);
-              if (borrowLimit80.isZero()) {
+              if (borrowLimit80.lte(0)) {
                 setInputState(InputState.ENTERAMOUNT);
+                setUserAmount("0");
               } else {
+                setUserAmount(
+                  formatUnits(borrowLimit80, token.data.underlying.decimals)
+                );
                 setInputState(InputState.CONFIRM);
               }
             }
           }}
           onChange={(value) => {
-            value = truncateNumber(value, token.data.underlying.decimals);
             setUserAmount(value);
             inputValidation(value, borrowLimit100);
             setMax(false);
@@ -208,7 +208,10 @@ const BorrowModal = ({ onClose }: IProps) => {
         {/* 1st tab */}
         <Details
           transactionType={TrasanctionType.BORROW}
-          stringAmount={userAmount}
+          stringAmount={truncateNumber(
+            userAmount,
+            token.data.underlying.decimals
+          )}
           token={token}
           icon={token.data.underlying.icon}
           isBorrowing={true}
@@ -260,6 +263,7 @@ const BorrowModal = ({ onClose }: IProps) => {
             }
           }}
           onChange={(value) => {
+            setUserAmount(value);
             inputValidation(value, repayLimit);
             setMax(false);
           }}
@@ -270,7 +274,10 @@ const BorrowModal = ({ onClose }: IProps) => {
         {/* 2nd tab */}
         <Details
           transactionType={TrasanctionType.REPAY}
-          stringAmount={userAmount}
+          stringAmount={truncateNumber(
+            userAmount,
+            token.data.underlying.decimals
+          )}
           icon={token.data.underlying.icon}
           token={token}
           isBorrowing={true}

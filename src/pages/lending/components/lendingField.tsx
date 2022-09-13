@@ -1,8 +1,6 @@
 import styled from "styled-components";
 import { useState } from "react";
 import { TrasanctionType } from "./BorrowLimits";
-import { formatBalance } from "global/utils/utils";
-import { BigNumber } from "ethers";
 import { UserLMTokenDetails } from "../config/interfaces";
 
 type styleProps = {

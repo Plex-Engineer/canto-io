@@ -17,7 +17,6 @@ import { BigNumber } from "ethers";
 import {
   maxWithdrawalInUnderlying,
   userMaximumWithdrawal,
-  willWithdrawalGoOverLimit,
 } from "pages/lending/utils/supplyWithdrawLimits";
 
 //STYLING
@@ -127,7 +126,7 @@ const SupplyModal = ({ onClose }: IProps) => {
 
   function resetInput() {
     //if in supply tab and allowance is true or if withdraw is true
-    console.log("withdrawing " + isWithdrawing);
+    // console.log("withdrawing " + isWithdrawing);
     if ((!isWithdrawing && token.allowance) || isWithdrawing) {
       setInputState(InputState.ENTERAMOUNT);
     } else {
@@ -138,6 +137,7 @@ const SupplyModal = ({ onClose }: IProps) => {
   }
 
   function inputValidation(value: string, max: BigNumber) {
+    value = truncateNumber(value, token.data.underlying.decimals);
     if (inputState !== InputState.ENABLE) {
       if (isNaN(Number(value))) {
         setInputState(InputState.INVALID);
@@ -204,7 +204,6 @@ const SupplyModal = ({ onClose }: IProps) => {
             }
           }}
           onChange={(value) => {
-            value = truncateNumber(value, token.data.underlying.decimals);
             setUserAmount(value);
             inputValidation(value, token.balanceOf);
             setMax(false);
@@ -216,7 +215,10 @@ const SupplyModal = ({ onClose }: IProps) => {
         {/* 1st tab */}
         <Details
           transactionType={TrasanctionType.SUPPLY}
-          stringAmount={userAmount}
+          stringAmount={truncateNumber(
+            userAmount,
+            token.data.underlying.decimals
+          )}
           token={token}
           icon={token.data.underlying.icon}
           isBorrowing={false}
@@ -290,7 +292,6 @@ const SupplyModal = ({ onClose }: IProps) => {
             }
           }}
           onChange={(value) => {
-            value = truncateNumber(value, token.data.underlying.decimals);
             setUserAmount(value);
             inputValidation(
               value,
@@ -309,7 +310,10 @@ const SupplyModal = ({ onClose }: IProps) => {
           transactionType={TrasanctionType.WITHDRAW}
           icon={token.data.underlying.icon}
           token={token}
-          stringAmount={userAmount}
+          stringAmount={truncateNumber(
+            userAmount,
+            token.data.underlying.decimals
+          )}
           borrowLimit={position.totalBorrowLimit}
           borrowBalance={position.totalBorrow}
           isBorrowing={false}
@@ -335,7 +339,6 @@ const SupplyModal = ({ onClose }: IProps) => {
     <Container
       onScroll={(e) => {
         e.preventDefault();
-        console.log("scrolling");
       }}
     >
       {["PendingSignature", "Mining", "Success", "Fail", "Exception"].includes(
