@@ -5,7 +5,9 @@ const Container = styled.div`
   text-shadow: none;
   padding: 1rem;
   border: 1px solid transparent;
-
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
   .number {
     color: #707070;
   }
@@ -14,6 +16,7 @@ const Container = styled.div`
     font-weight: 300;
     font-size: 1.4rem;
     letter-spacing: -0.05em;
+    height: 3rem;
   }
 
   .details {
@@ -24,21 +27,25 @@ const Container = styled.div`
   }
   .options-1 {
     display: flex;
+    opacity: 1;
+    transition: all 0.2s ease-in-out;
   }
   .options-2 {
-    display: none;
-  }
+    display: flex;
+    opacity: 0;
 
+    justify-content: space-between;
+    transition: all 0.2s ease-in-out;
+  }
   &:hover {
     border: 1px solid var(--primary-color);
     cursor: pointer;
     .options-1 {
-      display: none;
+      opacity: 0;
     }
 
     .options-2 {
-      display: flex;
-      justify-content: space-between;
+      opacity: 1;
     }
   }
 `;
