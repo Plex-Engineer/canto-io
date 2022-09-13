@@ -1,5 +1,5 @@
 {
-  "name": "canto-bridge",
+  "name": "canto-master",
   "description": "This is a bridge application.",
   "version": "0.3.1",
   "private": true,
