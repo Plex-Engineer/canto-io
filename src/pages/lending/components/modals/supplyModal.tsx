@@ -264,6 +264,7 @@ const SupplyModal = ({ onClose }: IProps) => {
       token.price,
       token.data.underlying.decimals
     );
+    console.log(formatUnits(withdrawalLimit, token.data.underlying.decimals))
     return (
       <TabPanel>
         <div

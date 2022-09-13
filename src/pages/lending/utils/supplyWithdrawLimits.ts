@@ -1,6 +1,6 @@
 //used and limit both in terms of note, collateral factor is raised to 10^18
 
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 
 //percent of limit will give how much, in terms of underlying can be withdrawn to stay under this limit
 export function maxWithdrawalInUnderlying(
@@ -11,13 +11,18 @@ export function maxWithdrawalInUnderlying(
   price: BigNumber,
   tokenDecimals: number
 ) {
-  if (collateralFactor.isZero() || price.isZero() || percentOfLimit == 0) {
+  if (collateralFactor.isZero() || price.isZero()) {
+    return ethers.constants.MaxUint256;
+  }
+  if (percentOfLimit == 0) {
     return BigNumber.from(0);
   }
-  return limit
+  const max = limit
     .sub(used.mul(100).div(percentOfLimit))
     .mul(BigNumber.from(10).pow(18 + tokenDecimals))
     .div(collateralFactor.mul(price));
+
+  return max.isNegative() ? BigNumber.from(0) : max;
 }
 
 //will return boolean for if withdrawal of the token at its price will go over the limit
@@ -31,6 +36,9 @@ export function willWithdrawalGoOverLimit(
   price: BigNumber,
   tokenDecimals: number
 ) {
+  if (used.isZero()) {
+    return false;
+  }
   return maxWithdrawalInUnderlying(
     used,
     limit,
