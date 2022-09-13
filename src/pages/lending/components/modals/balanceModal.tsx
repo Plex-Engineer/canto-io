@@ -1,7 +1,11 @@
 import styled from "styled-components";
 import logo from "assets/logo.svg";
 import { useEffect } from "react";
-import { noteSymbol } from "global/utils/utils";
+import {
+  getTransactionStatusString,
+  noteSymbol,
+  transactionStatusActions,
+} from "global/utils/utils";
 import { useClaim } from "pages/lending/hooks/useTransaction";
 const Container = styled.div`
   background-color: #040404;
@@ -121,6 +125,7 @@ const BalanceModal = ({ value, onClose }: Props) => {
       setTimeout(onClose, 500);
     }
   }, [state.status]);
+  const statusObj = transactionStatusActions("claim");
   return (
     <Container>
       <div className="title">canto balance</div>
@@ -158,29 +163,17 @@ const BalanceModal = ({ value, onClose }: Props) => {
               send(value.wallet);
           }}
         >
-          {getStatus(state.status)}
+          {getTransactionStatusString(
+            statusObj.action,
+            statusObj.inAction,
+            statusObj.postAction,
+            state.status
+          )}
         </Button>
       )}
     </Container>
   );
 };
-
-function getStatus(status: string) {
-  switch (status) {
-    case "None":
-      return "Claim";
-    case "PendingSignature":
-      return "Waiting for confirmation";
-    case "Exception":
-      return "Couldn't claim";
-    case "Fail":
-      return "Couldn't claim";
-    case "Mining":
-      return "Claiming";
-    case "Success":
-      return "Claimed";
-  }
-}
 
 // 'None' | 'PendingSignature' | 'Mining' | 'Success' | 'Fail' | 'Exception'
 

@@ -122,7 +122,7 @@ interface Props {
   chainId?: number;
   account?: string;
 }
-const AddRemoveModal = ({ value, onClose, chainId, account }: Props) => {
+const AddRemoveModal = ({ value }: Props) => {
   const setModalType = useModals((state) => state.setModalType);
 
   return (

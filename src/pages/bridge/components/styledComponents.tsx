@@ -164,19 +164,19 @@ export const Center = styled.div`
   justify-items: center;
 `;
 
-const DestInput = styled.input`
-  border: 1px solid #333;
-  padding: 1rem;
-  width: 35rem;
-  background-color: black;
-  border: none;
-  font-size: 24px;
-  text-align: center;
-  color: white;
-  &::placeholder {
-    color: #999;
-  }
-  &:focus {
-    outline: none;
-  }
-`;
+// const DestInput = styled.input`
+//   border: 1px solid #333;
+//   padding: 1rem;
+//   width: 35rem;
+//   background-color: black;
+//   border: none;
+//   font-size: 24px;
+//   text-align: center;
+//   color: white;
+//   &::placeholder {
+//     color: #999;
+//   }
+//   &:focus {
+//     outline: none;
+//   }
+// `;

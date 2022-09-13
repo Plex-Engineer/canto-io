@@ -117,27 +117,33 @@ export const transactionStatusActions = (
   switch (actionType) {
     case "enable":
       return {
-        action: `enable  ${token}`,
-        inAction: `enabling  ${token}`,
-        postAction: "enabled",
+        action: `enable ${token}`,
+        inAction: `enabling ${token}`,
+        postAction: `enabled ${token}`,
       };
     case "increase allowance":
       return {
         action: "increase allowance",
         inAction: "increasing allowance",
-        postAction: "allowance increased",
+        postAction: "increased allowance",
       };
     case "send token":
       return {
         action: `send ${token}`,
         inAction: `sending ${token}`,
-        postAction: `${token} sent`,
+        postAction: `sent ${token}`,
       };
     case "add":
       return {
         action: "add liquidity",
         inAction: "adding liquidity",
         postAction: "added liquidity",
+      };
+    case "claim":
+      return {
+        action: "claim",
+        inAction: "claiming",
+        postAction: "claimed",
       };
     case "remove":
       return {

@@ -8,6 +8,7 @@ import AddRemoveModal from "./addRemove";
 import { RemoveLiquidityConfirmation } from "./removeConfirmation";
 import { AddLiquidityConfirmation } from "./addConfirmation";
 import EnableModal from "./enableModal";
+import { AllPairInfo } from "../hooks/useTokens";
 
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
@@ -35,7 +36,7 @@ const StyledPopup = styled(Popup)`
 
 interface Props {
   onClose: () => void;
-  data?: any;
+  data: AllPairInfo;
   chainId?: number;
   account?: string;
 }
@@ -59,19 +60,20 @@ const ModalManager = (props: Props) => {
       position="center center"
       nested
     >
-      <img
-        src={close}
-        style={{
-          position: "absolute",
-          top: ".5rem",
-          right: ".5rem",
-          width: "40px",
-          cursor: "pointer",
-          zIndex: "6",
-        }}
-        alt="close"
-        onClick={props.onClose}
-      />
+      <div role="button" tabIndex={0} onClick={props.onClose}>
+        <img
+          src={close}
+          style={{
+            position: "absolute",
+            top: ".5rem",
+            right: ".5rem",
+            width: "40px",
+            cursor: "pointer",
+            zIndex: "6",
+          }}
+          alt="close"
+        />
+      </div>
 
       {modalType === ModalType.ENABLE && (
         <EnableModal

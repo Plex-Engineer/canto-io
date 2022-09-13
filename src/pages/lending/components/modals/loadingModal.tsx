@@ -1,5 +1,9 @@
 import styled from "styled-components";
 import loading from "assets/loading.svg";
+import {
+  getTransactionStatusString,
+  transactionStatusActions,
+} from "global/utils/utils";
 interface ILoading {
   isLoading: boolean;
   status: string | undefined;
@@ -64,21 +68,13 @@ const Button = styled.button`
   }
 `;
 const LoadingModal = ({ status }: ILoading) => {
-  let currentStatus = "";
-  switch (status) {
-    case "PendingSignature":
-      currentStatus = "waiting for confirmation";
-      break;
-    case "Mining":
-      currentStatus = "validating";
-      break;
-    case "Success":
-      currentStatus = "successful";
-      break;
-    case "Exception":
-      currentStatus = "Cancelled";
-      break;
-  }
+  const statusObj = transactionStatusActions("");
+  const currentStatus = getTransactionStatusString(
+    statusObj.action,
+    statusObj.inAction,
+    statusObj.postAction,
+    status
+  );
   return (
     <Progress>
       <img src={loading} height={60} />

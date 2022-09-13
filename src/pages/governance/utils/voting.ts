@@ -1,5 +1,6 @@
 import { generateEndpointProposals } from "@tharsis/provider";
 import { createTxMsgVote } from "@tharsis/transactions";
+import { Chain, Fee } from "global/config/cosmosConstants";
 import {
   ethToCanto,
   getSenderObj,
@@ -10,17 +11,17 @@ export async function voteOnProposal(
   proposalID: number,
   proposalOption: number,
   nodeAddressIP: string,
-  fee: any,
-  chain: any,
+  fee: Fee,
+  chain: Chain,
   memo: string
 ) {
   // check metamask
   //@ts-ignore
   if (typeof window.ethereum !== "undefined") {
-    console.log("MetaMask is installed!");
+    // console.log("MetaMask is installed!");
   } else {
-    console.log("Please install Metamask!");
-    return;
+    console.error("Please install Metamask!");
+    return 0;
   }
 
   // get metamask account address
@@ -40,23 +41,17 @@ export async function voteOnProposal(
 
     const msg = createTxMsgVote(chain, senderObj, fee, memo, params);
 
-    const response = await signAndBroadcastTxMsg(
-      msg,
-      senderObj,
-      chain,
-      nodeAddressIP,
-      account
-    );
+    await signAndBroadcastTxMsg(msg, senderObj, chain, nodeAddressIP, account);
 
-    console.log("thank you for your vote");
+    // console.log("thank you for your vote");
 
     setTimeout(() => {
       window.location.reload();
     }, 4000);
     return 1;
   } catch (err) {
-    console.log("vote could not be placed");
-    console.log(err);
+    console.error("vote could not be placed");
+    console.error(err);
     return 0;
   }
 }
@@ -67,9 +62,9 @@ export async function getAccountVote(
 ) {
   //@ts-ignore
   if (typeof window.ethereum !== "undefined") {
-    console.log("MetaMask is installed!");
+    // console.log("MetaMask is installed!");
   } else {
-    console.log("Please install Metamask!");
+    console.error("Please install Metamask!");
     return "NONE";
   }
   //@ts-ignore

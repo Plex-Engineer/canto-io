@@ -431,10 +431,7 @@ interface Props {
 }
 
 export const AddLiquidityConfirmation = (props: Props) => {
-  const [modalType, confirmValues] = useModals((state) => [
-    state.modalType,
-    state.confirmationValues,
-  ]);
+  const [confirmValues] = useModals((state) => [state.confirmationValues]);
   const [expectedLP, setExpectedLP] = useState("0");
 
   const amountOut1 = Number(confirmValues.amount1).toFixed(

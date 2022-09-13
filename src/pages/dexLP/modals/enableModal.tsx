@@ -76,17 +76,6 @@ const Button = styled.button`
   }
 `;
 
-const DisabledButton = styled(Button)`
-  background-color: black;
-  color: #939393;
-  border: 1px solid #939393;
-  &:hover {
-    color: #eee;
-    cursor: default;
-    background-color: #222;
-  }
-`;
-
 interface AddAllowanceProps {
   pair: AllPairInfo;
   chainId: number | undefined;
@@ -188,10 +177,7 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
 };
 
 const RemoveAllowanceButton = (props: AddAllowanceProps) => {
-  const [setModalType, setConfirmationValues] = useModals((state) => [
-    state.setModalType,
-    state.setConfirmationValues,
-  ]);
+  const [setModalType] = useModals((state) => [state.setModalType]);
 
   const routerAddress = getRouterAddress(props.chainId);
   const { state: addLPAllowance, send: addLPAllowanceSend } = useSetAllowance({
@@ -273,7 +259,7 @@ export const PopIn = styled.div<showProps>`
   left: 0;
   z-index: 1;
 `;
-const EnableModal = ({ value, onClose, chainId, account }: Props) => {
+const EnableModal = ({ value, chainId }: Props) => {
   const [token1AllowanceStatus, setToken1AllowanceStatus] = useState("None");
   const [token2AllowanceStatus, setToken2AllowanceStatus] = useState("None");
 

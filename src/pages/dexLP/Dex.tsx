@@ -3,12 +3,15 @@ import Table from "./components/table";
 import Row, { TransactionRow } from "./components/row";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useNotifications } from "@usedapp/core";
+import { useNotifications, Notification } from "@usedapp/core";
 import useModals, { ModalType } from "./hooks/useModals";
 import { ModalManager } from "./modals/ModalManager";
 import { ethers } from "ethers";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import useDex, { AllPairInfo } from "pages/dexLP/hooks/useTokens";
+import useDex, {
+  AllPairInfo,
+  emptyPairInfo,
+} from "pages/dexLP/hooks/useTokens";
 import { noteSymbol, truncateNumber } from "global/utils/utils";
 import style from "./Dex.module.scss";
 
@@ -162,7 +165,7 @@ const Dex = () => {
     <Container style={style}>
       <div style={{ marginBottom: "75px" }}>
         <ModalManager
-          data={activePair}
+          data={activePair ?? emptyPairInfo}
           chainId={Number(networkInfo.chainId)}
           account={networkInfo.account}
           onClose={() => {

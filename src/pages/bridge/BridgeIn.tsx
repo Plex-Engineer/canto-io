@@ -3,7 +3,7 @@ import ethIcon from "assets/icons/ETH.svg";
 import TransferBox from "./components/TransferBox";
 import { GTokens, useGravityTokens } from "./hooks/useGravityTokens";
 import { useEffect, useState } from "react";
-import { useTokenStore } from "./stores/tokens";
+import { selectedEmptyToken, useTokenStore } from "./stores/tokens";
 import styled from "styled-components";
 import { TokenWallet } from "./components/TokenSelect";
 import { getCantoBalance, NativeGTokens } from "./hooks/useCosmosTokens";
@@ -123,7 +123,7 @@ const BridgeIn = () => {
         tokens={cantoGravityTokens}
         activeToken={tokenStore.selectedToken}
         onSelect={(value) => {
-          tokenStore.setSelectedToken(value);
+          tokenStore.setSelectedToken(value ?? selectedEmptyToken);
           resetCosmos();
           resetApprove();
         }}
