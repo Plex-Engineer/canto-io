@@ -1,93 +1,42 @@
-import styled from "@emotion/styled";
-import { Text } from "cantoui";
-import discord from "assets/discord.svg";
-import github from "assets/github.svg";
-import twitter from "assets/twitter.svg";
-import ImageButton from "./ImageButton";
-
-const Footer = () => {
+import "./footer.css";
+import discordIcon from "../../assets/discordIcon.png";
+import gitHubIcon from "../../assets/githubIcon.png";
+import cantoIcon from "../../assets/Favicon.svg";
+export const Footer = () => {
   return (
-    <Styled>
-      <div className="links">
-        <a href="https://canto.io/bugsPlaceholder">
-          <Text type="text">report bug</Text>
-        </a>
-        <a href="https://canto.io/documentsPlaceholder">
-          <Text type="text">document</Text>
-        </a>
-        <a href="https://canto.io/aboutPlaceholder">
-          <Text type="text">about canto</Text>
-        </a>
+    <footer id="footer" className="site-footer" role="contentinfo">
+      <div className="social-wrapper">
+        <ul>
+          <li>
+            <a href="https://docs.canto.io/">
+              <img src={cantoIcon} alt="Canto Logo" className="social-icon" />
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/CantoPublic">
+              <img
+                src="https://cdn1.iconfinder.com/data/icons/logotypes/32/twitter-128.png"
+                alt="Twitter Logo"
+                className="social-icon"
+              />
+            </a>
+          </li>
+          <li>
+            <a href="https://discord.gg/N3BxQhRx">
+              <img
+                src={discordIcon}
+                alt="Discord Logo"
+                className="social-icon"
+              />
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/Plex-Engineer/cantomaster">
+              <img src={gitHubIcon} alt="Github Logo" className="social-icon" />
+            </a>
+          </li>
+        </ul>
       </div>
-
-      <div className="links">
-        <Text
-          style={{
-            color: "var(--primary-darker-color)",
-          }}
-          type="text"
-        >
-          all rights reserved 2021-2022
-        </Text>
-        <div className="icon-links">
-          <ImageButton
-            src={discord}
-            alt="discord"
-            height={40}
-            onClick={() => {
-              window.open("https://discord.gg/cantoPlaceholder");
-            }}
-          />
-          <ImageButton
-            src={github}
-            alt="github"
-            height={40}
-            onClick={() => {
-              window.open("https://github.io/cantoPlaceholder");
-            }}
-          />
-          <ImageButton
-            src={twitter}
-            alt="twitter"
-            height={40}
-            onClick={() => {
-              window.open("https://twitter.com/cantoPlaceholder");
-            }}
-          />
-        </div>
-      </div>
-    </Styled>
+    </footer>
   );
 };
-
-const Styled = styled.div`
-  border-top: 1px solid var(--primary-color);
-  margin: 0 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 0;
-  .links {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-  }
-
-  .icon-links {
-    display: flex;
-
-    gap: 1rem;
-  }
-
-  @media (max-width: 1000px) {
-    flex-direction: column;
-
-    .links {
-      margin-top: 1rem;
-      flex-direction: column;
-      gap: 1rem;
-    }
-  }
-`;
-
-export default Footer;
