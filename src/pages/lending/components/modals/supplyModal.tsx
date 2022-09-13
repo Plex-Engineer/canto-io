@@ -295,7 +295,7 @@ const SupplyModal = ({ onClose }: IProps) => {
             setUserAmount(value);
             inputValidation(
               value,
-              withdrawalLimit.lt(token.supplyBalance)
+              token.collateral && withdrawalLimit.lt(token.supplyBalance)
                 ? withdrawalLimit
                 : token.supplyBalance
             );

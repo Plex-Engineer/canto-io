@@ -47,7 +47,7 @@ export function expectedBorrowLimitUsedInBorrowOrRepay(
   currentLimit: BigNumber
 ) {
   if (currentLimit.isZero()) {
-    return BigNumber.from(0);
+    return 0;
   }
   const expectedBorrowAmount = newBorrowAmount(
     borrow,
@@ -56,5 +56,7 @@ export function expectedBorrowLimitUsedInBorrowOrRepay(
     borrowBalance,
     price
   );
-  return expectedBorrowAmount.mul(100).div(currentLimit);
+
+  //since only used for hypotheticals, we can use numbers instead of big numbers to stop rounding to the nearest whole number
+  return (Number(expectedBorrowAmount) * 100) / Number(currentLimit);
 }

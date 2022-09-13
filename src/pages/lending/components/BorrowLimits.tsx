@@ -12,6 +12,7 @@ import {
   expectedBorrowLimitUsedInBorrowOrRepay,
   newBorrowAmount,
 } from "../utils/borrowRepayLimits";
+import React from "react";
 
 enum TransactionType {
   SUPPLY,
@@ -61,7 +62,7 @@ const Details = ({
   );
   const cBorrowLimitUsed = borrowLimit.isZero()
     ? 0
-    : borrowBalance.mul(100).div(borrowLimit).toNumber();
+    : (Number(borrowBalance) * 100) / Number(borrowLimit);
   const cBorrowLimitHypo = formatUnits(
     isBorrowing
       ? newBorrowAmount(
@@ -153,34 +154,31 @@ const Details = ({
         <p>borrow {isBorrowing ? "balance" : "limit"}:</p>
         <p>
           {noteSymbol + truncateNumber(cBorrowLimit) + " "}
-          {!amount.isZero() && (token.collateral || isBorrowing) ? (
-            <span>-&gt;</span>
+          {amount.gt(0) &&
+          (token.collateral || isBorrowing) &&
+          Number(cBorrowLimitHypo) > 0 ? (
+            <React.Fragment>
+              <span>-&gt;</span> {noteSymbol + truncateNumber(cBorrowLimitHypo)}
+            </React.Fragment>
           ) : null}{" "}
-          {!amount.isZero() && (token.collateral || isBorrowing)
-            ? noteSymbol + truncateNumber(cBorrowLimitHypo)
-            : null}
         </p>
       </Limits>
       <Limits>
         <p>borrow limit used:</p>
         <p>
-          {isNaN(Number(cBorrowLimitUsed))
-            ? "0% "
-            : truncateNumber(cBorrowLimitUsed.toString()) + "% "}
-          {!amount.isZero() && (token.collateral || isBorrowing) ? (
-            <span>-&gt;</span>
+          {truncateNumber(cBorrowLimitUsed.toString()) + "% "}
+          {amount.gt(0) &&
+          (token.collateral || isBorrowing) &&
+          cBorrowLimitUsedHypo > 0 ? (
+            <React.Fragment>
+              <span>-&gt;</span>{" "}
+              {truncateNumber(cBorrowLimitUsedHypo.toString()) + "%"}
+            </React.Fragment>
           ) : null}{" "}
-          {!amount.isZero() && (token.collateral || isBorrowing)
-            ? (Number(cBorrowLimitUsedHypo) <= 0
-                ? Number(cBorrowLimitUsedHypo)
-                : cBorrowLimitUsedHypo) + "%"
-            : null}
         </p>
       </Limits>
       <LimitBar
-        progress={
-          !token.collateral ? cBorrowLimitUsed : Number(cBorrowLimitUsedHypo)
-        }
+        progress={!token.collateral ? cBorrowLimitUsed : cBorrowLimitUsedHypo}
       />
     </div>
   );

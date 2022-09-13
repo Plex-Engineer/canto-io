@@ -80,7 +80,7 @@ export function expectedBorrowLimitUsedInSupplyOrWithdraw(
     currentLimit
   );
   if (expectedBorrowLimit.isZero()) {
-    return BigNumber.from(0);
+    return 0;
   }
   return currentBorrows.mul(100).div(expectedBorrowLimit).toNumber();
 }
