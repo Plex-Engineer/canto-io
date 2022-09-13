@@ -10,6 +10,7 @@ import { StylesDictionary } from "../../utils/StylesDictionary";
 import styled from "styled-components";
 import { Page } from "./Navbar";
 import { Link } from "react-router-dom";
+import useGlobalModals, { ModalType } from "../../stores/useModals";
 
 interface BurgerMenuProps {
   chainId: number;
@@ -22,6 +23,7 @@ export const BurgerMenu = ({
   currentPage,
   pageList,
 }: BurgerMenuProps) => {
+  const setModalType = useGlobalModals((state) => state.setModalType);
   return (
     <WrapperMenu styles={BurgerStyles}>
       <h2 className="title">terminal</h2>
@@ -44,7 +46,8 @@ export const BurgerMenu = ({
       <div style={styles.buttonDiv}>
         <OutlinedButton
           onClick={() => {
-            addTokens(chainId);
+            // addTokens(chainId);
+            setModalType(ModalType.TOKENS);
           }}
           style={styles.buttonStyle}
         >
