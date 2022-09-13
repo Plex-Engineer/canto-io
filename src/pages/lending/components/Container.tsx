@@ -72,7 +72,8 @@ export const Container = styled.div`
         width: 100%;
       }
       table {
-        width: 500px;
+        min-width: 600px;
+        width: 100%;
       }
     }
   }
@@ -96,6 +97,7 @@ export const Hero = styled.div`
   @media (max-width: 1000px) {
     flex-direction: column;
     margin: 0;
+    margin-top: 2rem;
     justify-content: center;
     align-items: flex-start;
     gap: 0.3rem;

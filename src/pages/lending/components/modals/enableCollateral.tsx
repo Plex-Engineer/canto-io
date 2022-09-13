@@ -58,6 +58,10 @@ const Container = styled.div`
     border-radius: 1px;
     color: var(--primary-color);
   }
+
+  @media (max-width: 1000px) {
+    width: 100%;
+  }
 `;
 
 const Button = styled.button`

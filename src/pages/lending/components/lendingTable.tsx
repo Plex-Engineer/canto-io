@@ -11,6 +11,7 @@ const Table = styled.table`
   border-collapse: collapse;
   border-spacing: 0;
   text-shadow: none;
+
   thead {
     text-transform: lowercase;
     font-size: 14px;
@@ -61,6 +62,7 @@ const Table = styled.table`
   }
   @media (max-width: 1000px) {
     width: 800px;
+
     margin: 0 2rem;
   }
 `;
@@ -74,8 +76,7 @@ const LendingTable = (props: Props) => {
   return (
     <div
       style={{
-        // overflowX: "auto",
-        width: "100%",
+        overflowX: "auto",
       }}
     >
       <Table>

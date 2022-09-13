@@ -27,32 +27,6 @@ const StyledPopup = styled(Popup)`
     border: 1px solid var(--primary-color);
     scroll-behavior: smooth;
     /* width */
-    &::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    /* Track */
-    &::-webkit-scrollbar-track {
-      background: #151515;
-    }
-
-    /* Handle */
-    &::-webkit-scrollbar-thumb {
-      box-shadow: inset 2 2 5px var(--primary-color);
-      background: #111111;
-    }
-
-    /* Handle on hover */
-    &::-webkit-scrollbar-thumb:hover {
-      background: #07e48c;
-    }
-
-    & {
-      overflow-y: auto;
-    }
-    &:hover::-webkit-scrollbar-thumb {
-      background: #353535;
-    }
 
     @media (max-width: 1000px) {
       width: 100%;

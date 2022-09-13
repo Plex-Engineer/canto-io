@@ -49,27 +49,7 @@ const Container = styled.div`
     scrollbar-color: var(--primary-color);
     scroll-behavior: smooth;
     /* width */
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    /* Track */
-    &::-webkit-scrollbar-track {
-      background: #151515;
-    }
-
-    /* Handle */
-    &::-webkit-scrollbar-thumb {
-      box-shadow: inset 2 2 5px var(--primary-color);
-
-      background: var(--primary-color);
-    }
-
-    /* Handle on hover */
-    &::-webkit-scrollbar-thumb:hover {
-      background: #07e48c;
-    }
-  }
+    
   .token-item {
     display: flex;
     font-weight: 400;

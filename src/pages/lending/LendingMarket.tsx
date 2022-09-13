@@ -35,6 +35,17 @@ const LendingMarket = () => {
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);
   const modalStore = useModalStore();
+  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 1000);
+
+  function handleWindowSizeChange() {
+    setIsMobile(window.innerWidth <= 1000);
+  }
+  useEffect(() => {
+    window.addEventListener("resize", handleWindowSizeChange);
+    return () => {
+      window.removeEventListener("resize", handleWindowSizeChange);
+    };
+  }, []);
 
   useEffect(() => {
     notifications.forEach((item) => {
@@ -155,7 +166,6 @@ const LendingMarket = () => {
     return (
       <div className="left">
         <p>supplying</p>
-
         <LendingTable
           columns={["asset", "apr", "rewards", "balance", "collateral"]}
           isLending
@@ -383,6 +393,8 @@ const LendingMarket = () => {
     ReactTooltip.rebuild();
   });
 
+  const [onLeftTab, setOnLeftTab] = useState(true);
+
   return (
     <Container className="lendingMarket">
       <ModalManager isOpen={modalStore.currentModal != ModalType.NONE} />
@@ -500,18 +512,25 @@ const LendingMarket = () => {
         </ToolTipL>
       </Popup>
 
-      <SpecialTabs></SpecialTabs>
+      <SpecialTabs
+        active={onLeftTab}
+        onLeftTabClick={() => {
+          setOnLeftTab(true);
+        }}
+        onRightTabClick={() => {
+          setOnLeftTab(false);
+        }}
+      />
 
       <div>
         <div
           className="tables"
           style={{
-            marginBottom: "4rem",
+            marginBottom: "2rem",
           }}
         >
-          {SupplyingTable()}
-
-          {BorrowingTable()}
+          {isMobile && onLeftTab && SupplyingTable()}
+          {isMobile && !onLeftTab && BorrowingTable()}
         </div>
 
         {/* This table is used for showing transaction status */}
@@ -563,6 +582,7 @@ const LendingMarket = () => {
                     }
                     return (
                       <TransactionRow
+                        key={msg.name + msg.type}
                         icon={msg.icon}
                         name={msg.name.toLowerCase()}
                         status={
@@ -578,6 +598,7 @@ const LendingMarket = () => {
                       />
                     );
                   }
+                  return null;
                 })}
               </LendingTable>
             ) : null}
@@ -609,33 +630,57 @@ const LendingMarket = () => {
             display: "flex",
           }}
         >
-          {SupplyTable()}
+          {/* if on mobile then check which tab is active */}
+          {isMobile && onLeftTab && SupplyTable()}
 
-          {BorrowTable()}
+          {/* if not on mobile the show*/}
+          {!isMobile && SupplyTable()}
+
+          {/* if on mobile then check which tab is active */}
+          {isMobile && !onLeftTab && BorrowTable()}
+
+          {/* if not on mobile the show*/}
+          {!isMobile && BorrowTable()}
         </div>
       </div>
     </Container>
   );
 };
 
-const SpecialTabs = () => {
+interface SpecialTabsProps {
+  onLeftTabClick: () => void;
+  onRightTabClick: () => void;
+  active: boolean;
+}
+
+interface ActiveProps {
+  active: boolean;
+}
+const SpecialTabs = (props: SpecialTabsProps) => {
   const TabBar = styled.div`
     display: flex;
   `;
-  const Tab = styled.div`
+  const Tab = styled.div<ActiveProps>`
     width: 50%;
     text-align: center;
     background-color: #0a2d15;
-    &:hover {
-      background-color: #0f742f;
-      cursor: pointer;
+    @media (max-width: 1000px) {
+      background-color: ${(props) => (props.active ? "#0f742f" : "#0a2d15")};
+      &:hover {
+        background-color: #0f742f;
+        cursor: pointer;
+      }
     }
   `;
 
   return (
     <TabBar>
-      <Tab>supply</Tab>
-      <Tab>borrow</Tab>
+      <Tab active={props.active} data-active onClick={props.onLeftTabClick}>
+        supply
+      </Tab>
+      <Tab active={!props.active} onClick={props.onRightTabClick}>
+        borrow
+      </Tab>
     </TabBar>
   );
 };
