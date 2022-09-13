@@ -2,7 +2,7 @@
 
 import { BigNumber } from "ethers";
 
-//percent of limit will give how much, in terms of note can be withdrawn to stay under this limit
+//percent of limit will give how much, in terms of underlying can be withdrawn to stay under this limit
 export function maxWithdrawalInUnderlying(
   used: BigNumber,
   limit: BigNumber,
@@ -85,42 +85,44 @@ export function expectedBorrowLimitUsedInSupplyOrWithdraw(
   return currentBorrows.mul(100).div(expectedBorrowLimit).toNumber();
 }
 
-//returns the borrow amount for the user in repay/borrow modal
-export function newBorrowAmount(
-  borrow: boolean,
-  amount: BigNumber,
+//return the BigNumber of the value when the user hits max, as well as the boolean for whether or not this is the maximum or 80% limit
+export function userMaximumWithdrawal(
+  supplyBalance: BigNumber,
   tokenDecimals: number,
-  borrowBalance: BigNumber,
-  price: BigNumber
-) {
-  if (tokenDecimals == 0) {
-    return BigNumber.from(borrowBalance);
-  }
-  const amountInNote = amount
-    .mul(price)
-    .div(BigNumber.from(10).pow(tokenDecimals));
-  return borrow
-    ? borrowBalance.add(amountInNote)
-    : borrowBalance.sub(amountInNote);
-}
-
-export function expectedBorrowLimitUsedInBorrowOrRepay(
-  borrow: boolean,
-  amount: BigNumber,
-  tokenDecimals: number,
-  borrowBalance: BigNumber,
+  totalBorrow: BigNumber,
+  borrowLimit: BigNumber,
+  collateralFactor: BigNumber,
   price: BigNumber,
-  currentLimit: BigNumber
-) {
-  if (currentLimit.isZero()) {
-    return BigNumber.from(0);
+  isCollateral: boolean
+): [BigNumber, boolean] {
+  const withdrawLimit80Percent =
+    isCollateral &&
+    willWithdrawalGoOverLimit(
+      totalBorrow,
+      borrowLimit,
+      collateralFactor,
+      80,
+      supplyBalance,
+      price,
+      tokenDecimals
+    )
+      ? maxWithdrawalInUnderlying(
+          totalBorrow,
+          borrowLimit,
+          collateralFactor,
+          80,
+          price,
+          tokenDecimals
+        )
+      : undefined;
+
+  if (!withdrawLimit80Percent) {
+    return [supplyBalance, true];
+  } else {
+    if (!withdrawLimit80Percent.lte(0)) {
+      return [withdrawLimit80Percent, false];
+    }
   }
-  const expectedBorrowAmount = newBorrowAmount(
-    borrow,
-    amount,
-    tokenDecimals,
-    borrowBalance,
-    price
-  );
-  return expectedBorrowAmount.mul(100).div(currentLimit);
+
+  return [BigNumber.from(0), false];
 }

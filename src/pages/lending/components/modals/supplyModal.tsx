@@ -16,6 +16,7 @@ import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import {
   maxWithdrawalInUnderlying,
+  userMaximumWithdrawal,
   willWithdrawalGoOverLimit,
 } from "pages/lending/utils/supplyWithdrawLimits";
 
@@ -189,6 +190,10 @@ const SupplyModal = ({ onClose }: IProps) => {
         />
         {/* supply */}
         <LendingField
+          token={token}
+          value={userAmount}
+          transactionType={TrasanctionType.SUPPLY}
+          canDoMax={true}
           onMax={() => {
             if (inputState != InputState.ENABLE) {
               setUserAmount(
@@ -198,14 +203,12 @@ const SupplyModal = ({ onClose }: IProps) => {
               setInputState(InputState.CONFIRM);
             }
           }}
-          value={userAmount}
           onChange={(value) => {
+            value = truncateNumber(value, token.data.underlying.decimals);
             setUserAmount(value);
             inputValidation(value, token.balanceOf);
             setMax(false);
           }}
-          transactionType={TrasanctionType.SUPPLY}
-          token={token}
           balance={truncateNumber(
             formatUnits(token.balanceOf, token.data.underlying.decimals)
           )}
@@ -242,26 +245,23 @@ const SupplyModal = ({ onClose }: IProps) => {
     );
   };
   const WithdrawTab = () => {
-    const withdrawLimit =
-      token.collateral &&
-      !willWithdrawalGoOverLimit(
-        position.totalBorrow,
-        position.totalBorrowLimit,
-        token.collateralFactor,
-        80,
-        token.supplyBalance,
-        token.price,
-        token.data.underlying.decimals
-      )
-        ? undefined
-        : maxWithdrawalInUnderlying(
-            position.totalBorrow,
-            position.totalBorrowLimit,
-            token.collateralFactor,
-            80,
-            token.price,
-            token.data.underlying.decimals
-          );
+    const [limit80Percent, withdrawalMax] = userMaximumWithdrawal(
+      token.supplyBalance,
+      token.data.underlying.decimals,
+      position.totalBorrow,
+      position.totalBorrowLimit,
+      token.collateralFactor,
+      token.price,
+      token.collateral
+    );
+    const withdrawalLimit = maxWithdrawalInUnderlying(
+      position.totalBorrow,
+      position.totalBorrowLimit,
+      token.collateralFactor,
+      100,
+      token.price,
+      token.data.underlying.decimals
+    );
     return (
       <TabPanel>
         <div
@@ -274,44 +274,28 @@ const SupplyModal = ({ onClose }: IProps) => {
           token={token}
           value={userAmount}
           transactionType={TrasanctionType.WITHDRAW}
-          limit={withdrawLimit}
+          canDoMax={withdrawalMax}
           //Withdraw
           onMax={() => {
             if (inputState != InputState.ENABLE) {
-              //check if we are in the withdraw state
-              if (!withdrawLimit) {
-                setUserAmount(
-                  formatUnits(
-                    token.supplyBalance,
-                    token.data.underlying.decimals
-                  )
-                );
-                setMax(true);
-                setInputState(InputState.CONFIRM);
+              setUserAmount(
+                formatUnits(limit80Percent, token.data.underlying.decimals)
+              );
+              setMax(withdrawalMax);
+              if (limit80Percent.isZero()) {
+                setInputState(InputState.ENTERAMOUNT);
               } else {
-                setUserAmount(
-                  formatUnits(
-                    withdrawLimit.gt(token.supplyBalance)
-                      ? token.supplyBalance
-                      : withdrawLimit,
-                    token.data.underlying.decimals
-                  )
-                );
-                setMax(false);
-                if (withdrawLimit.isZero()) {
-                  setInputState(InputState.ENTERAMOUNT);
-                } else {
-                  setInputState(InputState.CONFIRM);
-                }
+                setInputState(InputState.CONFIRM);
               }
             }
           }}
           onChange={(value) => {
+            value = truncateNumber(value, token.data.underlying.decimals);
             setUserAmount(value);
             inputValidation(
               value,
-              withdrawLimit && withdrawLimit.lt(token.supplyBalance)
-                ? withdrawLimit
+              withdrawalLimit.lt(token.supplyBalance)
+                ? withdrawalLimit
                 : token.supplyBalance
             );
             setMax(false);

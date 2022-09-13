@@ -60,11 +60,11 @@ const Max = styled.span`
 type Props = {
   balance: string;
   token: UserLMTokenDetails;
-  limit?: BigNumber;
   transactionType: TrasanctionType;
   onChange: (value: string) => void;
   onMax: () => void;
   value: string;
+  canDoMax: boolean;
 };
 
 const LendingField = (props: Props) => {
@@ -112,11 +112,7 @@ const LendingField = (props: Props) => {
         <p>{props.balance}</p>
         <p>
           <Max onClick={() => props.onMax()}>
-            {(props.transactionType != TrasanctionType.BORROW &&
-              props.limit === undefined) ||
-            props.transactionType == TrasanctionType.REPAY
-              ? "max"
-              : "80% limit"}
+            {!props.canDoMax ? "80% limit" : "max"}
           </Max>
         </p>
       </div>

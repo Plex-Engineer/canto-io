@@ -4,12 +4,14 @@ import { noteSymbol, truncateNumber } from "global/utils/utils";
 import { BigNumber } from "ethers";
 import { UserLMTokenDetails } from "../config/interfaces";
 import {
-  expectedBorrowLimitUsedInBorrowOrRepay,
   expectedBorrowLimitUsedInSupplyOrWithdraw,
-  newBorrowAmount,
   newBorrowLimit,
 } from "../utils/supplyWithdrawLimits";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
+import {
+  expectedBorrowLimitUsedInBorrowOrRepay,
+  newBorrowAmount,
+} from "../utils/borrowRepayLimits";
 
 enum TransactionType {
   SUPPLY,
