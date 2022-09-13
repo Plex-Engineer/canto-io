@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { OutlinedButton, Text, Token, TOKENS } from "cantoui";
 import CheckBox from "global/components/checkBox";
-const Container = styled.div`
+const Styled = styled.div`
   background-color: #040404;
   height: 36rem;
   width: 26rem;
@@ -27,7 +27,14 @@ const Container = styled.div`
     padding: 1rem;
     border-bottom: 1px solid var(--primary-color);
   }
-
+  .details {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.4rem 1rem;
+    /* margin-top: 0.3rem; */
+  }
   .scroll-view {
     overflow-y: auto;
     width: 100%;
@@ -40,21 +47,20 @@ const Container = styled.div`
   }
 `;
 
+function getAllTokens() {
+  const tokens: Token[] = [];
+  Object.entries(TOKENS).forEach(([key, token]) =>
+    Object.entries(token).forEach(([tkey, ttoken]) => tokens.push(ttoken))
+  );
+
+  return tokens;
+}
 const TokensModal = () => {
   const [selectedTokens, setSelectedTokens] = useState<Token[]>([]);
-
-  function getTotalLength() {
-    let total = 0;
-
-    Object.entries(TOKENS).forEach(([token]) =>
-      Object.entries(token).forEach(() => (total += 1))
-    );
-
-    return total;
-  }
+  const [selectAll, setSelectAll] = useState(false);
 
   return (
-    <Container>
+    <Styled>
       <div className="title">Import Tokens</div>
       <div className="scroll-view">
         {Object.entries(TOKENS).map(([key, token]) => (
@@ -65,6 +71,7 @@ const TokensModal = () => {
                 <TokenItem
                   token={ttoken}
                   key={tkey}
+                  allChecked={selectAll}
                   onSelect={(token, selected) => {
                     if (selected) {
                       setSelectedTokens([...selectedTokens, token]);
@@ -80,15 +87,10 @@ const TokensModal = () => {
           </div>
         ))}
       </div>
-      {
-        <p>
-          {selectedTokens.length}/{getTotalLength()}
-        </p>
-      }
 
       <OutlinedButton
         style={{
-          margin: "1.2rem",
+          marginTop: "1.2rem",
         }}
         onClick={() => {
           addTokens(selectedTokens);
@@ -96,12 +98,34 @@ const TokensModal = () => {
       >
         Import Tokens
       </OutlinedButton>
-    </Container>
+      {
+        <div className="details">
+          <p>
+            {selectedTokens.length}/{getAllTokens().length}
+          </p>
+          <div style={{ display: "flex", gap: "1rem" }}>
+            <p>select all</p>
+            <CheckBox
+              checked={selectAll}
+              onChange={(val) => {
+                setSelectAll(val);
+                if (!selectAll) {
+                  setSelectedTokens(getAllTokens());
+                } else {
+                  setSelectedTokens([]);
+                }
+              }}
+            />
+          </div>
+        </div>
+      }
+    </Styled>
   );
 };
 
 interface TokenItemProps {
   token: Token;
+  allChecked: boolean;
   onSelect: (token: Token, selected: boolean) => void;
 }
 
@@ -123,9 +147,11 @@ const ItemStyled = styled.div`
     cursor: pointer;
   }
 `;
-const TokenItem = ({ token, onSelect }: TokenItemProps) => {
-  const [checked, setChecked] = useState(false);
+const TokenItem = ({ token, onSelect, allChecked }: TokenItemProps) => {
+  const [checked, setChecked] = useState(allChecked);
 
+  //used for checking all the boxes
+  useEffect(() => setChecked(allChecked), [allChecked]);
   return (
     <ItemStyled
       onClick={() => {
@@ -138,7 +164,7 @@ const TokenItem = ({ token, onSelect }: TokenItemProps) => {
         <div className="type">{token.symbol}</div>
       </div>
       <CheckBox
-        checked={checked}
+        checked={checked || allChecked}
         onChange={(val) => {
           //   setChecked(val);
         }}
