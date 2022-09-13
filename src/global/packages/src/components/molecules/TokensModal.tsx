@@ -41,6 +41,18 @@ const Container = styled.div`
 `;
 
 const TokensModal = () => {
+  const [selectedTokens, setSelectedTokens] = useState<Token[]>([]);
+
+  function getTotalLength() {
+    let total = 0;
+
+    Object.entries(TOKENS).forEach(([token]) =>
+      Object.entries(token).forEach(() => (total += 1))
+    );
+
+    return total;
+  }
+
   return (
     <Container>
       <div className="title">Import Tokens</div>
@@ -48,15 +60,38 @@ const TokensModal = () => {
         {Object.entries(TOKENS).map(([key, token]) => (
           <div key={key}>
             <Text type="text">{key}</Text>
-            {Object.entries(token).map(([tkey, ttoken]) => (
-              <TokenItem token={ttoken} key={tkey} />
-            ))}
+            {Object.entries(token).map(([tkey, ttoken]) => {
+              return (
+                <TokenItem
+                  token={ttoken}
+                  key={tkey}
+                  onSelect={(token, selected) => {
+                    if (selected) {
+                      setSelectedTokens([...selectedTokens, token]);
+                    } else {
+                      setSelectedTokens(
+                        selectedTokens.filter((t) => t.symbol !== token.symbol)
+                      );
+                    }
+                  }}
+                />
+              );
+            })}
           </div>
         ))}
       </div>
+      {
+        <p>
+          {selectedTokens.length}/{getTotalLength()}
+        </p>
+      }
+
       <OutlinedButton
         style={{
           margin: "1.2rem",
+        }}
+        onClick={() => {
+          addTokens(selectedTokens);
         }}
       >
         Import Tokens
@@ -67,6 +102,7 @@ const TokensModal = () => {
 
 interface TokenItemProps {
   token: Token;
+  onSelect: (token: Token, selected: boolean) => void;
 }
 
 const ItemStyled = styled.div`
@@ -87,12 +123,14 @@ const ItemStyled = styled.div`
     cursor: pointer;
   }
 `;
-const TokenItem = ({ token }: TokenItemProps) => {
+const TokenItem = ({ token, onSelect }: TokenItemProps) => {
   const [checked, setChecked] = useState(false);
+
   return (
     <ItemStyled
       onClick={() => {
         setChecked(!checked);
+        onSelect(token, !checked);
       }}
     >
       <div className="row">
