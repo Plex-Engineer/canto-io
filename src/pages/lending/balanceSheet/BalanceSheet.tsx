@@ -7,19 +7,25 @@ import {
   useBalanceSheetData,
 } from "./useBalanceSheetData";
 import { useLPInfo } from "./useLPInfo";
-import { useTokens } from "../hooks/useTokens";
 import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { truncateNumber } from "global/utils/utils";
 import LendingTable from "pages/lending/components/lendingTable";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { noteSymbol } from "global/utils/utils";
+import { useLMTokenData } from "../hooks/useLMTokenData";
+import { useUserLMTokenData } from "../hooks/useUserLMTokenData";
+import { LMTokenDetails } from "../config/interfaces";
 
 export const BalanceSheet = () => {
   //get network info and token list
   const networkInfo = useNetworkInfo();
-  const allData = useTokens(networkInfo.account, Number(networkInfo.chainId));
-  const tokens = allData?.LMTokens;
+  const lmTokenData: LMTokenDetails[] = useLMTokenData(networkInfo.chainId);
+  const { userLMTokens } = useUserLMTokenData(
+    lmTokenData,
+    networkInfo.account,
+    networkInfo.chainId
+  );
 
   //get base token prices used for pricing LP tokens
   const [tokenPrices, setTokenPrices] = useState<TokenPriceObject[]>([]);
@@ -42,13 +48,10 @@ export const BalanceSheet = () => {
   const columns = ["ticker", "balance (supply + wallet)", "value"];
 
   const { assetTokens, debtTokens, LPTokens, totals } = useBalanceSheetData(
-    tokens,
+    userLMTokens,
     tokenPrices,
     LPInfo
   );
-  if (!tokens) {
-    return <div></div>;
-  }
 
   return (
     <div>

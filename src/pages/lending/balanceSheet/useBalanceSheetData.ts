@@ -1,7 +1,9 @@
 import { MAINPAIRS } from "pages/dexLP/config/pairs";
 import { TokenPriceObject } from "./tokenPrices";
 import { LPTokenInfo } from "./useLPInfo";
-import { LMToken } from "../config/interfaces";
+import { UserLMTokenDetails } from "../config/interfaces";
+import { formatUnits } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
 
 export interface BalanceSheetToken {
   icon: string;
@@ -29,7 +31,7 @@ export interface LPTokenData {
 }
 
 export function useBalanceSheetData(
-  tokens: LMToken[] | undefined,
+  tokens: UserLMTokenDetails[] | undefined,
   priceObject: TokenPriceObject[] | undefined,
   LPInfo: LPTokenInfo[] | undefined
 ): {
@@ -61,10 +63,15 @@ export function useBalanceSheetData(
           return priceToken.address == token.data.underlying.address;
         })?.priceInNote ?? 0;
 
-    if (Number(token.balanceOf) != 0 || Number(token.balanceOfC) != 0) {
-      const balanceOf = Number(token.supplyBalance) + Number(token.balanceOf);
+    if (!token.balanceOf.isZero() || !token.balanceOfC.isZero()) {
+      const balanceOf = Number(
+        formatUnits(
+          token.supplyBalance.add(token.balanceOf),
+          token.data.underlying.decimals
+        )
+      );
       const balanceOfNote = balanceOf * Number(price);
-      totalAssets += balanceOfNote;
+      totalAssets += Number(balanceOfNote);
       assetTokens.push({
         icon: token.data.underlying.icon,
         symbol: token.data.underlying.symbol,
@@ -72,8 +79,13 @@ export function useBalanceSheetData(
         balanceOfNote,
       });
     }
-    if (Number(token.borrowBalance) != 0) {
-      const balanceOf = Number(token.borrowBalance);
+    if (!token.borrowBalance.isZero()) {
+      const balanceOf = Number(
+        formatUnits(
+          token.supplyBalance.add(token.borrowBalance),
+          token.data.underlying.decimals
+        )
+      );
       const balanceOfNote = balanceOf * Number(price);
       totalDebt += balanceOfNote;
       debtTokens.push({
@@ -85,13 +97,18 @@ export function useBalanceSheetData(
     }
     if (
       token.data.underlying.isLP &&
-      (Number(token.balanceOf) != 0 || Number(token.balanceOfC) != 0)
+      (!token.balanceOf.isZero() || !token.balanceOfC.isZero())
     ) {
       const pair = MAINPAIRS.find(
         (pair) => pair.address == token.data.underlying.address
       );
       if (pair) {
-        const LPAmount = Number(token.balanceOf) + Number(token.supplyBalance);
+        const LPAmount = Number(
+          formatUnits(
+            token.supplyBalance.add(token.balanceOf),
+            token.data.underlying.decimals
+          )
+        );
         const LPTokenData = LPInfo?.find((lpToken) => {
           return lpToken.LPAddress == token.data.underlying.address;
         });
