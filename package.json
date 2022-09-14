@@ -43,7 +43,6 @@
     "reactjs-popup": "^2.0.5",
     "rollup-plugin-polyfill-node": "^0.10.2",
     "sass": "^1.54.0",
-    "web3": "^1.7.3",
     "zustand": "^4.0.0"
   },
   "devDependencies": {
