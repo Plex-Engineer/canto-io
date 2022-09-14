@@ -1,19 +1,19 @@
-import styled from 'styled-components';
+import styled from "@emotion/styled";
 
 const Sizes = {
-  'x-sm': 16,
+  "x-sm": 16,
   sm: 18,
   md: 20,
   lg: 22,
-  'x-lg': 28,
+  "x-lg": 28,
 };
 interface Props {
-  size?: 'x-sm' | 'sm' | 'md' | 'lg' | 'x-lg';
-  padding?: 'x-sm' | 'sm' | 'md' | 'lg' | 'x-lg';
+  size?: "x-sm" | "sm" | "md" | "lg" | "x-lg";
+  padding?: "x-sm" | "sm" | "md" | "lg" | "x-lg";
 }
 const PrimaryButton = styled.button<Props>`
   font-weight: 300;
-  font-size: ${({ size }) => Sizes[size ?? 'md'] + 'px'};
+  font-size: ${({ size }) => Sizes[size ?? "md"] + "px"};
   background-color: var(--primary-color);
   color: var(--pitch-black-color);
   padding: 0.4rem 2rem;
