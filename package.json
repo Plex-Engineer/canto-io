@@ -4,8 +4,8 @@
   "version": "0.3.3",
   "private": true,
   "author": {
-    "name": "Plex labs",
-    "url": "https://github.com/plexlabs"
+    "name": "Plex Engineer",
+    "url": "https://github.com/Plex-Engineer"
   },
   "scripts": {
     "dev": "vite",
