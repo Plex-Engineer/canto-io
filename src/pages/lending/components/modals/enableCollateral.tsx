@@ -4,7 +4,7 @@ import {
   useEnterMarkets,
   useExitMarket,
 } from "../../hooks/useTransaction";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { DisabledButton } from "../reactiveButton";
 import LoadingModal from "../modals/loadingModal";
 import useModalStore from "pages/lending/stores/useModals";
@@ -113,6 +113,7 @@ interface Props {
 const CollatModal = (props: Props) => {
   const modalStore = useModalStore();
   const token: UserLMTokenDetails = modalStore.activeToken;
+  const [userConfirmed, setUserConfirmed] = useState(false);
 
   const details: Details = {
     name: token.data.underlying.symbol ?? "",
@@ -166,11 +167,20 @@ const CollatModal = (props: Props) => {
       // </Container>
     );
   }
-  const willGoOverLimit = willWithdrawalGoOverLimit(
+  const willGoOverLimit80PercentLimit = willWithdrawalGoOverLimit(
     props.position.totalBorrow,
     props.position.totalBorrowLimit,
     token.collateralFactor,
     80,
+    token.supplyBalance,
+    token.price,
+    token.data.underlying.decimals
+  );
+  const willGoOverLimit100PercentLimit = willWithdrawalGoOverLimit(
+    props.position.totalBorrow,
+    props.position.totalBorrowLimit,
+    token.collateralFactor,
+    100,
     token.supplyBalance,
     token.price,
     token.data.underlying.decimals
@@ -190,10 +200,12 @@ const CollatModal = (props: Props) => {
       <h2>
         {!token.borrowBalance.isZero()
           ? `you cannot uncollateralize an asset that is currently being borrowed. please repay all ${token?.data.underlying.name.toLowerCase()} before uncollateralizing.`
-          : willGoOverLimit && props.decollateralize
-          ? "80% of your borrow limit will be used. please repay borrows or increase supply."
           : props.decollateralize
-          ? "disabling an asset as collateral will remove it from your borrowing limit, and no longer subject it to liquidation"
+          ? willGoOverLimit100PercentLimit
+            ? "your total borrow limit will be used. please repay borrows or increase supply."
+            : willGoOverLimit80PercentLimit
+            ? "80% or more of your total borrow limit will be used. please make sure you understand the risks of decollateralizing this asset."
+            : "disabling an asset as collateral will remove it from your borrowing limit, and no longer subject it to liquidation"
           : "enabling an asset as collateral increases your borrowing limit, but subjects the asset to liquidation"}
       </h2>
       <div
@@ -208,13 +220,33 @@ const CollatModal = (props: Props) => {
           marginTop: "0rem",
         }}
       >
-        {(!token.borrowBalance.isZero() || willGoOverLimit) &&
-        props.decollateralize ? (
-          <DisabledButton>
-            {!token.borrowBalance.isZero()
-              ? `currently borrowing ${token.data.underlying.symbol.toLowerCase()}`
-              : "80% borrow limit will be reached"}
-          </DisabledButton>
+        {props.decollateralize &&
+        (!token.borrowBalance.isZero() ||
+          willGoOverLimit100PercentLimit ||
+          (willGoOverLimit80PercentLimit && !userConfirmed)) ? (
+          !token.borrowBalance.isZero() ? (
+            <DisabledButton>{`currently borrowing ${token.data.underlying.symbol.toLowerCase()}`}</DisabledButton>
+          ) : willGoOverLimit100PercentLimit ? (
+            <DisabledButton>
+              {"100% borrow limit will be reached"}
+            </DisabledButton>
+          ) : (
+            <div>
+              <DisabledButton>
+                {"please confirm you understand the risks"}
+              </DisabledButton>
+              <br />
+              <a
+                role="button"
+                tabIndex={0}
+                style={{ textDecoration: "underline", cursor: "pointer" }}
+                onClick={() => setUserConfirmed(true)}
+              >
+                i understand this transaction will put me over 80% of my borrow
+                limit
+              </a>
+            </div>
+          )
         ) : (
           <Button
             onClick={() => {
