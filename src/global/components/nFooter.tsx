@@ -35,7 +35,7 @@ const Footer = () => {
             alt="discord"
             height={40}
             onClick={() => {
-              window.open("https://discord.gg/cantoPlaceholder");
+              window.open("https://discord.gg/N3BxQhRx");
             }}
           />
           <ImageButton
@@ -43,7 +43,7 @@ const Footer = () => {
             alt="github"
             height={40}
             onClick={() => {
-              window.open("https://github.io/cantoPlaceholder");
+              window.open("https://github.com/Plex-Engineer/canto-mono");
             }}
           />
           <ImageButton
@@ -51,7 +51,7 @@ const Footer = () => {
             alt="twitter"
             height={40}
             onClick={() => {
-              window.open("https://twitter.com/cantoPlaceholder");
+              window.open("https://twitter.com/CantoPublic");
             }}
           />
         </div>
