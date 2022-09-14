@@ -1,4 +1,4 @@
-import { LMBalance, LMToken, LMTokenDetails } from "../config/interfaces";
+import { UserLMTokenDetails, EmptyActiveLMToken } from "../config/interfaces";
 import create from "zustand";
 
 export enum ModalType {
@@ -18,14 +18,8 @@ interface ModalState {
   close: () => void;
   isOpen: (modal: ModalType) => boolean;
   redirect: (modal: ModalType) => void;
-  activeToken: LMToken | null;
-  setActiveToken: (token: LMToken | null) => void;
-  tokens: LMToken[] | undefined;
-  setTokens: (tokens: LMToken[] | undefined) => void;
-  balance: LMBalance | undefined;
-  setBalance: (balance: LMBalance | undefined) => void;
-  stats: LMTokenDetails | undefined;
-  setStats: (stats: LMTokenDetails | undefined) => void;
+  activeToken: UserLMTokenDetails;
+  setActiveToken: (token: UserLMTokenDetails) => void;
 }
 const useModalStore = create<ModalState>((set, get) => ({
   currentModal: ModalType.NONE,
@@ -35,14 +29,8 @@ const useModalStore = create<ModalState>((set, get) => ({
   redirect: (modal) => {
     set({ currentModal: modal });
   },
-  activeToken: null,
+  activeToken: EmptyActiveLMToken,
   setActiveToken: (token) => set({ activeToken: token }),
-  tokens: undefined,
-  setTokens: (tokens) => set({ tokens }),
-  balance: undefined,
-  setBalance: (balance) => set({ balance }),
-  stats: undefined,
-  setStats: (stats) => set({ stats }),
 }));
 
 export default useModalStore;

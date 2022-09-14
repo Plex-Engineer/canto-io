@@ -4,11 +4,18 @@ import { useEffect, useState } from "react";
 import { TransactionStatus } from "@usedapp/core";
 import { LoadingOverlay } from "./supplyModal";
 import { InputState, ReactiveButton } from "../reactiveButton";
-import { formatBalance } from "global/utils/utils";
+import { truncateNumber } from "global/utils/utils";
 import LendingField from "../lendingField";
 import { Details, TrasanctionType } from "../BorrowLimits";
 import LoadingModal from "./loadingModal";
 import useModalStore from "pages/lending/stores/useModals";
+import {
+  UserLMPosition,
+  UserLMTokenDetails,
+} from "pages/lending/config/interfaces";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { maxBorrowInUnderlying } from "pages/lending/utils/borrowRepayLimits";
+import { BigNumber } from "ethers";
 
 //STYLING
 const Container = styled.div`
@@ -63,7 +70,7 @@ const Container = styled.div`
   }
 `;
 
-export const Wallet = styled.div`
+const Wallet = styled.div`
   display: flex;
   justify-content: space-between;
   margin: 2rem 0 1.3rem 0;
@@ -83,73 +90,40 @@ export const Wallet = styled.div`
 
 interface IProps {
   onClose: () => void;
+  position: UserLMPosition;
 }
-const BorrowModal = ({ onClose }: IProps) => {
+const BorrowModal = ({ onClose, position }: IProps) => {
   const modalStore = useModalStore();
-  const stats: any = modalStore.stats;
-  const token: any = modalStore.activeToken;
+  const token: UserLMTokenDetails = modalStore.activeToken;
   const [transaction, setTransaction] = useState<TransactionStatus>();
   const [isRepaying, setIsRepaying] = useState(true);
+  const [isMax, setMax] = useState(false);
 
   const [inputState, setInputState] = useState(InputState.ENTERAMOUNT);
 
-  const [amount, setAmount] = useState("");
-  const [isMax, setMax] = useState(false);
+  const [userAmount, setUserAmount] = useState("");
 
   function resetInput() {
     //if in repay tab and allowance is true or if borrowing is true
-    console.log("in repay tab " + isRepaying);
     if ((isRepaying && token.allowance) || !isRepaying) {
       setInputState(InputState.ENTERAMOUNT);
     } else {
       setInputState(InputState.ENABLE);
     }
 
-    setAmount("");
+    setUserAmount("");
   }
 
-  function repayValidation(value: string, amount: number) {
-    if (value == "") {
-      setAmount("");
-    }
-    //TODO: if not enabled or borrow modal
+  function inputValidation(value: string, max: BigNumber) {
+    value = truncateNumber(value, token.data.underlying.decimals);
     if (inputState !== InputState.ENABLE) {
       if (isNaN(Number(value))) {
         setInputState(InputState.INVALID);
       } else if (value.length < 1 || Number(value) == 0) {
         setInputState(InputState.ENTERAMOUNT);
-      } else if (Math.abs(Number(value)) > amount) {
-        setAmount(value);
-
+      } else if (parseUnits(value, token.data.underlying.decimals).gt(max)) {
         setInputState(InputState.NOFUNDS);
       } else {
-        setAmount(value);
-
-        setInputState(InputState.CONFIRM);
-      }
-    }
-  }
-  function borrowValidation(value: string, maxAmount: number) {
-    if (value == "") {
-      setAmount("");
-    }
-
-    //TODO: if not enabled or borrow modal
-    if (inputState !== InputState.ENABLE) {
-      if (isNaN(Number(value))) {
-        setInputState(InputState.INVALID);
-      } else if (ExpectedBorrowLimitUsedIfBorrowing(Number(value)) > 100) {
-        setAmount(value);
-
-        setInputState(InputState.NOFUNDS);
-      } else if (
-        (value.length < 1 || Number(value) == 0) &&
-        ExpectedBorrowLimitUsedIfBorrowing(Number(value)) <= 100
-      ) {
-        setInputState(InputState.ENTERAMOUNT);
-      } else {
-        setAmount(value);
-
         setInputState(InputState.CONFIRM);
       }
     }
@@ -160,14 +134,13 @@ const BorrowModal = ({ onClose }: IProps) => {
       <Wallet>
         <p>currently borrowing</p>
         <p>
-          {formatBalance(token.borrowBalance)} {token.data.underlying.symbol}
+          {truncateNumber(
+            formatUnits(token.borrowBalance, token.data.underlying.decimals)
+          )}{" "}
+          {token.data.underlying.symbol}
         </p>
       </Wallet>
     );
-  }
-
-  function borrowAmount() {
-    return (stats.totalBorrowLimit * 0.8 - stats.totalBorrow) / token.price;
   }
 
   function WalletForRepay() {
@@ -175,25 +148,30 @@ const BorrowModal = ({ onClose }: IProps) => {
       <Wallet>
         <p>wallet balance</p>
         <p>
-          {formatBalance(token.balanceOf)} {token.data.underlying.symbol}
+          {truncateNumber(
+            formatUnits(token.balanceOf, token.data.underlying.decimals)
+          )}{" "}
+          {token.data.underlying.symbol}
         </p>
       </Wallet>
     );
   }
 
-  //Hypothetical Borrow Balance if Borrowing
-  function ExpectedBorrowBalanceIfBorrowing(amount: number) {
-    return stats.totalBorrowLimitUsed + token.price * amount;
-  }
-
-  //Hypothetical Borrow Limit Used If Borrowing
-  function ExpectedBorrowLimitUsedIfBorrowing(amount: number) {
-    return (
-      (ExpectedBorrowBalanceIfBorrowing(amount) / stats.totalBorrowLimit) * 100
-    );
-  }
-
   const BorrowTab = () => {
+    const borrowLimit80 = maxBorrowInUnderlying(
+      position.totalBorrow,
+      position.totalBorrowLimit,
+      80,
+      token.price,
+      token.data.underlying.decimals
+    );
+    const borrowLimit100 = maxBorrowInUnderlying(
+      position.totalBorrow,
+      position.totalBorrowLimit,
+      100,
+      token.price,
+      token.data.underlying.decimals
+    );
     return (
       <TabPanel>
         <div
@@ -204,52 +182,52 @@ const BorrowModal = ({ onClose }: IProps) => {
         />
         {/* borrow */}
         <LendingField
-          onMax={(value) => {
+          token={token}
+          value={userAmount}
+          transactionType={TrasanctionType.BORROW}
+          canDoMax={false}
+          onMax={() => {
             if (inputState != InputState.ENABLE) {
-              const val = borrowAmount();
-
-              if (val > 0) {
-                setInputState(InputState.CONFIRM);
-              } else {
-                setInputState(InputState.ENTERAMOUNT);
-              }
-              setAmount(val.toFixed(token.data.underlying.decimals));
               setMax(true);
+              if (borrowLimit80.lte(0)) {
+                setInputState(InputState.ENTERAMOUNT);
+                setUserAmount("0");
+              } else {
+                setUserAmount(
+                  formatUnits(borrowLimit80, token.data.underlying.decimals)
+                );
+                setInputState(InputState.CONFIRM);
+              }
             }
           }}
-          limit={borrowAmount() > 0 ? borrowAmount() : 0}
-          value={amount}
           onChange={(value) => {
-            borrowValidation(value, token.supplyBalance);
+            setUserAmount(value);
+            inputValidation(value, borrowLimit100);
             setMax(false);
           }}
-          transactionType={TrasanctionType.BORROW}
-          token={token}
-          type={token.data.underlying.name}
-          balance={token.balanceOf}
+          balance={truncateNumber(
+            formatUnits(token.borrowBalance, token.data.underlying.decimals)
+          )}
         />
         {/* 1st tab */}
         <Details
           transactionType={TrasanctionType.BORROW}
-          amount={Number(amount)}
+          stringAmount={truncateNumber(
+            userAmount,
+            token.data.underlying.decimals
+          )}
           token={token}
           icon={token.data.underlying.icon}
           isBorrowing={true}
-          borrowLimit={stats.totalBorrowLimit}
-          borrowBalance={stats.totalBorrowLimitUsed}
-          borrowLimitUsed={Number(
-            (
-              (stats.totalBorrowLimitUsed / stats.totalBorrowLimit) *
-              100
-            ).toFixed(2)
-          )}
+          borrowLimit={position.totalBorrowLimit}
+          borrowBalance={position.totalBorrow}
         />
 
         <ReactiveButton
           transactionType={TrasanctionType.BORROW}
           state={inputState}
           token={token}
-          amount={amount}
+          amount={userAmount}
           isEth={token.data.symbol == "cCANTO"}
           max={isMax}
           onTransaction={(e) => {
@@ -262,6 +240,9 @@ const BorrowModal = ({ onClose }: IProps) => {
     );
   };
   const RepayTab = () => {
+    const repayLimit = token.balanceOf.lt(token.borrowBalance)
+      ? token.balanceOf
+      : token.borrowBalance;
     return (
       <TabPanel>
         <div
@@ -272,43 +253,40 @@ const BorrowModal = ({ onClose }: IProps) => {
         />
         <LendingField
           token={token}
-          value={amount}
+          value={userAmount}
           transactionType={TrasanctionType.REPAY}
-          limit={Math.min(token.balanceOf, token.borrowBalance)}
+          canDoMax={true}
           //repay
-          onMax={(value) => {
+          onMax={() => {
             if (inputState != InputState.ENABLE) {
-              //check if we are in the withdraw state
-              const val = Math.min(token.balanceOf, token.borrowBalance);
-              setAmount(val.toString());
+              setUserAmount(
+                formatUnits(repayLimit, token.data.underlying.decimals)
+              );
               setMax(true);
               setInputState(InputState.CONFIRM);
             }
           }}
           onChange={(value) => {
-            repayValidation(
-              value,
-              Math.min(token.balanceOf, token.borrowBalance)
-            );
+            setUserAmount(value);
+            inputValidation(value, repayLimit);
             setMax(false);
           }}
-          balance={token.borrowBalance}
+          balance={truncateNumber(
+            formatUnits(token.borrowBalance, token.data.underlying.decimals)
+          )}
         />
         {/* 2nd tab */}
         <Details
           transactionType={TrasanctionType.REPAY}
+          stringAmount={truncateNumber(
+            userAmount,
+            token.data.underlying.decimals
+          )}
           icon={token.data.underlying.icon}
           token={token}
-          amount={Number(amount)}
-          borrowLimit={stats.totalBorrowLimit}
-          borrowLimitUsed={Number(
-            (
-              (stats.totalBorrowLimitUsed / stats.totalBorrowLimit) *
-              100
-            ).toFixed(2)
-          )}
-          borrowBalance={stats.totalBorrowLimitUsed}
           isBorrowing={true}
+          borrowLimit={position.totalBorrowLimit}
+          borrowBalance={position.totalBorrow}
         />
         <ReactiveButton
           onTransaction={(e) => {
@@ -318,7 +296,7 @@ const BorrowModal = ({ onClose }: IProps) => {
           isEth={token.data.symbol == "cCANTO"}
           state={inputState}
           token={token}
-          amount={amount}
+          amount={userAmount}
           transactionType={
             inputState != InputState.ENABLE
               ? TrasanctionType.REPAY

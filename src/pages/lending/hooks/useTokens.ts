@@ -4,7 +4,7 @@ import { BigNumber, Contract } from "ethers";
 import { ethers } from "ethers";
 import { CTOKENS, CTOKEN, CantoTestnet, ADDRESSES } from "cantoui";
 import { cTokensBase, mainnetBasecTokens } from "../config/lendingMarketTokens";
-import { LMBalance, LMToken, LMTokenDetails } from "../config/interfaces";
+import { UserLMRewards, LMToken, UserLMPosition } from "../config/interfaces";
 import {
   cERC20Abi,
   comptrollerAbi,
@@ -20,7 +20,7 @@ export function useTokens(
 ):
   | {
       LMTokens: LMToken[];
-      balances: LMTokenDetails;
+      balances: UserLMPosition;
     }
   | undefined {
   const tokens: CTOKEN[] =
@@ -328,7 +328,7 @@ export function useTokens(
 
     const canto = LMTokens.find((item) => item.data.symbol == "cCANTO");
 
-    const balance: LMBalance = {
+    const balance: UserLMRewards = {
       walletBalance: canto?.balanceOf,
       price: canto?.price,
       accrued: totalRewards + Number(cantoAccrued),
@@ -336,7 +336,7 @@ export function useTokens(
       wallet: account,
     };
 
-    const balances: LMTokenDetails = {
+    const balances: UserLMPosition = {
       totalSupply,
       totalBorrow,
       totalBorrowLimit,

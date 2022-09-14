@@ -1,8 +1,20 @@
 import styled from "@emotion/styled";
 import CANTO from "assets/icons/canto.png";
-import { noteSymbol } from "global/utils/utils";
+import { noteSymbol, truncateNumber } from "global/utils/utils";
+import { BigNumber } from "ethers";
+import { UserLMTokenDetails } from "../config/interfaces";
+import {
+  expectedBorrowLimitUsedInSupplyOrWithdraw,
+  newBorrowLimit,
+} from "../utils/supplyWithdrawLimits";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
+import {
+  expectedBorrowLimitUsedInBorrowOrRepay,
+  newBorrowAmount,
+} from "../utils/borrowRepayLimits";
+import React from "react";
 
-enum TrasanctionType {
+enum TransactionType {
   SUPPLY,
   WITHDRAW,
   BORROW,
@@ -11,14 +23,13 @@ enum TrasanctionType {
 }
 
 interface IDetailProps {
-  borrowLimit: number;
-  borrowLimitUsed: number;
+  borrowLimit: BigNumber;
   icon: string;
-  amount: number;
-  token: any;
+  stringAmount: string;
+  token: UserLMTokenDetails;
   isBorrowing: boolean;
-  transactionType: TrasanctionType;
-  borrowBalance: number;
+  transactionType: TransactionType;
+  borrowBalance: BigNumber;
 }
 
 const Limits = styled.div`
@@ -34,57 +45,62 @@ const Limits = styled.div`
 
 const Details = ({
   borrowLimit,
-  borrowLimitUsed,
   icon,
-  amount,
+  stringAmount,
   token,
   isBorrowing,
   transactionType,
   borrowBalance,
 }: IDetailProps) => {
-  //Hypothetical Borrow Limit if Amount is supplied
-  function ExpectedBorrowLimit() {
-    const additionalBorrowLimit =
-      token.collateralFactor *
-      (transactionType == TrasanctionType.SUPPLY ? amount : -amount);
-    const additionalBorrowLimitInNote = additionalBorrowLimit * token.price;
-    return additionalBorrowLimitInNote + borrowLimit;
-  }
-
-  //Hypothetical Borrow Limit Used If About to supply/withdraw
-  function ExpectedBorrowLimitUsed(ExpectedBorrowLimit: number) {
-    return borrowBalance / ExpectedBorrowLimit;
-  }
-
-  //Hypothetical Borrow Balance if Borrowing
-  function ExpectedBorrowBalanceIfBorrowing() {
-    return (
-      borrowBalance +
-      token.price *
-        (transactionType == TrasanctionType.REPAY ? -amount : amount)
-    );
-  }
-
-  //Hypothetical Borrow Limit Used If Borrowing
-  function ExpectedBorrowLimitUsedIfBorrowing() {
-    return (ExpectedBorrowBalanceIfBorrowing() / borrowLimit) * 100;
-  }
-
-  const cBorrowLimit = isBorrowing
-    ? borrowBalance.toFixed(2)
-    : borrowLimit.toFixed(2);
-
-  const cBorrowLimitHypo = isBorrowing
-    ? ExpectedBorrowBalanceIfBorrowing().toFixed(2)
-    : ExpectedBorrowLimit().toFixed(2);
-
-  const cBorrowLimitUsed = borrowLimitUsed.toFixed(2);
-
-  const cBorrowLimitUsedHypo = (
+  const amount =
+    isNaN(Number(stringAmount)) || !stringAmount || Number(stringAmount) <= 0
+      ? BigNumber.from(0)
+      : parseUnits(stringAmount, token.data.underlying.decimals);
+  const cBorrowLimit = formatUnits(
+    isBorrowing ? borrowBalance : borrowLimit,
+    18
+  );
+  const cBorrowLimitUsed = borrowLimit.isZero()
+    ? 0
+    : (Number(borrowBalance) * 100) / Number(borrowLimit);
+  const cBorrowLimitHypo = formatUnits(
     isBorrowing
-      ? ExpectedBorrowLimitUsedIfBorrowing()
-      : ExpectedBorrowLimitUsed(ExpectedBorrowLimit()) * 100
-  ).toFixed(2);
+      ? newBorrowAmount(
+          transactionType == TransactionType.BORROW,
+          amount,
+          token.data.underlying.decimals,
+          borrowBalance,
+          token.price
+        )
+      : newBorrowLimit(
+          transactionType == TransactionType.SUPPLY,
+          amount,
+          token.data.underlying.decimals,
+          token.collateralFactor,
+          token.price,
+          borrowLimit
+        ),
+    18
+  );
+
+  const cBorrowLimitUsedHypo = isBorrowing
+    ? expectedBorrowLimitUsedInBorrowOrRepay(
+        transactionType == TransactionType.BORROW,
+        amount,
+        token.data.underlying.decimals,
+        borrowBalance,
+        token.price,
+        borrowLimit
+      )
+    : expectedBorrowLimitUsedInSupplyOrWithdraw(
+        transactionType == TransactionType.SUPPLY,
+        amount,
+        token.data.underlying.decimals,
+        token.collateralFactor,
+        token.price,
+        borrowLimit,
+        borrowBalance
+      );
 
   return (
     <div>
@@ -132,41 +148,37 @@ const Details = ({
       </Limits>
       <Limits>
         <p>collateral factor:</p>
-        <p>{token.collateralFactor * 100}%</p>
+        <p>{truncateNumber(formatUnits(token.collateralFactor.mul(100)))}%</p>
       </Limits>
       <Limits>
         <p>borrow {isBorrowing ? "balance" : "limit"}:</p>
         <p>
-          {noteSymbol}
-          {cBorrowLimit}{" "}
-          {amount > 0 && (token.collateral || isBorrowing) ? (
-            <span>-&gt;</span>
+          {noteSymbol + truncateNumber(cBorrowLimit) + " "}
+          {amount.gt(0) &&
+          (token.collateral || isBorrowing) &&
+          Number(cBorrowLimitHypo) > 0 ? (
+            <React.Fragment>
+              <span>-&gt;</span> {noteSymbol + truncateNumber(cBorrowLimitHypo)}
+            </React.Fragment>
           ) : null}{" "}
-          {(amount && (token.collateral || isBorrowing)) > 0
-            ? noteSymbol + cBorrowLimitHypo
-            : null}
         </p>
       </Limits>
       <Limits>
         <p>borrow limit used:</p>
         <p>
-          {isNaN(Number(cBorrowLimitUsed)) ? 0 : cBorrowLimitUsed}%{" "}
-          {(amount && (token.collateral || isBorrowing)) > 0 ? (
-            <span>-&gt;</span>
+          {truncateNumber(cBorrowLimitUsed.toString()) + "% "}
+          {amount.gt(0) &&
+          (token.collateral || isBorrowing) &&
+          cBorrowLimitUsedHypo > 0 ? (
+            <React.Fragment>
+              <span>-&gt;</span>{" "}
+              {truncateNumber(cBorrowLimitUsedHypo.toString()) + "%"}
+            </React.Fragment>
           ) : null}{" "}
-          {amount > 0 && (token.collateral || isBorrowing)
-            ? (Number(cBorrowLimitUsedHypo) <= 0
-                ? Number(cBorrowLimitUsedHypo)
-                : cBorrowLimitUsedHypo) + "%"
-            : null}
         </p>
       </Limits>
       <LimitBar
-        progress={
-          !(token.collateral || isBorrowing)
-            ? Number(cBorrowLimitUsed)
-            : Number(cBorrowLimitUsedHypo)
-        }
+        progress={!token.collateral ? cBorrowLimitUsed : cBorrowLimitUsedHypo}
       />
     </div>
   );
@@ -208,4 +220,4 @@ const LimitBar = ({ progress }: LimitBarProps) => {
   );
 };
 
-export { Details, LimitBar, TrasanctionType };
+export { Details, LimitBar, TransactionType as TrasanctionType };

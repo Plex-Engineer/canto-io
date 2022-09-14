@@ -190,3 +190,10 @@ export const TinyTable = styled.div`
    
   } */
 `;
+export const ToolTipL = styled.div`
+  border: 1px solid var(--primary-color);
+  background-color: #111;
+  padding: 1rem;
+  width: 20rem;
+  color: white;
+`;

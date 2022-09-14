@@ -8,6 +8,11 @@ import { useEffect } from "react";
 import { DisabledButton } from "../reactiveButton";
 import LoadingModal from "../modals/loadingModal";
 import useModalStore from "pages/lending/stores/useModals";
+import {
+  UserLMPosition,
+  UserLMTokenDetails,
+} from "pages/lending/config/interfaces";
+import { willWithdrawalGoOverLimit } from "pages/lending/utils/supplyWithdrawLimits";
 const Container = styled.div`
   background-color: #040404;
   padding: 2rem;
@@ -102,17 +107,17 @@ const APY = styled.div`
 interface Props {
   onClose: (result: boolean) => void;
   decollateralize?: boolean;
+  position: UserLMPosition;
 }
 
 const CollatModal = (props: Props) => {
   const modalStore = useModalStore();
-  const stats: any = modalStore.stats;
-  const token: any = modalStore.activeToken;
+  const token: UserLMTokenDetails = modalStore.activeToken;
 
   const details: Details = {
-    name: token.data.underlying.symbol,
-    address: token.data.address,
-    icon: token.data.underlying.icon,
+    name: token.data.underlying.symbol ?? "",
+    address: token.data.address ?? "",
+    icon: token.data.underlying.icon ?? "",
     amount: "0",
     type: props.decollateralize ? "Decollateralize" : "Collateralize",
   };
@@ -161,16 +166,15 @@ const CollatModal = (props: Props) => {
       // </Container>
     );
   }
-  function withdrawAmount() {
-    return (
-      (stats.totalBorrowLimit - stats.totalBorrowLimitUsed / 0.8) /
-      token.price /
-      token.collateralFactor
-    );
-  }
-  function ifLimit() {
-    return withdrawAmount() < token.supplyBalance;
-  }
+  const willGoOverLimit = willWithdrawalGoOverLimit(
+    props.position.totalBorrow,
+    props.position.totalBorrowLimit,
+    token.collateralFactor,
+    80,
+    token.supplyBalance,
+    token.price,
+    token.data.underlying.decimals
+  );
   return (
     <Container>
       <img
@@ -184,9 +188,9 @@ const CollatModal = (props: Props) => {
       <h2>{token.data.underlying.name}</h2>
 
       <h2>
-        {token.borrowBalance > 0
-          ? `you cannot uncollateralize an asset that is currently being borrowed. please repay all ${token.data.underlying.name.toLowerCase()} before uncollateralizing.`
-          : ifLimit() && props.decollateralize
+        {!token.borrowBalance.isZero()
+          ? `you cannot uncollateralize an asset that is currently being borrowed. please repay all ${token?.data.underlying.name.toLowerCase()} before uncollateralizing.`
+          : willGoOverLimit && props.decollateralize
           ? "80% of your borrow limit will be used. please repay borrows or increase supply."
           : props.decollateralize
           ? "disabling an asset as collateral will remove it from your borrowing limit, and no longer subject it to liquidation"
@@ -204,9 +208,10 @@ const CollatModal = (props: Props) => {
           marginTop: "0rem",
         }}
       >
-        {(token.borrowBalance > 0 || ifLimit()) && props.decollateralize ? (
+        {(!token.borrowBalance.isZero() || willGoOverLimit) &&
+        props.decollateralize ? (
           <DisabledButton>
-            {token.borrowBalance > 0
+            {!token.borrowBalance.isZero()
               ? `currently borrowing ${token.data.underlying.symbol.toLowerCase()}`
               : "80% borrow limit will be reached"}
           </DisabledButton>

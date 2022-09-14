@@ -6,8 +6,18 @@ import { Details, TrasanctionType } from "../BorrowLimits";
 import { TransactionStatus } from "@usedapp/core";
 import { InputState, ReactiveButton } from "../reactiveButton";
 import LoadingModal from "./loadingModal";
-import { formatBalance } from "global/utils/utils";
+import { truncateNumber } from "global/utils/utils";
 import useModalStore from "pages/lending/stores/useModals";
+import {
+  UserLMPosition,
+  UserLMTokenDetails,
+} from "pages/lending/config/interfaces";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
+import {
+  maxWithdrawalInUnderlying,
+  userMaximumWithdrawal,
+} from "pages/lending/utils/supplyWithdrawLimits";
 
 //STYLING
 export const LoadingOverlay = styled.div`
@@ -93,13 +103,13 @@ export const Wallet = styled.div`
 `;
 
 interface IProps {
+  position: UserLMPosition;
   onClose: () => void;
 }
 
-const SupplyModal = ({ onClose }: IProps) => {
+const SupplyModal = ({ onClose, position }: IProps) => {
   const modalStore = useModalStore();
-  const stats: any = modalStore.stats;
-  const token: any = modalStore.activeToken;
+  const token: UserLMTokenDetails = modalStore.activeToken;
   const [transaction, setTransaction] = useState<TransactionStatus>();
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isMax, setMax] = useState(false);
@@ -108,7 +118,7 @@ const SupplyModal = ({ onClose }: IProps) => {
     !token.allowance ? InputState.ENABLE : InputState.ENTERAMOUNT
   );
 
-  const [amount, setAmount] = useState("");
+  const [userAmount, setUserAmount] = useState("");
 
   useEffect(() => {
     if (
@@ -120,64 +130,29 @@ const SupplyModal = ({ onClose }: IProps) => {
 
   function resetInput() {
     //if in supply tab and allowance is true or if withdraw is true
-    console.log("withdrawing " + isWithdrawing);
+    // console.log("withdrawing " + isWithdrawing);
     if ((!isWithdrawing && token.allowance) || isWithdrawing) {
       setInputState(InputState.ENTERAMOUNT);
     } else {
       setInputState(InputState.ENABLE);
     }
 
-    setAmount("");
+    setUserAmount("");
   }
 
-  function supplyValidation(value: string, max: number) {
-    if (value == "") {
-      setAmount("");
-    }
+  function inputValidation(value: string, max: BigNumber) {
+    value = truncateNumber(value, token.data.underlying.decimals);
     if (inputState !== InputState.ENABLE) {
       if (isNaN(Number(value))) {
         setInputState(InputState.INVALID);
-      } else if (value.length < 1 || Number(value) == 0) {
+      } else if (value.length < 1 || Number(value) <= 0) {
         setInputState(InputState.ENTERAMOUNT);
-      } else if (Math.abs(Number(value)) > max) {
+      } else if (parseUnits(value, token.data.underlying.decimals).gt(max)) {
         setInputState(InputState.NOFUNDS);
       } else {
-        setAmount(value);
         setInputState(InputState.CONFIRM);
       }
     }
-  }
-
-  function withdrawValidation(value: string, max: number) {
-    if (value == "") {
-      setAmount("");
-    }
-
-    if (inputState !== InputState.ENABLE) {
-      if (isNaN(Number(value))) {
-        setInputState(InputState.INVALID);
-      } else if (
-        //Value has no be less than currently supplying, but if not collateralized, we do not care about expected borrowlimit used
-        Math.abs(Number(value)) > max ||
-        (token.collateral && ExpectedBorrowLimitUsed(Number(value)) > 1)
-      ) {
-        setAmount(value);
-        setInputState(InputState.NOFUNDS);
-      } else if (value.length < 1 || Number(value) == 0) {
-        setInputState(InputState.ENTERAMOUNT);
-      } else {
-        setAmount(value);
-        setInputState(InputState.CONFIRM);
-      }
-    }
-  }
-
-  function withdrawAmount() {
-    return (
-      (stats.totalBorrowLimit - stats.totalBorrowLimitUsed / 0.8) /
-      token.price /
-      token.collateralFactor
-    );
   }
 
   function WalletForSupply() {
@@ -185,7 +160,10 @@ const SupplyModal = ({ onClose }: IProps) => {
       <Wallet>
         <p>wallet balance</p>
         <p>
-          {formatBalance(token.balanceOf)} {token.data.underlying.symbol}
+          {truncateNumber(
+            formatUnits(token.balanceOf, token.data.underlying.decimals)
+          )}{" "}
+          {token.data.underlying.symbol}
         </p>
       </Wallet>
     );
@@ -196,20 +174,13 @@ const SupplyModal = ({ onClose }: IProps) => {
       <Wallet>
         <p>currently supplying</p>
         <p>
-          {formatBalance(token.supplyBalance)} {token.data.underlying.symbol}
+          {truncateNumber(
+            formatUnits(token.supplyBalance, token.data.underlying.decimals)
+          )}{" "}
+          {token.data.underlying.symbol}
         </p>
       </Wallet>
     );
-  }
-  function ExpectedBorrowLimit(value: number) {
-    const additionalBorrowLimit = token.collateralFactor * -value;
-    const additionalBorrowLimitInNote = additionalBorrowLimit * token.price;
-    return additionalBorrowLimitInNote + stats.totalBorrowLimit;
-  }
-
-  //Hypothetical Borrow Limit Used If About to supply/withdraw
-  function ExpectedBorrowLimitUsed(value: number) {
-    return stats.totalBorrowLimitUsed / ExpectedBorrowLimit(value);
   }
 
   const SupplyTab = () => {
@@ -223,43 +194,40 @@ const SupplyModal = ({ onClose }: IProps) => {
         />
         {/* supply */}
         <LendingField
-          onMax={(value: string) => {
+          token={token}
+          value={userAmount}
+          transactionType={TrasanctionType.SUPPLY}
+          canDoMax={true}
+          onMax={() => {
             if (inputState != InputState.ENABLE) {
-              const val = value;
-              if (Number(val) > 0) setInputState(InputState.CONFIRM);
-              else {
-                setInputState(InputState.ENTERAMOUNT);
-              }
-              setAmount(val);
+              setUserAmount(
+                formatUnits(token.balanceOf, token.data.underlying.decimals)
+              );
               setMax(true);
+              setInputState(InputState.CONFIRM);
             }
           }}
-          limit={undefined}
-          value={amount}
           onChange={(value) => {
-            supplyValidation(value, token.balanceOf);
+            setUserAmount(value);
+            inputValidation(value, token.balanceOf);
             setMax(false);
           }}
-          transactionType={TrasanctionType.SUPPLY}
-          token={token}
-          type={token.data.underlying.name}
-          balance={token.balanceOf}
+          balance={truncateNumber(
+            formatUnits(token.balanceOf, token.data.underlying.decimals)
+          )}
         />
         {/* 1st tab */}
         <Details
           transactionType={TrasanctionType.SUPPLY}
-          amount={Number(amount)}
+          stringAmount={truncateNumber(
+            userAmount,
+            token.data.underlying.decimals
+          )}
           token={token}
           icon={token.data.underlying.icon}
           isBorrowing={false}
-          borrowLimit={stats.totalBorrowLimit}
-          borrowBalance={stats.totalBorrowLimitUsed}
-          borrowLimitUsed={Number(
-            (
-              (stats.totalBorrowLimitUsed / stats.totalBorrowLimit) *
-              100
-            ).toFixed(2)
-          )}
+          borrowLimit={position.totalBorrowLimit}
+          borrowBalance={position.totalBorrow}
         />
 
         <ReactiveButton
@@ -275,7 +243,7 @@ const SupplyModal = ({ onClose }: IProps) => {
           max={isMax}
           token={token}
           isEth={token.data.symbol == "cCANTO"}
-          amount={amount}
+          amount={userAmount}
         />
 
         {WalletForSupply()}
@@ -283,6 +251,15 @@ const SupplyModal = ({ onClose }: IProps) => {
     );
   };
   const WithdrawTab = () => {
+    const [limit80Percent, totalLimit, isMax] = userMaximumWithdrawal(
+      token.supplyBalance,
+      token.data.underlying.decimals,
+      position.totalBorrow,
+      position.totalBorrowLimit,
+      token.collateralFactor,
+      token.price,
+      token.collateral
+    );
     return (
       <TabPanel>
         <div
@@ -293,53 +270,43 @@ const SupplyModal = ({ onClose }: IProps) => {
         />
         <LendingField
           token={token}
-          value={amount}
+          value={userAmount}
           transactionType={TrasanctionType.WITHDRAW}
-          limit={
-            !token.collateral
-              ? undefined
-              : withdrawAmount() < token.supplyBalance
-              ? withdrawAmount() < 0
-                ? 0
-                : withdrawAmount()
-              : undefined
-          }
+          canDoMax={isMax}
           //Withdraw
-          onMax={(value) => {
+          onMax={() => {
             if (inputState != InputState.ENABLE) {
-              //check if we are in the withdraw state
-              let val = !token.collateral
-                ? value
-                : withdrawAmount() < token.supplyBalance
-                ? withdrawAmount().toFixed(token.data.underlying.decimals)
-                : value;
-              val = Number(val) < 0 ? "0" : val;
-              setAmount(val.toString());
-              //Check that max was actually 100% of the balance
-              token.supplyBalance > val ? setMax(false) : setMax(true);
-              setInputState(InputState.CONFIRM);
+              setUserAmount(
+                formatUnits(limit80Percent, token.data.underlying.decimals)
+              );
+              setMax(isMax);
+              if (limit80Percent.isZero()) {
+                setInputState(InputState.ENTERAMOUNT);
+              } else {
+                setInputState(InputState.CONFIRM);
+              }
             }
           }}
           onChange={(value) => {
-            withdrawValidation(value, token.supplyBalance);
+            setUserAmount(value);
+            inputValidation(value, totalLimit);
             setMax(false);
           }}
-          balance={token.supplyBalance}
+          balance={truncateNumber(
+            formatUnits(token.supplyBalance, token.data.underlying.decimals)
+          )}
         />
         {/* 2nd tab */}
         <Details
           transactionType={TrasanctionType.WITHDRAW}
           icon={token.data.underlying.icon}
           token={token}
-          amount={Number(amount)}
-          borrowLimit={stats.totalBorrowLimit}
-          borrowLimitUsed={Number(
-            (
-              (stats.totalBorrowLimitUsed / stats.totalBorrowLimit) *
-              100
-            ).toFixed(2)
+          stringAmount={truncateNumber(
+            userAmount,
+            token.data.underlying.decimals
           )}
-          borrowBalance={stats.totalBorrowLimitUsed}
+          borrowLimit={position.totalBorrowLimit}
+          borrowBalance={position.totalBorrow}
           isBorrowing={false}
         />
         <ReactiveButton
@@ -350,7 +317,7 @@ const SupplyModal = ({ onClose }: IProps) => {
           state={inputState}
           token={token}
           isEth={token.data.symbol == "cCANTO"}
-          amount={amount}
+          amount={userAmount}
           transactionType={TrasanctionType.WITHDRAW}
         />
 
@@ -363,7 +330,6 @@ const SupplyModal = ({ onClose }: IProps) => {
     <Container
       onScroll={(e) => {
         e.preventDefault();
-        console.log("scrolling");
       }}
     >
       {["PendingSignature", "Mining", "Success", "Fail", "Exception"].includes(
