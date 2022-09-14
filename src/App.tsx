@@ -42,10 +42,11 @@ function App() {
       <ScanlinesOverlay />
       <ScanLine />
       <Overlay />
+      <GlobalStyle />
+
       <Router>
         <Container className="App">
           <CantoNav />
-          <GlobalStyle />
           <Routes>
             <Route path="/bridge" key={"bridge"} element={<BridgingPage />} />
             <Route
