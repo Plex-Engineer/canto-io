@@ -9,7 +9,7 @@ import {
 import { useLPInfo } from "./useLPInfo";
 import { useTokens } from "../hooks/useTokens";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { truncateNumber } from "global/utils/utils";
 import LendingTable from "pages/lending/components/lendingTable";
 import { useNetworkInfo } from "global/stores/networkInfo";

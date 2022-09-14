@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { ModalManager, ModalType } from "./modals/modalManager";
 import { useState } from "react";
 import { ToolTip } from "./Tooltip";

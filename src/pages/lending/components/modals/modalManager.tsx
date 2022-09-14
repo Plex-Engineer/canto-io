@@ -1,5 +1,5 @@
 import Popup from "reactjs-popup";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import WalletModal from "./walletModal";
 import close from "assets/close.svg";
 import CollatModal from "./enableCollateral";

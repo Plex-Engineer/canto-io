@@ -2,7 +2,7 @@ import { CantoMainnet, PrimaryButton, Text } from "cantoui";
 import { GTokens } from "./hooks/useGravityTokens";
 import { useEffect, useState } from "react";
 import { selectedEmptyToken, useTokenStore } from "./stores/tokens";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { TokenWallet } from "./components/TokenSelect";
 import {
   getCantoBalance,

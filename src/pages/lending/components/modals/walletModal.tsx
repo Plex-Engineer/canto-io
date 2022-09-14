@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import logo from "../../../../assets/logo.svg";
 import metamask from "../../../../assets/wallets/metamask.svg";
 import walletConnect from "../../../../assets/wallets/walletconnect.svg";

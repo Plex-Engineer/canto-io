@@ -1,6 +1,6 @@
 import { TrasanctionType } from "./BorrowLimits";
 import { TransactionStatus } from "@usedapp/core";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { BigNumber, ethers } from "ethers";
 import {
   useSupply,

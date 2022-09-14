@@ -4,7 +4,7 @@ import TransferBox from "./components/TransferBox";
 import { GTokens, useGravityTokens } from "./hooks/useGravityTokens";
 import { useEffect, useState } from "react";
 import { selectedEmptyToken, useTokenStore } from "./stores/tokens";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { TokenWallet } from "./components/TokenSelect";
 import { getCantoBalance, NativeGTokens } from "./hooks/useCosmosTokens";
 import { useApprove, useCosmos } from "./hooks/useTransactions";

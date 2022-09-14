@@ -1,5 +1,5 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import LendingField from "../lendingField";
 import { useState, useEffect } from "react";
 import { Details, TrasanctionType } from "../BorrowLimits";

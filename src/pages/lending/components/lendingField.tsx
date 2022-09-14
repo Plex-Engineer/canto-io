@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { useState } from "react";
 import { TrasanctionType } from "./BorrowLimits";
 import { formatBalance } from "global/utils/utils";

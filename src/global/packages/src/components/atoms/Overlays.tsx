@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import Noise from "assets/bg-noise.gif";
 const StaticNoiseOverlay = styled.div`
   -webkit-font-smoothing: antialiased;

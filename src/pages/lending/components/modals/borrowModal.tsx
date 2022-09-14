@@ -1,5 +1,5 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import { TransactionStatus } from "@usedapp/core";
 import { LoadingOverlay } from "./supplyModal";

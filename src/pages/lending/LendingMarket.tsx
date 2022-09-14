@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { useNotifications, Notification } from "@usedapp/core";
 import { useState, useEffect } from "react";
 import LendingTable from "./components/lendingTable";

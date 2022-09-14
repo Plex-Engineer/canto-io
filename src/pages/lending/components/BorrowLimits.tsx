@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import CANTO from "assets/icons/canto.png";
 import { noteSymbol } from "global/utils/utils";
 

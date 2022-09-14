@@ -8,7 +8,7 @@ import { slide as Menu } from "react-burger-menu";
 import { OutlinedButton } from "../atoms/Button";
 import { Text } from "../atoms/Text";
 import { StylesDictionary } from "../../utils/StylesDictionary";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { Page } from "./Navbar";
 import { Link } from "react-router-dom";
 import useGlobalModals, { ModalType } from "../../stores/useModals";
