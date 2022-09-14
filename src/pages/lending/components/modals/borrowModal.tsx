@@ -86,10 +86,10 @@ const Wallet = styled.div`
 
 interface IProps {
   onClose: () => void;
+  position: UserLMPosition;
 }
-const BorrowModal = ({ onClose }: IProps) => {
+const BorrowModal = ({ onClose, position }: IProps) => {
   const modalStore = useModalStore();
-  const position: UserLMPosition = modalStore.position;
   const token: UserLMTokenDetails = modalStore.activeToken;
   const [transaction, setTransaction] = useState<TransactionStatus>();
   const [isRepaying, setIsRepaying] = useState(true);

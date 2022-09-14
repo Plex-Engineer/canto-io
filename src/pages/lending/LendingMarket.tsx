@@ -131,24 +131,17 @@ const LendingMarket = () => {
     networkInfo.account,
     networkInfo.chainId
   );
-
-  //Useffect for calling data per block
-  useEffect(() => {
-    const interval = setInterval(() => {
-      modalStore.setRewards(rewards);
-      modalStore.setPosition(position);
-      ReactTooltip.rebuild();
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [position]);
-
   useEffect(() => {
     ReactTooltip.rebuild();
   });
 
   return (
     <Container className="lendingMarket">
-      <ModalManager isOpen={modalStore.currentModal != ModalType.NONE} />
+      <ModalManager
+        isOpen={modalStore.currentModal != ModalType.NONE}
+        position={position}
+        rewards={rewards}
+      />
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
         <Button
           onClick={() => {

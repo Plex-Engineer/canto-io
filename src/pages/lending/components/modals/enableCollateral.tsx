@@ -103,11 +103,11 @@ const APY = styled.div`
 interface Props {
   onClose: (result: boolean) => void;
   decollateralize?: boolean;
+  position: UserLMPosition;
 }
 
 const CollatModal = (props: Props) => {
   const modalStore = useModalStore();
-  const position: UserLMPosition = modalStore.position;
   const token: UserLMTokenDetails = modalStore.activeToken;
 
   const details: Details = {
@@ -163,8 +163,8 @@ const CollatModal = (props: Props) => {
     );
   }
   const willGoOverLimit = willWithdrawalGoOverLimit(
-    position.totalBorrow,
-    position.totalBorrowLimit,
+    props.position.totalBorrow,
+    props.position.totalBorrowLimit,
     token.collateralFactor,
     80,
     token.supplyBalance,

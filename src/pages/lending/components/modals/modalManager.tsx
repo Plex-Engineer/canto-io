@@ -8,6 +8,7 @@ import BorrowModal from ".//borrowModal";
 import { Mixpanel } from "mixpanel";
 import RewardsModal from "./rewardsModal";
 import useModalStore, { ModalType } from "pages/lending/stores/useModals";
+import { UserLMPosition, UserLMRewards } from "pages/lending/config/interfaces";
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
   &-overlay {
@@ -52,9 +53,11 @@ const StyledPopup = styled(Popup)`
 
 interface Props {
   isOpen: boolean;
+  position: UserLMPosition;
+  rewards: UserLMRewards;
 }
 
-const ModalManager = ({ isOpen }: Props) => {
+const ModalManager = ({ isOpen, position, rewards }: Props) => {
   const modalStore = useModalStore();
 
   if (modalStore.currentModal !== ModalType.NONE && modalStore.activeToken) {
@@ -99,24 +102,28 @@ const ModalManager = ({ isOpen }: Props) => {
         <WalletModal onClose={modalStore.close} />
       )}
       {modalStore.currentModal === ModalType.LENDING && (
-        <SupplyModal onClose={modalStore.close} />
+        <SupplyModal onClose={modalStore.close} position={position} />
       )}
 
       {modalStore.currentModal === ModalType.BORROW && (
-        <BorrowModal onClose={modalStore.close} />
+        <BorrowModal onClose={modalStore.close} position={position} />
       )}
 
       {modalStore.currentModal === ModalType.COLLATERAL && (
-        <CollatModal onClose={modalStore.close} />
+        <CollatModal onClose={modalStore.close} position={position} />
       )}
 
       {modalStore.currentModal === ModalType.DECOLLATERAL && (
-        <CollatModal onClose={modalStore.close} decollateralize />
+        <CollatModal
+          onClose={modalStore.close}
+          decollateralize
+          position={position}
+        />
       )}
       {modalStore.currentModal === ModalType.BALANCE && (
         <RewardsModal
           // passin LMBalance to this
-          rewardsObj={modalStore.rewards}
+          rewardsObj={rewards}
           onClose={modalStore.close}
         />
       )}

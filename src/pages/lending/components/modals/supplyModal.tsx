@@ -99,12 +99,12 @@ export const Wallet = styled.div`
 `;
 
 interface IProps {
+  position: UserLMPosition;
   onClose: () => void;
 }
 
-const SupplyModal = ({ onClose }: IProps) => {
+const SupplyModal = ({ onClose, position }: IProps) => {
   const modalStore = useModalStore();
-  const position: UserLMPosition = modalStore.position;
   const token: UserLMTokenDetails = modalStore.activeToken;
   const [transaction, setTransaction] = useState<TransactionStatus>();
   const [isWithdrawing, setIsWithdrawing] = useState(false);
@@ -247,7 +247,7 @@ const SupplyModal = ({ onClose }: IProps) => {
     );
   };
   const WithdrawTab = () => {
-    const [limit80Percent, withdrawalMax] = userMaximumWithdrawal(
+    const [limit80Percent, totalLimit, isMax] = userMaximumWithdrawal(
       token.supplyBalance,
       token.data.underlying.decimals,
       position.totalBorrow,
@@ -256,15 +256,6 @@ const SupplyModal = ({ onClose }: IProps) => {
       token.price,
       token.collateral
     );
-    const withdrawalLimit = maxWithdrawalInUnderlying(
-      position.totalBorrow,
-      position.totalBorrowLimit,
-      token.collateralFactor,
-      100,
-      token.price,
-      token.data.underlying.decimals
-    );
-    console.log(formatUnits(withdrawalLimit, token.data.underlying.decimals))
     return (
       <TabPanel>
         <div
@@ -277,14 +268,14 @@ const SupplyModal = ({ onClose }: IProps) => {
           token={token}
           value={userAmount}
           transactionType={TrasanctionType.WITHDRAW}
-          canDoMax={withdrawalMax}
+          canDoMax={isMax}
           //Withdraw
           onMax={() => {
             if (inputState != InputState.ENABLE) {
               setUserAmount(
                 formatUnits(limit80Percent, token.data.underlying.decimals)
               );
-              setMax(withdrawalMax);
+              setMax(isMax);
               if (limit80Percent.isZero()) {
                 setInputState(InputState.ENTERAMOUNT);
               } else {
@@ -294,12 +285,7 @@ const SupplyModal = ({ onClose }: IProps) => {
           }}
           onChange={(value) => {
             setUserAmount(value);
-            inputValidation(
-              value,
-              token.collateral && withdrawalLimit.lt(token.supplyBalance)
-                ? withdrawalLimit
-                : token.supplyBalance
-            );
+            inputValidation(value, totalLimit);
             setMax(false);
           }}
           balance={truncateNumber(
