@@ -4,6 +4,7 @@ import { PAIR, TESTPAIRS, MAINPAIRS } from "../config/pairs";
 import { ADDRESSES, CantoMainnet, CantoTestnet } from "cantoui";
 import { ERC20Abi, routerAbi } from "global/config/abi";
 import { LPPairInfo } from "../config/interfaces";
+import { getLPPairRatio } from "../utils/utils";
 
 const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
   const onCanto =
@@ -82,26 +83,15 @@ const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
       const reserves = tokenData[1];
       const reserveA = reserves.reserveA;
       const reserveB = reserves.reserveB;
-      let ratio: BigNumber;
-      let aTob: boolean;
-      if (
-        reserveA
-          .div(BigNumber.from(10).pow(PAIRS[idx].token1.decimals))
-          .gte(reserveB.div(BigNumber.from(10).pow(PAIRS[idx].token2.decimals)))
-      ) {
-        ratio = reserveA.div(reserveB);
-        aTob = true;
-      } else {
-        ratio = reserveB.div(reserveA);
-        aTob = false;
-      }
+      const [ratio, aTob] = getLPPairRatio(reserveA, reserveB);
 
       const tokenAPrice = tokenData[2][0];
       const tokenBPrice = tokenData[3][0];
       const LPUnderlyingPrice = tokenData[4][0];
 
+      //since price factors in token decimals and is factored by 1e18, we can just divide by 1e18 to get value in note
       const totalValueLocked = LPUnderlyingPrice.mul(totalSupply).div(
-        BigNumber.from(10).pow(PAIRS[idx].decimals)
+        BigNumber.from(10).pow(18)
       );
       const moreData: LPPairInfo = {
         basePairInfo: PAIRS[idx],
@@ -118,6 +108,7 @@ const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
         prices: {
           token1: tokenAPrice,
           token2: tokenBPrice,
+          LP: LPUnderlyingPrice,
         },
       };
       return moreData;

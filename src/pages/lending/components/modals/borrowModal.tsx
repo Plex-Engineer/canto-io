@@ -162,15 +162,13 @@ const BorrowModal = ({ onClose, position }: IProps) => {
       position.totalBorrow,
       position.totalBorrowLimit,
       80,
-      token.price,
-      token.data.underlying.decimals
+      token.price
     );
     const borrowLimit100 = maxBorrowInUnderlying(
       position.totalBorrow,
       position.totalBorrowLimit,
       100,
-      token.price,
-      token.data.underlying.decimals
+      token.price
     );
     return (
       <TabPanel>

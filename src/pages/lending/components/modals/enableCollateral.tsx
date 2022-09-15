@@ -173,8 +173,7 @@ const CollatModal = (props: Props) => {
     token.collateralFactor,
     80,
     token.supplyBalance,
-    token.price,
-    token.data.underlying.decimals
+    token.price
   );
   const willGoOverLimit100PercentLimit = willWithdrawalGoOverLimit(
     props.position.totalBorrow,
@@ -182,8 +181,7 @@ const CollatModal = (props: Props) => {
     token.collateralFactor,
     100,
     token.supplyBalance,
-    token.price,
-    token.data.underlying.decimals
+    token.price
   );
   return (
     <Container>

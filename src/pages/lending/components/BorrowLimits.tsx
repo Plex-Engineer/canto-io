@@ -73,14 +73,12 @@ const Details = ({
       ? newBorrowAmount(
           transactionType == TransactionType.BORROW,
           amount,
-          token.data.underlying.decimals,
           borrowBalance,
           token.price
         )
       : newBorrowLimit(
           transactionType == TransactionType.SUPPLY,
           amount,
-          token.data.underlying.decimals,
           token.collateralFactor,
           token.price,
           borrowLimit
@@ -92,7 +90,6 @@ const Details = ({
     ? expectedBorrowLimitUsedInBorrowOrRepay(
         transactionType == TransactionType.BORROW,
         amount,
-        token.data.underlying.decimals,
         borrowBalance,
         token.price,
         borrowLimit
@@ -100,7 +97,6 @@ const Details = ({
     : expectedBorrowLimitUsedInSupplyOrWithdraw(
         transactionType == TransactionType.SUPPLY,
         amount,
-        token.data.underlying.decimals,
         token.collateralFactor,
         token.price,
         borrowLimit,

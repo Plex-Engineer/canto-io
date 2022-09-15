@@ -1,4 +1,3 @@
-import { formatEther } from "@ethersproject/units";
 import { CallResult, useCalls, useEtherBalance } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { ethers } from "ethers";
@@ -147,10 +146,10 @@ export function useUserLMTokenData(
 
       const supplyBalanceinNote = supplyBalance
         .mul(LMTokens[idx].price)
-        .div(BigNumber.from(10).pow(LMTokens[idx].data.underlying.decimals));
+        .div(BigNumber.from(10).pow(18));
       const borrowBalanceinNote = borrowBalance
         .mul(LMTokens[idx].price)
-        .div(BigNumber.from(10).pow(LMTokens[idx].data.underlying.decimals));
+        .div(BigNumber.from(10).pow(18));
 
       //supplierDiff = comptroller.supplyState().index - comptroller.compSupplierIndex(cToken.address, supplier.address)
       const supplierDIff = BigNumber.from(tokenData[6][0]).sub(tokenData[5][0]);

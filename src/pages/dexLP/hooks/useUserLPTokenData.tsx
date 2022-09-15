@@ -92,11 +92,8 @@ const useUserLPTokenInfo = (
     ];
   });
 
-  const results = useCalls(LPTokens && onCanto ? calls.flat() : []) ?? {};
-  // console.log(results)
-  if (account == undefined) {
-    return [];
-  }
+  const results =
+    useCalls(LPTokens && onCanto && account ? calls.flat() : []) ?? {};
 
   const chuckSize = !PAIRS ? 0 : results.length / PAIRS.length;
   let processedTokens: Array<any>;
@@ -111,9 +108,6 @@ const useUserLPTokenInfo = (
     return chunks;
   };
 
-  if (!PAIRS) {
-    return [];
-  }
   if (chuckSize > 0 && results?.[0] != undefined && !results?.[0].error) {
     processedTokens = array_chunks(results, chuckSize);
     return processedTokens.map((tokenData, idx) => {
@@ -182,7 +176,26 @@ const useUserLPTokenInfo = (
       return moreData;
     });
   }
-  return [];
+  return LPTokens.map((pair) => {
+    return {
+      ...pair,
+      userSupply: {
+        totalLP: BigNumber.from(0),
+        token1: BigNumber.from(0),
+        token2: BigNumber.from(0),
+        percentOwned: 0,
+      },
+      allowance: {
+        token1: BigNumber.from(0),
+        token2: BigNumber.from(0),
+        LPtoken: BigNumber.from(0),
+      },
+      balances: {
+        token1: BigNumber.from(0),
+        token2: BigNumber.from(0),
+      },
+    };
+  });
 };
 
 export default useUserLPTokenInfo;

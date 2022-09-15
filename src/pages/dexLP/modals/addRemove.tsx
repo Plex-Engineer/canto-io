@@ -1,8 +1,10 @@
-import { AllPairInfo } from "../hooks/useTokens";
 import styled from "@emotion/styled";
-import { noteSymbol } from "global/utils/utils";
+import { noteSymbol, truncateNumber } from "global/utils/utils";
 import IconPair from "../components/iconPair";
 import useModals, { ModalType } from "../hooks/useModals";
+import { UserLPPairInfo } from "../config/interfaces";
+import { valueInNote } from "../utils/utils";
+import { formatUnits } from "ethers/lib/utils";
 const Container = styled.div`
   background-color: #040404;
   height: 36rem;
@@ -117,60 +119,90 @@ const PrimaryButton = styled(SecondaryButton)`
 `;
 
 interface Props {
-  value: AllPairInfo;
+  activePair: UserLPPairInfo;
   onClose: () => void;
   chainId?: number;
   account?: string;
 }
-const AddRemoveModal = ({ value }: Props) => {
+const AddRemoveModal = ({ activePair }: Props) => {
   const setModalType = useModals((state) => state.setModalType);
 
   return (
     <Container>
       <div className="title">
-        {value.basePairInfo.token1.symbol +
+        {activePair.basePairInfo.token1.symbol +
           " / " +
-          value.basePairInfo.token2.symbol}
+          activePair.basePairInfo.token2.symbol}
       </div>
       <p id="position">position overview</p>
       <IconPair
-        iconLeft={value.basePairInfo.token1.icon}
-        iconRight={value.basePairInfo.token2.icon}
+        iconLeft={activePair.basePairInfo.token1.icon}
+        iconRight={activePair.basePairInfo.token2.icon}
       />
       <h1>
-        {value.basePairInfo.token1.symbol +
+        {activePair.basePairInfo.token1.symbol +
           " & " +
-          value.basePairInfo.token2.symbol}
+          activePair.basePairInfo.token2.symbol}
       </h1>
-      <h4>pool share {(value.userSupply.percentOwned * 100).toFixed(4)}%</h4>
+      <h4>
+        pool share {(activePair.userSupply.percentOwned * 100).toFixed(4)}%
+      </h4>
 
       <div className="fields">
         <div className="token">
-          <img src={value.basePairInfo.token1.icon} height={50} width={50} />
+          <img
+            src={activePair.basePairInfo.token1.icon}
+            height={50}
+            width={50}
+          />
           <p>
             {noteSymbol}
-            {(
-              Number(value.userSupply.token1) * Number(value.prices.token1)
-            ).toFixed(4)}
+            {truncateNumber(
+              formatUnits(
+                valueInNote(
+                  activePair.userSupply.token1,
+                  activePair.prices.token1
+                )
+              )
+            )}
           </p>
 
           <p>
-            {Number(value.userSupply.token1).toFixed(4)}{" "}
-            {value.basePairInfo.token1.symbol}
+            {truncateNumber(
+              formatUnits(
+                activePair.userSupply.token1,
+                activePair.basePairInfo.token1.decimals
+              )
+            )}{" "}
+            {activePair.basePairInfo.token1.symbol}
           </p>
         </div>
         <div className="token">
-          <img src={value.basePairInfo.token2.icon} height={50} width={50} />
+          <img
+            src={activePair.basePairInfo.token2.icon}
+            height={50}
+            width={50}
+          />
           <p>
             {noteSymbol}
-            {(
-              Number(value.userSupply.token2) * Number(value.prices.token2)
-            ).toFixed(4)}
+            {truncateNumber(
+              formatUnits(
+                valueInNote(
+                  activePair.userSupply.token2,
+                  activePair.prices.token2
+                )
+              )
+            )}
           </p>
 
           <p>
-            {Number(value.userSupply.token2).toFixed(4)}{" "}
-            {value.basePairInfo.token2.symbol}
+            {truncateNumber(
+              formatUnits(
+                activePair.userSupply.token2,
+                activePair.basePairInfo.token2.decimals
+              )
+            )}{" "}
+            {activePair.basePairInfo.token2.symbol}
           </p>
         </div>
       </div>

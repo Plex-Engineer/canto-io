@@ -43,7 +43,7 @@ test("Max withdrawal in underlying", () => {
       limit: parseUnits("10000", 18),
       collateralFactor: parseUnits("1", 18),
       percentOfLimit: 100,
-      price: parseUnits("1", 18),
+      price: parseUnits("1", 30),
       tokenDecimals: 6,
       withdrawalAmounts: [
         {
@@ -159,7 +159,7 @@ test("Max withdrawal in underlying", () => {
       limit: parseUnits("10000", 18),
       collateralFactor: parseUnits("0.5", 18),
       percentOfLimit: 50,
-      price: parseUnits("2", 18),
+      price: parseUnits("2", 30),
       tokenDecimals: 6,
       withdrawalAmounts: [
         {
@@ -269,7 +269,7 @@ test("Max withdrawal in underlying", () => {
       limit: parseUnits("1000", 18),
       collateralFactor: parseUnits("0.5", 18),
       percentOfLimit: 100,
-      price: parseUnits("1", 18),
+      price: parseUnits("1", 30),
       tokenDecimals: 6,
       withdrawalAmounts: [
         {
@@ -377,7 +377,7 @@ test("Max withdrawal in underlying", () => {
       limit: parseUnits("10000", 18),
       collateralFactor: parseUnits("0.5", 18),
       percentOfLimit: 50,
-      price: parseUnits("0", 18),
+      price: parseUnits("0", 30),
       tokenDecimals: 6,
       withdrawalAmounts: [
         {
@@ -406,8 +406,7 @@ test("Max withdrawal in underlying", () => {
       testCase.limit,
       testCase.collateralFactor,
       testCase.percentOfLimit,
-      testCase.price,
-      testCase.tokenDecimals
+      testCase.price
     );
     for (const withdrawalAmount of testCase.withdrawalAmounts) {
       const ableToWithdraw = !willWithdrawalGoOverLimit(
@@ -416,8 +415,7 @@ test("Max withdrawal in underlying", () => {
         testCase.collateralFactor,
         testCase.percentOfLimit,
         withdrawalAmount.amount,
-        testCase.price,
-        testCase.tokenDecimals
+        testCase.price
       );
       expect(ableToWithdraw).toBe(withdrawalAmount.expected);
     }
@@ -488,29 +486,17 @@ test("New Borrow Limit For Supply", () => {
       amount: parseUnits("10000", 6),
       tokenDecimals: 6,
       collateralFactor: parseUnits("1", 18),
-      price: parseUnits("1", 18),
+      price: parseUnits("1", 30),
       currentLimit: parseUnits("0", 18),
       currentBorrows: parseUnits("3333", 18),
       expectedLimit: parseUnits("10000", 18),
       expectedLimitUsed: 0.3333,
-    },
-    {
-      supply: true,
-      amount: parseUnits("10000", 6),
-      tokenDecimals: 0,
-      collateralFactor: parseUnits("1", 18),
-      price: parseUnits("1", 18),
-      currentLimit: parseUnits("1000", 18),
-      currentBorrows: parseUnits("500", 18),
-      expectedLimit: parseUnits("1000", 18),
-      expectedLimitUsed: 0.5,
     },
   ];
   for (const testCase of testCases) {
     const testLimit = newBorrowLimit(
       testCase.supply,
       testCase.amount,
-      testCase.tokenDecimals,
       testCase.collateralFactor,
       testCase.price,
       testCase.currentLimit
@@ -518,7 +504,6 @@ test("New Borrow Limit For Supply", () => {
     const testLimitUsed = expectedBorrowLimitUsedInSupplyOrWithdraw(
       testCase.supply,
       testCase.amount,
-      testCase.tokenDecimals,
       testCase.collateralFactor,
       testCase.price,
       testCase.currentLimit,
@@ -580,7 +565,7 @@ test("New Borrow Limit For Withdraw", () => {
       amount: parseUnits("10000", 6),
       tokenDecimals: 6,
       collateralFactor: parseUnits(".5", 18),
-      price: parseUnits("1", 18),
+      price: parseUnits("1", 30),
       currentLimit: parseUnits("10000", 18),
       currentBorrows: parseUnits("7000", 18),
       expectedLimit: parseUnits("5000", 18),
@@ -591,7 +576,7 @@ test("New Borrow Limit For Withdraw", () => {
       amount: parseUnits("20000", 6),
       tokenDecimals: 6,
       collateralFactor: parseUnits(".5", 18),
-      price: parseUnits("1", 18),
+      price: parseUnits("1", 30),
       currentLimit: parseUnits("10000", 18),
       currentBorrows: parseUnits("7000", 18),
       expectedLimit: parseUnits("0", 18),
@@ -602,7 +587,6 @@ test("New Borrow Limit For Withdraw", () => {
     const testLimit = newBorrowLimit(
       testCase.supply,
       testCase.amount,
-      testCase.tokenDecimals,
       testCase.collateralFactor,
       testCase.price,
       testCase.currentLimit
@@ -610,7 +594,6 @@ test("New Borrow Limit For Withdraw", () => {
     const testLimitUsed = expectedBorrowLimitUsedInSupplyOrWithdraw(
       testCase.supply,
       testCase.amount,
-      testCase.tokenDecimals,
       testCase.collateralFactor,
       testCase.price,
       testCase.currentLimit,
@@ -627,16 +610,6 @@ test("User maximum withdrawal without collateral", () => {
     {
       supplyBalance: parseUnits("1000", 18),
       tokenDecimals: 18,
-      totalBorrow: parseUnits("1000", 18),
-      borrowLimit: parseUnits("1000", 18),
-      collateralFactor: parseUnits("0.5", 18),
-      price: parseUnits("1", 18),
-      isCollateral: false,
-      expected: [parseUnits("1000", 18), parseUnits("1000", 18), true],
-    },
-    {
-      supplyBalance: parseUnits("1000", 18),
-      tokenDecimals: 0,
       totalBorrow: parseUnits("1000", 18),
       borrowLimit: parseUnits("1000", 18),
       collateralFactor: parseUnits("0.5", 18),
@@ -678,7 +651,6 @@ test("User maximum withdrawal without collateral", () => {
   for (const testCase of testCases) {
     const maximums = userMaximumWithdrawal(
       testCase.supplyBalance,
-      testCase.tokenDecimals,
       testCase.totalBorrow,
       testCase.borrowLimit,
       testCase.collateralFactor,
@@ -727,7 +699,7 @@ test("User maximum withdrawal with collateral", () => {
       totalBorrow: parseUnits("400", 18),
       borrowLimit: parseUnits("1000", 18),
       collateralFactor: parseUnits("0.5", 18),
-      price: parseUnits("1", 18),
+      price: parseUnits("1", 30),
       isCollateral: true,
       expected: [parseUnits("1000", 6), parseUnits("1100", 6), false],
     },
@@ -737,7 +709,7 @@ test("User maximum withdrawal with collateral", () => {
       totalBorrow: parseUnits("400", 18),
       borrowLimit: parseUnits("1000", 18),
       collateralFactor: parseUnits("0.5", 18),
-      price: parseUnits("1", 18),
+      price: parseUnits("1", 30),
       isCollateral: true,
       expected: [parseUnits("1000", 6), parseUnits("1200", 6), false],
     },
@@ -747,7 +719,7 @@ test("User maximum withdrawal with collateral", () => {
       totalBorrow: parseUnits("400", 18),
       borrowLimit: parseUnits("1000", 18),
       collateralFactor: parseUnits("0.5", 18),
-      price: parseUnits("1", 18),
+      price: parseUnits("1", 30),
       isCollateral: true,
       expected: [parseUnits("1000", 6), parseUnits("1200", 6), false],
     },
@@ -758,19 +730,9 @@ test("User maximum withdrawal with collateral", () => {
       totalBorrow: parseUnits("400", 18),
       borrowLimit: parseUnits("1000", 18),
       collateralFactor: parseUnits("0.5", 18),
-      price: parseUnits("1", 18),
+      price: parseUnits("1", 30),
       isCollateral: true,
       expected: [parseUnits("0", 6), parseUnits("0", 6), true],
-    },
-    {
-      supplyBalance: parseUnits("2000", 6),
-      tokenDecimals: 0,
-      totalBorrow: parseUnits("400", 18),
-      borrowLimit: parseUnits("1000", 18),
-      collateralFactor: parseUnits("0.5", 18),
-      price: parseUnits("1", 18),
-      isCollateral: true,
-      expected: [parseUnits("2000", 6), parseUnits("2000", 6), true],
     },
     {
       supplyBalance: parseUnits("2000", 6),
@@ -778,7 +740,7 @@ test("User maximum withdrawal with collateral", () => {
       totalBorrow: parseUnits("0", 18),
       borrowLimit: parseUnits("1000", 18),
       collateralFactor: parseUnits("0.5", 18),
-      price: parseUnits("1", 18),
+      price: parseUnits("1", 30),
       isCollateral: true,
       expected: [parseUnits("2000", 6), parseUnits("2000", 6), true],
     },
@@ -788,7 +750,7 @@ test("User maximum withdrawal with collateral", () => {
       totalBorrow: parseUnits("400", 18),
       borrowLimit: parseUnits("0", 18),
       collateralFactor: parseUnits("0.5", 18),
-      price: parseUnits("1", 18),
+      price: parseUnits("1", 30),
       isCollateral: true,
       expected: [parseUnits("0", 6), parseUnits("0", 6), false],
     },
@@ -798,7 +760,7 @@ test("User maximum withdrawal with collateral", () => {
       totalBorrow: parseUnits("400", 18),
       borrowLimit: parseUnits("1000", 18),
       collateralFactor: parseUnits("0", 18),
-      price: parseUnits("1", 18),
+      price: parseUnits("1", 30),
       isCollateral: true,
       expected: [parseUnits("2000", 6), parseUnits("2000", 6), true],
     },
@@ -808,7 +770,7 @@ test("User maximum withdrawal with collateral", () => {
       totalBorrow: parseUnits("400", 18),
       borrowLimit: parseUnits("1000", 18),
       collateralFactor: parseUnits("0.5", 18),
-      price: parseUnits("0", 18),
+      price: parseUnits("0", 30),
       isCollateral: true,
       expected: [parseUnits("2000", 6), parseUnits("2000", 6), true],
     },
@@ -816,7 +778,6 @@ test("User maximum withdrawal with collateral", () => {
   for (const testCase of testCases) {
     const maximums = userMaximumWithdrawal(
       testCase.supplyBalance,
-      testCase.tokenDecimals,
       testCase.totalBorrow,
       testCase.borrowLimit,
       testCase.collateralFactor,

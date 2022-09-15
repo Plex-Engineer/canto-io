@@ -253,7 +253,6 @@ const SupplyModal = ({ onClose, position }: IProps) => {
   const WithdrawTab = () => {
     const [limit80Percent, totalLimit, isMax] = userMaximumWithdrawal(
       token.supplyBalance,
-      token.data.underlying.decimals,
       position.totalBorrow,
       position.totalBorrowLimit,
       token.collateralFactor,

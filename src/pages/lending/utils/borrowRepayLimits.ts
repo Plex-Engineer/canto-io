@@ -1,5 +1,4 @@
 import { BigNumber } from "ethers";
-import { formatUnits } from "ethers/lib/utils";
 import { convertBigNumberRatioIntoPercentage } from "global/utils/utils";
 
 //percent of limit will give how much, in terms of underlying can be borrowed to stay under this limit
@@ -7,17 +6,17 @@ export function maxBorrowInUnderlying(
   used: BigNumber,
   limit: BigNumber,
   percentOfLimit: number,
-  price: BigNumber,
-  tokenDecimals: number
+  price: BigNumber
 ) {
   if (price.isZero() || percentOfLimit == 0) {
     return BigNumber.from(0);
   }
+  //price factors in decimals and scaled to 1e18, so we do not need to know the token decimals for undelrlying borrows
   return limit
     .mul(percentOfLimit)
     .div(100)
     .sub(used)
-    .mul(BigNumber.from(10).pow(tokenDecimals))
+    .mul(BigNumber.from(10).pow(18))
     .div(price);
 }
 
@@ -25,16 +24,10 @@ export function maxBorrowInUnderlying(
 export function newBorrowAmount(
   borrow: boolean,
   amount: BigNumber,
-  tokenDecimals: number,
   borrowBalance: BigNumber,
   price: BigNumber
 ) {
-  if (tokenDecimals == 0) {
-    return BigNumber.from(borrowBalance);
-  }
-  const amountInNote = amount
-    .mul(price)
-    .div(BigNumber.from(10).pow(tokenDecimals));
+  const amountInNote = amount.mul(price).div(BigNumber.from(10).pow(18));
   return borrow
     ? borrowBalance.add(amountInNote)
     : borrowBalance.sub(amountInNote);
@@ -43,7 +36,6 @@ export function newBorrowAmount(
 export function expectedBorrowLimitUsedInBorrowOrRepay(
   borrow: boolean,
   amount: BigNumber,
-  tokenDecimals: number,
   borrowBalance: BigNumber,
   price: BigNumber,
   currentLimit: BigNumber
@@ -54,7 +46,6 @@ export function expectedBorrowLimitUsedInBorrowOrRepay(
   const expectedBorrowAmount = newBorrowAmount(
     borrow,
     amount,
-    tokenDecimals,
     borrowBalance,
     price
   );

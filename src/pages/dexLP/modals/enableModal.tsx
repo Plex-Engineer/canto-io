@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
-import { AllPairInfo } from "../hooks/useTokens";
 import { useEffect, useState } from "react";
 import LoadingModal from "./loadingModal";
 import IconPair from "../components/iconPair";
 import useModals, { ModalType } from "../hooks/useModals";
 import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
+import { UserLPPairInfo } from "../config/interfaces";
 
 const Container = styled.div`
   background-color: #040404;
@@ -77,7 +77,7 @@ const Button = styled.button`
 `;
 
 interface AddAllowanceProps {
-  pair: AllPairInfo;
+  pair: UserLPPairInfo;
   chainId: number | undefined;
   status1: (val: string) => void;
   status2: (val: string) => void;
@@ -127,8 +127,8 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
   }, [addAllowanceB.status]);
 
   if (
-    Number(props.pair.allowance.token1) == 0 &&
-    Number(props.pair.allowance.token2) == 0
+    props.pair.allowance.token1.isZero() &&
+    props.pair.allowance.token2.isZero()
   ) {
     return (
       <Button
@@ -147,7 +147,7 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
         {props.pair.basePairInfo.token2.symbol}
       </Button>
     );
-  } else if (Number(props.pair.allowance.token1) == 0) {
+  } else if (props.pair.allowance.token1.isZero()) {
     return (
       <Button
         onClick={() => {
@@ -217,7 +217,7 @@ const RemoveAllowanceButton = (props: AddAllowanceProps) => {
 };
 
 interface Props {
-  value: AllPairInfo;
+  activePair: UserLPPairInfo;
   onClose: () => void;
   chainId?: number;
   account?: string;
@@ -259,7 +259,7 @@ export const PopIn = styled.div<showProps>`
   left: 0;
   z-index: 1;
 `;
-const EnableModal = ({ value, chainId }: Props) => {
+const EnableModal = ({ activePair, chainId }: Props) => {
   const [token1AllowanceStatus, setToken1AllowanceStatus] = useState("None");
   const [token2AllowanceStatus, setToken2AllowanceStatus] = useState("None");
 
@@ -273,13 +273,13 @@ const EnableModal = ({ value, chainId }: Props) => {
       >
         <LoadingModal
           icons={{
-            icon1: value.basePairInfo.token1.icon,
-            icon2: value.basePairInfo.token2.icon,
+            icon1: activePair.basePairInfo.token1.icon,
+            icon2: activePair.basePairInfo.token2.icon,
           }}
           name={
-            value.basePairInfo.token1.symbol +
+            activePair.basePairInfo.token1.symbol +
             " / " +
-            value.basePairInfo.token2.symbol
+            activePair.basePairInfo.token2.symbol
           }
           amount={"0"}
           type="enable"
@@ -293,13 +293,13 @@ const EnableModal = ({ value, chainId }: Props) => {
       >
         <LoadingModal
           icons={{
-            icon1: value.basePairInfo.token1.icon,
-            icon2: value.basePairInfo.token2.icon,
+            icon1: activePair.basePairInfo.token1.icon,
+            icon2: activePair.basePairInfo.token2.icon,
           }}
           name={
-            value.basePairInfo.token1.symbol +
+            activePair.basePairInfo.token1.symbol +
             " / " +
-            value.basePairInfo.token2.symbol
+            activePair.basePairInfo.token2.symbol
           }
           amount={"0"}
           type="enable"
@@ -316,8 +316,8 @@ const EnableModal = ({ value, chainId }: Props) => {
         }}
       >
         <IconPair
-          iconLeft={value.basePairInfo.token1.icon}
-          iconRight={value.basePairInfo.token2.icon}
+          iconLeft={activePair.basePairInfo.token1.icon}
+          iconRight={activePair.basePairInfo.token2.icon}
         />
       </div>
       <p
@@ -332,14 +332,14 @@ const EnableModal = ({ value, chainId }: Props) => {
         <AddAllowanceButton
           status1={setToken1AllowanceStatus}
           status2={setToken2AllowanceStatus}
-          pair={value}
+          pair={activePair}
           chainId={chainId}
         />
       ) : (
         <RemoveAllowanceButton
           status1={setToken1AllowanceStatus}
           status2={setToken2AllowanceStatus}
-          pair={value}
+          pair={activePair}
           chainId={chainId}
         />
       )}
