@@ -1,10 +1,10 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import styled from "@emotion/styled";
-import LendingField from "../lendingField";
+import LendingField from "../components/lendingField";
 import { useState, useEffect } from "react";
-import { Details, TrasanctionType } from "../BorrowLimits";
+import { Details, TrasanctionType } from "../components/BorrowLimits";
 import { TransactionStatus } from "@usedapp/core";
-import { InputState, ReactiveButton } from "../reactiveButton";
+import { InputState, ReactiveButton } from "../components/reactiveButton";
 import LoadingModal from "./loadingModal";
 import { truncateNumber } from "global/utils/utils";
 import useModalStore from "pages/lending/stores/useModals";
@@ -14,10 +14,7 @@ import {
 } from "pages/lending/config/interfaces";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
-import {
-  maxWithdrawalInUnderlying,
-  userMaximumWithdrawal,
-} from "pages/lending/utils/supplyWithdrawLimits";
+import { userMaximumWithdrawal } from "pages/lending/utils/supplyWithdrawLimits";
 
 //STYLING
 export const LoadingOverlay = styled.div`

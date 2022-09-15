@@ -3,9 +3,10 @@ import {
   Details,
   useEnterMarkets,
   useExitMarket,
-} from "../../hooks/useTransaction";
+} from "../hooks/useTransaction";
 import React, { useEffect, useState } from "react";
-import { DisabledButton } from "../reactiveButton";
+
+import { DisabledButton } from "../components/reactiveButton";
 import LoadingModal from "../modals/loadingModal";
 import useModalStore from "pages/lending/stores/useModals";
 import {

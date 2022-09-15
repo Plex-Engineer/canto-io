@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import LendingTable from "./components/lendingTable";
 import ReactTooltip from "react-tooltip";
 import { TransactionRow } from "./components/lendingRow";
-import { ModalType, ModalManager } from "./components/modals/modalManager";
+import { ModalType, ModalManager } from "./modals/modalManager";
 import { toast } from "react-toastify";
 import { Details } from "./hooks/useTransaction";
 import { Container, Button } from "./components/Container";
