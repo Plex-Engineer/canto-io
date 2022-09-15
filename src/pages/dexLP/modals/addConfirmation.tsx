@@ -1,7 +1,6 @@
-import { ethers, Contract } from "ethers";
+import { ethers, Contract, BigNumber } from "ethers";
 import styled from "@emotion/styled";
-import { AllPairInfo } from "../hooks/useTokens";
-import { parseUnits } from "ethers/lib/utils";
+import { formatUnits } from "ethers/lib/utils";
 import IconPair from "../components/iconPair";
 import { RowCell } from "./removeModal";
 import { DexLoadingOverlay } from "./addModal";
@@ -18,8 +17,10 @@ import { truncateNumber } from "global/utils/utils";
 import {
   calculateExpectedShareofLP,
   getCurrentBlockTimestamp,
+  getReserveRatioAtoB,
 } from "../utils/utils";
 import { routerAbi } from "global/config/abi";
+import { UserLPPairInfo } from "../config/interfaces";
 
 const Container = styled.div`
   background-color: #040404;
@@ -148,14 +149,14 @@ const DisabledButton = styled(Button)`
 `;
 
 interface AddConfirmationProps {
-  pair: AllPairInfo;
-  value1: number;
-  value2: number;
+  pair: UserLPPairInfo;
+  value1: BigNumber;
+  value2: BigNumber;
   slippage: number;
   deadline: number;
   chainId?: number;
   account?: string;
-  expectedLP: string;
+  expectedLP: BigNumber;
 }
 
 const AddLiquidityButton = (props: AddConfirmationProps) => {
@@ -196,21 +197,18 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
       : TOKENS.cantoMainnet.WCANTO;
   const setModalType = useModals((state) => state.setModalType);
 
-  const amountOut1 = truncateNumber(
-    props.value1.toString(),
-    props.pair.basePairInfo.token1.decimals
-  );
-  const amountOut2 = truncateNumber(
-    props.value2.toString(),
-    props.pair.basePairInfo.token2.decimals
-  );
-
   const amountMinOut1 = truncateNumber(
-    ((Number(props.value1) * (100 - Number(props.slippage))) / 100).toString(),
+    props.value1.mul(Number(props.slippage)).div(100).toString(),
     props.pair.basePairInfo.token1.decimals
   );
   const amountMinOut2 = truncateNumber(
-    ((Number(props.value2) * (100 - Number(props.slippage))) / 100).toString(),
+    props.value2.mul(Number(props.slippage)).div(100).toString(),
+    props.pair.basePairInfo.token2.decimals
+  );
+  const displayReserveRatio = getReserveRatioAtoB(
+    props.pair.totalSupply.ratio.ratio,
+    props.pair.totalSupply.ratio.aTob,
+    props.pair.basePairInfo.token1.decimals,
     props.pair.basePairInfo.token2.decimals
   );
 
@@ -289,9 +287,11 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
         iconRight={props.pair.basePairInfo.token2.icon}
       />
       <h1>
-        {Number(props.expectedLP) == 0
+        {props.expectedLP.isZero()
           ? "calculating..."
-          : truncateNumber(props.expectedLP)}
+          : truncateNumber(
+              formatUnits(props.expectedLP, props.pair.basePairInfo.decimals)
+            )}
       </h1>
 
       <h4>
@@ -313,7 +313,7 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
             "1 " +
             props.pair.basePairInfo.token1.symbol +
             " = " +
-            (1 / Number(props.pair.totalSupply.ratio)).toFixed(3) +
+            truncateNumber(displayReserveRatio.toString()) +
             " " +
             props.pair.basePairInfo.token2.symbol
           }
@@ -324,7 +324,7 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
             "1 " +
             props.pair.basePairInfo.token2.symbol +
             " = " +
-            Number(props.pair.totalSupply.ratio).toFixed(3) +
+            truncateNumber((1 / displayReserveRatio).toString()) +
             " " +
             props.pair.basePairInfo.token1.symbol
           }
@@ -344,11 +344,15 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
       >
         <RowCell
           type={props.pair.basePairInfo.token1.symbol + " deposited : "}
-          value={Number(props.value1).toFixed(4)}
+          value={truncateNumber(
+            formatUnits(props.value1, props.pair.basePairInfo.token1.decimals)
+          )}
         />
         <RowCell
           type={props.pair.basePairInfo.token2.symbol + " deposited : "}
-          value={Number(props.value2).toFixed(4)}
+          value={truncateNumber(
+            formatUnits(props.value2, props.pair.basePairInfo.token2.decimals)
+          )}
         />
         <RowCell
           type="share of pool : "
@@ -369,25 +373,28 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
       ) : props.pair.basePairInfo.token1.address == WCANTO.address ? (
         <Button
           onClick={() => {
-            addLiquidityCANTOSend(
+            console.log(
               props.pair.basePairInfo.token2.address,
               props.pair.basePairInfo.stable,
-              parseUnits(amountOut2, props.pair.basePairInfo.token2.decimals),
-              parseUnits(
-                amountMinOut2,
-                props.pair.basePairInfo.token2.decimals
-              ),
-              parseUnits(
-                amountMinOut1,
-                props.pair.basePairInfo.token1.decimals
-              ),
+              props.value2,
+              amountMinOut2,
+              amountMinOut1,
               props.account,
               currentBlockTimeStamp + Number(props.deadline) * 60,
               {
-                value: parseUnits(
-                  amountOut1,
-                  props.pair.basePairInfo.token1.decimals
-                ),
+                value: props.value1,
+              }
+            );
+            addLiquidityCANTOSend(
+              props.pair.basePairInfo.token2.address,
+              props.pair.basePairInfo.stable,
+              props.value2,
+              amountMinOut2,
+              amountMinOut1,
+              props.account,
+              currentBlockTimeStamp + Number(props.deadline) * 60,
+              {
+                value: props.value1,
               }
             );
           }}
@@ -401,16 +408,10 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
               props.pair.basePairInfo.token1.address,
               props.pair.basePairInfo.token2.address,
               props.pair.basePairInfo.stable,
-              parseUnits(amountOut1, props.pair.basePairInfo.token1.decimals),
-              parseUnits(amountOut2, props.pair.basePairInfo.token2.decimals),
-              parseUnits(
-                amountMinOut1,
-                props.pair.basePairInfo.token1.decimals
-              ),
-              parseUnits(
-                amountMinOut2,
-                props.pair.basePairInfo.token2.decimals
-              ),
+              props.value1,
+              props.value2,
+              amountMinOut1,
+              amountMinOut2,
               props.account,
               currentBlockTimeStamp + Number(props.deadline) * 60
             );
@@ -424,7 +425,7 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
 };
 
 interface Props {
-  value: AllPairInfo;
+  activePair: UserLPPairInfo;
   onClose: () => void;
   chainId?: number;
   account?: string;
@@ -432,14 +433,7 @@ interface Props {
 
 export const AddLiquidityConfirmation = (props: Props) => {
   const [confirmValues] = useModals((state) => [state.confirmationValues]);
-  const [expectedLP, setExpectedLP] = useState("0");
-
-  const amountOut1 = Number(confirmValues.amount1).toFixed(
-    props.value.basePairInfo.token1.decimals
-  );
-  const amountOut2 = Number(confirmValues.amount2).toFixed(
-    props.value.basePairInfo.token2.decimals
-  );
+  const [expectedLP, setExpectedLP] = useState(BigNumber.from(0));
 
   async function getExpectedLP() {
     const providerURL =
@@ -454,17 +448,13 @@ export const AddLiquidityConfirmation = (props: Props) => {
     const RouterContract = new Contract(routerAddress, routerAbi, provider);
 
     const LPOut = await RouterContract.quoteAddLiquidity(
-      props.value.basePairInfo.token1.address,
-      props.value.basePairInfo.token2.address,
-      props.value.basePairInfo.stable,
-      parseUnits(amountOut1, props.value.basePairInfo.token1.decimals),
-      parseUnits(amountOut2, props.value.basePairInfo.token2.decimals)
+      props.activePair.basePairInfo.token1.address,
+      props.activePair.basePairInfo.token2.address,
+      props.activePair.basePairInfo.stable,
+      confirmValues.amount1,
+      confirmValues.amount2
     );
-    const formattedLPOut = ethers.utils.formatUnits(
-      LPOut.liquidity ?? 0,
-      props.value.basePairInfo.decimals
-    );
-    setExpectedLP(formattedLPOut);
+    setExpectedLP(LPOut.liquidity);
   }
   useEffect(() => {
     getExpectedLP();
@@ -473,7 +463,7 @@ export const AddLiquidityConfirmation = (props: Props) => {
   return (
     <div>
       <AddLiquidityButton
-        pair={props.value}
+        pair={props.activePair}
         value1={confirmValues.amount1}
         value2={confirmValues.amount2}
         slippage={confirmValues.slippage}

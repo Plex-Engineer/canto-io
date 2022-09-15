@@ -143,7 +143,6 @@ const useUserLPTokenInfo = (
       const BNPercentOwned = userLP
         .mul(BigNumber.from(10).pow(18))
         .div(LPTokens[idx].totalSupply.totalLP);
-      //percent owned will be a number since not used for further calculations
       const userTokensA = BNPercentOwned.mul(
         LPTokens[idx].totalSupply.token1
       ).div(BigNumber.from(10).pow(18));
