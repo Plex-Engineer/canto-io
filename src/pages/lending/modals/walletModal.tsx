@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
-import logo from "../../../../assets/logo.svg";
-import metamask from "../../../../assets/wallets/metamask.svg";
-import walletConnect from "../../../../assets/wallets/walletconnect.svg";
-import tally from "../../../../assets/wallets/tally.svg";
-import coinBase from "../../../../assets/wallets/coinbase.svg";
-import ledger from "../../../../assets/wallets/ledger.svg";
+import logo from "assets/logo.svg";
+import metamask from "assets/wallets/metamask.svg";
+import walletConnect from "assets/wallets/walletconnect.svg";
+import tally from "assets/wallets/tally.svg";
+import coinBase from "assets/wallets/coinbase.svg";
+import ledger from "assets/wallets/ledger.svg";
 import { useEthers } from "@usedapp/core";
 
 const Container = styled.div`

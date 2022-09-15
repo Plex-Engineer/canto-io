@@ -4,7 +4,6 @@ import TransactionStatusProvider from "../../providers/transactionContext";
 import { Chain } from "@usedapp/core";
 import { ETHMainnet } from "pages/bridge/config/networks";
 import { CantoMainnet as CantoMain, CantoTestnet as CantoTest } from "cantoui";
-import TokenProvider from "pages/lending/providers/activeTokenContext";
 
 interface IProviderProps {
   children: React.ReactNode;
@@ -67,9 +66,7 @@ const config: Config = {
 const Provider = ({ children }: IProviderProps) => {
   return (
     <DAppProvider config={config}>
-      <TokenProvider>
-        <TransactionStatusProvider>{children}</TransactionStatusProvider>
-      </TokenProvider>
+      <TransactionStatusProvider>{children}</TransactionStatusProvider>
     </DAppProvider>
   );
 };
