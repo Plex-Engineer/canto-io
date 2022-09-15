@@ -3,10 +3,10 @@ import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import { TransactionStatus } from "@usedapp/core";
 import { LoadingOverlay } from "./supplyModal";
-import { InputState, ReactiveButton } from "../reactiveButton";
+import { InputState, ReactiveButton } from "../components/reactiveButton";
 import { truncateNumber } from "global/utils/utils";
-import LendingField from "../lendingField";
-import { Details, TrasanctionType } from "../BorrowLimits";
+import LendingField from "../components/lendingField";
+import { Details, TrasanctionType } from "../components/BorrowLimits";
 import LoadingModal from "./loadingModal";
 import useModalStore from "pages/lending/stores/useModals";
 import {
