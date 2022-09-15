@@ -1,4 +1,4 @@
-import { TOKENS, ADDRESSES, Token } from "cantoui";
+import { TOKENS, ADDRESSES, Token, CTOKENS } from "cantoui";
 
 export interface PAIR {
   address: string;
@@ -6,6 +6,7 @@ export interface PAIR {
   token1: Token;
   token2: Token;
   decimals: number;
+  cDecimals: number;
   stable: boolean;
 }
 
@@ -16,6 +17,7 @@ export const TESTPAIRS: PAIR[] = [
     token1: { ...TOKENS.cantoTestnet.WCANTO, symbol: "CANTO" }, // CANTO,
     token2: TOKENS.cantoTestnet.NOTE, // NOTE,
     decimals: TOKENS.cantoTestnet.CantoNote.decimals,
+    cDecimals: CTOKENS.cantoTestnet.CCantoNote.decimals,
     stable: false,
   },
   {
@@ -24,6 +26,7 @@ export const TESTPAIRS: PAIR[] = [
     token1: { ...TOKENS.cantoTestnet.WCANTO, symbol: "CANTO" }, // CANTO,
     token2: TOKENS.cantoTestnet.ETH, // ETH,
     decimals: TOKENS.cantoTestnet.CantoETH.decimals,
+    cDecimals: CTOKENS.cantoTestnet.CCantoETH.decimals,
     stable: false,
   },
   {
@@ -32,6 +35,7 @@ export const TESTPAIRS: PAIR[] = [
     token1: { ...TOKENS.cantoTestnet.WCANTO, symbol: "CANTO" }, // CANTO,
     token2: TOKENS.cantoTestnet.ATOM, // ATOM,
     decimals: TOKENS.cantoTestnet.CantoAtom.decimals,
+    cDecimals: CTOKENS.cantoTestnet.CCantoAtom.decimals,
     stable: false,
   },
   {
@@ -40,6 +44,7 @@ export const TESTPAIRS: PAIR[] = [
     token1: TOKENS.cantoTestnet.NOTE, // NOTE,
     token2: TOKENS.cantoTestnet.USDC, // USDC,
     decimals: TOKENS.cantoTestnet.NoteUSDC.decimals,
+    cDecimals: CTOKENS.cantoTestnet.CNoteUSDC.decimals,
     stable: true,
   },
   {
@@ -48,6 +53,7 @@ export const TESTPAIRS: PAIR[] = [
     token1: TOKENS.cantoTestnet.NOTE, // NOTE,
     token2: TOKENS.cantoTestnet.USDT, // USDT,
     decimals: TOKENS.cantoTestnet.NoteUSDT.decimals,
+    cDecimals: CTOKENS.cantoTestnet.CNoteUSDT.decimals,
     stable: true,
   },
 ];
@@ -58,6 +64,7 @@ export const MAINPAIRS: PAIR[] = [
     token1: { ...TOKENS.cantoMainnet.WCANTO, symbol: "CANTO" }, // CANTO,
     token2: TOKENS.cantoMainnet.NOTE, // NOTE,
     decimals: TOKENS.cantoMainnet.CantoNote.decimals,
+    cDecimals: CTOKENS.cantoMainnet.CCantoNote.decimals,
     stable: false,
   },
   {
@@ -66,6 +73,7 @@ export const MAINPAIRS: PAIR[] = [
     token1: { ...TOKENS.cantoMainnet.WCANTO, symbol: "CANTO" }, // CANTO,
     token2: TOKENS.cantoMainnet.ETH, // ETH,
     decimals: TOKENS.cantoMainnet.CantoETH.decimals,
+    cDecimals: CTOKENS.cantoMainnet.CCantoETH.decimals,
     stable: false,
   },
   {
@@ -74,6 +82,7 @@ export const MAINPAIRS: PAIR[] = [
     token1: { ...TOKENS.cantoMainnet.WCANTO, symbol: "CANTO" }, // CANTO,
     token2: TOKENS.cantoMainnet.ATOM, // ATOM,
     decimals: TOKENS.cantoMainnet.CantoAtom.decimals,
+    cDecimals: CTOKENS.cantoMainnet.CCantoAtom.decimals,
     stable: false,
   },
   {
@@ -82,6 +91,7 @@ export const MAINPAIRS: PAIR[] = [
     token1: TOKENS.cantoMainnet.NOTE, // NOTE,
     token2: TOKENS.cantoMainnet.USDC, // USDC,
     decimals: TOKENS.cantoMainnet.NoteUSDC.decimals,
+    cDecimals: CTOKENS.cantoMainnet.CNoteUSDC.decimals,
     stable: true,
   },
   {
@@ -90,6 +100,7 @@ export const MAINPAIRS: PAIR[] = [
     token1: TOKENS.cantoMainnet.NOTE, // NOTE,
     token2: TOKENS.cantoMainnet.USDT, // USDT,
     decimals: TOKENS.cantoMainnet.NoteUSDT.decimals,
+    cDecimals: CTOKENS.cantoMainnet.CNoteUSDT.decimals,
     stable: true,
   },
 ];

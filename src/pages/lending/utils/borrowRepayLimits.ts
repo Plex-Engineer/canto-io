@@ -1,5 +1,6 @@
 import { BigNumber } from "ethers";
-import { formatBigNumberToPercentage } from "./utils";
+import { formatUnits } from "ethers/lib/utils";
+import { convertBigNumberRatioIntoPercentage } from "global/utils/utils";
 
 //percent of limit will give how much, in terms of underlying can be borrowed to stay under this limit
 export function maxBorrowInUnderlying(
@@ -58,7 +59,8 @@ export function expectedBorrowLimitUsedInBorrowOrRepay(
     price
   );
 
-  return formatBigNumberToPercentage(
-    expectedBorrowAmount.mul(10000).div(currentLimit)
+  return convertBigNumberRatioIntoPercentage(
+    expectedBorrowAmount,
+    currentLimit
   );
 }

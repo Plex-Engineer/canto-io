@@ -459,7 +459,7 @@ test("New Borrow Limit For Supply", () => {
       currentLimit: parseUnits("1000", 18),
       currentBorrows: parseUnits("350", 18),
       expectedLimit: parseUnits("3500", 18),
-      expectedLimitUsed: 10,
+      expectedLimitUsed: 0.1,
     },
     {
       supply: true,
@@ -470,7 +470,7 @@ test("New Borrow Limit For Supply", () => {
       currentLimit: parseUnits("1000", 18),
       currentBorrows: parseUnits("3.5", 18),
       expectedLimit: parseUnits("3500", 18),
-      expectedLimitUsed: 0.1,
+      expectedLimitUsed: 0.001,
     },
     {
       supply: true,
@@ -481,7 +481,7 @@ test("New Borrow Limit For Supply", () => {
       currentLimit: parseUnits("1000", 18),
       currentBorrows: parseUnits("7000", 18),
       expectedLimit: parseUnits("3500", 18),
-      expectedLimitUsed: 200,
+      expectedLimitUsed: 2.0,
     },
     {
       supply: true,
@@ -492,7 +492,7 @@ test("New Borrow Limit For Supply", () => {
       currentLimit: parseUnits("0", 18),
       currentBorrows: parseUnits("3333", 18),
       expectedLimit: parseUnits("10000", 18),
-      expectedLimitUsed: 33.33,
+      expectedLimitUsed: 0.3333,
     },
     {
       supply: true,
@@ -503,7 +503,7 @@ test("New Borrow Limit For Supply", () => {
       currentLimit: parseUnits("1000", 18),
       currentBorrows: parseUnits("500", 18),
       expectedLimit: parseUnits("1000", 18),
-      expectedLimitUsed: 50,
+      expectedLimitUsed: 0.5,
     },
   ];
   for (const testCase of testCases) {
@@ -573,7 +573,7 @@ test("New Borrow Limit For Withdraw", () => {
       currentLimit: parseUnits("1000", 18),
       currentBorrows: parseUnits("7000", 18),
       expectedLimit: parseUnits("1000", 18),
-      expectedLimitUsed: 700,
+      expectedLimitUsed: 7,
     },
     {
       supply: false,
@@ -584,7 +584,7 @@ test("New Borrow Limit For Withdraw", () => {
       currentLimit: parseUnits("10000", 18),
       currentBorrows: parseUnits("7000", 18),
       expectedLimit: parseUnits("5000", 18),
-      expectedLimitUsed: 140,
+      expectedLimitUsed: 1.4,
     },
     {
       supply: false,

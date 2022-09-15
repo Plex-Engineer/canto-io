@@ -14,6 +14,8 @@ import useDex, {
 } from "pages/dexLP/hooks/useTokens";
 import { noteSymbol, truncateNumber } from "global/utils/utils";
 import style from "./Dex.module.scss";
+import useLPTokenData from "./hooks/useLPTokenData";
+import useUserLPTokenInfo from "./hooks/useUserLPTokenData";
 
 const Container = styled.div`
   display: flex;
@@ -84,6 +86,13 @@ const Dex = () => {
   ]);
 
   const pairs = useDex(networkInfo.account, Number(networkInfo.chainId));
+  const pairs2 = useLPTokenData(Number(networkInfo.chainId));
+  const userPairs = useUserLPTokenInfo(
+    pairs2,
+    networkInfo.account,
+    Number(networkInfo.chainId)
+  );
+  console.log(userPairs);
 
   useEffect(() => {
     notifications.forEach((item) => {
@@ -238,7 +247,6 @@ const Dex = () => {
           <p className="tableName">current position</p>
           <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
             {pairs?.map((pair: AllPairInfo, idx) => {
-              console.log(0.2 * idx);
               return Number(pair.userSupply.totalLP) > 0 ||
                 Number(pair.userSupply.percentOwned) > 0 ? (
                 <Row

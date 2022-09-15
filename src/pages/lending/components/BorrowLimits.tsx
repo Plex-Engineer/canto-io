@@ -1,6 +1,10 @@
 import styled from "@emotion/styled";
 import CANTO from "assets/icons/canto.png";
-import { noteSymbol, truncateNumber } from "global/utils/utils";
+import {
+  convertBigNumberRatioIntoPercentage,
+  noteSymbol,
+  truncateNumber,
+} from "global/utils/utils";
 import { BigNumber } from "ethers";
 import { UserLMTokenDetails } from "../config/interfaces";
 import {
@@ -62,7 +66,8 @@ const Details = ({
   );
   const cBorrowLimitUsed = borrowLimit.isZero()
     ? 0
-    : (Number(borrowBalance) * 100) / Number(borrowLimit);
+    : convertBigNumberRatioIntoPercentage(borrowBalance, borrowLimit) * 100;
+
   const cBorrowLimitHypo = formatUnits(
     isBorrowing
       ? newBorrowAmount(
@@ -91,7 +96,7 @@ const Details = ({
         borrowBalance,
         token.price,
         borrowLimit
-      )
+      ) * 100
     : expectedBorrowLimitUsedInSupplyOrWithdraw(
         transactionType == TransactionType.SUPPLY,
         amount,
@@ -100,7 +105,7 @@ const Details = ({
         token.price,
         borrowLimit,
         borrowBalance
-      );
+      ) * 100;
 
   return (
     <div>

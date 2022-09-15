@@ -1,3 +1,6 @@
+import { BigNumber } from "ethers";
+import { formatUnits } from "ethers/lib/utils";
+
 export function classNames(...classes: unknown[]): string {
   return classes.filter(Boolean).join(" ");
 }
@@ -15,6 +18,15 @@ export const formatBalance = (num: string | number) => {
 };
 
 export const noteSymbol = "Ꞥ";
+
+export function convertBigNumberRatioIntoPercentage(
+  numerator: BigNumber,
+  denominator: BigNumber
+) {
+  return Number(
+    formatUnits(numerator.mul(BigNumber.from(10).pow(18)).div(denominator))
+  );
+}
 
 export function truncateNumber(value: string, decimals?: number) {
   if (!value || isNaN(Number(value))) {

@@ -1,7 +1,8 @@
 //used and limit both in terms of note, collateral factor is raised to 10^18
 
 import { BigNumber, ethers } from "ethers";
-import { formatBigNumberToPercentage } from "./utils";
+import { formatUnits } from "ethers/lib/utils";
+import { convertBigNumberRatioIntoPercentage } from "global/utils/utils";
 
 //percent of limit will give how much, in terms of underlying can be withdrawn to stay under this limit
 export function maxWithdrawalInUnderlying(
@@ -92,8 +93,9 @@ export function expectedBorrowLimitUsedInSupplyOrWithdraw(
   if (expectedBorrowLimit.lte(0)) {
     return 0;
   }
-  return formatBigNumberToPercentage(
-    currentBorrows.mul(10000).div(expectedBorrowLimit)
+  return convertBigNumberRatioIntoPercentage(
+    currentBorrows,
+    expectedBorrowLimit
   );
 }
 /*
