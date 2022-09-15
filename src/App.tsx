@@ -21,7 +21,7 @@ import Staking from "pages/staking/Staking";
 import { BalanceSheet } from "pages/lending/balanceSheet/BalanceSheet";
 import BridgingPage from "pages/bridge/Bridging";
 import { useCoingeckoTokenPrice } from "@usedapp/coingecko";
-import Footer from "global/components/footer";
+import Footer from "global/components/nFooter";
 // import landing from "pages/landing_page/index.html"
 
 //Styling
@@ -42,10 +42,11 @@ function App() {
       <ScanlinesOverlay />
       <ScanLine />
       <Overlay />
+      <GlobalStyle />
+
       <Router>
         <Container className="App">
           <CantoNav />
-          <GlobalStyle />
           <Routes>
             <Route path="/bridge" key={"bridge"} element={<BridgingPage />} />
             <Route

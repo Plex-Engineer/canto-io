@@ -1,6 +1,6 @@
 import { FilledButton, HighlightButton, PrimaryButton, Text } from "cantoui";
 import { ChangeEvent, useRef } from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import arrow from "../../../assets/right.svg";
 import CopyIcon from "../../../assets/copy.svg";
 import { toast } from "react-toastify";

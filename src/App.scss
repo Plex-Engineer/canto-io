@@ -1,18 +1,34 @@
 #root {
   width: 100%;
-  --primary-color: #06fc99;
-  --primary-color: #06fc99;
   --primary-color-dark: #05de87;
   --off-white-color: #efefef;
-  --error-color: #fe4256;
+  //   --error-color: #fe4256;
   --toastify-color-progress-light: var(--primary-color) !important;
+}
+
+:root {
+  --primary-color: #06fc99;
+  --primary-dark-color: #11d888;
+  --primary-darker-color: #05955b;
+
+  --error-color: #ff4141;
+  --warning-color: #ffda58;
+
+  --off-white-color: #f2f2f2;
+  --semi-grey-color: #b3b3b3;
+  --holy-grey-color: #8b8b8b;
+  --just-grey-color: #717171;
+  --dark-grey-color: #424242;
+  --too-dark-color: #222222;
+  --pitch-black-color: #111111;
 }
 
 :root {
   --primary-color: #06fc99;
   --primary-color-dark: #05de87;
   --off-white-color: #efefef;
-  --error-color: #fe4256;
+  //   --error-color: #fe4256;
+
   --toastify-color-progress-light: var(--primary-color) !important;
   scrollbar-color: var(--primary-color);
   scroll-behavior: smooth;

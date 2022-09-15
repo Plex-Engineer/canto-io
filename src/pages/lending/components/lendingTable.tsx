@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from "@emotion/styled";
 
 const Table = styled.table`
   border: none;
@@ -32,6 +32,16 @@ const Table = styled.table`
     line-height: 4rem;
     background-color: black;
     border-bottom: var(--primary-color) solid 1px;
+    animation-fill-mode: forwards;
+
+    @keyframes fader {
+      from {
+        border-bottom: transparent solid 1px;
+      }
+      to {
+        border-bottom: var(--primary-color) solid 1px;
+      }
+    }
   }
   td:first-child,
   th:first-child {

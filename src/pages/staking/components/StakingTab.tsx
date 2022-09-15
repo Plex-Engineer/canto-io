@@ -1,5 +1,5 @@
 import { DelegationResponse, Validator, UndelegationMap } from "../utils/utils";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import ValidatorTable from "./ValidatorTable";
 
 const Button = styled.button`

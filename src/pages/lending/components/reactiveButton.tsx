@@ -1,6 +1,6 @@
 import { TrasanctionType } from "./BorrowLimits";
 import { TransactionStatus } from "@usedapp/core";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { BigNumber, ethers } from "ethers";
 import {
   useSupply,
@@ -14,6 +14,9 @@ import {
   Details,
 } from "../hooks/useTransaction";
 import { Mixpanel } from "mixpanel";
+import { UserLMTokenDetails } from "../config/interfaces";
+import { parseUnits } from "ethers/lib/utils";
+import { truncateNumber } from "global/utils/utils";
 //ENUM
 enum InputState {
   ENABLE,
@@ -56,19 +59,12 @@ export const DisabledButton = styled.button`
 
 interface IButton {
   state: InputState;
-  token: any;
+  token: UserLMTokenDetails;
   amount: string;
   transactionType: TrasanctionType;
   max: boolean;
   isEth: boolean;
   onTransaction: (transaction: TransactionStatus) => void;
-}
-
-function truncateByDecimals(amount: string, decimals: number) {
-  if (amount.indexOf(".") == -1) {
-    return amount;
-  }
-  return amount.slice(0, amount.indexOf(".") + decimals + 1);
 }
 
 const ReactiveButton = ({
@@ -80,7 +76,14 @@ const ReactiveButton = ({
   max,
   isEth,
 }: IButton) => {
-  // const addTransaction = useTransactionStatusUpdate();
+  const BNAmount =
+    !amount || isNaN(Number(amount))
+      ? BigNumber.from(0)
+      : parseUnits(
+          truncateNumber(amount, token.data.underlying.decimals),
+          token.data.underlying.decimals
+        );
+
   const details: Details = {
     name: token.data.underlying.symbol,
     address: token.data.address,
@@ -163,7 +166,7 @@ const ReactiveButton = ({
       if (
         (transactionType == TrasanctionType.BORROW ||
           transactionType == TrasanctionType.WITHDRAW) &&
-        token.cash < Number(amount)
+        token.cash.lt(BNAmount)
       ) {
         return (
           <DisabledButton>
@@ -173,7 +176,7 @@ const ReactiveButton = ({
       }
       if (
         transactionType == TrasanctionType.BORROW &&
-        token.borrowCap < Number(amount)
+        token.borrowCap.lt(BNAmount)
       ) {
         return <DisabledButton>borrow cap has been reached</DisabledButton>;
       }
@@ -183,66 +186,29 @@ const ReactiveButton = ({
             switch (transactionType) {
               case TrasanctionType.SUPPLY:
                 if (isEth) {
-                  const gas = max ? "1000000000000000" : "0";
+                  const gas = max ? parseUnits("1", "17") : BigNumber.from(0);
                   supplySendEth({
                     to: token.data.address,
-                    value: ethers.utils
-                      .parseUnits(
-                        truncateByDecimals(
-                          amount,
-                          token.data.underlying.decimals
-                        ),
-                        token.data.underlying.decimals
-                      )
-                      .sub(gas),
+                    value: BNAmount.sub(gas),
                   });
                 } else {
-                  supplySend(
-                    ethers.utils.parseUnits(
-                      truncateByDecimals(
-                        amount,
-                        token.data.underlying.decimals
-                      ),
-                      token.data.underlying.decimals
-                    )
-                  );
+                  supplySend(BNAmount);
                 }
                 Mixpanel.events.lendingMarketActions.supply(
-                  token.wallet,
+                  token.wallet ?? "" ?? "",
                   token.data.symbol,
-                  ethers.utils
-                    .parseUnits(
-                      truncateByDecimals(
-                        amount,
-                        token.data.underlying.decimals
-                      ),
-                      token.data.underlying.decimals
-                    )
-                    .toString(),
-                  token.price
+                  BNAmount.toString(),
+                  token.price.toString()
                 );
 
                 break;
               case TrasanctionType.BORROW:
-                borrowSend(
-                  ethers.utils.parseUnits(
-                    truncateByDecimals(amount, token.data.underlying.decimals),
-                    token.data.underlying.decimals
-                  )
-                );
+                borrowSend(BNAmount);
                 Mixpanel.events.lendingMarketActions.borrow(
-                  token.wallet,
+                  token.wallet ?? "",
                   token.data.symbol,
-                  ethers.utils
-                    .parseUnits(
-                      truncateByDecimals(
-                        amount,
-                        token.data.underlying.decimals
-                      ),
-                      token.data.underlying.decimals
-                    )
-                    .toString(),
-                  token.price
+                  BNAmount.toString(),
+                  token.price.toString()
                 );
                 break;
               case TrasanctionType.REPAY:
@@ -250,13 +216,7 @@ const ReactiveButton = ({
                   repaySendEth({
                     to: token.data.address,
                     data: "0x4e4d9fea",
-                    value: ethers.utils.parseUnits(
-                      truncateByDecimals(
-                        amount,
-                        token.data.underlying.decimals
-                      ),
-                      token.data.underlying.decimals
-                    ),
+                    value: BNAmount,
                   });
                 } else {
                   repaySend(
@@ -264,50 +224,23 @@ const ReactiveButton = ({
                       Number(token.balanceOf) >
                         Number(token.borrowBalance) + 0.001
                       ? "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-                      : ethers.utils.parseUnits(
-                          truncateByDecimals(
-                            amount,
-                            token.data.underlying.decimals
-                          ),
-                          token.data.underlying.decimals
-                        )
+                      : BNAmount
                   );
                 }
                 Mixpanel.events.lendingMarketActions.repay(
-                  token.wallet,
+                  token.wallet ?? "",
                   token.data.symbol,
-                  ethers.utils
-                    .parseUnits(
-                      truncateByDecimals(
-                        amount,
-                        token.data.underlying.decimals
-                      ),
-                      token.data.underlying.decimals
-                    )
-                    .toString(),
-                  token.price
+                  BNAmount.toString(),
+                  token.price.toString()
                 );
                 break;
               case TrasanctionType.WITHDRAW:
-                redeemSend(
-                  ethers.utils.parseUnits(
-                    truncateByDecimals(amount, token.data.underlying.decimals),
-                    token.data.underlying.decimals
-                  )
-                );
+                redeemSend(BNAmount);
                 Mixpanel.events.lendingMarketActions.withdraw(
-                  token.wallet,
+                  token.wallet ?? "",
                   token.data.symbol,
-                  ethers.utils
-                    .parseUnits(
-                      truncateByDecimals(
-                        amount,
-                        token.data.underlying.decimals
-                      ),
-                      token.data.underlying.decimals
-                    )
-                    .toString(),
-                  token.price
+                  BNAmount.toString(),
+                  token.price.toString()
                 );
             }
           }}

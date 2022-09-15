@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from "@emotion/styled";
 
 export const Container = styled.div`
   display: flex;
@@ -189,4 +189,11 @@ export const TinyTable = styled.div`
     border: 1px solid var(--error-color) !important;
    
   } */
+`;
+export const ToolTipL = styled.div`
+  border: 1px solid var(--primary-color);
+  background-color: #111;
+  padding: 1rem;
+  width: 20rem;
+  color: white;
 `;

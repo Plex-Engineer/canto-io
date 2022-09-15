@@ -1,13 +1,19 @@
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import {
   Details,
   useEnterMarkets,
   useExitMarket,
-} from "../../hooks/useTransaction";
-import { useEffect } from "react";
-import { DisabledButton } from "../reactiveButton";
+} from "../hooks/useTransaction";
+import React, { useEffect, useState } from "react";
+
+import { DisabledButton } from "../components/reactiveButton";
 import LoadingModal from "../modals/loadingModal";
 import useModalStore from "pages/lending/stores/useModals";
+import {
+  UserLMPosition,
+  UserLMTokenDetails,
+} from "pages/lending/config/interfaces";
+import { willWithdrawalGoOverLimit } from "pages/lending/utils/supplyWithdrawLimits";
 const Container = styled.div`
   background-color: #040404;
   padding: 2rem;
@@ -102,17 +108,18 @@ const APY = styled.div`
 interface Props {
   onClose: (result: boolean) => void;
   decollateralize?: boolean;
+  position: UserLMPosition;
 }
 
 const CollatModal = (props: Props) => {
   const modalStore = useModalStore();
-  const stats: any = modalStore.stats;
-  const token: any = modalStore.activeToken;
+  const token: UserLMTokenDetails = modalStore.activeToken;
+  const [userConfirmed, setUserConfirmed] = useState(false);
 
   const details: Details = {
-    name: token.data.underlying.symbol,
-    address: token.data.address,
-    icon: token.data.underlying.icon,
+    name: token.data.underlying.symbol ?? "",
+    address: token.data.address ?? "",
+    icon: token.data.underlying.icon ?? "",
     amount: "0",
     type: props.decollateralize ? "Decollateralize" : "Collateralize",
   };
@@ -161,16 +168,24 @@ const CollatModal = (props: Props) => {
       // </Container>
     );
   }
-  function withdrawAmount() {
-    return (
-      (stats.totalBorrowLimit - stats.totalBorrowLimitUsed / 0.8) /
-      token.price /
-      token.collateralFactor
-    );
-  }
-  function ifLimit() {
-    return withdrawAmount() < token.supplyBalance;
-  }
+  const willGoOverLimit80PercentLimit = willWithdrawalGoOverLimit(
+    props.position.totalBorrow,
+    props.position.totalBorrowLimit,
+    token.collateralFactor,
+    80,
+    token.supplyBalance,
+    token.price,
+    token.data.underlying.decimals
+  );
+  const willGoOverLimit100PercentLimit = willWithdrawalGoOverLimit(
+    props.position.totalBorrow,
+    props.position.totalBorrowLimit,
+    token.collateralFactor,
+    100,
+    token.supplyBalance,
+    token.price,
+    token.data.underlying.decimals
+  );
   return (
     <Container>
       <img
@@ -184,12 +199,14 @@ const CollatModal = (props: Props) => {
       <h2>{token.data.underlying.name}</h2>
 
       <h2>
-        {token.borrowBalance > 0
-          ? `you cannot uncollateralize an asset that is currently being borrowed. please repay all ${token.data.underlying.name.toLowerCase()} before uncollateralizing.`
-          : ifLimit() && props.decollateralize
-          ? "80% of your borrow limit will be used. please repay borrows or increase supply."
+        {!token.borrowBalance.isZero()
+          ? `you cannot uncollateralize an asset that is currently being borrowed. please repay all ${token?.data.underlying.name.toLowerCase()} before uncollateralizing.`
           : props.decollateralize
-          ? "disabling an asset as collateral will remove it from your borrowing limit, and no longer subject it to liquidation"
+          ? willGoOverLimit100PercentLimit
+            ? "your total borrow limit will be used. please repay borrows or increase supply."
+            : willGoOverLimit80PercentLimit
+            ? "80% or more of your total borrow limit will be used. please make sure you understand the risks of decollateralizing this asset."
+            : "disabling an asset as collateral will remove it from your borrowing limit, and no longer subject it to liquidation"
           : "enabling an asset as collateral increases your borrowing limit, but subjects the asset to liquidation"}
       </h2>
       <div
@@ -204,12 +221,33 @@ const CollatModal = (props: Props) => {
           marginTop: "0rem",
         }}
       >
-        {(token.borrowBalance > 0 || ifLimit()) && props.decollateralize ? (
-          <DisabledButton>
-            {token.borrowBalance > 0
-              ? `currently borrowing ${token.data.underlying.symbol.toLowerCase()}`
-              : "80% borrow limit will be reached"}
-          </DisabledButton>
+        {props.decollateralize &&
+        (!token.borrowBalance.isZero() ||
+          willGoOverLimit100PercentLimit ||
+          (willGoOverLimit80PercentLimit && !userConfirmed)) ? (
+          !token.borrowBalance.isZero() ? (
+            <DisabledButton>{`currently borrowing ${token.data.underlying.symbol.toLowerCase()}`}</DisabledButton>
+          ) : willGoOverLimit100PercentLimit ? (
+            <DisabledButton>
+              {"100% borrow limit will be reached"}
+            </DisabledButton>
+          ) : (
+            <div>
+              <DisabledButton>
+                {"please confirm you understand the risks"}
+              </DisabledButton>
+              <br />
+              <a
+                role="button"
+                tabIndex={0}
+                style={{ textDecoration: "underline", cursor: "pointer" }}
+                onClick={() => setUserConfirmed(true)}
+              >
+                i understand this transaction will put me over 80% of my borrow
+                limit
+              </a>
+            </div>
+          )
         ) : (
           <Button
             onClick={() => {

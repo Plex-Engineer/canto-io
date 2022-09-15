@@ -2,7 +2,7 @@ import StakeModal from "./components/stakeModal";
 import React, { useState } from "react";
 import Popup from "reactjs-popup";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import ValidatorTable from "./components/ValidatorTable";
 import {
   Validator,

@@ -2,7 +2,7 @@ import { memo, votingFee } from "global/config/cosmosConstants";
 import { nodeURL } from "global/utils/cantoTransactions/helpers";
 import { useEffect } from "react";
 import { useState } from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import CheckBox from "./components/checkBox";
 import { GraphBar } from "./components/govBar";
 import { votingThresholds } from "./config/votingThresholds";

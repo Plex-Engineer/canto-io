@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Popup from "reactjs-popup";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import Proposal from "./proposal";
 import { Mixpanel } from "mixpanel";
 import { ProposalData, useProposals } from "./stores/proposals";

@@ -6,7 +6,7 @@ import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import logo from "./../../assets/logo.svg";
 import { useLocation } from "react-router-dom";
 import { getBaseTokenName } from "global/utils/walletConnect/getTokenSymbol";
-import { useAlert, NavBar } from "cantoui";
+import { useAlert, NavBar } from "../packages/src";
 import { GenPubKey } from "./genPubKey";
 
 export const CantoNav = () => {

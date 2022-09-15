@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import {
   addCTokens,
   addTokens,
@@ -7,9 +8,10 @@ import { slide as Menu } from "react-burger-menu";
 import { OutlinedButton } from "../atoms/Button";
 import { Text } from "../atoms/Text";
 import { StylesDictionary } from "../../utils/StylesDictionary";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { Page } from "./Navbar";
 import { Link } from "react-router-dom";
+import useGlobalModals, { ModalType } from "../../stores/useModals";
 
 interface BurgerMenuProps {
   chainId: number;
@@ -22,6 +24,7 @@ export const BurgerMenu = ({
   currentPage,
   pageList,
 }: BurgerMenuProps) => {
+  const setModalType = useGlobalModals((state) => state.setModalType);
   return (
     <WrapperMenu styles={BurgerStyles}>
       <h2 className="title">terminal</h2>
@@ -44,7 +47,8 @@ export const BurgerMenu = ({
       <div style={styles.buttonDiv}>
         <OutlinedButton
           onClick={() => {
-            addTokens(chainId);
+            // addTokens(chainId);
+            setModalType(ModalType.TOKENS);
           }}
           style={styles.buttonStyle}
         >

@@ -5,7 +5,8 @@ import Glitch from "../../components/molecules/Glitch";
 import { OutlinedButton } from "../atoms/Button";
 import { Text } from "../atoms/Text";
 import Alert from "../atoms/Alert";
-import styled from "styled-components";
+import styled from "@emotion/styled";
+import ModalManager from "../molecules/ModalManager";
 
 export interface Page {
   name: string;
@@ -173,6 +174,7 @@ function ConnectionButton(
           connect <span className="hide-on-mobile">&nbsp;wallet</span>
         </OutlinedButton>
       )}
+      <ModalManager />
     </div>
   );
 }

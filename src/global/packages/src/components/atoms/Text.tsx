@@ -1,22 +1,22 @@
-import styled from 'styled-components';
+import styled from "@emotion/styled";
 
 interface Props {
-  type: 'title' | 'subtitle' | 'text' | 'subtext';
-  color?: 'white' | 'primary';
-  align?: 'left' | 'center' | 'right';
+  type: "title" | "subtitle" | "text" | "subtext";
+  color?: "white" | "primary";
+  align?: "left" | "center" | "right";
 }
 
 const Mapper = {
-  white: 'white',
-  primary: 'var(--primary-color)',
-  title: '32px',
-  subtitle: '30px',
-  text: '18px',
-  subtext: '18px',
+  white: "white",
+  primary: "var(--primary-color)",
+  title: "32px",
+  subtitle: "30px",
+  text: "18px",
+  subtext: "18px",
 };
 
 export const Text = styled.p<Props>`
-  color: ${({ color }) => Mapper[color ?? 'primary']};
+  color: ${({ color }) => Mapper[color ?? "primary"]};
   font-size: ${({ type }) => Mapper[type]};
-  text-align: ${({ align }) => align ?? 'center'};
+  text-align: ${({ align }) => align ?? "center"};
 `;

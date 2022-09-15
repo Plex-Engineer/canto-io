@@ -1,5 +1,5 @@
-import { CantoMainnet, CantoTestnet } from '../config/networks';
-import { TOKENS, CTOKENS } from '../config/tokenInfo';
+import { CantoMainnet, CantoTestnet } from "../config/networks";
+import { TOKENS, CTOKENS } from "../config/tokenInfo";
 
 export async function addCantoToKeplr() {
   // Keplr extension injects the offline signer that is compatible with cosmJS.
@@ -8,7 +8,7 @@ export async function addCantoToKeplr() {
   // If `window.getOfflineSigner` or `window.keplr` is null, Keplr extension may be not installed on browser.
   //@ts-ignore
   if (!window.getOfflineSigner || !window.keplr) {
-    alert('Please install keplr extension');
+    alert("Please install keplr extension");
   } else {
     //@ts-ignore
     if (window.keplr.experimentalSuggestChain) {
@@ -22,19 +22,19 @@ export async function addCantoToKeplr() {
         //@ts-ignore
         await window.keplr.experimentalSuggestChain({
           // Chain-id of the cantosis chain.
-          chainId: 'canto_7700-1',
+          chainId: "canto_7700-1",
           // The name of the chain to be displayed to the user.
-          chainName: 'Canto Mainnet',
+          chainName: "Canto Mainnet",
           // RPC endpoint of the chain. In this case we are using blockapsis, as it's accepts connections from any host currently. No Cors limitations.
-          rpc: 'http://164.90.154.41:26657',
+          rpc: "http://164.90.154.41:26657",
           // REST endpoint of the chain.
-          rest: 'http://164.90.154.41:1317',
+          rest: "http://164.90.154.41:1317",
           // Staking coin information
           stakeCurrency: {
             // Coin denomination to be displayed to the user.
-            coinDenom: 'CANTO',
+            coinDenom: "CANTO",
             // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-            coinMinimalDenom: 'acanto',
+            coinMinimalDenom: "acanto",
             // # of decimal points to convert minimal denomination to user-facing denomination.
             coinDecimals: 18,
             // (Optional) Keplr can show the fiat value of the coin if a coingecko id is provided.
@@ -61,20 +61,20 @@ export async function addCantoToKeplr() {
           //   bech32PrefixConsPub: string;
           // }
           bech32Config: {
-            bech32PrefixAccAddr: 'canto',
-            bech32PrefixAccPub: 'cantopub',
-            bech32PrefixValAddr: 'cantovaloper',
-            bech32PrefixValPub: 'cantovaloperpub',
-            bech32PrefixConsAddr: 'cantovalcons',
-            bech32PrefixConsPub: 'cantovalconspub',
+            bech32PrefixAccAddr: "canto",
+            bech32PrefixAccPub: "cantopub",
+            bech32PrefixValAddr: "cantovaloper",
+            bech32PrefixValPub: "cantovaloperpub",
+            bech32PrefixConsAddr: "cantovalcons",
+            bech32PrefixConsPub: "cantovalconspub",
           },
           // List of all coin/tokens used in this chain.
           currencies: [
             {
               // Coin denomination to be displayed to the user.
-              coinDenom: 'CANTO',
+              coinDenom: "CANTO",
               // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-              coinMinimalDenom: 'acanto',
+              coinMinimalDenom: "acanto",
               // # of decimal points to convert minimal denomination to user-facing denomination.
               coinDecimals: 18,
               // (Optional) Keplr can show the fiat value of the coin if a coingecko id is provided.
@@ -86,9 +86,9 @@ export async function addCantoToKeplr() {
           feeCurrencies: [
             {
               // Coin denomination to be displayed to the user.
-              coinDenom: 'CANTO',
+              coinDenom: "CANTO",
               // Actual denom (i.e. ucanto, uscrt) used by the blockchain.
-              coinMinimalDenom: 'acanto',
+              coinMinimalDenom: "acanto",
               // # of decimal points to convert minimal denomination to user-facing denomination.
               coinDecimals: 18,
               // (Optional) Keplr can show the fiat value of the coin if a coingecko id is provided.
@@ -113,14 +113,14 @@ export async function addCantoToKeplr() {
           },
         });
       } catch {
-        alert('Failed to suggest the chain');
+        alert("Failed to suggest the chain");
       }
     } else {
-      alert('Please use the recent version of keplr extension');
+      alert("Please use the recent version of keplr extension");
     }
   }
 
-  const chainId = 'canto_7700-1';
+  const chainId = "canto_7700-1";
 
   // You should request Keplr to enable the wallet.
   // This method will ask the user whether or not to allow access if they haven't visited this website.
@@ -149,18 +149,22 @@ export async function addCantoToKeplr() {
 }
 
 export async function addTokens(chainId: number | undefined) {
-  if (!chainId || !(chainId == CantoMainnet.chainId || chainId == CantoTestnet.chainId)) {
+  if (
+    !chainId ||
+    !(chainId == CantoMainnet.chainId || chainId == CantoTestnet.chainId)
+  ) {
     return;
   }
-  const tokens = chainId == CantoTestnet.chainId ? TOKENS.cantoTestnet : TOKENS.cantoMainnet;
+  const tokens =
+    chainId == CantoTestnet.chainId ? TOKENS.cantoTestnet : TOKENS.cantoMainnet;
   for (const [name, tokenObj] of Object.entries(tokens)) {
     try {
-      if (tokenObj.name != 'Canto') {
+      if (tokenObj.name != "Canto") {
         //@ts-ignore
         ethereum.request({
-          method: 'wallet_watchAsset',
+          method: "wallet_watchAsset",
           params: {
-            type: 'ERC20', // Initially only supports ERC20, but eventually more!
+            type: "ERC20", // Initially only supports ERC20, but eventually more!
             options: {
               address: tokenObj.address, // The address that the token is at.
               symbol: tokenObj.symbol.slice(0, 11), // A ticker symbol or shorthand, up to 5 chars.
@@ -177,19 +181,25 @@ export async function addTokens(chainId: number | undefined) {
 }
 
 export async function addCTokens(chainId: number | undefined) {
-  if (!chainId || !(chainId == CantoMainnet.chainId || chainId == CantoTestnet.chainId)) {
+  if (
+    !chainId ||
+    !(chainId == CantoMainnet.chainId || chainId == CantoTestnet.chainId)
+  ) {
     return;
   }
-  const cTokens = chainId == CantoTestnet.chainId ? CTOKENS.cantoTestnet : CTOKENS.cantoMainnet;
+  const cTokens =
+    chainId == CantoTestnet.chainId
+      ? CTOKENS.cantoTestnet
+      : CTOKENS.cantoMainnet;
 
   for (const [name, tokenObj] of Object.entries(cTokens)) {
     try {
-      if (tokenObj.name != 'Canto') {
+      if (tokenObj.name != "Canto") {
         //@ts-ignore
         ethereum.request({
-          method: 'wallet_watchAsset',
+          method: "wallet_watchAsset",
           params: {
-            type: 'ERC20', // Initially only supports ERC20, but eventually more!
+            type: "ERC20", // Initially only supports ERC20, but eventually more!
             options: {
               address: tokenObj.address, // The address that the token is at.
               symbol: tokenObj.symbol.slice(0, 11), // A ticker symbol or shorthand, up to 5 chars.

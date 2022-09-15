@@ -1,6 +1,5 @@
-
-import { useAlert } from "../../stores/index"
-import styled from "styled-components";
+import { useAlert } from "../../stores/index";
+import styled from "@emotion/styled";
 
 const SuccessStyle = styled.div`
   background-color: #09271b;
@@ -23,28 +22,32 @@ const ErrorStyle = styled(SuccessStyle)`
 
 const WarningStyle = styled(SuccessStyle)`
   background-color: #3b310e;
-  border-bottom: 1px solid #FFDA58;
-  color: #FFDA58;
+  border-bottom: 1px solid #ffda58;
+  color: #ffda58;
 `;
 
 const Container = styled.div`
   height: 6rem;
-  transition: all .3s;
-`
-
+  transition: all 0.3s;
+`;
 
 const Alert = () => {
-  const {type, open, child} = useAlert();
-  return <Container style={{
-    height: open ? "6rem" : "0"
-  }} >
-    { type == "Success" ? <SuccessStyle>{child}</SuccessStyle> :
-      type == "Failure" ?
-         <ErrorStyle>{child}</ErrorStyle> :
-      type == "Warning" ? <WarningStyle>{child}</WarningStyle> : null
-    }
-    
-  </Container>
+  const { type, open, child } = useAlert();
+  return (
+    <Container
+      style={{
+        height: open ? "6rem" : "0",
+      }}
+    >
+      {type == "Success" ? (
+        <SuccessStyle>{child}</SuccessStyle>
+      ) : type == "Failure" ? (
+        <ErrorStyle>{child}</ErrorStyle>
+      ) : type == "Warning" ? (
+        <WarningStyle>{child}</WarningStyle>
+      ) : null}
+    </Container>
+  );
 };
 
 export default Alert;
