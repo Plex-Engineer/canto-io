@@ -227,6 +227,7 @@ const Dex = () => {
                   />
                 );
               }
+              return null;
             })}
           </Table>
         </div>

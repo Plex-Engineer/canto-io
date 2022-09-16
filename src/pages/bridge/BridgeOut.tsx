@@ -22,6 +22,7 @@ import {
 import { ConvertTransferBox } from "./components/convertTransferBox";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
+import { useCantoGravityTokens } from "./hooks/useCantoGravityTokens";
 
 const BridgeOut = () => {
   const networkInfo = useNetworkInfo();
