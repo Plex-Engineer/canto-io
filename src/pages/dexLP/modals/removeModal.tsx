@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
 import Input from "../components/input";
-import { AllPairInfo } from "../hooks/useTokens";
 import { useEffect, useState } from "react";
 import { noteSymbol, truncateNumber } from "global/utils/utils";
 import LoadingModal from "./loadingModal";
@@ -9,6 +8,10 @@ import SettingsIcon from "assets/settings.svg";
 import IconPair from "../components/iconPair";
 import useModals, { ModalType } from "../hooks/useModals";
 import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
+import { UserLPPairInfo } from "../config/interfaces";
+import { BigNumber } from "ethers";
+import { getLPOut, getReserveRatioAtoB, valueInNote } from "../utils/utils";
+import { formatUnits } from "ethers/lib/utils";
 
 const Container = styled.div`
   background-color: #040404;
@@ -130,10 +133,10 @@ export const RowCell = (props: RowCellProps) => {
 };
 
 interface ConfirmButtonProps {
-  pair: AllPairInfo;
+  pair: UserLPPairInfo;
   percentage: number;
-  amount1: number;
-  amount2: number;
+  amount1: BigNumber;
+  amount2: BigNumber;
   slippage: number;
   deadline: number;
   chainId?: number;
@@ -159,16 +162,12 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
   });
 
   const routerAddress = getRouterAddress(props.chainId);
-  const LPOut = (
-    (Number(props.pair.userSupply.totalLP) * Number(props.percentage)) /
-    100
-  ).toFixed(props.pair.basePairInfo.decimals);
+  const LPOut = getLPOut(props.percentage, props.pair.userSupply.totalLP);
 
-  const needLPTokenAllowance =
-    Number(LPOut) > Number(props.pair.allowance.LPtoken);
+  const needLPTokenAllowance = LPOut.gt(props.pair.allowance.LPtoken);
 
   useEffect(() => {
-    if (Number(props.pair.allowance.LPtoken) == 0) {
+    if (props.pair.allowance.LPtoken.isZero()) {
       setModalType(ModalType.ENABLE);
     }
   }, []);
@@ -196,12 +195,12 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
       </Button>
     );
   } else if (
-    Number(props.percentage) > 100 ||
-    Number(props.percentage) <= 0 ||
+    props.percentage > 100 ||
+    props.percentage <= 0 ||
     isNaN(Number(props.percentage))
   ) {
     return <DisabledButton>enter percentage</DisabledButton>;
-  } else if (Number(props.slippage) <= 0 || Number(props.deadline) <= 1) {
+  } else if (props.slippage <= 0 || props.deadline <= 1) {
     return <DisabledButton>invalid settings</DisabledButton>;
   } else {
     return (
@@ -224,33 +223,35 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
 };
 
 interface Props {
-  value: AllPairInfo;
+  activePair: UserLPPairInfo;
   onClose: () => void;
   chainId?: number;
   account?: string;
 }
-const RemoveModal = ({ value, chainId }: Props) => {
+const RemoveModal = ({ activePair, chainId }: Props) => {
   const [percentage, setPercentage] = useState("1");
-
   const [slippage, setSlippage] = useState("1");
   const [deadline, setDeadline] = useState("10");
-  const [value1, setValue1] = useState(0);
-  const [value2, setValue2] = useState(0);
+  const [value1, setValue1] = useState(BigNumber.from(0));
+  const [value2, setValue2] = useState(BigNumber.from(0));
   const [openSettings, setOpenSettings] = useState(false);
 
   const [tokenAllowanceStatus, setTokenAllowanceStatus] = useState("None");
+  const displayReserveRatio = getReserveRatioAtoB(
+    activePair.totalSupply.ratio.ratio,
+    activePair.totalSupply.ratio.aTob,
+    activePair.basePairInfo.token1.decimals,
+    activePair.basePairInfo.token2.decimals
+  );
 
   useEffect(() => {
-    setValue1(
-      isNaN(Number(percentage))
-        ? 0
-        : (Number(percentage) * Number(value.userSupply.token1)) / 100
-    );
-    setValue2(
-      isNaN(Number(percentage))
-        ? 0
-        : (Number(percentage) * Number(value.userSupply.token2)) / 100
-    );
+    if (isNaN(Number(percentage)) || Number(percentage) <= 0) {
+      setValue1(BigNumber.from(0));
+      setValue2(BigNumber.from(0));
+    } else {
+      setValue1(activePair.userSupply.token1.mul(Number(percentage)).div(100));
+      setValue2(activePair.userSupply.token2.mul(Number(percentage)).div(100));
+    }
   }, [percentage]);
   return (
     <Container>
@@ -261,13 +262,13 @@ const RemoveModal = ({ value, chainId }: Props) => {
       >
         <LoadingModal
           icons={{
-            icon1: value.basePairInfo.token1.icon,
-            icon2: value.basePairInfo.token2.icon,
+            icon1: activePair.basePairInfo.token1.icon,
+            icon2: activePair.basePairInfo.token2.icon,
           }}
           name={
-            value.basePairInfo.token1.symbol +
+            activePair.basePairInfo.token1.symbol +
             " / " +
-            value.basePairInfo.token2.symbol
+            activePair.basePairInfo.token2.symbol
           }
           amount={"0"}
           type="remove"
@@ -294,15 +295,16 @@ const RemoveModal = ({ value, chainId }: Props) => {
           onClick={() => {
             setOpenSettings(!openSettings);
           }}
-        ></div>
-        <img
-          src={SettingsIcon}
-          height="30px"
-          style={{
-            cursor: "pointer",
-            zIndex: "5",
-          }}
-        />
+        >
+          <img
+            src={SettingsIcon}
+            height="30px"
+            style={{
+              cursor: "pointer",
+              zIndex: "5",
+            }}
+          />
+        </div>
       </div>
       <div
         style={{
@@ -310,8 +312,8 @@ const RemoveModal = ({ value, chainId }: Props) => {
         }}
       >
         <IconPair
-          iconLeft={value.basePairInfo.token1.icon}
-          iconRight={value.basePairInfo.token2.icon}
+          iconLeft={activePair.basePairInfo.token1.icon}
+          iconRight={activePair.basePairInfo.token2.icon}
         />
       </div>
       <div
@@ -323,15 +325,13 @@ const RemoveModal = ({ value, chainId }: Props) => {
           value={percentage}
           onChange={(percentage) => {
             setPercentage(percentage);
-            // setValue1(isNaN(Number(percentage)) ? 0 : (Number(percentage) * Number(value.userSupply.token1) / 100))
-            // setValue2(isNaN(Number(percentage)) ? 0 : (Number(percentage) * Number(value.userSupply.token2) / 100))
           }}
         />
       </div>
       <div style={{ color: "white" }}>
-        1 {value.basePairInfo.token1.symbol} ={" "}
-        {truncateNumber((1 / value.totalSupply.ratio).toString())}{" "}
-        {value.basePairInfo.token2.symbol}
+        1 {activePair.basePairInfo.token1.symbol} ={" "}
+        {truncateNumber(displayReserveRatio.toString())}{" "}
+        {activePair.basePairInfo.token2.symbol}
       </div>
 
       <div className="tokenBox">
@@ -347,30 +347,38 @@ const RemoveModal = ({ value, chainId }: Props) => {
         </p>
         <RowCell
           type={
-            truncateNumber(value1.toString()) +
+            truncateNumber(
+              formatUnits(value1, activePair.basePairInfo.token1.decimals)
+            ) +
             " " +
-            value.basePairInfo.token1.symbol
+            activePair.basePairInfo.token1.symbol
           }
           value={
             noteSymbol +
-            truncateNumber((value1 * Number(value.prices.token1)).toString())
+            truncateNumber(
+              formatUnits(valueInNote(value1, activePair.prices.token1))
+            )
           }
         />
         <RowCell
           type={
-            truncateNumber(value2.toString()) +
+            truncateNumber(
+              formatUnits(value2, activePair.basePairInfo.token2.decimals)
+            ) +
             " " +
-            value.basePairInfo.token2.symbol
+            activePair.basePairInfo.token2.symbol
           }
           value={
             noteSymbol +
-            truncateNumber((value2 * Number(value.prices.token2)).toString())
+            truncateNumber(
+              formatUnits(valueInNote(value2, activePair.prices.token2))
+            )
           }
         />
       </div>
       <ConfirmButton
         status={setTokenAllowanceStatus}
-        pair={value}
+        pair={activePair}
         percentage={Number(percentage)}
         amount1={value1}
         amount2={value2}

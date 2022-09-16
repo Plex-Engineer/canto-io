@@ -108,3 +108,7 @@ export function getReserveRatioAtoB(
 export function valueInNote(amount: BigNumber, price: BigNumber) {
   return price.mul(amount).div(BigNumber.from(10).pow(18));
 }
+
+export function getLPOut(percentage: number, totalLP: BigNumber) {
+  return totalLP.mul(percentage).div(100);
+}

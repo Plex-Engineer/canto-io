@@ -373,18 +373,6 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
       ) : props.pair.basePairInfo.token1.address == WCANTO.address ? (
         <Button
           onClick={() => {
-            console.log(
-              props.pair.basePairInfo.token2.address,
-              props.pair.basePairInfo.stable,
-              props.value2,
-              amountMinOut2,
-              amountMinOut1,
-              props.account,
-              currentBlockTimeStamp + Number(props.deadline) * 60,
-              {
-                value: props.value1,
-              }
-            );
             addLiquidityCANTOSend(
               props.pair.basePairInfo.token2.address,
               props.pair.basePairInfo.stable,

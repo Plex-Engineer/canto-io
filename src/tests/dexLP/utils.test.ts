@@ -109,23 +109,33 @@ test("calculating amount from LP ratio", () => {
   }
 });
 
-// test("calculating expected share of LP", () => {
-//   const testCases = [
-//     { expectedLPOut: "1", currentLP: "0", totalLP: "99", expected: 1 },
-//     { expectedLPOut: "5", currentLP: "5", totalLP: "95", expected: 10 },
-//   ];
+test("calculating expected share of LP", () => {
+  const testCases = [
+    {
+      expectedLPOut: parseUnits("1"),
+      currentLP: parseUnits("0"),
+      totalLP: parseUnits("99"),
+      expected: 0.01,
+    },
+    {
+      expectedLPOut: parseUnits("5"),
+      currentLP: parseUnits("5"),
+      totalLP: parseUnits("95"),
+      expected: 0.1,
+    },
+  ];
 
-//   const testReturns = testCases.map((testCase) =>
-//     calculateExpectedShareofLP(
-//       testCase.expectedLPOut,
-//       testCase.currentLP,
-//       testCase.totalLP
-//     )
-//   );
-//   for (let i = 0; i < testCases.length; i++) {
-//     expect(testReturns[i]).toBeCloseTo(testCases[i].expected);
-//   }
-// });
+  const testReturns = testCases.map((testCase) =>
+    calculateExpectedShareofLP(
+      testCase.expectedLPOut,
+      testCase.currentLP,
+      testCase.totalLP
+    )
+  );
+  for (let i = 0; i < testCases.length; i++) {
+    expect(testReturns[i]).toBe(testCases[i].expected);
+  }
+});
 
 // test("calculating LP token limits", () => {
 //   const testCases = [

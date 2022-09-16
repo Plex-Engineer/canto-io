@@ -14,6 +14,7 @@ import {
 import { cERC20Abi, comptrollerAbi, ERC20Abi } from "global/config/abi";
 import { parseUnits } from "ethers/lib/utils";
 import { getSupplyBalanceFromCTokens } from "../utils/utils";
+import { valueInNote } from "pages/dexLP/utils/utils";
 
 export function useUserLMTokenData(
   LMTokens: LMTokenDetails[],
@@ -144,12 +145,14 @@ export function useUserLMTokenData(
         LMTokens[idx].data.underlying.decimals
       );
 
-      const supplyBalanceinNote = supplyBalance
-        .mul(LMTokens[idx].price)
-        .div(BigNumber.from(10).pow(18));
-      const borrowBalanceinNote = borrowBalance
-        .mul(LMTokens[idx].price)
-        .div(BigNumber.from(10).pow(18));
+      const supplyBalanceinNote = valueInNote(
+        supplyBalance,
+        LMTokens[idx].price
+      );
+      const borrowBalanceinNote = valueInNote(
+        borrowBalance,
+        LMTokens[idx].price
+      );
 
       //supplierDiff = comptroller.supplyState().index - comptroller.compSupplierIndex(cToken.address, supplier.address)
       const supplierDIff = BigNumber.from(tokenData[6][0]).sub(tokenData[5][0]);
