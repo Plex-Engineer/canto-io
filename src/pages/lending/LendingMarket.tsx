@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import styled from "@emotion/styled";
 import { useNotifications, Notification } from "@usedapp/core";
 import { useState, useEffect } from "react";
-import LendingTable from "./components/lendingTable";
-import ReactTooltip from "react-tooltip";
+import LendingTable from "./components/table";
 import { TransactionRow } from "./components/lendingRow";
 import { ModalType, ModalManager } from "./modals/modalManager";
-import { toast } from "react-toastify";
 import { Details } from "./hooks/useTransaction";
-import { Container, Button } from "./components/Container";
+import { Styled, Button } from "./components/Styled";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { Mixpanel } from "mixpanel";
 import { truncateNumber } from "global/utils/utils";
@@ -22,6 +19,8 @@ import {
   LMPositionBar,
   SupplyTable,
 } from "./components/LMTables";
+import { useToast } from "./hooks/useToasts";
+import { SpecialTabs } from "./components/SpecialTabs";
 
 const LendingMarket = () => {
   //intialize network store
@@ -31,107 +30,7 @@ const LendingMarket = () => {
   const modalStore = useModalStore();
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 1000);
 
-  function handleWindowSizeChange() {
-    setIsMobile(window.innerWidth <= 1000);
-  }
-  useEffect(() => {
-    window.addEventListener("resize", handleWindowSizeChange);
-    return () => {
-      window.removeEventListener("resize", handleWindowSizeChange);
-    };
-  }, []);
-
-  useEffect(() => {
-    notifications.forEach((item) => {
-      if (
-        item.type == "transactionStarted" &&
-        !notifs.find((it) => it.id == item.id)
-      ) {
-        setNotifs([...notifs, item]);
-      }
-      if (
-        item.type == "transactionSucceed" ||
-        item.type == "transactionFailed"
-      ) {
-        setNotifs(
-          notifs.filter(
-            //@ts-ignore
-            (localItem) => localItem.transaction.hash != item.transaction.hash
-          )
-        );
-      }
-    });
-
-    notifications.map((noti) => {
-      if (
-        //@ts-ignore
-        (noti?.transactionName?.includes("type") &&
-          noti.type == "transactionSucceed") ||
-        noti.type == "transactionFailed"
-      ) {
-        const isSuccesful = noti.type != "transactionFailed";
-        //@ts-ignore
-        const msg: Details = JSON.parse(noti?.transactionName);
-        switch (msg.type) {
-          case "Supply":
-            msg.type = "supplied";
-            break;
-          case "Borrow":
-            msg.type = "borrowed";
-            break;
-          case "Withdraw":
-            msg.type = "withdrawn";
-            break;
-          case "Repay":
-            msg.type = "repaid";
-            break;
-          case "Collateralize":
-            msg.type = "collateralized";
-            break;
-          case "Decollateralize":
-            msg.type = "decollateralized";
-            break;
-          case "Enable":
-            msg.type = "enabled";
-            break;
-          case "Claim":
-            msg.type = "claimed";
-            break;
-        }
-
-        const errormsg = isSuccesful ? "" : "not";
-        const msged =
-          (Number(msg.amount) > 0 ? Number(msg.amount).toFixed(2) : "") +
-          ` ${msg.name} has ${errormsg} been ${msg.type}`;
-
-        toast(msged, {
-          position: "top-right",
-          autoClose: 5000,
-          toastId: noti.submittedAt,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progressStyle: {
-            color: `${
-              isSuccesful ? "var(--primary-color)" : "var(--error-color"
-            }`,
-          },
-          style: {
-            border: "1px solid var(--primary-color)",
-            borderRadius: "0px",
-            paddingBottom: "3px",
-            background: "black",
-            color: `${
-              isSuccesful ? "var(--primary-color)" : "var(--error-color"
-            }`,
-            height: "100px",
-            fontSize: "20px",
-          },
-        });
-      }
-    });
-  }, [notifications, notifs]);
+  useToast(setIsMobile, notifications, notifs, setNotifs);
 
   //this is used to generate some statistics about the token from the getMarkets
   Mixpanel.events.pageOpened("Lending Market", networkInfo.account);
@@ -142,14 +41,11 @@ const LendingMarket = () => {
     networkInfo.account,
     networkInfo.chainId
   );
-  useEffect(() => {
-    ReactTooltip.rebuild();
-  });
 
   const [onLeftTab, setOnLeftTab] = useState(true);
 
   return (
-    <Container className="lendingMarket">
+    <Styled>
       <ModalManager
         isOpen={modalStore.currentModal != ModalType.NONE}
         position={position}
@@ -355,45 +251,8 @@ const LendingMarket = () => {
           }
         </div>
       </div>
-    </Container>
+    </Styled>
   );
 };
 
-interface SpecialTabsProps {
-  onLeftTabClick: () => void;
-  onRightTabClick: () => void;
-  active: boolean;
-}
-
-interface ActiveProps {
-  active: boolean;
-}
-const SpecialTabs = (props: SpecialTabsProps) => {
-  const TabBar = styled.div`
-    display: flex;
-  `;
-  const Tab = styled.div<ActiveProps>`
-    width: 50%;
-    text-align: center;
-    background-color: #0a2d15;
-    @media (max-width: 1000px) {
-      background-color: ${(props) => (props.active ? "#0f742f" : "#0a2d15")};
-      &:hover {
-        background-color: #0f742f;
-        cursor: pointer;
-      }
-    }
-  `;
-
-  return (
-    <TabBar>
-      <Tab active={props.active} data-active onClick={props.onLeftTabClick}>
-        supply
-      </Tab>
-      <Tab active={!props.active} onClick={props.onRightTabClick}>
-        borrow
-      </Tab>
-    </TabBar>
-  );
-};
 export default LendingMarket;

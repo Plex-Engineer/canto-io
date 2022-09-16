@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 
-export const Container = styled.div`
+export const Styled = styled.div`
   display: flex;
   flex-direction: column;
   color: #fff;
