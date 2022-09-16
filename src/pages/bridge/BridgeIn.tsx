@@ -13,6 +13,8 @@ import { ReactiveButton } from "./components/ReactiveButton";
 import { BigNumber, ethers } from "ethers";
 import { ConvertTransferBox } from "./components/convertTransferBox";
 import { useNetworkInfo } from "global/stores/networkInfo";
+import { useEthGravityTokens } from "./hooks/useEthGravityTokens";
+import { getNativeCantoBalance } from "./utils/nativeBalances";
 const BridgeIn = () => {
   const networkInfo = useNetworkInfo();
   const tokenStore = useTokenStore();
@@ -24,6 +26,10 @@ const BridgeIn = () => {
   const { gravityTokens, gravityAddress } = useGravityTokens(
     networkInfo.account
   );
+
+  // const { userEthGTokens, gravityAddress: P } = useEthGravityTokens(
+  //   networkInfo.account
+  // );
 
   //will contain the eth gravity tokens with the native canto balances
   const [cantoGravityTokens, setCantoGravityTokens] = useState<
