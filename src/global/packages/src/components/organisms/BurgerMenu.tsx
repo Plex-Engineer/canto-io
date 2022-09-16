@@ -54,14 +54,14 @@ export const BurgerMenu = ({
         >
           import tokens
         </OutlinedButton>
-        <OutlinedButton
+        {/* <OutlinedButton
           onClick={() => {
             addCTokens(chainId);
           }}
           style={styles.buttonStyle}
         >
           import cTokens
-        </OutlinedButton>
+        </OutlinedButton> */}
         <OutlinedButton
           onClick={() => {
             addCantoToKeplr();
@@ -124,6 +124,7 @@ const BurgerStyles = {
   },
   bmMenu: {
     background: "#000000",
+    borderRight: "1px solid var(--primary-color)",
     padding: "0em .5em 0",
     fontSize: "1.15em",
   },
@@ -132,6 +133,7 @@ const BurgerStyles = {
   },
   bmItemList: {
     color: "var(--primary-color)",
+    height: "90%",
     // padding: '.8em',
     textAlign: "center",
     // marginTop: '30px',
@@ -141,9 +143,9 @@ const BurgerStyles = {
     color: "var(--primary-color)",
   },
   bmOverlay: {
-    background: "rgba(0, 0, 0, 0.3)",
-    width: "0",
-    height: "0",
+    background: "rgba(9, 40, 26, 0.599)",
+    // width: "0",
+    // height: "0",
   },
 };
 

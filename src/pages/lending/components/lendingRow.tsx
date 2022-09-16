@@ -32,7 +32,7 @@ interface SupplyProps {
   rewards?: string;
 }
 
-interface ITransactionProps {
+interface TransactionProps {
   name: string;
   icon: string;
   status: string;
@@ -40,7 +40,7 @@ interface ITransactionProps {
   date: Date;
 }
 
-interface Iitems {
+interface ItemProps {
   top: string;
   bottom: string;
 }
@@ -58,7 +58,7 @@ interface Iitems {
 //     }
 //   }
 // `;
-const DualRow = ({ top, bottom }: Iitems) => {
+const DualRow = ({ top, bottom }: ItemProps) => {
   return (
     <div
       style={{
@@ -78,7 +78,7 @@ const DualRow = ({ top, bottom }: Iitems) => {
     </div>
   );
 };
-//TODO: figure out what do to with the props
+
 const BorrowRow = (props: BorrowingProps) => {
   return (
     <tr onClick={props.onClick}>
@@ -160,7 +160,7 @@ const SupplyRow = (props: SupplyProps) => {
   );
 };
 
-const TransactionRow = (props: ITransactionProps) => {
+const TransactionRow = (props: TransactionProps) => {
   return (
     <tr onClick={props.onClick}>
       <td>

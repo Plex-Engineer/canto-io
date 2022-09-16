@@ -4,10 +4,10 @@ import { noteSymbol, truncateNumber } from "global/utils/utils";
 import React from "react";
 import Popup from "reactjs-popup";
 import { UserLMPosition, UserLMTokenDetails } from "../config/interfaces";
-import { Hero, TinyTable, ToolTipL } from "./Container";
+import { Hero, TinyTable, ToolTipL } from "./Styled";
 import CypherText from "./CypherText";
 import { BorrowRow, SupplyRow } from "./lendingRow";
-import LendingTable from "./lendingTable";
+import LendingTable from "./table";
 
 interface SupplyingProps {
   visible: boolean;
