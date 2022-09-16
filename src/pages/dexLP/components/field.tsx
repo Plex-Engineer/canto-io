@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
-import { formatBalance, truncateNumber } from "global/utils/utils";
-import { useEffect, useState } from "react";
+import { truncateNumber } from "global/utils/utils";
+import { useState } from "react";
 
 type styleProps = {
   focused: boolean;

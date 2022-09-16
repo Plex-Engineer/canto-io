@@ -137,23 +137,85 @@ test("calculating expected share of LP", () => {
   }
 });
 
-// test("calculating LP token limits", () => {
-//   const testCases = [
-//     { balanceA: 1, balanceB: 1, ratio: 1, limitA: "1", limitB: "1" },
-//     { balanceA: 100, balanceB: 1, ratio: 1, limitA: "1", limitB: "1" },
-//     { balanceA: 100, balanceB: 1, ratio: 0.5, limitA: "0.5", limitB: "1" },
-//     { balanceA: 50, balanceB: 10, ratio: 10, limitA: "50", limitB: "5" },
-//     { balanceA: 400, balanceB: 50, ratio: 0.01, limitA: "0.5", limitB: "50" },
-//   ];
+test("calculating LP token limits", () => {
+  const testCases = [
+    {
+      balanceA: parseUnits("1"),
+      balanceB: parseUnits("1"),
+      ratio: parseUnits("1"),
+      limitA: parseUnits("1"),
+      limitB: parseUnits("1"),
+      atob: true,
+    },
+    {
+      balanceA: parseUnits("100"),
+      balanceB: parseUnits("1"),
+      ratio: parseUnits("1"),
+      limitA: parseUnits("1"),
+      limitB: parseUnits("1"),
+      atob: true,
+    },
+    {
+      balanceA: parseUnits("100"),
+      balanceB: parseUnits("1"),
+      ratio: parseUnits("2"),
+      limitA: parseUnits("0.5"),
+      limitB: parseUnits("1"),
+      atob: false,
+    },
+    {
+      balanceA: parseUnits("50"),
+      balanceB: parseUnits("10"),
+      ratio: parseUnits("10"),
+      limitA: parseUnits("50"),
+      limitB: parseUnits("5"),
+      atob: true,
+    },
+    {
+      balanceA: parseUnits("400"),
+      balanceB: parseUnits("50"),
+      ratio: parseUnits("100"),
+      limitA: parseUnits("0.5"),
+      limitB: parseUnits("50"),
+      atob: false,
+    },
+    //testing different decimals
+    {
+      balanceA: parseUnits("100", 18),
+      balanceB: parseUnits("100", 6),
+      ratio: parseUnits("1", 30),
+      limitA: parseUnits("100", 18),
+      limitB: parseUnits("100", 6),
+      atob: true,
+    },
+    {
+      balanceA: parseUnits("100", 6),
+      balanceB: parseUnits("100", 18),
+      ratio: parseUnits("1", 30),
+      limitA: parseUnits("100", 6),
+      limitB: parseUnits("100", 18),
+      atob: false,
+    },
+  ];
 
-//   const testLimitsA = testCases.map((testCase) =>
-//     getToken1Limit(testCase.balanceA, testCase.balanceB, testCase.ratio)
-//   );
-//   const testLimitsB = testCases.map((testCase) =>
-//     getToken2Limit(testCase.balanceA, testCase.balanceB, testCase.ratio)
-//   );
-//   for (let i = 0; i < testCases.length; i++) {
-//     expect(testLimitsA[i]).toBe(testCases[i].limitA);
-//     expect(testLimitsB[i]).toBe(testCases[i].limitB);
-//   }
-// });
+  const testLimitsA = testCases.map((testCase) =>
+    getToken1Limit(
+      testCase.balanceA,
+      testCase.balanceB,
+      testCase.ratio,
+      testCase.atob
+    )
+  );
+  const testLimitsB = testCases.map((testCase) =>
+    getToken2Limit(
+      testCase.balanceA,
+      testCase.balanceB,
+      testCase.ratio,
+      testCase.atob
+    )
+  );
+  for (let i = 0; i < testCases.length; i++) {
+    expect(testLimitsA[i]).toStrictEqual(testCases[i].limitA);
+    expect(testLimitsB[i]).toStrictEqual(testCases[i].limitB);
+  }
+});

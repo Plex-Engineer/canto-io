@@ -8,7 +8,6 @@ import AddRemoveModal from "./addRemove";
 import { RemoveLiquidityConfirmation } from "./removeConfirmation";
 import { AddLiquidityConfirmation } from "./addConfirmation";
 import EnableModal from "./enableModal";
-import { AllPairInfo } from "../hooks/useTokens";
 
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"

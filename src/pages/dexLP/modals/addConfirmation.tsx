@@ -197,14 +197,9 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
       : TOKENS.cantoMainnet.WCANTO;
   const setModalType = useModals((state) => state.setModalType);
 
-  const amountMinOut1 = truncateNumber(
-    props.value1.mul(Number(props.slippage)).div(100).toString(),
-    props.pair.basePairInfo.token1.decimals
-  );
-  const amountMinOut2 = truncateNumber(
-    props.value2.mul(Number(props.slippage)).div(100).toString(),
-    props.pair.basePairInfo.token2.decimals
-  );
+  const amountMinOut1 = props.value1.mul(Number(props.slippage)).div(100);
+  const amountMinOut2 = props.value2.mul(Number(props.slippage)).div(100);
+
   const displayReserveRatio = getReserveRatioAtoB(
     props.pair.totalSupply.ratio.ratio,
     props.pair.totalSupply.ratio.aTob,

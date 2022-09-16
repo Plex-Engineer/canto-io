@@ -1,6 +1,5 @@
-import { ethers } from "ethers";
+import { BigNumber } from "ethers";
 import styled from "@emotion/styled";
-import { AllPairInfo } from "../hooks/useTokens";
 import {
   useRemoveLiquidity,
   useRemoveLiquidityCANTO,
@@ -14,7 +13,9 @@ import { useState } from "react";
 import useModals from "../hooks/useModals";
 import { TOKENS, CantoTestnet } from "cantoui";
 import { truncateNumber } from "global/utils/utils";
-import { getCurrentBlockTimestamp } from "../utils/utils";
+import { getCurrentBlockTimestamp, getReserveRatioAtoB } from "../utils/utils";
+import { UserLPPairInfo } from "../config/interfaces";
+import { formatUnits } from "ethers/lib/utils";
 
 const Container = styled.div`
   background-color: #040404;
@@ -145,9 +146,9 @@ const DisabledButton = styled.button`
 `;
 
 interface RemoveConfirmationProps {
-  pair: AllPairInfo;
-  value1: number;
-  value2: number;
+  pair: UserLPPairInfo;
+  value1: BigNumber;
+  value2: BigNumber;
   percentage: number;
   slippage: number;
   deadline: number;
@@ -156,6 +157,12 @@ interface RemoveConfirmationProps {
 }
 
 export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
+  const displayReserveRatio = getReserveRatioAtoB(
+    props.pair.totalSupply.ratio.ratio,
+    props.pair.totalSupply.ratio.aTob,
+    props.pair.basePairInfo.token1.decimals,
+    props.pair.basePairInfo.token2.decimals
+  );
   const { state: removeLiquidityState, send: removeLiquiditySend } =
     useRemoveLiquidity(props.chainId, {
       type: "remove",
@@ -194,21 +201,10 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
   const LPOut =
     props.percentage == 100
       ? props.pair.userSupply.totalLP
-      : truncateNumber(
-          (
-            (Number(props.pair.userSupply.totalLP) * Number(props.percentage)) /
-            100
-          ).toString(),
-          props.pair.basePairInfo.decimals
-        );
-  const amountMinOut1 = truncateNumber(
-    ((Number(props.value1) * (100 - Number(props.slippage))) / 100).toString(),
-    props.pair.basePairInfo.token1.decimals
-  );
-  const amountMinOut2 = truncateNumber(
-    ((Number(props.value2) * (100 - Number(props.slippage))) / 100).toString(),
-    props.pair.basePairInfo.token2.decimals
-  );
+      : props.pair.userSupply.totalLP.mul(props.percentage).div(100);
+
+  const amountMinOut1 = props.value1.mul(100 - props.slippage).div(100);
+  const amountMinOut2 = props.value2.mul(100 - props.slippage).div(100);
 
   //getting current block timestamp to add to the deadline that the user inputs
   const [currentBlockTimeStamp, setCurrentBlockTimeStamp] = useState(0);
@@ -310,7 +306,7 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
             "1 " +
             props.pair.basePairInfo.token1.symbol +
             " = " +
-            (1 / Number(props.pair.totalSupply.ratio)).toFixed(3) +
+            truncateNumber(displayReserveRatio.toString()) +
             " " +
             props.pair.basePairInfo.token2.symbol
           }
@@ -321,7 +317,7 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
             "1 " +
             props.pair.basePairInfo.token2.symbol +
             " = " +
-            Number(props.pair.totalSupply.ratio).toFixed(3) +
+            truncateNumber((1 / displayReserveRatio).toString()) +
             " " +
             props.pair.basePairInfo.token1.symbol
           }
@@ -341,13 +337,22 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
       >
         <RowCell
           type={props.pair.basePairInfo.token1.symbol + " withdrawing: "}
-          value={truncateNumber(props.value1.toString())}
+          value={truncateNumber(
+            formatUnits(props.value1, props.pair.basePairInfo.token1.decimals)
+          )}
         />
         <RowCell
           type={props.pair.basePairInfo.token2.symbol + " withdrawing: "}
-          value={truncateNumber(props.value2.toString())}
+          value={truncateNumber(
+            formatUnits(props.value2, props.pair.basePairInfo.token2.decimals)
+          )}
         />
-        <RowCell type={"burned: "} value={truncateNumber(LPOut.toString())} />
+        <RowCell
+          type={"burned: "}
+          value={truncateNumber(
+            formatUnits(LPOut, props.pair.basePairInfo.decimals)
+          )}
+        />
         {/* <RowCell type="share of pool : " value={calculateExpectedShareofLP(props.expectedLP, props.pair.userSupply.totalLP, props.pair.totalSupply.totalLP).toFixed(8) + "%"} /> */}
       </div>
       {currentBlockTimeStamp == 0 ? (
@@ -360,15 +365,9 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
             removeLiquidityCANTOSend(
               props.pair.basePairInfo.token2.address,
               props.pair.basePairInfo.stable,
-              ethers.utils.parseUnits(LPOut, props.pair.basePairInfo.decimals),
-              ethers.utils.parseUnits(
-                amountMinOut2,
-                props.pair.basePairInfo.token2.decimals
-              ),
-              ethers.utils.parseUnits(
-                amountMinOut1,
-                props.pair.basePairInfo.token1.decimals
-              ),
+              LPOut,
+              amountMinOut2,
+              amountMinOut1,
               props.account,
               currentBlockTimeStamp + Number(props.deadline) * 60
             );
@@ -383,15 +382,9 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
               props.pair.basePairInfo.token1.address,
               props.pair.basePairInfo.token2.address,
               props.pair.basePairInfo.stable,
-              ethers.utils.parseUnits(LPOut, props.pair.basePairInfo.decimals),
-              ethers.utils.parseUnits(
-                amountMinOut1,
-                props.pair.basePairInfo.token1.decimals
-              ),
-              ethers.utils.parseUnits(
-                amountMinOut2,
-                props.pair.basePairInfo.token2.decimals
-              ),
+              LPOut,
+              amountMinOut1,
+              amountMinOut2,
               props.account,
               currentBlockTimeStamp + Number(props.deadline) * 60
             );
@@ -405,7 +398,7 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
 };
 
 interface Props {
-  value: AllPairInfo;
+  activePair: UserLPPairInfo;
   onClose: () => void;
   chainId?: number;
   account?: string;
@@ -416,7 +409,7 @@ export const RemoveLiquidityConfirmation = (props: Props) => {
 
   return (
     <RemoveLiquidityButton
-      pair={props.value}
+      pair={props.activePair}
       value1={confirmValues.amount1}
       value2={confirmValues.amount2}
       percentage={confirmValues.percentage}

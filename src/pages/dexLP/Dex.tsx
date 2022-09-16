@@ -3,7 +3,7 @@ import Table from "./components/table";
 import Row, { TransactionRow } from "./components/row";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useNotifications, Notification } from "@usedapp/core";
+import { useNotifications } from "@usedapp/core";
 import useModals, { ModalType } from "./hooks/useModals";
 import { ModalManager } from "./modals/ModalManager";
 import { ethers } from "ethers";
