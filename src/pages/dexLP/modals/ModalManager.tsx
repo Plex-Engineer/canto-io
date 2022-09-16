@@ -8,7 +8,6 @@ import AddRemoveModal from "./addRemove";
 import { RemoveLiquidityConfirmation } from "./removeConfirmation";
 import { AddLiquidityConfirmation } from "./addConfirmation";
 import EnableModal from "./enableModal";
-import { AllPairInfo } from "../hooks/useTokens";
 
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
@@ -36,13 +35,15 @@ const StyledPopup = styled(Popup)`
 
 interface Props {
   onClose: () => void;
-  data: AllPairInfo;
   chainId?: number;
   account?: string;
 }
 
 const ModalManager = (props: Props) => {
-  const modalType = useModals((state) => state.modalType);
+  const [modalType, activePair] = useModals((state) => [
+    state.modalType,
+    state.activePair,
+  ]);
   return (
     <StyledPopup
       open={modalType != ModalType.NONE}
@@ -78,7 +79,7 @@ const ModalManager = (props: Props) => {
       {modalType === ModalType.ENABLE && (
         <EnableModal
           onClose={props.onClose}
-          value={props.data}
+          activePair={activePair}
           chainId={props.chainId}
           account={props.account}
         />
@@ -86,7 +87,7 @@ const ModalManager = (props: Props) => {
       {modalType === ModalType.ADD && (
         <AddModal
           onClose={props.onClose}
-          value={props.data}
+          activePair={activePair}
           chainId={props.chainId}
           account={props.account}
         />
@@ -94,7 +95,7 @@ const ModalManager = (props: Props) => {
       {modalType === ModalType.REMOVE && (
         <RemoveModal
           onClose={props.onClose}
-          value={props.data}
+          activePair={activePair}
           chainId={props.chainId}
           account={props.account}
         />
@@ -102,7 +103,7 @@ const ModalManager = (props: Props) => {
       {modalType === ModalType.ADD_OR_REMOVE && (
         <AddRemoveModal
           onClose={props.onClose}
-          value={props.data}
+          activePair={activePair}
           chainId={props.chainId}
           account={props.account}
         />
@@ -110,7 +111,7 @@ const ModalManager = (props: Props) => {
       {modalType === ModalType.REMOVE_CONFIRM && (
         <RemoveLiquidityConfirmation
           onClose={props.onClose}
-          value={props.data}
+          activePair={activePair}
           chainId={props.chainId}
           account={props.account}
         />
@@ -118,7 +119,7 @@ const ModalManager = (props: Props) => {
       {modalType === ModalType.ADD_CONFIRM && (
         <AddLiquidityConfirmation
           onClose={props.onClose}
-          value={props.data}
+          activePair={activePair}
           chainId={props.chainId}
           account={props.account}
         />

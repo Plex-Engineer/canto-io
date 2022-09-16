@@ -3,17 +3,17 @@ import Table from "./components/table";
 import Row, { TransactionRow } from "./components/row";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useNotifications, Notification } from "@usedapp/core";
+import { useNotifications } from "@usedapp/core";
 import useModals, { ModalType } from "./hooks/useModals";
 import { ModalManager } from "./modals/ModalManager";
 import { ethers } from "ethers";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import useDex, {
-  AllPairInfo,
-  emptyPairInfo,
-} from "pages/dexLP/hooks/useTokens";
 import { noteSymbol, truncateNumber } from "global/utils/utils";
 import style from "./Dex.module.scss";
+import useLPTokenData from "./hooks/useLPTokenData";
+import useUserLPTokenInfo from "./hooks/useUserLPTokenData";
+import { LPPairInfo, UserLPPairInfo } from "./config/interfaces";
+import { formatUnits } from "ethers/lib/utils";
 
 const Container = styled.div`
   display: flex;
@@ -77,13 +77,16 @@ const Dex = () => {
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<any[]>([]);
 
-  const [setModalType, activePair, setActivePair] = useModals((state) => [
+  const [setModalType, setActivePair] = useModals((state) => [
     state.setModalType,
-    state.activePair,
     state.setActivePair,
   ]);
-
-  const pairs = useDex(networkInfo.account, Number(networkInfo.chainId));
+  const pairs: LPPairInfo[] = useLPTokenData(Number(networkInfo.chainId));
+  const userPairs: UserLPPairInfo[] = useUserLPTokenInfo(
+    pairs,
+    networkInfo.account,
+    Number(networkInfo.chainId)
+  );
 
   useEffect(() => {
     notifications.forEach((item) => {
@@ -165,7 +168,6 @@ const Dex = () => {
     <Container style={style}>
       <div style={{ marginBottom: "75px" }}>
         <ModalManager
-          data={activePair ?? emptyPairInfo}
           chainId={Number(networkInfo.chainId)}
           account={networkInfo.account}
           onClose={() => {
@@ -229,18 +231,16 @@ const Dex = () => {
           </Table>
         </div>
       ) : null}
-      {pairs?.filter(
-        (pair: AllPairInfo) =>
-          Number(pair.userSupply.totalLP) > 0 ||
-          Number(pair.userSupply.percentOwned) > 0
+      {userPairs?.filter(
+        (pair: UserLPPairInfo) =>
+          !pair.userSupply.totalLP.isZero() || pair.userSupply.percentOwned > 0
       ).length ? (
         <div>
           <p className="tableName">current position</p>
           <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-            {pairs?.map((pair: AllPairInfo, idx) => {
-              console.log(0.2 * idx);
-              return Number(pair.userSupply.totalLP) > 0 ||
-                Number(pair.userSupply.percentOwned) > 0 ? (
+            {userPairs?.map((pair: UserLPPairInfo, idx) => {
+              return !pair.userSupply.totalLP.isZero() ||
+                pair.userSupply.percentOwned > 0 ? (
                 <Row
                   delay={0.2 * idx}
                   key={pair.basePairInfo.address}
@@ -249,7 +249,7 @@ const Dex = () => {
                   onClick={() => {
                     setActivePair(pair);
                     setModalType(
-                      Number(pair.userSupply.totalLP) > 0
+                      !pair.userSupply.totalLP.isZero()
                         ? ModalType.ADD_OR_REMOVE
                         : ModalType.ADD
                     );
@@ -260,11 +260,19 @@ const Dex = () => {
                     pair.basePairInfo.token2.symbol
                   }
                   totalValueLocked={
-                    noteSymbol + ethers.utils.commify(pair.totalSupply.tvl)
+                    noteSymbol +
+                    ethers.utils.commify(
+                      truncateNumber(formatUnits(pair.totalSupply.tvl))
+                    )
                   }
                   apr={"23.2"}
                   position={
-                    truncateNumber(pair.userSupply.totalLP) + " LP Tokens"
+                    truncateNumber(
+                      formatUnits(
+                        pair.userSupply.totalLP,
+                        pair.basePairInfo.decimals
+                      )
+                    ) + " LP Tokens"
                   }
                   share={truncateNumber(
                     (pair.userSupply.percentOwned * 100).toString()
@@ -277,18 +285,18 @@ const Dex = () => {
       ) : null}
 
       {
-        pairs?.filter(
-          (pair: AllPairInfo) =>
-            Number(pair.userSupply.totalLP) == 0 &&
-            Number(pair.userSupply.percentOwned) == 0
+        userPairs?.filter(
+          (pair: UserLPPairInfo) =>
+            pair.userSupply.totalLP.isZero() &&
+            pair.userSupply.percentOwned == 0
         ).length ? (
           <div>
             <p className="tableName">pools</p>
             <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-              {pairs?.map((pair: AllPairInfo, idx) => {
+              {userPairs?.map((pair: UserLPPairInfo, idx) => {
                 return !(
-                  Number(pair.userSupply.totalLP) == 0 &&
-                  Number(pair.userSupply.percentOwned) == 0
+                  pair.userSupply.totalLP.isZero() &&
+                  pair.userSupply.percentOwned == 0
                 ) ? null : (
                   <Row
                     delay={0.1 * idx}
@@ -309,11 +317,15 @@ const Dex = () => {
                       pair.basePairInfo.token2.symbol
                     }
                     totalValueLocked={
-                      noteSymbol + ethers.utils.commify(pair.totalSupply.tvl)
+                      noteSymbol +
+                      ethers.utils.commify(
+                        truncateNumber(formatUnits(pair.totalSupply.tvl))
+                      )
                     }
                     apr={"23.2"}
                     position={
-                      truncateNumber(pair.userSupply.totalLP) + " LP Tokens"
+                      truncateNumber(formatUnits(pair.userSupply.totalLP)) +
+                      " LP Tokens"
                     }
                     share={truncateNumber(
                       (pair.userSupply.percentOwned * 100).toString()

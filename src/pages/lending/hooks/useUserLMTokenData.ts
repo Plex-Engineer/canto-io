@@ -1,4 +1,3 @@
-import { formatEther } from "@ethersproject/units";
 import { CallResult, useCalls, useEtherBalance } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { ethers } from "ethers";
@@ -14,6 +13,8 @@ import {
 } from "../config/interfaces";
 import { cERC20Abi, comptrollerAbi, ERC20Abi } from "global/config/abi";
 import { parseUnits } from "ethers/lib/utils";
+import { getSupplyBalanceFromCTokens } from "../utils/utils";
+import { valueInNote } from "pages/dexLP/utils/utils";
 
 export function useUserLMTokenData(
   LMTokens: LMTokenDetails[],
@@ -137,16 +138,21 @@ export function useUserLMTokenData(
               )
             ) > 0;
 
-      const supplyBalance = LMTokens[idx].exchangeRate
-        .mul(balanceOfC)
-        .div(BigNumber.from(10).pow(18));
+      const supplyBalance = getSupplyBalanceFromCTokens(
+        balanceOfC,
+        LMTokens[idx].exchangeRate,
+        LMTokens[idx].data.decimals,
+        LMTokens[idx].data.underlying.decimals
+      );
 
-      const supplyBalanceinNote = supplyBalance
-        .mul(LMTokens[idx].price)
-        .div(BigNumber.from(10).pow(LMTokens[idx].data.underlying.decimals));
-      const borrowBalanceinNote = borrowBalance
-        .mul(LMTokens[idx].price)
-        .div(BigNumber.from(10).pow(LMTokens[idx].data.underlying.decimals));
+      const supplyBalanceinNote = valueInNote(
+        supplyBalance,
+        LMTokens[idx].price
+      );
+      const borrowBalanceinNote = valueInNote(
+        borrowBalance,
+        LMTokens[idx].price
+      );
 
       //supplierDiff = comptroller.supplyState().index - comptroller.compSupplierIndex(cToken.address, supplier.address)
       const supplierDIff = BigNumber.from(tokenData[6][0]).sub(tokenData[5][0]);

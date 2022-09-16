@@ -10,6 +10,7 @@ import {
 import { useClaim } from "pages/lending/hooks/useTransaction";
 import { UserLMRewards } from "pages/lending/config/interfaces";
 import { ethers } from "ethers";
+import { valueInNote } from "pages/dexLP/utils/utils";
 const Container = styled.div`
   background-color: #040404;
   height: 36rem;
@@ -142,7 +143,7 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
       <p className="secondaryBalance">
         {noteSymbol}
         {truncateNumber(
-          formatUnits(rewardsObj.price.mul(rewardsObj.walletBalance), 36)
+          formatUnits(valueInNote(rewardsObj.walletBalance, rewardsObj.price))
         )}
       </p>
       <div className="balances">
@@ -163,7 +164,7 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
           <p className="value">
             {noteSymbol}{" "}
             {truncateNumber(
-              formatUnits(rewardsObj.price.mul(rewardsObj.accrued), 36)
+              formatUnits(valueInNote(rewardsObj.accrued, rewardsObj.price))
             )}
           </p>
         </div>

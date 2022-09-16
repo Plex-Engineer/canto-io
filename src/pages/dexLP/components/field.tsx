@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
-import { formatBalance } from "global/utils/utils";
-import { useEffect, useState } from "react";
+import { truncateNumber } from "global/utils/utils";
+import { useState } from "react";
 
 type styleProps = {
   focused: boolean;
@@ -81,29 +81,20 @@ const IconName = styled.div<styleProps>`
 
 type Props = {
   placeholder: string;
-  balance: number;
+  balance: string;
   type?: string;
   hasToken?: boolean;
   token?: string;
-  limit: number;
+  limit: string;
   onChange: (value: string) => void;
   value: string;
   icon: string;
-  remaining: number;
 };
 
 const Field = (props: Props) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [remaining, setRemaining] = useState(props.balance);
   const [cursorPosition, setCursorPosition] = useState(0);
 
-  useEffect(() => {
-    if (props.remaining < 0 || isNaN(props.remaining)) {
-      setRemaining(0);
-    } else {
-      setRemaining(props.remaining);
-    }
-  }, [props.remaining]);
   const InputValue = () => (
     <input
       type="text"
@@ -145,7 +136,7 @@ const Field = (props: Props) => {
           justifyContent: "space-between",
         }}
       >
-        <p>{formatBalance(remaining)}</p>
+        <p>{truncateNumber(props.balance)}</p>
         <p>
           <Max
             onClick={() => {
