@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   CantoMainnet,
@@ -140,7 +140,7 @@ const fullTokenList = (chainId: number): TokenListCategory[] => {
   ];
 };
 
-function getAllTokens2(categories: TokenListCategory[]) {
+function getAllTokens(categories: TokenListCategory[]): AddTokenItemProps[] {
   const allTokens: AddTokenItemProps[] = [];
   categories.forEach((category) => allTokens.push(...category.tokens));
   return allTokens;
@@ -150,14 +150,40 @@ interface TokenModalProps {
 }
 const TokensModal = ({ chainId }: TokenModalProps) => {
   const [selectedTokens, setSelectedTokens] = useState<AddTokenItemProps[]>([]);
-  const allTokens = getAllTokens2(fullTokenList(chainId));
+  const [tokenList, setTokenList] = useState<TokenListCategory[]>(
+    fullTokenList(chainId)
+  );
+  const allTokens = getAllTokens(tokenList);
+
+  const [userSearch, setUserSearch] = useState("");
+
+  useEffect(() => {
+    if (!userSearch) {
+      setTokenList(fullTokenList(chainId));
+    } else {
+      setTokenList(
+        fullTokenList(chainId).map((category) => {
+          return {
+            name: category.name,
+            tokens: (category.tokens = category.tokens.filter((token) =>
+              token.symbol.toLowerCase().includes(userSearch.toLowerCase())
+            )),
+          };
+        })
+      );
+    }
+  }, [userSearch]);
   return (
     <Styled>
       <div className="title">Import Tokens</div>
+      <input
+        value={userSearch}
+        onChange={(e) => setUserSearch(e.target.value)}
+      />
       {allTokens.length > 0 ? (
         <React.Fragment>
           <div className="scroll-view">
-            {fullTokenList(chainId).map((category) => (
+            {tokenList.map((category) => (
               <div key={category.name}>
                 <Text type="text">{category.name}</Text>
                 {category.tokens.map((token) => {
@@ -219,7 +245,11 @@ const TokensModal = ({ chainId }: TokenModalProps) => {
         </React.Fragment>
       ) : (
         <div style={{ marginTop: "50%" }}>
-          <Text>please switch to canto network to add tokens</Text>
+          {userSearch ? (
+            <Text>no tokens match search</Text>
+          ) : (
+            <Text>please switch to canto network to add tokens</Text>
+          )}
         </div>
       )}
     </Styled>
