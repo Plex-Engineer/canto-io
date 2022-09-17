@@ -64,6 +64,17 @@ interface AddTokenItemProps {
   decimals: number;
   icon: string;
 }
+function sortTokens(tokens: AddTokenItemProps[]) {
+  return tokens.sort((a, b) => {
+    if (a.symbol < b.symbol) {
+      return -1;
+    }
+    if (a.symbol > b.symbol) {
+      return 1;
+    }
+    return 0;
+  });
+}
 
 const fullTokenList = (chainId: number): TokenListCategory[] => {
   const tokens: AddTokenItemProps[] = [];
@@ -127,15 +138,15 @@ const fullTokenList = (chainId: number): TokenListCategory[] => {
   return [
     {
       name: "Tokens",
-      tokens: tokens,
+      tokens: sortTokens(tokens),
     },
     {
       name: "cTokens",
-      tokens: cTokens,
+      tokens: sortTokens(cTokens),
     },
     {
       name: "LP Tokens",
-      tokens: lpTokens,
+      tokens: sortTokens(lpTokens),
     },
   ];
 };
