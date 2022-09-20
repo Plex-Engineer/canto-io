@@ -19,6 +19,8 @@ import { truncateNumber } from "global/utils/utils";
 import { UserLPPairInfo } from "../config/interfaces";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
+import { getAddButtonTextAndOnClick } from "../utils/modalButtonParams";
+import { PrimaryButton } from "cantoui";
 
 const Container = styled.div`
   background-color: #040404;
@@ -71,36 +73,6 @@ const Container = styled.div`
     width: 100%;
   }
 `;
-
-const Button = styled.button`
-  font-weight: 400;
-  width: 18rem;
-  font-size: 20px;
-  color: black;
-  background-color: var(--primary-color);
-  padding: 0.6rem;
-  border: 1px solid var(--primary-color);
-  margin: 2rem auto;
-  /* margin: 3rem auto; */
-
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-
-const DisabledButton = styled(Button)`
-  background-color: black;
-  color: #939393;
-  border: 1px solid #939393;
-  &:hover {
-    color: #eee;
-    cursor: default;
-    background-color: #222;
-  }
-`;
-
 interface AddAllowanceProps {
   pair: UserLPPairInfo;
   value1: string;
@@ -139,8 +111,6 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
   }
 
   const routerAddress = getRouterAddress(props.chainId);
-  const needToken1Allowance = bnValue1.gt(props.pair.allowance.token1);
-  const needToken2Allowance = bnValue2.gt(props.pair.allowance.token2);
 
   const { state: addAllowanceA, send: addAllowanceASend } = useSetAllowance({
     type: "Enable",
@@ -182,81 +152,45 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
       }, 500);
     }
   }, [addAllowanceB.status]);
-  if (needToken1Allowance && needToken2Allowance) {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceASend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-          addAllowanceBSend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        {"enable" +
-          props.pair.basePairInfo.token1.symbol +
-          " & " +
-          props.pair.basePairInfo.token2.symbol}
-      </Button>
-    );
-  } else if (needToken1Allowance && !needToken2Allowance) {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceASend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        enable {props.pair.basePairInfo.token1.symbol}
-      </Button>
-    );
-  } else if (!needToken1Allowance && needToken2Allowance) {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceBSend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        enable For {props.pair.basePairInfo.token2.symbol}
-      </Button>
-    );
-  } else {
-    if (bnValue1.isZero() || bnValue2.isZero()) {
-      return <DisabledButton>enter amount</DisabledButton>;
-    } else if (
-      bnValue1.gt(props.pair.balances.token1) ||
-      bnValue2.gt(props.pair.balances.token2)
-    ) {
-      return <DisabledButton>no funds</DisabledButton>;
-    } else if (Number(props.slippage) <= 0 || Number(props.deadline) <= 0) {
-      return <DisabledButton>invalid settings</DisabledButton>;
-    } else {
-      return (
-        <Button
-          onClick={() => {
-            setConfirmationValues({
-              amount1: bnValue1,
-              amount2: bnValue2,
-              slippage: props.slippage,
-              deadline: props.deadline,
-              percentage: 0,
-            });
-            setModalType(ModalType.ADD_CONFIRM);
-          }}
-        >
-          add liquidity
-        </Button>
-      );
+
+  const [buttonText, buttonOnClick, disabled] = getAddButtonTextAndOnClick(
+    props.pair.basePairInfo.token1.symbol,
+    props.pair.basePairInfo.token2.symbol,
+    props.pair.allowance.token1,
+    props.pair.allowance.token2,
+    props.pair.balances.token1,
+    props.pair.balances.token2,
+    bnValue1,
+    bnValue2,
+    props.slippage,
+    props.deadline,
+    () =>
+      addAllowanceASend(
+        routerAddress,
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ),
+    () =>
+      addAllowanceBSend(
+        routerAddress,
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ),
+    () => {
+      setConfirmationValues({
+        amount1: bnValue1,
+        amount2: bnValue2,
+        slippage: props.slippage,
+        deadline: props.deadline,
+        percentage: 0,
+      });
+      setModalType(ModalType.ADD_CONFIRM);
     }
-  }
+  );
+
+  return (
+    <PrimaryButton disabled={disabled} onClick={buttonOnClick}>
+      {buttonText}
+    </PrimaryButton>
+  );
 };
 
 interface Props {
@@ -545,13 +479,12 @@ const AddModal = ({ activePair, chainId }: Props) => {
               onChange={(d) => setDeadline(d)}
             />
           </div>
-          {Number(slippage) <= 0 || Number(deadline) <= 0 ? (
-            <DisabledButton>save settings</DisabledButton>
-          ) : (
-            <Button onClick={() => setOpenSettings(false)}>
-              save settings
-            </Button>
-          )}
+          <PrimaryButton
+            disabled={Number(slippage) <= 0 || Number(deadline) <= 0}
+            onClick={() => setOpenSettings(false)}
+          >
+            save settings
+          </PrimaryButton>
         </PopIn>
       </div>
       <AddAllowanceButton

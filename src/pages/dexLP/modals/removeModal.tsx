@@ -12,6 +12,8 @@ import { UserLPPairInfo } from "../config/interfaces";
 import { BigNumber } from "ethers";
 import { getLPOut, getReserveRatioAtoB, valueInNote } from "../utils/utils";
 import { formatUnits } from "ethers/lib/utils";
+import { PrimaryButton } from "cantoui";
+import { getRemoveButtonTextAndOnClick } from "../utils/modalButtonParams";
 
 const Container = styled.div`
   background-color: #040404;
@@ -81,34 +83,6 @@ const Container = styled.div`
   }
 `;
 
-const Button = styled.button`
-  font-weight: 400;
-  width: 18rem;
-  font-size: 22px;
-  color: black;
-  background-color: var(--primary-color);
-  padding: 0.6rem;
-  border: 1px solid var(--primary-color);
-  margin: 2rem auto;
-  /* margin: 3rem auto; */
-
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-
-const DisabledButton = styled(Button)`
-  background-color: #222;
-  color: #666;
-  border: none;
-  &:hover {
-    color: #eee;
-    cursor: default;
-    background-color: #222;
-  }
-`;
 interface RowCellProps {
   type: string;
   value?: string;
@@ -164,8 +138,6 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
   const routerAddress = getRouterAddress(props.chainId);
   const LPOut = getLPOut(props.percentage, props.pair.userSupply.totalLP);
 
-  const needLPTokenAllowance = LPOut.gt(props.pair.allowance.LPtoken);
-
   useEffect(() => {
     if (props.pair.allowance.LPtoken.isZero()) {
       setModalType(ModalType.ENABLE);
@@ -180,46 +152,37 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
     }
   }, [addAllowance.status]);
 
-  if (needLPTokenAllowance) {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceSend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        Enable {props.pair.basePairInfo.token1.symbol} /{" "}
-        {props.pair.basePairInfo.token2.symbol}
-      </Button>
-    );
-  } else if (
-    props.percentage > 100 ||
-    props.percentage <= 0 ||
-    isNaN(Number(props.percentage))
-  ) {
-    return <DisabledButton>enter percentage</DisabledButton>;
-  } else if (props.slippage <= 0 || props.deadline <= 1) {
-    return <DisabledButton>invalid settings</DisabledButton>;
-  } else {
-    return (
-      <Button
-        onClick={() => {
-          setConfirmationValues({
-            amount1: props.amount1,
-            amount2: props.amount2,
-            percentage: props.percentage,
-            slippage: props.slippage,
-            deadline: props.deadline,
-          });
-          setModalType(ModalType.REMOVE_CONFIRM);
-        }}
-      >
-        remove liquidity
-      </Button>
-    );
-  }
+  const [buttonText, buttonOnClick, disabled] = getRemoveButtonTextAndOnClick(
+    props.pair.basePairInfo.token1.symbol +
+      " / " +
+      props.pair.basePairInfo.token2.symbol,
+    props.pair.allowance.LPtoken,
+    LPOut,
+    props.slippage,
+    props.deadline,
+    props.percentage,
+    () =>
+      addAllowanceSend(
+        routerAddress,
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ),
+    () => {
+      setConfirmationValues({
+        amount1: props.amount1,
+        amount2: props.amount2,
+        percentage: props.percentage,
+        slippage: props.slippage,
+        deadline: props.deadline,
+      });
+      setModalType(ModalType.REMOVE_CONFIRM);
+    }
+  );
+
+  return (
+    <PrimaryButton disabled={disabled} onClick={buttonOnClick}>
+      {buttonText}
+    </PrimaryButton>
+  );
 };
 
 interface Props {
@@ -412,13 +375,12 @@ const RemoveModal = ({ activePair, chainId }: Props) => {
               onChange={(d) => setDeadline(d)}
             />
           </div>
-          {Number(slippage) <= 0 || Number(deadline) <= 0 ? (
-            <DisabledButton>save settings</DisabledButton>
-          ) : (
-            <Button onClick={() => setOpenSettings(false)}>
-              save settings
-            </Button>
-          )}
+          <PrimaryButton
+            disabled={Number(slippage) <= 0 || Number(deadline) <= 0}
+            onClick={() => setOpenSettings(false)}
+          >
+            save settings
+          </PrimaryButton>
         </PopIn>
       </div>
     </Container>

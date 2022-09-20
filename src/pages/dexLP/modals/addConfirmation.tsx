@@ -344,7 +344,7 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
         disabled={currentBlockTimeStamp == 0}
         style={{ marginTop: "1.5rem" }}
         size="lg"
-        onclick={() => {
+        onClick={() => {
           if (props.pair.basePairInfo.token1.address == WCANTO.address) {
             addLiquidityCANTOSend(
               props.pair.basePairInfo.token2.address,
