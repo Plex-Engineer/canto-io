@@ -8,7 +8,13 @@ import LoadingModal from "./loadingModal";
 import { useEffect, useState } from "react";
 import useModals, { ModalType } from "../hooks/useModals";
 
-import { TOKENS, ADDRESSES, CantoMainnet, CantoTestnet } from "cantoui";
+import {
+  TOKENS,
+  ADDRESSES,
+  CantoMainnet,
+  CantoTestnet,
+  PrimaryButton,
+} from "cantoui";
 import {
   useAddLiquidity,
   useAddLiquidityCANTO,
@@ -116,35 +122,6 @@ const Container = styled.div`
     .box {
       width: 100%;
     }
-  }
-`;
-
-const Button = styled.button`
-  font-weight: 400;
-  width: 18rem;
-  font-size: 22px;
-  color: black;
-  background-color: var(--primary-color);
-  padding: 0.6rem;
-  border: 1px solid var(--primary-color);
-  margin: 2rem;
-  /* margin: 3rem auto; */
-
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-const DisabledButton = styled(Button)`
-  background-color: black;
-  color: #939393;
-  border: 1px solid #939393;
-
-  &:hover {
-    cursor: not-allowed;
-    background-color: black;
-    color: #939393;
   }
 `;
 
@@ -363,11 +340,12 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
         />
       </div>
 
-      {currentBlockTimeStamp == 0 ? (
-        <DisabledButton>loading</DisabledButton>
-      ) : props.pair.basePairInfo.token1.address == WCANTO.address ? (
-        <Button
-          onClick={() => {
+      <PrimaryButton
+        disabled={currentBlockTimeStamp == 0}
+        style={{ marginTop: "1.5rem" }}
+        size="lg"
+        onclick={() => {
+          if (props.pair.basePairInfo.token1.address == WCANTO.address) {
             addLiquidityCANTOSend(
               props.pair.basePairInfo.token2.address,
               props.pair.basePairInfo.stable,
@@ -380,13 +358,7 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
                 value: props.value1,
               }
             );
-          }}
-        >
-          confirm
-        </Button>
-      ) : (
-        <Button
-          onClick={() => {
+          } else {
             addLiquiditySend(
               props.pair.basePairInfo.token1.address,
               props.pair.basePairInfo.token2.address,
@@ -398,11 +370,11 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
               props.account,
               currentBlockTimeStamp + Number(props.deadline) * 60
             );
-          }}
-        >
-          confirm
-        </Button>
-      )}
+          }
+        }}
+      >
+        confirm
+      </PrimaryButton>
     </Container>
   );
 };

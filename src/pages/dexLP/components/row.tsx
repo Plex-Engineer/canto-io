@@ -1,34 +1,6 @@
 import styled from "@emotion/styled";
 import IconPair from "./iconPair";
 
-interface ButtonProps {
-  primary?: boolean;
-}
-// ! TODO: switch to interal primary button option
-export const Button = styled.button<ButtonProps>`
-  background-color: ${(props) =>
-    props.primary ? "black" : "var(--primary-color);"};
-  font-size: 14px;
-
-  border: none;
-  color: ${(props) => (props.primary ? "var(--primary-color)" : "black")};
-  border: ${(props) =>
-    props.primary ? "var(--primary-color) solid 1px" : "none"};
-  padding: 0.3rem;
-  margin: 0.2rem;
-  font-weight: 500;
-  /* text-shadow: ${(props) =>
-    props.primary
-      ? "1px 1px 2px green, 0 0 1em green, 0 0 0.2em green"
-      : "1px 1px 1px #00B665, 0 0 1px #00B665, 0 0 1px #00B665"}; */
-
-  &:hover {
-    transform: scale(1.1);
-    cursor: pointer;
-    transition: all 0.1s ease-in-out;
-  }
-`;
-
 interface RowProps {
   iconLeft: string;
   iconRight: string;

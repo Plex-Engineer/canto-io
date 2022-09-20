@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { openLink } from "./landingScript";
-import "./style.scss";
+// import "./style.scss";
 import Typing from "./Typing";
 
 const LandingPage = () => {
