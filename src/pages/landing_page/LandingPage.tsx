@@ -1,36 +1,58 @@
 import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import { openLink } from "./landingScript";
 import "./style.scss";
+import Typing from "./Typing";
 
 const LandingPage = () => {
-  const text =
-    "Canto is a layer-1 blockchain built to deliver on the promise of DeFi. As a post-traditional financial movement, Canto enables accessibility, transparency, and freedom for new systems. Driven by a loosely organized collective of chain-native builders, Canto provides a new commons powered by free public infrastructure.";
-  const [shownText, setShownText] = useState<[string, string]>(["", text]);
-  useEffect(() => {
-    function timeout(delay: number) {
-      return new Promise((res) => setTimeout(res, delay));
+  const [userInput, setUserInput] = useState("");
+  const [showCursor, setShowCursor] = useState(true);
+  const [cursor, setCursor] = useState("█");
+  function blinkAnimation() {
+    if (showCursor) {
+      setTimeout(() => {
+        if (showCursor) {
+          if (cursor) {
+            setCursor("");
+          } else setCursor("█");
+        }
+      }, 600);
     }
-    async function setText() {
-      for (let i = 0; i < text.length; i++) {
-        await timeout(100);
-        setShownText([
-          text.substring(0, i + 1),
-          text.substring(i + 1, text.length),
-        ]);
-      }
+  }
+  blinkAnimation();
+
+  const pageList = [
+    {
+      name: "bridge",
+      link: "/bridge",
+    },
+    {
+      name: "governance",
+      link: "/governance",
+    },
+    {
+      name: "lending",
+      link: "/lending",
+    },
+    {
+      name: "lp interface",
+      link: "/lp",
+    },
+    {
+      name: "staking",
+      link: "/staking",
+    },
+  ];
+  function handleInputChange(value: string) {
+    if (value.length > 0) {
+      setShowCursor(false);
+      setCursor("");
+    } else {
+      setShowCursor(true);
+      setCursor("█");
     }
-    setText();
-  }, []);
-  useEffect(() => {
-    const userInput = document.querySelector("#inputData");
-    document.querySelector("#routes")?.addEventListener("click", (e) => {
-      openLink(e.path[1].id);
-    });
-    userInput?.addEventListener("change", () => {
-      const input = userInput.value.toString().replace("█", "");
-      openLink(input);
-    });
-  }, [document.querySelector("#routes"), document.querySelector("#inputData")]);
+    setUserInput(value.replace("█", ""));
+  }
   return (
     <div>
       <div className="layer"></div>
@@ -44,39 +66,30 @@ const LandingPage = () => {
           <span>Canto</span>
         </div>
         <div className="dim">*** enter a command to continue ***</div>
-        <div className="typing" id="typing">
-          <span className="typing">{shownText[0]}</span>
-          <span style={{ color: "#494949", textShadow: "none" }}>
-            {shownText[1]}
-          </span>
-        </div>
+        <Typing />
         <ul className="options" id="routes">
-          <li id="1">
-            <a>[1] bridge</a>
-          </li>
-          <li id="2">
-            <a>[2] convert</a>
-          </li>
-          <li id="3">
-            <a>[3] staking</a>
-          </li>
-          <li id="4">
-            <a>[4] lp interface</a>
-          </li>
-          <li id="5">
-            <a>[5] lending</a>
-          </li>
-          <li id="6">
-            <a>[6] governance</a>
-          </li>
-          <li id="7">
-            <a>[7] docs</a>
-          </li>
+          {pageList.map((page, idx) => {
+            return (
+              <NavLink to={page.link} key={page.name} id={page.name}>
+                <a>{"[" + idx + "] " + page.name}</a>
+              </NavLink>
+            );
+          })}
         </ul>
         <div className="seperator"></div>
         <div className="input-bar">
           <span className="tag">.canto@:\user_&gt; </span>
-          <input type="text" id="inputData" />
+          <input
+            type="text"
+            id="inputData"
+            value={userInput}
+            onChange={(e) => handleInputChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                openLink(userInput);
+              }
+            }}
+          />
         </div>
 
         <div className="alert blink">
