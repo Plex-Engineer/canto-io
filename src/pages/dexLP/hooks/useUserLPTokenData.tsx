@@ -124,9 +124,7 @@ const useUserLPTokenInfo = (
       //if the user has supplied in the market, we can get this balance from the cLP tokens and exchange rate stored
       const userLPSupplyBalance = getSupplyBalanceFromCTokens(
         tokenData[6][0],
-        tokenData[7][0],
-        PAIRS[idx].cDecimals,
-        PAIRS[idx].decimals
+        tokenData[7][0]
       );
 
       //multiplied by 1e18 so that division does not round down to whole numbers
