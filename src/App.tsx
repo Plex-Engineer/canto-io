@@ -22,6 +22,7 @@ import { BalanceSheet } from "pages/lending/balanceSheet/BalanceSheet";
 import BridgingPage from "pages/bridge/Bridging";
 import { useCoingeckoTokenPrice } from "@usedapp/coingecko";
 import Footer from "global/components/nFooter";
+import NStaking from "pages/nstaking/Staking";
 // import landing from "pages/landing_page/index.html"
 
 //Styling
@@ -62,6 +63,7 @@ function App() {
               element={<BalanceSheet />}
             />
             <Route path="/staking" key={"staking"} element={<Staking />} />
+            <Route path="/nstaking" key={"staking"} element={<NStaking />} />
           </Routes>
         </Container>
         <Footer />

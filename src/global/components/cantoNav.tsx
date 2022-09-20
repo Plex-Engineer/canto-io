@@ -84,6 +84,10 @@ export const CantoNav = () => {
       name: "staking",
       link: "/staking",
     },
+    {
+      name: "new staking",
+      link: "/nstaking",
+    },
   ];
 
   return (
