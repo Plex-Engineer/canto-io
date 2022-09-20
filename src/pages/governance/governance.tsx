@@ -3,10 +3,11 @@ import Popup from "reactjs-popup";
 import styled from "@emotion/styled";
 import Proposal from "./proposal";
 import { Mixpanel } from "mixpanel";
-import { ProposalData, useProposals } from "./stores/proposals";
+import { useProposals } from "./stores/proposals";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import GovBar from "./components/govBar";
 import { convertDateToString } from "./utils/formattingStrings";
+import { ProposalData } from "./config/interfaces";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
