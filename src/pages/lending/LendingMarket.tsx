@@ -5,7 +5,7 @@ import LendingTable from "./components/table";
 import { TransactionRow } from "./components/lendingRow";
 import { ModalType, ModalManager } from "./modals/modalManager";
 import { Details } from "./hooks/useTransaction";
-import { Styled, Button } from "./components/Styled";
+import { Styled } from "./components/Styled";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { Mixpanel } from "mixpanel";
 import { truncateNumber } from "global/utils/utils";
@@ -21,6 +21,7 @@ import {
 } from "./components/LMTables";
 import { useToast } from "./hooks/useToasts";
 import { SpecialTabs } from "./components/SpecialTabs";
+import { OutlinedButton } from "cantoui";
 
 const LendingMarket = () => {
   //intialize network store
@@ -52,14 +53,13 @@ const LendingMarket = () => {
         rewards={rewards}
       />
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Button
+        <OutlinedButton
           onClick={() => {
             modalStore.open(ModalType.BALANCE);
           }}
-          style={{ width: "15rem", alignSelf: "right" }}
         >
           claim LM rewards
-        </Button>
+        </OutlinedButton>
       </div>
       <div style={{ textAlign: "right" }}>
         {!rewards.accrued.isZero()

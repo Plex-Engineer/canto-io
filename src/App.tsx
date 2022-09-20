@@ -22,6 +22,7 @@ import { BalanceSheet } from "pages/lending/balanceSheet/BalanceSheet";
 import BridgingPage from "pages/bridge/Bridging";
 import { useCoingeckoTokenPrice } from "@usedapp/coingecko";
 import Footer from "global/components/nFooter";
+import LandingPage from "pages/landing_page/LandingPage";
 // import landing from "pages/landing_page/index.html"
 
 //Styling
@@ -48,6 +49,7 @@ function App() {
         <Container className="App">
           <CantoNav />
           <Routes>
+            <Route path="/" key={"home"} element={<LandingPage />} />
             <Route path="/bridge" key={"bridge"} element={<BridgingPage />} />
             <Route
               path="/governance"

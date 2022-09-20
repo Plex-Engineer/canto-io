@@ -6,12 +6,12 @@ import styled from "@emotion/styled";
 import CheckBox from "./components/checkBox";
 import { GraphBar } from "./components/govBar";
 import { votingThresholds } from "./config/votingThresholds";
-import { ProposalData } from "./stores/proposals";
 import {
   convertDateToString,
   convertToVoteNumber,
 } from "./utils/formattingStrings";
 import { getAccountVote, voteOnProposal } from "./utils/voting";
+import { ProposalData } from "./config/interfaces";
 
 const Container = styled.div`
   overflow-wrap: break-word;

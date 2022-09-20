@@ -110,23 +110,6 @@ export const Hero = styled.div`
   }
 `;
 
-export const Button = styled.button`
-  font-weight: 300;
-  font-size: 18px;
-  background-color: black;
-  color: var(--primary-color);
-  padding: 0.2rem 2rem;
-  border: 1px solid var(--primary-color);
-  justify-content: center;
-  /* margin: 0 -4rem auto auto; */
-  width: 14rem;
-  display: flex;
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
 export const TinyTable = styled.div`
   display: flex;
   flex-grow: 1;

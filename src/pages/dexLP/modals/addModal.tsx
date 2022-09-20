@@ -229,17 +229,15 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
       </Button>
     );
   } else {
-    if (isNaN(Number(props.value1)) || isNaN(Number(props.value2))) {
-      return <DisabledButton>enter valid amount</DisabledButton>;
+    if (bnValue1.isZero() || bnValue2.isZero()) {
+      return <DisabledButton>enter amount</DisabledButton>;
     } else if (
-      Number(props.value1) > Number(props.pair.balances.token1) ||
-      Number(props.value2) > Number(props.pair.balances.token2)
+      bnValue1.gt(props.pair.balances.token1) ||
+      bnValue2.gt(props.pair.balances.token2)
     ) {
       return <DisabledButton>no funds</DisabledButton>;
     } else if (Number(props.slippage) <= 0 || Number(props.deadline) <= 0) {
       return <DisabledButton>invalid settings</DisabledButton>;
-    } else if (!(props.value1 && props.value2)) {
-      return <DisabledButton>enter amount</DisabledButton>;
     } else {
       return (
         <Button
