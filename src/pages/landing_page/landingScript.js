@@ -28,6 +28,9 @@ export function openLink(input) {
       );
       break;
     default:
-      alert(true);
+      document.querySelector("#error").style.display = "block";
+      setTimeout(() => {
+        document.querySelector("#error").style.display = "none";
+      }, 3000);
   }
 }
