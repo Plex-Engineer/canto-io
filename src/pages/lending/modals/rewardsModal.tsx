@@ -11,6 +11,7 @@ import { useClaim } from "pages/lending/hooks/useTransaction";
 import { UserLMRewards } from "pages/lending/config/interfaces";
 import { ethers } from "ethers";
 import { valueInNote } from "pages/dexLP/utils/utils";
+import { PrimaryButton } from "cantoui";
 const Container = styled.div`
   background-color: #040404;
   height: 36rem;
@@ -88,34 +89,6 @@ const Container = styled.div`
   }
 `;
 
-const Button = styled.button`
-  font-weight: 400;
-  width: 18rem;
-  font-size: 22px;
-  color: black;
-  background-color: var(--primary-color);
-  padding: 0.6rem;
-  border: 1px solid var(--primary-color);
-  margin: 2rem;
-  /* margin: 3rem auto; */
-
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-
-const DisabledButton = styled(Button)`
-  background-color: #222;
-  color: #666;
-  border: none;
-  &:hover {
-    color: #eee;
-    cursor: default;
-    background-color: #222;
-  }
-`;
 interface Props {
   rewardsObj: UserLMRewards;
   onClose: () => void;
@@ -169,24 +142,24 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
           </p>
         </div>
       </div>
-      {Number(rewardsObj.accrued) == 0 ? (
-        <DisabledButton>nothing to claim</DisabledButton>
-      ) : (
-        <Button
-          onClick={() => {
-            if (state.status != "Mining" && state.status != "Success")
-              // console.log(value.wallet)
-              send(rewardsObj.wallet);
-          }}
-        >
-          {getTransactionStatusString(
-            statusObj.action,
-            statusObj.inAction,
-            statusObj.postAction,
-            state.status
-          )}
-        </Button>
-      )}
+      <PrimaryButton
+        style={{ margin: "2rem" }}
+        size="lg"
+        disabled={rewardsObj.accrued.isZero()}
+        onClick={() => {
+          if (state.status != "Mining" && state.status != "Success")
+            send(rewardsObj.wallet);
+        }}
+      >
+        {!rewardsObj.accrued.isZero()
+          ? getTransactionStatusString(
+              statusObj.action,
+              statusObj.inAction,
+              statusObj.postAction,
+              state.status
+            )
+          : "nothing to claim"}
+      </PrimaryButton>
     </Container>
   );
 };

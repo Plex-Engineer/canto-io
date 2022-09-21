@@ -135,7 +135,6 @@ const Governance = () => {
                 const abstain = Number(proposal.final_tally_result.abstain);
                 const veto = Number(proposal.final_tally_result.no_with_veto);
                 const totalVotes = yes + no + abstain + veto;
-                console.log(proposal.voting_end_time);
                 return (
                   <GovBar
                     key={proposal.proposal_id}
