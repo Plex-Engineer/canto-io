@@ -1,83 +1,14 @@
 import React, { useState, useEffect } from "react";
-import Popup from "reactjs-popup";
-import styled from "@emotion/styled";
 import Proposal from "./proposal";
 import { Mixpanel } from "mixpanel";
-import { ProposalData, useProposals } from "./stores/proposals";
+import { useProposals } from "./stores/proposals";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import GovBar from "./components/govBar";
 import { convertDateToString } from "./utils/formattingStrings";
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  color: #fff;
-  width: 1200px;
-  margin: 0 auto 3rem auto;
-  .title {
-    font-weight: 300;
-    font-size: 140px;
-    line-height: 130%;
-    text-align: center;
-    letter-spacing: -0.13em;
-    color: #06fc99;
-    text-shadow: 0px 12.2818px 12.2818px rgba(6, 252, 153, 0.2);
-    margin-top: 4rem;
-    margin-bottom: 2rem;
-  }
+import { emptyProposal, ProposalData } from "./config/interfaces";
+import { GovernanceContainer } from "./components/Styled";
+import { StyledPopup } from "global/components/Styled";
 
-  .subtitle {
-    margin: 0;
-    margin-bottom: 5rem;
-    a {
-      color: var(--primary-color);
-    }
-    margin-top: 40px;
-    text-shadow: none;
-    color: white;
-    text-align: center;
-    font-size: 35px;
-    font-weight: 400;
-  }
-
-  & > button {
-    background-color: var(--primary-color);
-    border: none;
-    border-radius: 0px;
-    padding: 0.6rem 2.4rem;
-    font-size: 1rem;
-    font-weight: 500;
-    letter-spacing: -0.03em;
-    width: fit-content;
-    margin: 0 auto;
-    margin-top: 2rem;
-
-    margin-bottom: 3rem;
-
-    &:hover {
-      background-color: var(--primary-color-dark);
-      cursor: pointer;
-    }
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    row-gap: 1rem;
-    column-gap: 0.8rem;
-  }
-`;
-const StyledPopup = styled(Popup)`
-  // use your custom style for ".popup-overlay"
-  &-overlay {
-    background-color: #1f4a2c6e;
-    backdrop-filter: blur(2px);
-    z-index: 10;
-  }
-  &-content {
-    background-color: black;
-    border: 1px solid var(--primary-color);
-  }
-`;
 const Governance = () => {
   //network info store
   const networkInfo = useNetworkInfo();
@@ -95,33 +26,6 @@ const Governance = () => {
     Mixpanel.events.pageOpened("governance", networkInfo.account);
   });
 
-  const emptyProposal: ProposalData = {
-    content: {
-      "@type": "none",
-      description: "none",
-      erc20address: "none",
-      title: "none",
-    },
-    deposit_end_time: "none",
-    final_tally_result: {
-      abstain: "5",
-      no: "3",
-      no_with_veto: "8",
-      yes: "10",
-    },
-    proposal_id: "none",
-    status: "none",
-    submit_time: "none",
-    total_deposit: [
-      {
-        denom: "none",
-        amount: "none",
-      },
-    ],
-    voting_end_time: "none",
-    voting_start_time: "none",
-  };
-
   function AllGovBars() {
     return (
       <React.Fragment>
@@ -134,7 +38,6 @@ const Governance = () => {
                 const abstain = Number(proposal.final_tally_result.abstain);
                 const veto = Number(proposal.final_tally_result.no_with_veto);
                 const totalVotes = yes + no + abstain + veto;
-                console.log(proposal.voting_end_time);
                 return (
                   <GovBar
                     key={proposal.proposal_id}
@@ -169,7 +72,7 @@ const Governance = () => {
   }
 
   return (
-    <Container>
+    <GovernanceContainer>
       <div className="title subtitle">
         <a href="https://staking.canto.io/">stake</a> your canto to participate
         in governance
@@ -190,7 +93,7 @@ const Governance = () => {
           account={networkInfo.account}
         />
       </StyledPopup>
-    </Container>
+    </GovernanceContainer>
   );
 };
 

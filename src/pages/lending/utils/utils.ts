@@ -18,18 +18,8 @@ export function formatLiquidity(liquidity: number) {
 //exchange rate is always scaled to 1e18
 export function getSupplyBalanceFromCTokens(
   cTokenBalance: BigNumber,
-  exchangeRate: BigNumber,
-  cDecimals: number,
-  underlyingDecimals: number
+  exchangeRate: BigNumber
 ) {
-  if (cDecimals > underlyingDecimals) {
-    return cTokenBalance
-      .mul(exchangeRate)
-      .div(BigNumber.from(10).pow(18 + cDecimals - underlyingDecimals));
-  } else {
-    return cTokenBalance
-      .mul(exchangeRate)
-      .mul(BigNumber.from(10).pow(underlyingDecimals - cDecimals))
-      .div(BigNumber.from(10).pow(18));
-  }
+  //exchange rate is always scaled to 1e18
+  return cTokenBalance.mul(exchangeRate).div(BigNumber.from(10).pow(18));
 }

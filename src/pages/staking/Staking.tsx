@@ -1,6 +1,5 @@
 import StakeModal from "./components/stakeModal";
 import React, { useState } from "react";
-import Popup from "reactjs-popup";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import styled from "@emotion/styled";
 import ValidatorTable from "./components/ValidatorTable";
@@ -29,21 +28,7 @@ import { useNetworkInfo } from "global/stores/networkInfo";
 import { CantoMainnet } from "cantoui";
 import { claimRewardFee } from "./config/fees";
 import { chain, memo } from "global/config/cosmosConstants";
-
-export const StyledPopup = styled(Popup)`
-  // use your custom style for ".popup-overlay"
-
-  &-overlay {
-    background-color: #1f4a2c6e;
-    backdrop-filter: blur(2px);
-    z-index: 10;
-  }
-
-  &-content {
-    background-color: black;
-    border: 1px solid var(--primary-color);
-  }
-`;
+import { StyledPopup } from "global/components/Styled";
 
 const Button = styled.button`
   font-weight: 300;

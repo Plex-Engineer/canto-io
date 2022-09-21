@@ -140,9 +140,7 @@ export function useUserLMTokenData(
 
       const supplyBalance = getSupplyBalanceFromCTokens(
         balanceOfC,
-        LMTokens[idx].exchangeRate,
-        LMTokens[idx].data.decimals,
-        LMTokens[idx].data.underlying.decimals
+        LMTokens[idx].exchangeRate
       );
 
       const supplyBalanceinNote = valueInNote(

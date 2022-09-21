@@ -1,9 +1,7 @@
-import styled from "@emotion/styled";
 import Input from "../components/input";
 import { useEffect, useState } from "react";
 import { noteSymbol, truncateNumber } from "global/utils/utils";
 import LoadingModal from "./loadingModal";
-import { DexLoadingOverlay, PopIn } from "./addModal";
 import SettingsIcon from "assets/settings.svg";
 import IconPair from "../components/iconPair";
 import useModals, { ModalType } from "../hooks/useModals";
@@ -12,103 +10,14 @@ import { UserLPPairInfo } from "../config/interfaces";
 import { BigNumber } from "ethers";
 import { getLPOut, getReserveRatioAtoB, valueInNote } from "../utils/utils";
 import { formatUnits } from "ethers/lib/utils";
+import { PrimaryButton } from "cantoui";
+import { getRemoveButtonTextAndOnClick } from "../utils/modalButtonParams";
+import {
+  DexModalContainer,
+  DexLoadingOverlay,
+  SettingsPopIn,
+} from "../components/Styled";
 
-const Container = styled.div`
-  background-color: #040404;
-  height: 36rem;
-  width: 30rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: start;
-  gap: 1rem;
-  /* padding: 1rem; */
-  .title {
-    font-style: normal;
-    font-weight: 300;
-    font-size: 22px;
-    line-height: 130%;
-    text-align: center;
-    letter-spacing: -0.1em;
-    color: var(--primary-color);
-    /* margin-top: 0.3rem; */
-    width: 100%;
-    background-color: #06fc991a;
-    padding: 1rem;
-    border-bottom: 1px solid var(--primary-color);
-    z-index: 5;
-  }
-
-  .tokenBox {
-    margin: 0 2rem !important;
-    background-color: #131313;
-    border: 1px solid #606060;
-    padding: 1rem;
-  }
-
-  .line {
-    border-bottom: 1px solid #222;
-  }
-  .logo {
-    /* padding: 1rem; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid var(--primary-color);
-    height: 60px;
-    width: 60px;
-    border-radius: 50%;
-    margin-bottom: 1.2rem;
-  }
-
-  .fields {
-    display: flex;
-    padding: 1rem;
-    gap: 0.3rem;
-  }
-
-  .rowCell {
-    p:first-child {
-      text-transform: lowercase;
-      color: #888;
-    }
-    p:last-child {
-      color: white;
-    }
-  }
-  @media (max-width: 1000px) {
-    width: 100%;
-  }
-`;
-
-const Button = styled.button`
-  font-weight: 400;
-  width: 18rem;
-  font-size: 22px;
-  color: black;
-  background-color: var(--primary-color);
-  padding: 0.6rem;
-  border: 1px solid var(--primary-color);
-  margin: 2rem auto;
-  /* margin: 3rem auto; */
-
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-
-const DisabledButton = styled(Button)`
-  background-color: #222;
-  color: #666;
-  border: none;
-  &:hover {
-    color: #eee;
-    cursor: default;
-    background-color: #222;
-  }
-`;
 interface RowCellProps {
   type: string;
   value?: string;
@@ -164,8 +73,6 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
   const routerAddress = getRouterAddress(props.chainId);
   const LPOut = getLPOut(props.percentage, props.pair.userSupply.totalLP);
 
-  const needLPTokenAllowance = LPOut.gt(props.pair.allowance.LPtoken);
-
   useEffect(() => {
     if (props.pair.allowance.LPtoken.isZero()) {
       setModalType(ModalType.ENABLE);
@@ -180,46 +87,37 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
     }
   }, [addAllowance.status]);
 
-  if (needLPTokenAllowance) {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceSend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        Enable {props.pair.basePairInfo.token1.symbol} /{" "}
-        {props.pair.basePairInfo.token2.symbol}
-      </Button>
-    );
-  } else if (
-    props.percentage > 100 ||
-    props.percentage <= 0 ||
-    isNaN(Number(props.percentage))
-  ) {
-    return <DisabledButton>enter percentage</DisabledButton>;
-  } else if (props.slippage <= 0 || props.deadline <= 1) {
-    return <DisabledButton>invalid settings</DisabledButton>;
-  } else {
-    return (
-      <Button
-        onClick={() => {
-          setConfirmationValues({
-            amount1: props.amount1,
-            amount2: props.amount2,
-            percentage: props.percentage,
-            slippage: props.slippage,
-            deadline: props.deadline,
-          });
-          setModalType(ModalType.REMOVE_CONFIRM);
-        }}
-      >
-        remove liquidity
-      </Button>
-    );
-  }
+  const [buttonText, buttonOnClick, disabled] = getRemoveButtonTextAndOnClick(
+    props.pair.basePairInfo.token1.symbol +
+      " / " +
+      props.pair.basePairInfo.token2.symbol,
+    props.pair.allowance.LPtoken,
+    LPOut,
+    props.slippage,
+    props.deadline,
+    props.percentage,
+    () =>
+      addAllowanceSend(
+        routerAddress,
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ),
+    () => {
+      setConfirmationValues({
+        amount1: props.amount1,
+        amount2: props.amount2,
+        percentage: props.percentage,
+        slippage: props.slippage,
+        deadline: props.deadline,
+      });
+      setModalType(ModalType.REMOVE_CONFIRM);
+    }
+  );
+
+  return (
+    <PrimaryButton disabled={disabled} onClick={buttonOnClick}>
+      {buttonText}
+    </PrimaryButton>
+  );
 };
 
 interface Props {
@@ -228,7 +126,7 @@ interface Props {
   chainId?: number;
   account?: string;
 }
-const RemoveModal = ({ activePair, chainId }: Props) => {
+const RemoveModal = ({ activePair, chainId, account }: Props) => {
   const [percentage, setPercentage] = useState("1");
   const [slippage, setSlippage] = useState("1");
   const [deadline, setDeadline] = useState("10");
@@ -254,9 +152,9 @@ const RemoveModal = ({ activePair, chainId }: Props) => {
     }
   }, [percentage]);
   return (
-    <Container>
+    <DexModalContainer>
       <DexLoadingOverlay
-        isLoading={["Mining", "PendingSignature", "Success"].includes(
+        show={["Mining", "PendingSignature", "Success"].includes(
           tokenAllowanceStatus
         )}
       >
@@ -273,6 +171,7 @@ const RemoveModal = ({ activePair, chainId }: Props) => {
           amount={"0"}
           type="remove"
           status={tokenAllowanceStatus}
+          account={account}
         />
       </DexLoadingOverlay>
       <div className="title">
@@ -394,7 +293,7 @@ const RemoveModal = ({ activePair, chainId }: Props) => {
           gap: "1rem",
         }}
       >
-        <PopIn
+        <SettingsPopIn
           show={openSettings}
           style={!openSettings ? { zIndex: "-1" } : { marginBottom: "-15px" }}
         >
@@ -412,16 +311,15 @@ const RemoveModal = ({ activePair, chainId }: Props) => {
               onChange={(d) => setDeadline(d)}
             />
           </div>
-          {Number(slippage) <= 0 || Number(deadline) <= 0 ? (
-            <DisabledButton>save settings</DisabledButton>
-          ) : (
-            <Button onClick={() => setOpenSettings(false)}>
-              save settings
-            </Button>
-          )}
-        </PopIn>
+          <PrimaryButton
+            disabled={Number(slippage) <= 0 || Number(deadline) <= 0}
+            onClick={() => setOpenSettings(false)}
+          >
+            save settings
+          </PrimaryButton>
+        </SettingsPopIn>
       </div>
-    </Container>
+    </DexModalContainer>
   );
 };
 

@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
 import down from "assets/down.svg";
-import Popup from "reactjs-popup";
 import { useState } from "react";
 import TokenModal from "../components/tokenModal";
 import { useTokenStore } from "../stores/tokens";
 import { NativeGTokens } from "../hooks/useCosmosTokens";
+import { StyledPopup } from "global/components/Styled";
 
 interface ITokenSelect {
   activeToken: NativeGTokens;
@@ -12,20 +12,6 @@ interface ITokenSelect {
   onSelect: (value: NativeGTokens | undefined) => void;
 }
 
-export const StyledPopup = styled(Popup)`
-  // use your custom style for ".popup-overlay"
-
-  &-overlay {
-    background-color: #1f4a2c6e;
-    backdrop-filter: blur(2px);
-    z-index: 10;
-  }
-
-  &-content {
-    background-color: black;
-    border: 1px solid var(--primary-color);
-  }
-`;
 export const TokenWallet = ({ onSelect, tokens }: ITokenSelect) => {
   const [isOpen, setOpen] = useState(false);
   const [activeToken] = useTokenStore((state) => [state.selectedToken]);

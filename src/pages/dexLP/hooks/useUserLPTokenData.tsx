@@ -11,6 +11,7 @@ import { cERC20Abi, ERC20Abi, routerAbi } from "global/config/abi";
 import { LPPairInfo, UserLPPairInfo } from "../config/interfaces";
 import { getSupplyBalanceFromCTokens } from "pages/lending/utils/utils";
 import { formatUnits } from "ethers/lib/utils";
+import { checkForCantoInPair } from "../utils/utils";
 
 const useUserLPTokenInfo = (
   LPTokens: LPPairInfo[],
@@ -113,20 +114,17 @@ const useUserLPTokenInfo = (
     return processedTokens.map((tokenData, idx) => {
       const userLP = tokenData[0][0];
 
-      let token1Balance;
-      if (PAIRS[idx].token1.address == TOKENS.WCANTO.address) {
-        token1Balance = CANTOBalance;
-      } else {
-        token1Balance = tokenData[1][0];
-      }
-      const token2Balance = tokenData[2][0];
+      const [isToken1Canto, isToken2Canto] = checkForCantoInPair(
+        LPTokens[idx].basePairInfo,
+        chainId
+      );
+      const token1Balance = isToken1Canto ? CANTOBalance : tokenData[1][0];
+      const token2Balance = isToken2Canto ? CANTOBalance : tokenData[2][0];
 
       //if the user has supplied in the market, we can get this balance from the cLP tokens and exchange rate stored
       const userLPSupplyBalance = getSupplyBalanceFromCTokens(
         tokenData[6][0],
-        tokenData[7][0],
-        PAIRS[idx].cDecimals,
-        PAIRS[idx].decimals
+        tokenData[7][0]
       );
 
       //multiplied by 1e18 so that division does not round down to whole numbers

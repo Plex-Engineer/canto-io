@@ -1,6 +1,17 @@
-import { CantoMainnet, CantoTestnet } from "cantoui";
+import { CantoMainnet, CantoTestnet, TOKENS } from "cantoui";
 import { BigNumber, ethers } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
+import { PAIR } from "../config/pairs";
+
+//function returns if pair contains WCANTO, since we must call a different function for supplying or Withdrawing liquidity
+//returns [isToken1Canto, isToken2Canto]
+export function checkForCantoInPair(pair: PAIR, chainId?: number) {
+  const WCANTO =
+    chainId == CantoTestnet.chainId
+      ? TOKENS.cantoTestnet.WCANTO.address
+      : TOKENS.cantoMainnet.WCANTO.address;
+  return [pair.token1.address == WCANTO, pair.token2.address == WCANTO];
+}
 
 //ratio that returns is scaled to 1e18 for accuracy
 export function getLPPairRatio(
@@ -110,5 +121,8 @@ export function valueInNote(amount: BigNumber, price: BigNumber) {
 }
 
 export function getLPOut(percentage: number, totalLP: BigNumber) {
+  if (percentage < 0 || isNaN(percentage)) {
+    return BigNumber.from(0);
+  }
   return totalLP.mul(percentage).div(100);
 }

@@ -1,4 +1,3 @@
-import styled from "@emotion/styled";
 import Field from "../components/field";
 import Input from "../components/input";
 import { useEffect, useState } from "react";
@@ -19,88 +18,13 @@ import { truncateNumber } from "global/utils/utils";
 import { UserLPPairInfo } from "../config/interfaces";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
-
-const Container = styled.div`
-  background-color: #040404;
-  height: 36rem;
-  width: 30rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: start;
-  gap: 1rem;
-  /* padding: 1rem; */
-  .title {
-    font-style: normal;
-    font-weight: 300;
-    font-size: 22px;
-    line-height: 130%;
-    text-align: center;
-    letter-spacing: -0.1em;
-    color: var(--primary-color);
-    /* margin-top: 0.3rem; */
-    width: 100%;
-    background-color: #06fc991a;
-    padding: 1rem;
-    border-bottom: 1px solid var(--primary-color);
-    z-index: 2;
-  }
-
-  .line {
-    border-bottom: 1px solid #222;
-  }
-  .logo {
-    /* padding: 1rem; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid var(--primary-color);
-    height: 60px;
-    width: 60px;
-    border-radius: 50%;
-    margin-bottom: 1.2rem;
-  }
-
-  .fields {
-    display: flex;
-    padding: 1rem;
-    gap: 0.3rem;
-  }
-
-  @media (max-width: 1000px) {
-    width: 100%;
-  }
-`;
-
-const Button = styled.button`
-  font-weight: 400;
-  width: 18rem;
-  font-size: 20px;
-  color: black;
-  background-color: var(--primary-color);
-  padding: 0.6rem;
-  border: 1px solid var(--primary-color);
-  margin: 2rem auto;
-  /* margin: 3rem auto; */
-
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-
-const DisabledButton = styled(Button)`
-  background-color: black;
-  color: #939393;
-  border: 1px solid #939393;
-  &:hover {
-    color: #eee;
-    cursor: default;
-    background-color: #222;
-  }
-`;
-
+import { getAddButtonTextAndOnClick } from "../utils/modalButtonParams";
+import { PrimaryButton } from "cantoui";
+import {
+  DexModalContainer,
+  SettingsPopIn,
+  DexLoadingOverlay,
+} from "../components/Styled";
 interface AddAllowanceProps {
   pair: UserLPPairInfo;
   value1: string;
@@ -139,8 +63,6 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
   }
 
   const routerAddress = getRouterAddress(props.chainId);
-  const needToken1Allowance = bnValue1.gt(props.pair.allowance.token1);
-  const needToken2Allowance = bnValue2.gt(props.pair.allowance.token2);
 
   const { state: addAllowanceA, send: addAllowanceASend } = useSetAllowance({
     type: "Enable",
@@ -182,83 +104,45 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
       }, 500);
     }
   }, [addAllowanceB.status]);
-  if (needToken1Allowance && needToken2Allowance) {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceASend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-          addAllowanceBSend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        {"enable" +
-          props.pair.basePairInfo.token1.symbol +
-          " & " +
-          props.pair.basePairInfo.token2.symbol}
-      </Button>
-    );
-  } else if (needToken1Allowance && !needToken2Allowance) {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceASend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        enable {props.pair.basePairInfo.token1.symbol}
-      </Button>
-    );
-  } else if (!needToken1Allowance && needToken2Allowance) {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceBSend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        enable For {props.pair.basePairInfo.token2.symbol}
-      </Button>
-    );
-  } else {
-    if (isNaN(Number(props.value1)) || isNaN(Number(props.value2))) {
-      return <DisabledButton>enter valid amount</DisabledButton>;
-    } else if (
-      Number(props.value1) > Number(props.pair.balances.token1) ||
-      Number(props.value2) > Number(props.pair.balances.token2)
-    ) {
-      return <DisabledButton>no funds</DisabledButton>;
-    } else if (Number(props.slippage) <= 0 || Number(props.deadline) <= 0) {
-      return <DisabledButton>invalid settings</DisabledButton>;
-    } else if (!(props.value1 && props.value2)) {
-      return <DisabledButton>enter amount</DisabledButton>;
-    } else {
-      return (
-        <Button
-          onClick={() => {
-            setConfirmationValues({
-              amount1: bnValue1,
-              amount2: bnValue2,
-              slippage: props.slippage,
-              deadline: props.deadline,
-              percentage: 0,
-            });
-            setModalType(ModalType.ADD_CONFIRM);
-          }}
-        >
-          add liquidity
-        </Button>
-      );
+
+  const [buttonText, buttonOnClick, disabled] = getAddButtonTextAndOnClick(
+    props.pair.basePairInfo.token1.symbol,
+    props.pair.basePairInfo.token2.symbol,
+    props.pair.allowance.token1,
+    props.pair.allowance.token2,
+    props.pair.balances.token1,
+    props.pair.balances.token2,
+    bnValue1,
+    bnValue2,
+    props.slippage,
+    props.deadline,
+    () =>
+      addAllowanceASend(
+        routerAddress,
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ),
+    () =>
+      addAllowanceBSend(
+        routerAddress,
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ),
+    () => {
+      setConfirmationValues({
+        amount1: bnValue1,
+        amount2: bnValue2,
+        slippage: props.slippage,
+        deadline: props.deadline,
+        percentage: 0,
+      });
+      setModalType(ModalType.ADD_CONFIRM);
     }
-  }
+  );
+
+  return (
+    <PrimaryButton disabled={disabled} onClick={buttonOnClick}>
+      {buttonText}
+    </PrimaryButton>
+  );
 };
 
 interface Props {
@@ -268,43 +152,7 @@ interface Props {
   account?: string;
 }
 
-interface StyleProps {
-  isLoading: boolean;
-}
-export const DexLoadingOverlay = styled.div<StyleProps>`
-  display: ${(props) => (props.isLoading ? "block" : "none")};
-  position: absolute;
-  top: 0%;
-  bottom: 0%;
-  width: 100%;
-  max-height: 45.6rem;
-  z-index: 2;
-  background-color: black;
-  @media (max-width: 1000px) {
-    width: 99vw;
-  }
-`;
-
-interface showProps {
-  show: boolean;
-}
-export const PopIn = styled.div<showProps>`
-  opacity: ${(showProps) => (showProps.show ? "100" : "0")};
-  transition: all 0.2s;
-  height: 100%;
-  position: absolute;
-  background-color: black;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  padding: 2rem;
-  justify-content: center;
-  top: 0;
-  left: 0;
-  z-index: 1;
-`;
-const AddModal = ({ activePair, chainId }: Props) => {
+const AddModal = ({ activePair, chainId, account }: Props) => {
   const [value1, setValue1] = useState("");
   const [value2, setValue2] = useState("");
   const [slippage, setSlippage] = useState("1");
@@ -320,9 +168,9 @@ const AddModal = ({ activePair, chainId }: Props) => {
   );
 
   return (
-    <Container>
+    <DexModalContainer>
       <DexLoadingOverlay
-        isLoading={["Mining", "PendingSignature", "Success"].includes(
+        show={["Mining", "PendingSignature", "Success"].includes(
           token1AllowanceStatus
         )}
       >
@@ -339,10 +187,11 @@ const AddModal = ({ activePair, chainId }: Props) => {
           amount={"0"}
           type="add"
           status={token1AllowanceStatus}
+          account={account}
         />
       </DexLoadingOverlay>
       <DexLoadingOverlay
-        isLoading={["Mining", "PendingSignature", "Success"].includes(
+        show={["Mining", "PendingSignature", "Success"].includes(
           token2AllowanceStatus
         )}
       >
@@ -359,6 +208,7 @@ const AddModal = ({ activePair, chainId }: Props) => {
           amount={"0"}
           type="add"
           status={token2AllowanceStatus}
+          account={account}
         />
       </DexLoadingOverlay>
       <div className="title">
@@ -529,7 +379,7 @@ const AddModal = ({ activePair, chainId }: Props) => {
           gap: "1rem",
         }}
       >
-        <PopIn
+        <SettingsPopIn
           show={openSettings}
           style={!openSettings ? { zIndex: "-1" } : { marginBottom: "-15px" }}
         >
@@ -547,14 +397,13 @@ const AddModal = ({ activePair, chainId }: Props) => {
               onChange={(d) => setDeadline(d)}
             />
           </div>
-          {Number(slippage) <= 0 || Number(deadline) <= 0 ? (
-            <DisabledButton>save settings</DisabledButton>
-          ) : (
-            <Button onClick={() => setOpenSettings(false)}>
-              save settings
-            </Button>
-          )}
-        </PopIn>
+          <PrimaryButton
+            disabled={Number(slippage) <= 0 || Number(deadline) <= 0}
+            onClick={() => setOpenSettings(false)}
+          >
+            save settings
+          </PrimaryButton>
+        </SettingsPopIn>
       </div>
       <AddAllowanceButton
         status1={setToken1AllowanceStatus}
@@ -566,7 +415,7 @@ const AddModal = ({ activePair, chainId }: Props) => {
         deadline={Number(deadline)}
         slippage={Number(slippage)}
       />
-    </Container>
+    </DexModalContainer>
   );
 };
 
