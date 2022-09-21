@@ -22,14 +22,15 @@ import { BalanceSheet } from "pages/lending/balanceSheet/BalanceSheet";
 import BridgingPage from "pages/bridge/Bridging";
 import { useCoingeckoTokenPrice } from "@usedapp/coingecko";
 import Footer from "global/components/nFooter";
+import NStaking from "pages/nstaking/Staking";
 import LandingPage from "pages/landing_page/LandingPage";
-// import landing from "pages/landing_page/index.html"
+
 
 //Styling
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: calc(100vh - 5rem);
   background-color: #111;
   text-shadow: 0 0 4px #2cffab, 0 0 20px var(--primary-color);
 `;
@@ -64,6 +65,7 @@ function App() {
               element={<BalanceSheet />}
             />
             <Route path="/staking" key={"staking"} element={<Staking />} />
+            <Route path="/nstaking" key={"staking"} element={<NStaking />} />
           </Routes>
         </Container>
         <Footer />

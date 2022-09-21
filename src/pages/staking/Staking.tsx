@@ -229,11 +229,15 @@ const Staking = () => {
     let message: React.ReactNode = "";
 
     let delegatedTo = BigNumber.from("0");
-    delegations.forEach((delegation: any) => {
-      if (delegation.delegation.validator_address.includes(currentValidator)) {
-        delegatedTo = BigNumber.from(delegation.balance.amount);
-      }
-    });
+    if (currentValidator != null) {
+      delegations.forEach((delegation) => {
+        if (
+          delegation.delegation.validator_address.includes(currentValidator)
+        ) {
+          delegatedTo = BigNumber.from(delegation.balance.amount);
+        }
+      });
+    }
 
     console.log(parsedAmount.toString(), delegatedTo.toString());
 

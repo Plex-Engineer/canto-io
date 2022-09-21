@@ -230,7 +230,7 @@ const TokensModal = ({ chainId }: TokenModalProps) => {
         </React.Fragment>
       ) : (
         <div style={{ marginTop: "50%" }}>
-          <Text>please switch to canto network to add tokens</Text>
+          <Text type="text">please switch to canto network to add tokens</Text>
         </div>
       )}
     </Styled>
