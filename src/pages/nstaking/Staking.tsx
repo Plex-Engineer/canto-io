@@ -1,7 +1,32 @@
-import React from "react";
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
+import MyStaking from "./tabs/myStaking";
+import AllDerevatives from "./tabs/allDerevatives";
+import Transactions from "./tabs/transactions";
+import Styled from "./style";
 
 const NStaking = () => {
-  return <div>Staking</div>;
+  return (
+    <Styled>
+      <Tabs className={"tabs"}>
+        <TabList>
+          <Tab>my staking</Tab>
+          <Tab>all derevatives</Tab>
+          <Tab>transactions</Tab>
+        </TabList>
+
+        <TabPanel>
+          <MyStaking />
+        </TabPanel>
+        <TabPanel>
+          <AllDerevatives />
+        </TabPanel>
+        <TabPanel>
+          <Transactions />
+        </TabPanel>
+      </Tabs>
+    </Styled>
+  );
 };
 
 export default NStaking;

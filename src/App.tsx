@@ -29,7 +29,7 @@ import NStaking from "pages/nstaking/Staking";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: calc(100vh - 5rem);
   background-color: #111;
   text-shadow: 0 0 4px #2cffab, 0 0 20px var(--primary-color);
 `;
