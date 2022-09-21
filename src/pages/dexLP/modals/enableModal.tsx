@@ -1,4 +1,3 @@
-import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import LoadingModal from "./loadingModal";
 import IconPair from "../components/iconPair";
@@ -7,58 +6,7 @@ import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
 import { UserLPPairInfo } from "../config/interfaces";
 import { PrimaryButton } from "cantoui";
 import { getEnableButtonTextAndOnClick } from "../utils/modalButtonParams";
-
-const Container = styled.div`
-  background-color: #040404;
-  height: 36rem;
-  width: 30rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: start;
-  gap: 1rem;
-  /* padding: 1rem; */
-  .title {
-    font-style: normal;
-    font-weight: 300;
-    font-size: 22px;
-    line-height: 130%;
-    text-align: center;
-    letter-spacing: -0.1em;
-    color: var(--primary-color);
-    /* margin-top: 0.3rem; */
-    width: 100%;
-    background-color: #06fc991a;
-    padding: 1rem;
-    border-bottom: 1px solid var(--primary-color);
-    z-index: 2;
-  }
-
-  .line {
-    border-bottom: 1px solid #222;
-  }
-  .logo {
-    /* padding: 1rem; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid var(--primary-color);
-    height: 60px;
-    width: 60px;
-    border-radius: 50%;
-    margin-bottom: 1.2rem;
-  }
-
-  .fields {
-    display: flex;
-    padding: 1rem;
-    gap: 0.3rem;
-  }
-
-  @media (max-width: 1000px) {
-    width: 100%;
-  }
-`;
+import { DexLoadingOverlay, DexModalContainer } from "../components/Styled";
 
 interface AddAllowanceProps {
   pair: UserLPPairInfo;
@@ -176,51 +124,15 @@ interface Props {
   account?: string;
 }
 
-interface StyleProps {
-  isLoading: boolean;
-}
-export const DexLoadingOverlay = styled.div<StyleProps>`
-  display: ${(props) => (props.isLoading ? "block" : "none")};
-  position: absolute;
-  top: 0%;
-  bottom: 0%;
-  width: 100%;
-  max-height: 45.6rem;
-  z-index: 2;
-  background-color: black;
-  @media (max-width: 1000px) {
-    width: 99vw;
-  }
-`;
-
-interface showProps {
-  show: boolean;
-}
-export const PopIn = styled.div<showProps>`
-  opacity: ${(showProps) => (showProps.show ? "100" : "0")};
-  transition: all 0.2s;
-  height: 100%;
-  position: absolute;
-  background-color: black;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  padding: 2rem;
-  justify-content: center;
-  top: 0;
-  left: 0;
-  z-index: 1;
-`;
-const EnableModal = ({ activePair, chainId }: Props) => {
+const EnableModal = ({ activePair, chainId, account }: Props) => {
   const [token1AllowanceStatus, setToken1AllowanceStatus] = useState("None");
   const [token2AllowanceStatus, setToken2AllowanceStatus] = useState("None");
 
   const prevModalType = useModals((state) => state.prevModalType);
   return (
-    <Container>
+    <DexModalContainer>
       <DexLoadingOverlay
-        isLoading={["Mining", "PendingSignature", "Success"].includes(
+        show={["Mining", "PendingSignature", "Success"].includes(
           token1AllowanceStatus
         )}
       >
@@ -237,10 +149,11 @@ const EnableModal = ({ activePair, chainId }: Props) => {
           amount={"0"}
           type="enable"
           status={token1AllowanceStatus}
+          account={account}
         />
       </DexLoadingOverlay>
       <DexLoadingOverlay
-        isLoading={["Mining", "PendingSignature", "Success"].includes(
+        show={["Mining", "PendingSignature", "Success"].includes(
           token2AllowanceStatus
         )}
       >
@@ -257,6 +170,7 @@ const EnableModal = ({ activePair, chainId }: Props) => {
           amount={"0"}
           type="enable"
           status={token2AllowanceStatus}
+          account={account}
         />
       </DexLoadingOverlay>
       <div className="title">{"Enable Token"}</div>
@@ -296,7 +210,7 @@ const EnableModal = ({ activePair, chainId }: Props) => {
           chainId={chainId}
         />
       )}
-    </Container>
+    </DexModalContainer>
   );
 };
 

@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import loading from "assets/loading.svg";
+import { OutlinedButton } from "cantoui";
 import {
   getTransactionStatusString,
   transactionStatusActions,
@@ -15,6 +16,7 @@ interface ILoading {
     | string;
   amount: string;
   type: string;
+  account?: string;
 }
 
 const Progress = styled.div`
@@ -57,24 +59,6 @@ const Progress = styled.div`
   }
 `;
 
-const Button = styled.button`
-  font-weight: 300;
-  font-size: 18px;
-  background-color: black;
-  color: var(--primary-color);
-  padding: 0.2rem 2rem;
-  border: 1px solid var(--primary-color);
-  margin: 3rem auto;
-  margin-bottom: 0;
-  display: flex;
-  align-self: center;
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-
 const LoadingModal = (props: ILoading) => {
   const actionObj = transactionStatusActions(props.type, "tokens");
 
@@ -87,16 +71,20 @@ const LoadingModal = (props: ILoading) => {
 
   return (
     <Progress>
-      {/* {typeof props.icons != "string" ? (
-        <IconPair iconLeft={props.icons.icon1} iconRight={props.icons.icon2} />
-      ) : (
-        <img src={props.icons} height={40} />
-      )} */}
       <img src={loading} className="loading" height={60} />
       <h3 style={{ marginTop: "2rem" }}>{props.name}</h3>
       <p>{currentStatus}</p>
-      {currentStatus == "mining" ? (
-        <Button>view on etherscan</Button>
+      {props.status?.toLowerCase() == "mining" ? (
+        <OutlinedButton
+          onClick={() => {
+            window.open(
+              "https://evm.explorer.canto.io/address/" + props.account,
+              "_blank"
+            );
+          }}
+        >
+          open block explorer
+        </OutlinedButton>
       ) : null}{" "}
     </Progress>
   );
