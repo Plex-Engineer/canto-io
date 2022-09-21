@@ -11,7 +11,7 @@ import { ModalType } from "../hooks/useModals";
 import { useEffect } from "react";
 import { useState } from "react";
 import useModals from "../hooks/useModals";
-import { TOKENS, CantoTestnet } from "cantoui";
+import { TOKENS, CantoTestnet, PrimaryButton } from "cantoui";
 import { truncateNumber } from "global/utils/utils";
 import { getCurrentBlockTimestamp, getReserveRatioAtoB } from "../utils/utils";
 import { UserLPPairInfo } from "../config/interfaces";
@@ -112,37 +112,6 @@ const Container = styled.div`
       width: 90%;
     }
   }
-`;
-
-const Button = styled.button`
-  font-weight: 400;
-  width: 18rem;
-  font-size: 22px;
-  color: black;
-  background-color: var(--primary-color);
-  padding: 0.6rem;
-  border: 1px solid var(--primary-color);
-  margin: 2rem;
-  /* margin: 3rem auto; */
-
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-
-const DisabledButton = styled.button`
-  font-weight: 300;
-  font-size: 18px;
-  background-color: black;
-  color: #939393;
-  padding: 0.2rem 2rem;
-  border: 1px solid #939393;
-  margin: 2rem auto;
-  margin-bottom: 0;
-  display: flex;
-  align-self: center;
 `;
 
 interface RemoveConfirmationProps {
@@ -355,13 +324,12 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
         />
         {/* <RowCell type="share of pool : " value={calculateExpectedShareofLP(props.expectedLP, props.pair.userSupply.totalLP, props.pair.totalSupply.totalLP).toFixed(8) + "%"} /> */}
       </div>
-      {currentBlockTimeStamp == 0 ? (
-        <DisabledButton>loading...</DisabledButton>
-      ) : props.pair.basePairInfo.token1.address == WCANTO.address ? (
-        <Button
-          onClick={() => {
-            // console.log(props);
-            // console.log(((Number((props.pair.userSupply.totalLP)) * Number(props.percentage)) / 100).toFixed(18).toString())
+      <PrimaryButton
+        style={{ marginTop: "1.5rem" }}
+        size="lg"
+        disabled={currentBlockTimeStamp == 0}
+        onClick={() => {
+          if (props.pair.basePairInfo.token1.address == WCANTO.address) {
             removeLiquidityCANTOSend(
               props.pair.basePairInfo.token2.address,
               props.pair.basePairInfo.stable,
@@ -371,13 +339,7 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
               props.account,
               currentBlockTimeStamp + Number(props.deadline) * 60
             );
-          }}
-        >
-          confirm
-        </Button>
-      ) : (
-        <Button
-          onClick={() => {
+          } else {
             removeLiquiditySend(
               props.pair.basePairInfo.token1.address,
               props.pair.basePairInfo.token2.address,
@@ -388,11 +350,11 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
               props.account,
               currentBlockTimeStamp + Number(props.deadline) * 60
             );
-          }}
-        >
-          confirm
-        </Button>
-      )}
+          }
+        }}
+      >
+        confirm
+      </PrimaryButton>
     </Container>
   );
 };

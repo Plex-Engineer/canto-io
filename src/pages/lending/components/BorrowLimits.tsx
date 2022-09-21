@@ -18,7 +18,7 @@ import {
 } from "../utils/borrowRepayLimits";
 import React from "react";
 
-enum TransactionType {
+export enum TransactionType {
   SUPPLY,
   WITHDRAW,
   BORROW,

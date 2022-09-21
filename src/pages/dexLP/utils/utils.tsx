@@ -110,5 +110,8 @@ export function valueInNote(amount: BigNumber, price: BigNumber) {
 }
 
 export function getLPOut(percentage: number, totalLP: BigNumber) {
+  if (percentage < 0 || isNaN(percentage)) {
+    return BigNumber.from(0);
+  }
   return totalLP.mul(percentage).div(100);
 }

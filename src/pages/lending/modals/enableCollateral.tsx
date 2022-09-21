@@ -4,9 +4,8 @@ import {
   useEnterMarkets,
   useExitMarket,
 } from "../hooks/useTransaction";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { DisabledButton } from "../components/reactiveButton";
 import LoadingModal from "../modals/loadingModal";
 import useModalStore from "pages/lending/stores/useModals";
 import {
@@ -14,6 +13,8 @@ import {
   UserLMTokenDetails,
 } from "pages/lending/config/interfaces";
 import { willWithdrawalGoOverLimit } from "pages/lending/utils/supplyWithdrawLimits";
+import { enableCollateralButtonAndModalText } from "../utils/modalButtonParams";
+import { PrimaryButton } from "cantoui";
 const Container = styled.div`
   background-color: #040404;
   padding: 2rem;
@@ -70,24 +71,6 @@ const Container = styled.div`
   }
 `;
 
-const Button = styled.button`
-  font-weight: 300;
-  font-size: 18px;
-  background-color: black;
-  color: var(--primary-color);
-  padding: 0.2rem 2rem;
-  border: 1px solid var(--primary-color);
-  /* margin: 3rem auto; */
-  display: flex;
-  align-self: center;
-
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-
 const APY = styled.div`
   display: flex;
   justify-content: space-between;
@@ -107,7 +90,7 @@ const APY = styled.div`
 
 interface Props {
   onClose: (result: boolean) => void;
-  decollateralize?: boolean;
+  decollateralize: boolean;
   position: UserLMPosition;
 }
 
@@ -184,6 +167,15 @@ const CollatModal = (props: Props) => {
     token.supplyBalance,
     token.price
   );
+  const [buttonText, modalText, disabled, authorize] =
+    enableCollateralButtonAndModalText(
+      props.decollateralize,
+      token.borrowBalance,
+      willGoOverLimit100PercentLimit,
+      willGoOverLimit80PercentLimit,
+      userConfirmed,
+      token.data.underlying.symbol
+    );
   return (
     <Container>
       <img
@@ -195,75 +187,42 @@ const CollatModal = (props: Props) => {
         alt="canto"
       />
       <h2>{token.data.underlying.name}</h2>
-
-      <h2>
-        {!token.borrowBalance.isZero()
-          ? `you cannot uncollateralize an asset that is currently being borrowed. please repay all ${token?.data.underlying.name.toLowerCase()} before uncollateralizing.`
-          : props.decollateralize
-          ? willGoOverLimit100PercentLimit
-            ? "your total borrow limit will be used. please repay borrows or increase supply."
-            : willGoOverLimit80PercentLimit
-            ? "80% or more of your total borrow limit will be used. please make sure you understand the risks of decollateralizing this asset."
-            : "disabling an asset as collateral will remove it from your borrowing limit, and no longer subject it to liquidation"
-          : "enabling an asset as collateral increases your borrowing limit, but subjects the asset to liquidation"}
-      </h2>
+      <h2>{modalText}</h2>
       <div
         style={{
           display: "flex",
           marginTop: "2rem",
         }}
       ></div>
-
       <APY
         style={{
           marginTop: "0rem",
         }}
       >
-        {props.decollateralize &&
-        (!token.borrowBalance.isZero() ||
-          willGoOverLimit100PercentLimit ||
-          (willGoOverLimit80PercentLimit && !userConfirmed)) ? (
-          !token.borrowBalance.isZero() ? (
-            <DisabledButton>{`currently borrowing ${token.data.underlying.symbol.toLowerCase()}`}</DisabledButton>
-          ) : willGoOverLimit100PercentLimit ? (
-            <DisabledButton>
-              {"100% borrow limit will be reached"}
-            </DisabledButton>
-          ) : (
-            <div>
-              <DisabledButton>
-                {"please confirm you understand the risks"}
-              </DisabledButton>
-              <br />
-              <a
-                role="button"
-                tabIndex={0}
-                style={{ textDecoration: "underline", cursor: "pointer" }}
-                onClick={() => setUserConfirmed(true)}
-              >
-                i understand this transaction will put me over 80% of my borrow
-                limit
-              </a>
-            </div>
-          )
-        ) : (
-          <Button
+        <div>
+          <PrimaryButton
+            disabled={disabled}
             onClick={() => {
               props.decollateralize
                 ? exitSend(token.data.address)
                 : enterSend([token.data.address]);
-
-              // props.onClose();
-            }}
-            style={{
-              margin: "0rem auto",
             }}
           >
-            {props.decollateralize
-              ? `disable ${token.data.underlying.symbol.toLowerCase()} as collateral`
-              : `use ${token.data.underlying.symbol.toLowerCase()} as collateral`}
-          </Button>
-        )}
+            {buttonText}
+          </PrimaryButton>
+          <br />
+          {authorize ? (
+            <a
+              role="button"
+              tabIndex={0}
+              style={{ textDecoration: "underline", cursor: "pointer" }}
+              onClick={() => setUserConfirmed(true)}
+            >
+              i understand this transaction will put me over 80% of my borrow
+              limit
+            </a>
+          ) : null}
+        </div>
       </APY>
     </Container>
   );

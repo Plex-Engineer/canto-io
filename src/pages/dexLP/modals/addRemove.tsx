@@ -5,6 +5,7 @@ import useModals, { ModalType } from "../hooks/useModals";
 import { UserLPPairInfo } from "../config/interfaces";
 import { valueInNote } from "../utils/utils";
 import { formatUnits } from "ethers/lib/utils";
+import { OutlinedButton, PrimaryButton } from "cantoui";
 const Container = styled.div`
   background-color: #040404;
   height: 36rem;
@@ -94,30 +95,6 @@ const Container = styled.div`
     width: 100%;
   }
 `;
-
-const SecondaryButton = styled.button`
-  font-weight: 300;
-  font-size: 18px;
-  background-color: black;
-  color: var(--primary-color);
-  padding: 0.4rem 2rem;
-  border: 1px solid var(--primary-color);
-  display: flex;
-  align-self: center;
-  justify-content: center;
-  width: 10rem;
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-
-const PrimaryButton = styled(SecondaryButton)`
-  background-color: var(--primary-color);
-  color: black;
-`;
-
 interface Props {
   activePair: UserLPPairInfo;
   onClose: () => void;
@@ -147,7 +124,6 @@ const AddRemoveModal = ({ activePair }: Props) => {
       <h4>
         pool share {(activePair.userSupply.percentOwned * 100).toFixed(4)}%
       </h4>
-
       <div className="fields">
         <div className="token">
           <img
@@ -207,15 +183,17 @@ const AddRemoveModal = ({ activePair }: Props) => {
         </div>
       </div>
       <div className="fields">
-        <SecondaryButton
+        <OutlinedButton
+          style={{ width: "9rem" }}
           onClick={() => {
             setModalType(ModalType.REMOVE);
           }}
         >
           remove
-        </SecondaryButton>
+        </OutlinedButton>
 
         <PrimaryButton
+          style={{ width: "9rem" }}
           onClick={() => {
             setModalType(ModalType.ADD);
           }}

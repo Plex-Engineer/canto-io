@@ -67,19 +67,20 @@ const ModalManager = ({ isOpen, position, rewards }: Props) => {
       position="center center"
       nested
     >
-      <img
-        src={close}
-        style={{
-          position: "absolute",
-          top: ".5rem",
-          right: ".5rem",
-          width: "40px",
-          cursor: "pointer",
-          zIndex: "3",
-        }}
-        alt="close"
-        onClick={modalStore.close}
-      />
+      <div role="button" tabIndex={0} onClick={modalStore.close}>
+        <img
+          src={close}
+          style={{
+            position: "absolute",
+            top: ".5rem",
+            right: ".5rem",
+            width: "40px",
+            cursor: "pointer",
+            zIndex: "3",
+          }}
+          alt="close"
+        />
+      </div>
       {modalStore.currentModal === ModalType.WALLET_CONNECTION && (
         <WalletModal onClose={modalStore.close} />
       )}
@@ -92,13 +93,17 @@ const ModalManager = ({ isOpen, position, rewards }: Props) => {
       )}
 
       {modalStore.currentModal === ModalType.COLLATERAL && (
-        <CollatModal onClose={modalStore.close} position={position} />
+        <CollatModal
+          onClose={modalStore.close}
+          position={position}
+          decollateralize={false}
+        />
       )}
 
       {modalStore.currentModal === ModalType.DECOLLATERAL && (
         <CollatModal
           onClose={modalStore.close}
-          decollateralize
+          decollateralize={true}
           position={position}
         />
       )}

@@ -5,6 +5,8 @@ import IconPair from "../components/iconPair";
 import useModals, { ModalType } from "../hooks/useModals";
 import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
 import { UserLPPairInfo } from "../config/interfaces";
+import { PrimaryButton } from "cantoui";
+import { getEnableButtonTextAndOnClick } from "../utils/modalButtonParams";
 
 const Container = styled.div`
   background-color: #040404;
@@ -58,24 +60,6 @@ const Container = styled.div`
   }
 `;
 
-const Button = styled.button`
-  font-weight: 400;
-  width: 18rem;
-  font-size: 20px;
-  color: black;
-  background-color: var(--primary-color);
-  padding: 0.6rem;
-  border: 1px solid var(--primary-color);
-  margin: 2rem;
-  /* margin: 3rem auto; */
-
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-
 interface AddAllowanceProps {
   pair: UserLPPairInfo;
   chainId: number | undefined;
@@ -125,55 +109,24 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
       }, 500);
     }
   }, [addAllowanceB.status]);
+  const [buttonText, buttonOnclick] = getEnableButtonTextAndOnClick(
+    props.pair.basePairInfo.token1.symbol,
+    props.pair.basePairInfo.token2.symbol,
+    props.pair.allowance.token1,
+    props.pair.allowance.token2,
+    () =>
+      addAllowanceASend(
+        routerAddress,
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ),
+    () =>
+      addAllowanceBSend(
+        routerAddress,
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      )
+  );
 
-  if (
-    props.pair.allowance.token1.isZero() &&
-    props.pair.allowance.token2.isZero()
-  ) {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceASend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-          addAllowanceBSend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        enable {props.pair.basePairInfo.token1.symbol} {" & "}
-        {props.pair.basePairInfo.token2.symbol}
-      </Button>
-    );
-  } else if (props.pair.allowance.token1.isZero()) {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceASend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        enable {props.pair.basePairInfo.token1.symbol}
-      </Button>
-    );
-  } else {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceBSend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        enable {props.pair.basePairInfo.token2.symbol}
-      </Button>
-    );
-  }
+  return <PrimaryButton onClick={buttonOnclick}>{buttonText}</PrimaryButton>;
 };
 
 const RemoveAllowanceButton = (props: AddAllowanceProps) => {
@@ -202,7 +155,7 @@ const RemoveAllowanceButton = (props: AddAllowanceProps) => {
   }, [addLPAllowance.status]);
 
   return (
-    <Button
+    <PrimaryButton
       onClick={() => {
         addLPAllowanceSend(
           routerAddress,
@@ -212,7 +165,7 @@ const RemoveAllowanceButton = (props: AddAllowanceProps) => {
     >
       enable {props.pair.basePairInfo.token1.symbol}/
       {props.pair.basePairInfo.token2.symbol}_LP
-    </Button>
+    </PrimaryButton>
   );
 };
 
