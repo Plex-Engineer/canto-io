@@ -1,8 +1,6 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import { TransactionStatus } from "@usedapp/core";
-import { LoadingOverlay } from "./supplyModal";
 import { InputState, ReactiveButton } from "../components/reactiveButton";
 import { truncateNumber } from "global/utils/utils";
 import LendingField from "../components/lendingField";
@@ -16,78 +14,11 @@ import {
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { maxBorrowInUnderlying } from "pages/lending/utils/borrowRepayLimits";
 import { BigNumber } from "ethers";
-
-//STYLING
-const Container = styled.div`
-  display: flex;
-  height: 90vh;
-  max-height: 45.6rem;
-  width: 400px;
-  flex-direction: column;
-  align-items: stretch;
-  .title {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    margin: 1rem;
-  }
-  .tabs {
-    margin: 16px;
-  }
-
-  .tablist {
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--primary-color);
-    padding: 0;
-    color: #efefef;
-    font-weight: 400;
-    .tab {
-      flex: 1;
-      cursor: pointer;
-      padding: 0.5rem;
-      text-align: center;
-      transition: all 0.2s ease-in-out;
-      &:hover:not(.selected) {
-        background: #a7efd218;
-      }
-      &:focus {
-        outline: none;
-      }
-    }
-  }
-
-  .selected {
-    background: rgba(6, 252, 153, 0.15);
-    border-radius: 1px;
-    color: var(--primary-color);
-  }
-
-  @media (max-width: 1000px) {
-    width: 100%;
-  }
-`;
-
-const Wallet = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin: 2rem 0 1.3rem 0;
-  border-top: 1px solid #222;
-  padding-top: 1rem;
-  p:first-child {
-    font-weight: 300;
-    font-size: 16px;
-    color: #dfdfdf;
-  }
-  p:last-child {
-    font-weight: 300;
-    font-size: 16px;
-    color: var(--primary-color);
-  }
-`;
-
+import {
+  SupplyBorrowContainer,
+  ModalWallet,
+  SupplyBorrowLoadingOverlay,
+} from "../components/Styled";
 interface IProps {
   onClose: () => void;
   position: UserLMPosition;
@@ -131,7 +62,7 @@ const BorrowModal = ({ onClose, position }: IProps) => {
 
   function WalletForBorrow() {
     return (
-      <Wallet>
+      <ModalWallet>
         <p>currently borrowing</p>
         <p>
           {truncateNumber(
@@ -139,13 +70,13 @@ const BorrowModal = ({ onClose, position }: IProps) => {
           )}{" "}
           {token.data.underlying.symbol}
         </p>
-      </Wallet>
+      </ModalWallet>
     );
   }
 
   function WalletForRepay() {
     return (
-      <Wallet>
+      <ModalWallet>
         <p>wallet balance</p>
         <p>
           {truncateNumber(
@@ -153,7 +84,7 @@ const BorrowModal = ({ onClose, position }: IProps) => {
           )}{" "}
           {token.data.underlying.symbol}
         </p>
-      </Wallet>
+      </ModalWallet>
     );
   }
 
@@ -316,18 +247,18 @@ const BorrowModal = ({ onClose, position }: IProps) => {
   }, [transaction?.status]);
 
   return (
-    <Container>
+    <SupplyBorrowContainer>
       {/* 'None' , 'PendingSignature' , 'Mining' , 'Success' , 'Fail' , 'Exception' */}
       {["PendingSignature", "Mining", "Success", "Fail", "Exception"].includes(
         transaction?.status ?? "none"
       ) ? (
-        <LoadingOverlay>
+        <SupplyBorrowLoadingOverlay>
           <LoadingModal
             isLoading
             modalText="borrowing bat"
             status={transaction?.status}
           />
-        </LoadingOverlay>
+        </SupplyBorrowLoadingOverlay>
       ) : null}
 
       <div className="title">
@@ -382,7 +313,7 @@ const BorrowModal = ({ onClose, position }: IProps) => {
         {/* New Tab ================================== */}
         {RepayTab()}
       </Tabs>
-    </Container>
+    </SupplyBorrowContainer>
   );
 };
 export default BorrowModal;

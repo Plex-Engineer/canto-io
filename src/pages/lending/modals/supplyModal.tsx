@@ -1,5 +1,4 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import styled from "@emotion/styled";
 import LendingField from "../components/lendingField";
 import { useState, useEffect } from "react";
 import { Details, TrasanctionType } from "../components/BorrowLimits";
@@ -15,90 +14,11 @@ import {
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { userMaximumWithdrawal } from "pages/lending/utils/supplyWithdrawLimits";
-
-//STYLING
-export const LoadingOverlay = styled.div`
-  position: absolute;
-  top: 0%;
-  bottom: 0%;
-  width: 400px;
-  max-height: 45.6rem;
-  background-color: black;
-  @media (max-width: 1000px) {
-    width: 99vw;
-  }
-`;
-const Container = styled.div`
-  display: flex;
-  max-height: 45.6rem;
-  height: 90vh;
-  width: 400px;
-  flex-direction: column;
-  align-items: stretch;
-  position: relative;
-  .title {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    margin: 1rem;
-  }
-  .tabs {
-    margin: 16px;
-  }
-
-  .tablist {
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--primary-color);
-    padding: 0;
-    color: #efefef;
-    font-weight: 400;
-    .tab {
-      flex: 1;
-      cursor: pointer;
-      padding: 0.5rem;
-      text-align: center;
-      transition: all 0.2s ease-in-out;
-      &:hover:not(.selected) {
-        background: #a7efd218;
-      }
-      &:focus {
-        outline: none;
-      }
-    }
-  }
-
-  .selected {
-    background: rgba(6, 252, 153, 0.15);
-    border-radius: 1px;
-    color: var(--primary-color);
-  }
-
-  @media (max-width: 1000px) {
-    width: 100%;
-  }
-`;
-
-export const Wallet = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin: 2rem 0 1.3rem 0;
-  border-top: 1px solid #222;
-  padding-top: 1rem;
-  p:first-child {
-    font-weight: 300;
-    font-size: 16px;
-    color: #dfdfdf;
-  }
-  p:last-child {
-    font-weight: 300;
-    font-size: 16px;
-    color: var(--primary-color);
-  }
-`;
-
+import {
+  SupplyBorrowContainer,
+  ModalWallet,
+  SupplyBorrowLoadingOverlay,
+} from "../components/Styled";
 interface IProps {
   position: UserLMPosition;
   onClose: () => void;
@@ -154,7 +74,7 @@ const SupplyModal = ({ onClose, position }: IProps) => {
 
   function WalletForSupply() {
     return (
-      <Wallet>
+      <ModalWallet>
         <p>wallet balance</p>
         <p>
           {truncateNumber(
@@ -162,13 +82,13 @@ const SupplyModal = ({ onClose, position }: IProps) => {
           )}{" "}
           {token.data.underlying.symbol}
         </p>
-      </Wallet>
+      </ModalWallet>
     );
   }
 
   function WalletForWithdraw() {
     return (
-      <Wallet>
+      <ModalWallet>
         <p>currently supplying</p>
         <p>
           {truncateNumber(
@@ -176,7 +96,7 @@ const SupplyModal = ({ onClose, position }: IProps) => {
           )}{" "}
           {token.data.underlying.symbol}
         </p>
-      </Wallet>
+      </ModalWallet>
     );
   }
 
@@ -323,7 +243,7 @@ const SupplyModal = ({ onClose, position }: IProps) => {
   };
 
   return (
-    <Container
+    <SupplyBorrowContainer
       onScroll={(e) => {
         e.preventDefault();
       }}
@@ -331,13 +251,13 @@ const SupplyModal = ({ onClose, position }: IProps) => {
       {["PendingSignature", "Mining", "Success", "Fail", "Exception"].includes(
         transaction?.status ?? "none"
       ) ? (
-        <LoadingOverlay>
+        <SupplyBorrowLoadingOverlay>
           <LoadingModal
             isLoading
             modalText="borrowing bat"
             status={transaction?.status}
           />
-        </LoadingOverlay>
+        </SupplyBorrowLoadingOverlay>
       ) : null}
       <div className="title">
         <img
@@ -391,7 +311,7 @@ const SupplyModal = ({ onClose, position }: IProps) => {
         {/* New Tab ================================== */}
         {WithdrawTab()}
       </Tabs>
-    </Container>
+    </SupplyBorrowContainer>
   );
 };
 export default SupplyModal;

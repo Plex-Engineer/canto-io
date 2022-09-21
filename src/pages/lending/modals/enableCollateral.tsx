@@ -15,61 +15,7 @@ import {
 import { willWithdrawalGoOverLimit } from "pages/lending/utils/supplyWithdrawLimits";
 import { enableCollateralButtonAndModalText } from "../utils/modalButtonParams";
 import { PrimaryButton } from "cantoui";
-const Container = styled.div`
-  background-color: #040404;
-  padding: 2rem;
-  height: 60vh;
-  max-height: 45.6rem;
-  width: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  h2 {
-    font-weight: 300;
-    font-size: 18px;
-    line-height: 130%;
-    text-align: center;
-    color: var(--off-white-color);
-  }
-  .tabs {
-    margin: 16px;
-  }
-
-  .tablist {
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--primary-color);
-    padding: 0;
-    color: #efefef;
-    font-weight: 400;
-    .tab {
-      flex: 1;
-      cursor: pointer;
-      padding: 0.5rem;
-      text-align: center;
-      transition: all 0.2s ease-in-out;
-      &:hover:not(.selected) {
-        background: #a7efd218;
-      }
-      &:focus {
-        outline: none;
-        /* border: 1px solid var(--primary-color); */
-      }
-    }
-  }
-
-  .selected {
-    background: rgba(6, 252, 153, 0.15);
-    border-radius: 1px;
-    color: var(--primary-color);
-  }
-
-  @media (max-width: 1000px) {
-    width: 100%;
-  }
-`;
+import { EnableCollateralContainer } from "../components/Styled";
 
 const APY = styled.div`
   display: flex;
@@ -130,7 +76,7 @@ const CollatModal = (props: Props) => {
     ["Mining", "PendingSignature", "Success"].includes(exitState.status)
   ) {
     return (
-      <Container>
+      <EnableCollateralContainer>
         <LoadingOverlay>
           <LoadingModal
             isLoading={true}
@@ -144,7 +90,7 @@ const CollatModal = (props: Props) => {
             modalText={""}
           />
         </LoadingOverlay>
-      </Container>
+      </EnableCollateralContainer>
       // <Container>
       //   <h1>{enterState.status !== "None" ? enterState.status : null} </h1>
       //   <h1>{exitState.status !== "None" ? exitState.status : null}</h1>
@@ -177,7 +123,7 @@ const CollatModal = (props: Props) => {
       token.data.underlying.symbol
     );
   return (
-    <Container>
+    <EnableCollateralContainer>
       <img
         src={token.data.underlying.icon}
         height={50}
@@ -224,7 +170,7 @@ const CollatModal = (props: Props) => {
           ) : null}
         </div>
       </APY>
-    </Container>
+    </EnableCollateralContainer>
   );
 };
 
