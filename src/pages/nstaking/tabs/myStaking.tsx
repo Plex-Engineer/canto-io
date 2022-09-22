@@ -1,9 +1,25 @@
 import styled from "@emotion/styled";
+import { formatEther } from "ethers/lib/utils";
 import NotConnected from "../components/NotConnected";
-const MyStaking = () => {
+import { MyStakingProps } from "../config/interfaces";
+
+const MyStaking = (props: MyStakingProps) => {
+  console.log(props.userDelegations);
   return (
     <Styled>
-      <NotConnected />
+      {!props.connected ? (
+        <NotConnected />
+      ) : (
+        <div>
+          <ul>
+            <li>{formatEther(props.balance)}</li>
+            <li>{formatEther(props.totalStaked)}</li>
+            <li>{formatEther(props.totalUnbonding)}</li>
+            <li>{formatEther(props.totalRewards)}</li>
+            <li>{props.apr}</li>
+          </ul>
+        </div>
+      )}
     </Styled>
   );
 };
