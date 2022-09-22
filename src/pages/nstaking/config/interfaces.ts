@@ -1,4 +1,5 @@
 import { BigNumber } from "ethers";
+import { MasterValidatorProps } from "../utils/allUserValidatorInfo";
 
 export interface Validator {
   commission: {
@@ -64,7 +65,7 @@ export interface MyStakingProps {
   totalUnbonding: BigNumber;
   totalRewards: BigNumber;
   apr: string;
-  userDelegations: Validator[];
+  userDelegations: MasterValidatorProps[];
 }
 export interface AllStakingProps {
   validators: Validator[];

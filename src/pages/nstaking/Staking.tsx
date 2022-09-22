@@ -86,18 +86,22 @@ const NStaking = () => {
             totalUnbonding={undelegations.total_unbonding}
             totalRewards={rewards}
             apr={stakingApr}
-            userDelegations={validators.filter((validator) => {
-              for (let i = 0; i < delegations.length; i++) {
-                const delegation = delegations[i];
-                if (
-                  delegation.delegation.validator_address ==
-                  validator.operator_address
-                ) {
-                  return true;
+            userDelegations={getAllValidatorData(
+              validators.filter((validator) => {
+                for (let i = 0; i < delegations.length; i++) {
+                  const delegation = delegations[i];
+                  if (
+                    delegation.delegation.validator_address ==
+                    validator.operator_address
+                  ) {
+                    return true;
+                  }
                 }
-              }
-              return false;
-            })}
+                return false;
+              }),
+              delegations,
+              undelegations
+            )}
           />
         </TabPanel>
         <TabPanel>

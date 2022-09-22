@@ -8,14 +8,20 @@ import { MasterValidatorProps } from "../utils/allUserValidatorInfo";
 
 interface TableProps {
   validators: MasterValidatorProps[];
+  sortBy: "validatorTotal" | "userTotal";
 }
 export const TestTable = (props: TableProps) => {
   const sortedValidators = props.validators.sort((a, b) => {
-    return BigNumber.from(a.validator.tokens).gt(
-      BigNumber.from(b.validator.tokens)
-    )
-      ? -1
-      : 1;
+    const value1 =
+      props.sortBy === "userTotal"
+        ? a.userDelegations?.balance.amount
+        : a.validator.tokens;
+    const value2 =
+      props.sortBy === "userTotal"
+        ? b.userDelegations?.balance.amount
+        : b.validator.tokens;
+
+    return BigNumber.from(value1).gt(BigNumber.from(value2)) ? -1 : 1;
   });
 
   if (props.validators.length) {
@@ -25,8 +31,8 @@ export const TestTable = (props: TableProps) => {
         columns={[
           "rank",
           "name",
-          "validator total",
-          "my stake",
+          `validator total ${props.sortBy === "validatorTotal" ? "^" : ""}`,
+          `my stake ${props.sortBy === "userTotal" ? "^" : ""}`,
           "undelegations",
           "commission",
           "",

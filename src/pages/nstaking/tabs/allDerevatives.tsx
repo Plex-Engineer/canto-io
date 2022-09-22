@@ -5,7 +5,7 @@ interface AllDerevativesProps {
   validators: MasterValidatorProps[];
 }
 const AllDerevatives = (props: AllDerevativesProps) => {
-  return <TestTable validators={props.validators} />;
+  return <TestTable validators={props.validators} sortBy="validatorTotal" />;
 };
 
 export default AllDerevatives;

@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { formatEther } from "ethers/lib/utils";
 import NotConnected from "../components/NotConnected";
+import { TestTable } from "../components/testTable";
 import { MyStakingProps } from "../config/interfaces";
 
 const MyStaking = (props: MyStakingProps) => {
@@ -18,6 +19,7 @@ const MyStaking = (props: MyStakingProps) => {
             <li>{formatEther(props.totalRewards)}</li>
             <li>{props.apr}</li>
           </ul>
+          <TestTable validators={props.userDelegations} sortBy="userTotal" />
         </div>
       )}
     </Styled>
