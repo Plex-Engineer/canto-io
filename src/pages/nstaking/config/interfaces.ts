@@ -46,7 +46,7 @@ interface lockout {
   complete_time_stamp: string;
   value_of_coin: BigNumber;
 }
-interface validators {
+export interface UndelegatingValidator {
   name: string;
   validator_unbonding: BigNumber;
   lockouts?: lockout[];
@@ -54,7 +54,7 @@ interface validators {
 
 export interface UndelegationMap {
   total_unbonding: BigNumber;
-  validators?: validators[];
+  validators?: UndelegatingValidator[];
 }
 
 export interface MyStakingProps {
@@ -75,4 +75,10 @@ export enum StakingTransactionType {
   UNDELEGATE,
   REDELEGATE,
   CLAIM_REWARDS,
+}
+
+export interface ValidatorTableProps {
+  validators: Validator[];
+  userDelegations: DelegationResponse[];
+  userUndelegations: UndelegationMap;
 }

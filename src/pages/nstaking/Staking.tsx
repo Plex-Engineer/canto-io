@@ -20,6 +20,7 @@ import { CantoMainnet } from "cantoui";
 import { calculateTotalStaked, getStakingApr } from "pages/staking/utils/utils";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { BigNumber } from "ethers";
+import { getAllValidatorData } from "./utils/allUserValidatorInfo";
 
 const NStaking = () => {
   const networkInfo = useNetworkInfo();
@@ -100,7 +101,13 @@ const NStaking = () => {
           />
         </TabPanel>
         <TabPanel>
-          <AllDerevatives validators={validators} />
+          <AllDerevatives
+            validators={getAllValidatorData(
+              validators,
+              delegations,
+              undelegations
+            )}
+          />
         </TabPanel>
         <TabPanel>
           <Transactions />

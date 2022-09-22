@@ -1,8 +1,11 @@
-import { AllStakingProps } from "../config/interfaces";
+import { TestTable } from "../components/testTable";
+import { MasterValidatorProps } from "../utils/allUserValidatorInfo";
 
-const AllDerevatives = (props: AllStakingProps) => {
-  console.log(props.validators);
-  return <div>AllDerevatives</div>;
+interface AllDerevativesProps {
+  validators: MasterValidatorProps[];
+}
+const AllDerevatives = (props: AllDerevativesProps) => {
+  return <TestTable validators={props.validators} />;
 };
 
 export default AllDerevatives;
