@@ -5,7 +5,6 @@ import { TestTable } from "../components/testTable";
 import { MyStakingProps } from "../config/interfaces";
 
 const MyStaking = (props: MyStakingProps) => {
-  console.log(props.userDelegations);
   return (
     <Styled>
       {!props.connected ? (

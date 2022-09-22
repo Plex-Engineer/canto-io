@@ -23,7 +23,7 @@ export function getAllValidatorData(
     return undelegations.validators?.find((o) => o.name === operator_address);
   }
 
-  return validators.map((validator, index) => {
+  return validators.map((validator) => {
     const userDelegation = delegations.find((delegation) => {
       return (
         delegation.delegation.validator_address === validator.operator_address
