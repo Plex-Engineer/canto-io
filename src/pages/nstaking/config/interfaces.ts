@@ -60,12 +60,14 @@ export interface UndelegationMap {
 
 export interface MyStakingProps {
   connected: boolean;
+  account: string;
   balance: BigNumber;
   totalStaked: BigNumber;
   totalUnbonding: BigNumber;
   totalRewards: BigNumber;
   apr: string;
-  userDelegations: MasterValidatorProps[];
+  userValidationInfo: MasterValidatorProps[];
+  userDelegations: Validator[];
 }
 export interface AllStakingProps {
   validators: Validator[];

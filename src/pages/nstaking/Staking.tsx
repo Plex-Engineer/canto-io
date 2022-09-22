@@ -69,6 +69,18 @@ const NStaking = () => {
     return () => clearInterval(interval);
   }, [networkInfo.account]);
 
+  const userValidators = validators.filter((validator) => {
+    for (let i = 0; i < delegations.length; i++) {
+      const delegation = delegations[i];
+      if (
+        delegation.delegation.validator_address == validator.operator_address
+      ) {
+        return true;
+      }
+    }
+    return false;
+  });
+
   return (
     <Styled>
       <Tabs className={"tabs"}>
@@ -81,27 +93,18 @@ const NStaking = () => {
         <TabPanel>
           <MyStaking
             connected={Number(networkInfo.chainId) == CantoMainnet.chainId}
+            account={networkInfo.account ?? ""}
             balance={networkInfo.balance}
             totalStaked={calculateTotalStaked(delegations)}
             totalUnbonding={undelegations.total_unbonding}
             totalRewards={rewards}
             apr={stakingApr}
-            userDelegations={getAllValidatorData(
-              validators.filter((validator) => {
-                for (let i = 0; i < delegations.length; i++) {
-                  const delegation = delegations[i];
-                  if (
-                    delegation.delegation.validator_address ==
-                    validator.operator_address
-                  ) {
-                    return true;
-                  }
-                }
-                return false;
-              }),
+            userValidationInfo={getAllValidatorData(
+              userValidators,
               delegations,
               undelegations
             )}
+            userDelegations={userValidators}
           />
         </TabPanel>
         <TabPanel>
