@@ -1,5 +1,4 @@
 import { BigNumber } from "ethers";
-import { MasterValidatorProps } from "../utils/allUserValidatorInfo";
 
 export interface Validator {
   commission: {
@@ -43,7 +42,7 @@ export interface DelegationResponse {
   };
 }
 
-interface lockout {
+export interface lockout {
   complete_time_stamp: string;
   value_of_coin: BigNumber;
 }
@@ -85,3 +84,44 @@ export interface ValidatorTableProps {
   userDelegations: DelegationResponse[];
   userUndelegations: UndelegationMap;
 }
+
+export interface MasterValidatorProps {
+  validator: Validator;
+  userDelegations: DelegationResponse | undefined;
+  undelagatingInfo?: UndelegatingValidator | undefined;
+}
+
+//used to initiate the modal validator so it is never undefined
+export const EmptyActiveValidator: MasterValidatorProps = {
+  validator: {
+    commission: {
+      commission_rates: {
+        max_change_rate: "0",
+        max_rate: "0",
+        rate: "0",
+      },
+      update_time: "0",
+    },
+    consensus_pubkey: {
+      "@type": "0",
+      key: "0",
+    },
+    delegator_shares: "0",
+    description: {
+      details: "0",
+      identity: "0",
+      moniker: "0",
+      security_contact: "0",
+      website: "0",
+    },
+    jailed: false,
+    min_self_delegation: "0",
+    operator_address: "0",
+    status: "0",
+    tokens: "0",
+    unbonding_height: "0",
+    unbonding_time: "0",
+  },
+  userDelegations: undefined,
+  undelagatingInfo: undefined,
+};

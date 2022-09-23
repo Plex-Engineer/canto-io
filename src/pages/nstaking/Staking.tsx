@@ -21,9 +21,12 @@ import { calculateTotalStaked, getStakingApr } from "pages/staking/utils/utils";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { BigNumber } from "ethers";
 import { getAllValidatorData } from "./utils/allUserValidatorInfo";
+import { ModalManager } from "./modals/modalManager";
+import useTransactionStore from "./stores/transactionStore";
 
 const NStaking = () => {
   const networkInfo = useNetworkInfo();
+  const transactionStore = useTransactionStore();
   // get all of the validators
   const [validators, setValidators] = useState<Validator[]>([]);
   const [stakingApr, setStakingApr] = useState("");
@@ -83,13 +86,14 @@ const NStaking = () => {
 
   return (
     <Styled>
+      <ModalManager allValidators={validators} />
       <Tabs className={"tabs"}>
         <TabList>
           <Tab>my staking</Tab>
           <Tab>all derevatives</Tab>
           <Tab>transactions</Tab>
         </TabList>
-
+        {transactionStore.transactionMessage}
         <TabPanel>
           <MyStaking
             connected={Number(networkInfo.chainId) == CantoMainnet.chainId}

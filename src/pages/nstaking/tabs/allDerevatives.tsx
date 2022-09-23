@@ -1,5 +1,5 @@
 import { TestTable } from "../components/testTable";
-import { MasterValidatorProps } from "../utils/allUserValidatorInfo";
+import { MasterValidatorProps } from "../config/interfaces";
 
 interface AllDerevativesProps {
   validators: MasterValidatorProps[];
