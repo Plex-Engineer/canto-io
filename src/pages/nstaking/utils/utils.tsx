@@ -15,11 +15,12 @@ import {
 
 export async function getActiveTransactionMessage(
   account: string,
-  validatorAddress: string,
+  validatorName: string,
   amount: BigNumber,
   prevBalance: BigNumber,
   transactionType: StakingTransactionType,
-  currentValidator?: string
+  currentValidator?: string,
+  newValidatorName?: string
 ): Promise<React.ReactNode> {
   if (transactionType != StakingTransactionType.NONE) {
     let numberOfBlocksChecked = 0;
@@ -33,7 +34,6 @@ export async function getActiveTransactionMessage(
         CantoMainnet.cosmosAPIEndpoint,
         account
       );
-      const currentDelegations = calculateTotalStaked(delegations);
       let delegatedTo = BigNumber.from("0");
       if (currentValidator != null) {
         delegations.forEach((delegation) => {
@@ -56,22 +56,22 @@ export async function getActiveTransactionMessage(
             ? "delegated"
             : "claimed"
         } ${truncateNumber(formatEther(amount))} CANTO ${
-          validatorAddress ? `to ${validatorAddress}` : "in rewards"
+          validatorName ? `to ${validatorName}` : "in rewards"
         }`;
       } else if (
         transactionType === StakingTransactionType.UNDELEGATE &&
-        !currentDelegations.eq(prevBalance)
+        !delegatedTo.eq(prevBalance)
       ) {
         return `you have successfully undelegated ${truncateNumber(
           formatEther(amount)
-        )} CANTO from ${validatorAddress}`;
+        )} CANTO from ${validatorName}`;
       } else if (
         transactionType === StakingTransactionType.REDELEGATE &&
         !delegatedTo.eq(amount)
       ) {
         return `you have successfully redelegated ${truncateNumber(
           formatEther(amount)
-        )} CANTO from ${currentValidator} to ${validatorAddress}`;
+        )} CANTO from ${validatorName} to ${newValidatorName}`;
       }
     }
     //since we have checked multiple blocks, the transaction must have failed

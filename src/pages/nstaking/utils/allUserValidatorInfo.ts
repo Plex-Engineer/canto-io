@@ -1,15 +1,11 @@
 import {
   DelegationResponse,
+  MasterValidatorProps,
   UndelegatingValidator,
   UndelegationMap,
   Validator,
 } from "../config/interfaces";
 
-export interface MasterValidatorProps {
-  validator: Validator;
-  userDelegations: DelegationResponse | undefined;
-  undelagatingInfo?: UndelegatingValidator | undefined;
-}
 export function getAllValidatorData(
   validators: Validator[],
   delegations: DelegationResponse[],

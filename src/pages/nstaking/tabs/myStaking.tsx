@@ -4,20 +4,18 @@ import { formatEther } from "ethers/lib/utils";
 import { chain, memo } from "global/config/cosmosConstants";
 import { claimRewardFee } from "pages/staking/config/fees";
 import { txClaimRewards } from "pages/staking/utils/transactions";
-import React, { useState } from "react";
 import NotConnected from "../components/NotConnected";
 import { ValidatorTable } from "../components/stakingTable";
 import { MyStakingProps, StakingTransactionType } from "../config/interfaces";
+import { userTxMessages } from "../config/messages";
+import useTransactionStore from "../stores/transactionStore";
 import { getActiveTransactionMessage } from "../utils/utils";
 
 const MyStaking = (props: MyStakingProps) => {
-  const [confirmationMessage, setConfirmationMessage] =
-    useState<React.ReactNode>(null);
+  const transactionStore = useTransactionStore();
 
   async function handleClaimRewards() {
-    setConfirmationMessage(
-      "waiting for the metamask transaction to be signed..."
-    );
+    transactionStore.setTransactionMessage(userTxMessages.waitSign);
     await txClaimRewards(
       props.account,
       CantoMainnet.cosmosAPIEndpoint,
@@ -26,8 +24,8 @@ const MyStaking = (props: MyStakingProps) => {
       memo,
       props.userDelegations
     );
-    setConfirmationMessage("waiting for the transaction to be verified...");
-    setConfirmationMessage(
+    transactionStore.setTransactionMessage(userTxMessages.waitVerify);
+    transactionStore.setTransactionMessage(
       await getActiveTransactionMessage(
         props.account,
         "",
@@ -47,7 +45,6 @@ const MyStaking = (props: MyStakingProps) => {
           <OutlinedButton onClick={handleClaimRewards}>
             claim rewards
           </OutlinedButton>
-          {confirmationMessage}
           <ul>
             <li>{formatEther(props.balance)}</li>
             <li>{formatEther(props.totalStaked)}</li>

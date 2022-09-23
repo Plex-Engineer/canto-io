@@ -88,7 +88,6 @@ export const CantoNav = () => {
     <NavBar
       onClick={() => {
         activateBrowserWallet();
-        addNetwork();
       }}
       chainId={Number(netWorkInfo.chainId)}
       account={netWorkInfo.account ?? ""}
