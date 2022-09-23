@@ -13,8 +13,8 @@ import useValidatorModalStore, {
   ValidatorModalType,
 } from "../stores/validatorModalStore";
 import React from "react";
-import Row from "./row";
-import Table from "./table";
+// import Row from "./row";
+import TableB from "./table";
 
 interface TableProps {
   validators: MasterValidatorProps[];
@@ -37,7 +37,7 @@ export const ValidatorTable = (props: TableProps) => {
 
   if (props.validators.length) {
     return (
-      <Table
+      <TableB
         columns={[
           "rank",
           "name",
@@ -67,7 +67,7 @@ export const ValidatorTable = (props: TableProps) => {
             />
           );
         })}
-      </Table>
+      </TableB>
     );
   } else {
     return null;

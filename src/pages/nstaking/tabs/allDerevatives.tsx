@@ -1,4 +1,4 @@
-import { TestTable } from "../components/testTable";
+import { ValidatorTable } from "../components/stakingTable";
 import { MasterValidatorProps } from "../config/interfaces";
 
 interface AllDerevativesProps {
