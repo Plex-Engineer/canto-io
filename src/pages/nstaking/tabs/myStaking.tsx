@@ -6,7 +6,7 @@ import { claimRewardFee } from "pages/staking/config/fees";
 import { txClaimRewards } from "pages/staking/utils/transactions";
 import React, { useState } from "react";
 import NotConnected from "../components/NotConnected";
-import { TestTable } from "../components/testTable";
+import { ValidatorTable } from "../components/stakingTable";
 import { MyStakingProps, StakingTransactionType } from "../config/interfaces";
 import { getActiveTransactionMessage } from "../utils/utils";
 
@@ -55,7 +55,10 @@ const MyStaking = (props: MyStakingProps) => {
             <li>{formatEther(props.totalRewards)}</li>
             <li>{props.apr}</li>
           </ul>
-          <TestTable validators={props.userValidationInfo} sortBy="userTotal" />
+          <ValidatorTable
+            validators={props.userValidationInfo}
+            sortBy="userTotal"
+          />
         </div>
       )}
     </Styled>

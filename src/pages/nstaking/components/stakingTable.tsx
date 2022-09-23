@@ -1,16 +1,17 @@
 import { BigNumber } from "ethers";
 import { commify, formatEther } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
-import LendingTable from "pages/lending/components/table";
 import { UndelegatingValidator } from "../config/interfaces";
 
 import { MasterValidatorProps } from "../utils/allUserValidatorInfo";
+import Row from "./row";
+import Table from "./table";
 
 interface TableProps {
   validators: MasterValidatorProps[];
   sortBy: "validatorTotal" | "userTotal";
 }
-export const TestTable = (props: TableProps) => {
+export const ValidatorTable = (props: TableProps) => {
   const sortedValidators = props.validators.sort((a, b) => {
     const value1 =
       props.sortBy === "userTotal"
@@ -26,23 +27,22 @@ export const TestTable = (props: TableProps) => {
 
   if (props.validators.length) {
     return (
-      <LendingTable
-        isLending={false}
+      <Table
         columns={[
           "rank",
           "name",
           `validator total ${props.sortBy === "validatorTotal" ? "^" : ""}`,
           `my stake ${props.sortBy === "userTotal" ? "^" : ""}`,
-          "undelegations",
+          //   "undelegations",
           "commission",
           "",
         ]}
       >
-        {sortedValidators.map((validator, key) => {
+        {sortedValidators.map((validator, idx) => {
           return (
             <Row
-              key={key}
-              rank={key + 1}
+              key={idx}
+              rank={idx + 1}
               name={validator.validator.description.moniker}
               totalStake={validator.validator.tokens}
               userStake={validator.userDelegations?.balance.amount ?? "0"}
@@ -50,10 +50,16 @@ export const TestTable = (props: TableProps) => {
               commission={Number(
                 validator.validator.commission.commission_rates.rate
               )}
+              onClick={() => {
+                console.log(
+                  "clicked " + validator.validator.description.moniker
+                );
+              }}
+              delay={idx * 0.1}
             />
           );
         })}
-      </LendingTable>
+      </Table>
     );
   } else {
     return null;
@@ -68,19 +74,20 @@ interface RowProps {
   undelegationInfo?: UndelegatingValidator;
   commission: number;
 }
-const Row = (props: RowProps) => {
-  return (
-    <tr>
-      <td>{props.rank}</td>
-      <td>{props.name}</td>
-      <td>
-        {commify(truncateNumber(formatEther(props.totalStake))) + " canto"}
-      </td>
-      <td>
-        {commify(truncateNumber(formatEther(props.userStake))) + " canto"}
-      </td>
-      <td>{props.undelegationInfo?.validator_unbonding.toString()}</td>
-      <td>{props.commission * 100 + "%"}</td>
-    </tr>
-  );
-};
+// const Row = (props: RowProps) => {
+//   console.log(props.undelegationInfo);
+//   return (
+//     <tr>
+//       <td>{props.rank}</td>
+//       <td>{props.name}</td>
+//       <td>
+//         {commify(truncateNumber(formatEther(props.totalStake))) + " canto"}
+//       </td>
+//       <td>
+//         {commify(truncateNumber(formatEther(props.userStake))) + " canto"}
+//       </td>
+//       {/* <td>{props.undelegationInfo?.validator_unbonding.toString()}</td> */}
+//       <td>{props.commission * 100 + "%"}</td>
+//     </tr>
+//   );
+// };

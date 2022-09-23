@@ -86,7 +86,7 @@ const NStaking = () => {
       <Tabs className={"tabs"}>
         <TabList>
           <Tab>my staking</Tab>
-          <Tab>all derevatives</Tab>
+          <Tab>all validators</Tab>
           <Tab>transactions</Tab>
         </TabList>
 
