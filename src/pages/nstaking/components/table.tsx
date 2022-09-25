@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-
+import arrow from "assets/rightArrow.svg";
 const Container = styled.table`
   & {
     border: none;
@@ -14,25 +14,36 @@ const Container = styled.table`
   thead {
     text-transform: lowercase;
     font-size: 14px;
-    background-color: #06fc9a1b;
-    tr {
+    border-radius: 4px;
+
+    /* tr {
       border-bottom: var(--primary-color) solid 1px !important;
-    }
+    } */
   }
   th {
     padding: 8px;
     font-weight: 400;
     line-height: 1rem;
+    flex: 1;
   }
-
+  td {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+  }
   tr {
+    display: flex;
+    justify-content: space-around;
+
     font-size: 14px;
     font-weight: 400;
     line-height: 4rem;
-    border-bottom: transparent solid 1px;
 
     animation-fill-mode: forwards;
-
+    background-color: black;
+    margin-top: 1rem;
     @keyframes fader {
       from {
         border-bottom: transparent solid 1px;
@@ -44,11 +55,29 @@ const Container = styled.table`
   }
 
   tbody {
-    border: var(--primary-color) solid 1px;
+    display: grid;
+    /* border: var(--primary-color) solid 1px; */
+    tr {
+      border-radius: 4px;
+      border-left: 3px solid var(--primary-color);
+      border-right: 3px solid var(--primary-color);
+      transition: all 0.2s;
+      &:hover {
+        background-color: #163428;
+        cursor: pointer;
+      }
+      position: relative;
+      &::after {
+        content: url(${arrow});
+        position: absolute;
+        right: 6px;
+        top: 10px;
 
-    tr:hover {
-      background-color: #06fc9a1b;
-      cursor: pointer;
+        &:hover {
+          transform: translateX(10);
+          background-color: red;
+        }
+      }
     }
   }
   @media (max-width: 1000px) {

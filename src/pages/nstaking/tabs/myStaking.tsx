@@ -42,9 +42,7 @@ const MyStaking = (props: MyStakingProps) => {
         <NotConnected />
       ) : (
         <div>
-          <OutlinedButton onClick={handleClaimRewards}>
-            claim rewards
-          </OutlinedButton>
+          <OutlinedButton onClick={handleClaimRewards}>claim rewards</OutlinedButton>
           <ul>
             <li>{formatEther(props.balance)}</li>
             <li>{formatEther(props.totalStaked)}</li>
@@ -52,10 +50,7 @@ const MyStaking = (props: MyStakingProps) => {
             <li>{formatEther(props.totalRewards)}</li>
             <li>{props.apr}</li>
           </ul>
-          <ValidatorTable
-            validators={props.userValidationInfo}
-            sortBy="userTotal"
-          />
+          <ValidatorTable validators={props.userValidationInfo} sortBy="userTotal" />
         </div>
       )}
     </Styled>

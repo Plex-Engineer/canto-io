@@ -3,7 +3,7 @@ import { commify, formatEther } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
 import HistoryToggleOffSharpIcon from "@mui/icons-material/HistoryToggleOffSharp";
 import Popover from "@mui/material/Popover";
-
+import cantoIcon from "assets/logo.svg";
 import {
   lockout,
   MasterValidatorProps,
@@ -43,9 +43,8 @@ export const ValidatorTable = (props: TableProps) => {
           "name",
           `validator total ${props.sortBy === "validatorTotal" ? "^" : ""}`,
           `my stake ${props.sortBy === "userTotal" ? "^" : ""}`,
-          //   "undelegations",
+          "undelegations",
           "commission",
-          "",
         ]}
       >
         {sortedValidators.map((validator, idx) => {
@@ -98,10 +97,12 @@ const Row = (props: RowProps) => {
       <td>{props.rank}</td>
       <td>{props.name}</td>
       <td>
-        {commify(truncateNumber(formatEther(props.totalStake))) + " canto"}
+        {commify(truncateNumber(formatEther(props.totalStake)))}{" "}
+        <img src={cantoIcon} alt="canto" height={14} />
       </td>
       <td>
-        {commify(truncateNumber(formatEther(props.userStake))) + " canto"}
+        {commify(truncateNumber(formatEther(props.userStake)))}
+        <img src={cantoIcon} alt="canto" height={14} />
       </td>
       <td>
         <HistoryToggleOffSharpIcon
