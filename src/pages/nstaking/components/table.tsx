@@ -24,14 +24,20 @@ const Container = styled.table`
     padding: 8px;
     font-weight: 400;
     line-height: 1rem;
-    flex: 1;
   }
-  td {
-    flex: 1;
+  td,
+  th {
+    flex: 4;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0.4rem;
+
+    /* &:nth-child(1),
+    :nth-child(5),
+    :nth-child(6) {
+      flex: 2;
+    } */
   }
   tr {
     display: flex;
@@ -56,15 +62,17 @@ const Container = styled.table`
 
   tbody {
     display: grid;
-    /* border: var(--primary-color) solid 1px; */
+
     tr {
       border-radius: 4px;
       border-left: 3px solid var(--primary-color);
       border-right: 3px solid var(--primary-color);
       transition: all 0.2s;
+
       &:hover {
         background-color: #163428;
         cursor: pointer;
+        transform: scale(1.02);
       }
       position: relative;
       &::after {
@@ -75,7 +83,6 @@ const Container = styled.table`
 
         &:hover {
           transform: translateX(10);
-          background-color: red;
         }
       }
     }

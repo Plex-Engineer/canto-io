@@ -4,6 +4,7 @@ import { formatEther } from "ethers/lib/utils";
 import { chain, memo } from "global/config/cosmosConstants";
 import { claimRewardFee } from "pages/staking/config/fees";
 import { txClaimRewards } from "pages/staking/utils/transactions";
+import InfoBar from "../components/InfoBar";
 import NotConnected from "../components/NotConnected";
 import { ValidatorTable } from "../components/stakingTable";
 import { MyStakingProps, StakingTransactionType } from "../config/interfaces";
@@ -42,15 +43,28 @@ const MyStaking = (props: MyStakingProps) => {
         <NotConnected />
       ) : (
         <div>
-          <OutlinedButton onClick={handleClaimRewards}>claim rewards</OutlinedButton>
-          <ul>
+          <OutlinedButton onClick={handleClaimRewards}>
+            claim rewards
+          </OutlinedButton>
+          {/* <ul>
             <li>{formatEther(props.balance)}</li>
             <li>{formatEther(props.totalStaked)}</li>
             <li>{formatEther(props.totalUnbonding)}</li>
             <li>{formatEther(props.totalRewards)}</li>
             <li>{props.apr}</li>
-          </ul>
-          <ValidatorTable validators={props.userValidationInfo} sortBy="userTotal" />
+          </ul> */}
+
+          <InfoBar
+            balance={formatEther(props.balance)}
+            totalStaked={formatEther(props.totalStaked)}
+            totalUnbonding={formatEther(props.totalUnbonding)}
+            rewards={formatEther(props.totalRewards)}
+            apr={props.apr}
+          />
+          <ValidatorTable
+            validators={props.userValidationInfo}
+            sortBy="userTotal"
+          />
         </div>
       )}
     </Styled>
