@@ -143,7 +143,6 @@ export const StakingModal = ({
   };
   return (
     <StakingModalContainer>
-      {" "}
       <div className="title">{validator.validator.description.moniker}</div>
       <div className="desc">
         <h2

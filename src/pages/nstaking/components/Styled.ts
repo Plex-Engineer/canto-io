@@ -10,15 +10,16 @@ export const StakingModalContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: start;
+
   input {
     text-align: right;
   }
   hr {
-    width: 85%;
+    width: 100%;
     border: none;
     border-bottom: 1px solid #444444;
   }
+
   /* padding: 1rem; */
   .react-select-container {
   }
@@ -69,7 +70,7 @@ export const StakingModalContainer = styled.div`
   }
 
   .redelegate {
-    width: 85%;
+    width: 100%;
     margin: 2rem 0;
     .btn-grp {
       width: 100%;
@@ -96,8 +97,6 @@ export const StakingModalContainer = styled.div`
       }
 
       input {
-        background-color: transparent;
-        width: 40%;
         border-bottom: 1px solid #1b7244;
 
         &:focus {
@@ -111,20 +110,17 @@ export const StakingModalContainer = styled.div`
     }
   }
   .title {
-    font-style: normal;
     font-weight: 300;
     font-size: 22px;
-    line-height: 130%;
     text-align: center;
     letter-spacing: -0.1em;
     text-transform: lowercase;
     color: var(--primary-color);
-    margin-bottom: 2rem;
-    /* margin-top: 0.3rem; */
     width: 100%;
     background-color: #06fc991a;
     padding: 1rem;
     border-bottom: 1px solid var(--primary-color);
+    margin-bottom: 1rem;
   }
 
   .dual-h-row {
@@ -134,18 +130,7 @@ export const StakingModalContainer = styled.div`
     justify-content: space-between;
     margin: 0.4rem 0;
   }
-  .balances {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    justify-content: end;
-    width: 18rem;
-  }
-  .bal {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem;
-  }
+
   .type {
     color: #8b8b8b;
   }
@@ -154,17 +139,6 @@ export const StakingModalContainer = styled.div`
   }
   .line {
     border-bottom: 1px solid #222;
-  }
-  .logo {
-    /* padding: 1rem; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid var(--primary-color);
-    height: 60px;
-    width: 60px;
-    border-radius: 50%;
-    margin-bottom: 1.2rem;
   }
 
   h2 {
@@ -176,6 +150,10 @@ export const StakingModalContainer = styled.div`
     line-height: 120%;
     margin-bottom: 0.4rem;
   }
+
+  h4 {
+    width: 100%;
+  }
   .secondaryBalance {
     font-weight: 300;
     font-size: 16px;
@@ -186,14 +164,15 @@ export const StakingModalContainer = styled.div`
   .btn-grp {
     display: flex;
     justify-content: space-between;
-    width: 85%;
+    width: 100%;
     margin: 2rem 0;
   }
 
   .desc {
-    margin: 0 6rem;
-    margin-bottom: 2rem;
-    max-width: 85%;
+    margin: 0 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   .textField {
     margin: 0.1rem 0;
@@ -214,7 +193,7 @@ export const StakingModalContainer = styled.div`
     font-size: 18px;
     font-weight: 600;
     color: white;
-    margin: 0 2rem;
+    margin-left: 4rem;
     &:focus {
       outline: none;
     }

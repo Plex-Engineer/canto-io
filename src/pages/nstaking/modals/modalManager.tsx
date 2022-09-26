@@ -47,7 +47,6 @@ export const ModalManager = (props: ModalManagerProps) => {
       position="center center"
       nested
     >
-      {" "}
       <div role="button" tabIndex={0} onClick={validatorModals.close}>
         <img
           src={close}
