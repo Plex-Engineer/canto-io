@@ -1498,7 +1498,7 @@
     link-module-alias "^1.2.0"
     shx "^0.3.4"
 
-"@tharsis/transactions@^0.2.4":
+"@tharsis/transactions@^0.2.6":
   version "0.2.6"
   resolved "https://registry.yarnpkg.com/@tharsis/transactions/-/transactions-0.2.6.tgz#b6478eca3987e69e060d098adf601d68d8960da9"
   integrity sha512-RHDYaLYvDL4UvKveN08vppsRyjTOnJ2eSBBCXmSyRBbeEVXOBG83qhoECx9nrcs3gXzEL5pqU3PUe3p+3hzfDQ==
@@ -5292,7 +5292,7 @@ react-refresh@^0.13.0:
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.13.0.tgz#cbd01a4482a177a5da8d44c9755ebb1f26d5a1c1"
   integrity sha512-XP8A9BT0CpRBD+NYLLeIhld/RqG9+gktUjW1FkE+Vm7OCinbG1SshcK5tb9ls4kzvjZr9mOQc7HYgBngEyPAXg==
 
-react-router-dom@^6.3.0:
+react-router-dom@^6.4.1:
   version "6.4.1"
   resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.4.1.tgz#99c9b7c4967890701c888517475aa5d54d25760e"
   integrity sha512-MY7NJCrGNVJtGp8ODMOBHu20UaIkmwD2V3YsAOUQoCXFk7Ppdwf55RdcGyrSj+ycSL9Uiwrb3gTLYSnzcRoXww==
