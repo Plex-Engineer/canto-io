@@ -5,7 +5,7 @@ import { selectedEmptyToken, useTokenStore } from "./stores/tokens";
 import BridgeIn from "./BridgeIn";
 import BridgeOut from "./BridgeOut";
 
-const BridgingPage = () => {
+const NBridgingPage = () => {
   const tokenStore = useTokenStore();
   return (
     <Container>
@@ -80,4 +80,4 @@ const Container = styled.div`
   }
 `;
 
-export default BridgingPage;
+export default NBridgingPage;
