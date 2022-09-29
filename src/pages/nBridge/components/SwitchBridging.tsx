@@ -33,7 +33,7 @@ const SwitchBridging = () => {
           <ImageButton
             src={EthIcon}
             alt="Ethereum"
-            height={40}
+            height={30}
             onClick={() => SetTransactionType("Bridge")}
           />
         </div>
@@ -41,7 +41,7 @@ const SwitchBridging = () => {
         <img
           src={CantoIcon}
           alt="Canto (Bridge)"
-          height={40}
+          height={30}
           style={{
             filter: "grayscale(100%)",
             width: "20%",
@@ -56,7 +56,7 @@ const SwitchBridging = () => {
           <ImageButton
             src={CantoIcon}
             alt="Canto (EVM)"
-            height={40}
+            height={30}
             onClick={() => SetTransactionType("Convert")}
           />
         </div>
@@ -74,7 +74,7 @@ const Styled = styled.div`
     width: 100%;
     justify-content: space-between;
     align-items: center;
-    padding: 4rem;
+    padding: 2.5rem 5rem;
 
     /* border: 2px solid var(--primary-color); */
   }

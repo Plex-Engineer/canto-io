@@ -41,6 +41,7 @@ const TransferBox = (props: Props) => {
     <TransferBoxStyled disabled={!props.connected}>
       <div className="overlay">
         <HighlightButton
+          as={FilledButton}
           className="switch"
           id="network-switch"
           // disabled={props.connected}
@@ -181,7 +182,7 @@ interface StyeldProps {
   disabled?: boolean;
 }
 const TransferBoxStyled = styled.div<StyeldProps>`
-  background-color: #242222;
+  background-color: black;
 
   width: 600px;
   display: flex;
@@ -189,9 +190,7 @@ const TransferBoxStyled = styled.div<StyeldProps>`
   gap: 1rem;
   padding: 2rem;
   border: ${(props) =>
-    props.disabled
-      ? " 1px solid var(--warning-color)"
-      : "1px solid var(--primary-color)"};
+    props.disabled ? " 1px solid var(--warning-color)" : "1px solid #333"};
   /* border: ${(props) =>
     props.disabled ? " 1px solid #333" : "1px solid var(--primary-color)"}; */
   margin: 2rem 0;
