@@ -30,6 +30,7 @@ interface SupplyProps {
   onClick?: () => void;
   collaterable: boolean;
   rewards?: string;
+  sortableProps?: unknown[];
 }
 
 interface TransactionProps {
