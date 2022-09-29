@@ -1,5 +1,5 @@
 import { CantoMainnet, NodeAddresses } from "cantoui";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 
 export function addNetwork() {
   try {
@@ -48,13 +48,12 @@ export async function getAccountBalance(account: string | undefined) {
   //@ts-ignore
   if (window.ethereum) {
     //@ts-ignore
-    const balance = await window.ethereum.request({
+    return await window.ethereum.request({
       method: "eth_getBalance",
       params: [account, "latest"],
     });
-    return ethers.utils.formatEther(balance);
   }
-  return "0";
+  return BigNumber.from(0);
 }
 
 export async function getCantoAddressFromMetaMask(address: string | undefined) {

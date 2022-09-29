@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import { checkPubKey } from "global/utils/cantoTransactions/publicKey";
 import { getCantoAddressFromMetaMask } from "global/utils/walletConnect/addCantoToWallet";
 import create from "zustand";
@@ -10,8 +11,8 @@ interface NetworkProps {
   setAccount: (account: string | undefined) => void;
   cantoAddress: string;
   hasPubKey: boolean;
-  balance: string;
-  setBalance: (balance: string) => void;
+  balance: BigNumber;
+  setBalance: (balance: BigNumber) => void;
 }
 
 export const useNetworkInfo = create<NetworkProps>()(
@@ -30,7 +31,7 @@ export const useNetworkInfo = create<NetworkProps>()(
         set({ hasPubKey: hasPubKey });
       }
     },
-    balance: "0",
+    balance: BigNumber.from(0),
     setBalance: (balance) => set({ balance: balance }),
   }))
 );

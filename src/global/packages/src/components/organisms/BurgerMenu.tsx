@@ -144,8 +144,8 @@ const BurgerStyles = {
   },
   bmOverlay: {
     background: "rgba(9, 40, 26, 0.599)",
-    // width: "0",
-    // height: "0",
+    width: "0",
+    height: "0",
   },
 };
 
