@@ -4,6 +4,8 @@ import styled from "@emotion/styled";
 import arrow from "../../../assets/right.svg";
 import CopyIcon from "../../../assets/copy.svg";
 import { toast } from "react-toastify";
+import { TokenWallet } from "./TokenSelect";
+import { selectedEmptyToken, useBridgeStore } from "../stores/gravityStore";
 
 interface Props {
   tokenSymbol: string;
@@ -16,6 +18,7 @@ interface Props {
   button: React.ReactNode;
   max: string;
   amount?: string;
+  tokenSelector: React.ReactNode;
   from: {
     name: string;
     address?: string;
@@ -36,23 +39,24 @@ const TransferBox = (props: Props) => {
   }
   return (
     <TransferBoxStyled disabled={!props.connected}>
-      <HighlightButton
-        className="switch"
-        id="head-button"
-        // disabled={props.connected}
-        // style={{
-        //   width: "100%",
-        //   color: !props.connected ? "var(--warning-color)" : "",
-        //   border: !props.connected ? "1px solid var(--warning-color)" : "",
-        //   backgroundColor: !props.connected ? "#382e1f" : "",
-        // }}
-        onClick={props.onSwitch}
-      >
-        {!props.connected
-          ? "switch to " + props.networkName
-          : "connected to " + props.networkName}
-      </HighlightButton>
-
+      <div className="overlay">
+        <HighlightButton
+          className="switch"
+          id="network-switch"
+          // disabled={props.connected}
+          // style={{
+          //   width: "100%",
+          //   color: !props.connected ? "var(--warning-color)" : "",
+          //   border: !props.connected ? "1px solid var(--warning-color)" : "",
+          //   backgroundColor: !props.connected ? "#382e1f" : "",
+          // }}
+          onClick={props.onSwitch}
+        >
+          {!props.connected
+            ? "switch to " + props.networkName
+            : "connected to " + props.networkName}
+        </HighlightButton>
+      </div>
       <div className="row">
         <div
           style={{
@@ -133,12 +137,8 @@ const TransferBox = (props: Props) => {
         </Text>
       </div>
       <div className="amount">
-        <div className="token">
-          <img src={props.tokenIcon} alt="eth" width={26} />
-          <Text type="text" align="left" color="white">
-            {props.tokenSymbol}
-          </Text>
-        </div>
+        {props.tokenSelector}
+
         <div className="amount-input">
           <Text type="text" align="left" color="primary">
             amount :
@@ -182,16 +182,18 @@ interface StyeldProps {
 }
 const TransferBoxStyled = styled.div<StyeldProps>`
   background-color: #242222;
-  width: 560px;
+
+  width: 600px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 1rem;
-  padding-top: 3rem;
+  padding: 2rem;
   border: ${(props) =>
     props.disabled
       ? " 1px solid var(--warning-color)"
       : "1px solid var(--primary-color)"};
+  /* border: ${(props) =>
+    props.disabled ? " 1px solid #333" : "1px solid var(--primary-color)"}; */
   margin: 2rem 0;
   .row {
     display: flex;
@@ -208,10 +210,17 @@ const TransferBoxStyled = styled.div<StyeldProps>`
     }
   }
   position: relative;
-  #head-button {
+
+  .overlay {
+    background-color: #222222d2;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
     position: absolute;
-    top: -30px;
-    width: 400px !important;
+    display: ${(props) => (props.disabled ? "grid" : "none")};
+    justify-content: center;
   }
   .max {
     position: absolute;
@@ -226,6 +235,8 @@ const TransferBoxStyled = styled.div<StyeldProps>`
   }
 
   .switch {
+    width: 400px;
+
     color: ${({ disabled }) => (disabled ? "var(--warning-color)" : "")};
     border: ${({ disabled }) =>
       disabled ? "1px solid var(--warning-color)" : ""};
@@ -285,22 +296,4 @@ const TransferBoxStyled = styled.div<StyeldProps>`
   }
 `;
 
-// export const HighlightButton = styled(FilledButton)`
-//   background-color: #172b23;
-//   border: 1px solid var(--primary-color);
-//   color: var(--primary-color);
-//   padding: 1rem !important;
-
-//   &:hover {
-//     background-color: #203128;
-//     color: var(--primary-dark-color);
-//     border: 1px solid var(--primary-darker-color);
-//   }
-
-//   &:disabled {
-//     background-color: #373737;
-//     color: var(--off-white-color);
-//     border: 1px solid var(--off-white-color);
-//   }
-// `;
 export default TransferBox;

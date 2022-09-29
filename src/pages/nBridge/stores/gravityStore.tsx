@@ -6,11 +6,11 @@ import { providers } from "ethers";
 import { GTokens } from "../hooks/useGravityTokens";
 import { NativeGTokens } from "../hooks/useCosmosTokens";
 
-interface TxStatus {
-  state: TransactionStatus;
-  send: (...args: any[]) => Promise<providers.TransactionReceipt | undefined>;
-  resetState: () => void;
-}
+// interface TxStatus {
+//   state: TransactionStatus;
+//   send: (...args: any[]) => Promise<providers.TransactionReceipt | undefined>;
+//   resetState: () => void;
+// }
 export const selectedEmptyToken = {
   data: {
     isERC20: false,
@@ -29,13 +29,17 @@ export const selectedEmptyToken = {
   nativeBalanceOf: "-1",
 };
 
-interface TokenStore {
+interface BridgeStore {
   network: {
     chainID: ChainId | undefined;
     setChainID: (value: ChainId) => void;
   };
   tokens: GTokens[];
   setTokens: (tokens: GTokens[]) => void;
+  transactionType: "Bridge" | "Convert";
+  setTransactionType: (value: "Bridge" | "Convert") => void;
+  amount: string;
+  setAmount: (value: string) => void;
   selectedToken: NativeGTokens;
   setSelectedToken: (token: NativeGTokens) => void;
   approveStatus: TransactionState;
@@ -43,7 +47,7 @@ interface TokenStore {
   cosmosStatus: TransactionState;
   setCosmosStatus: (tx: TransactionState) => void;
 }
-export const useTokenStore = create<TokenStore>()(
+export const useBridgeStore = create<BridgeStore>()(
   devtools((set, get) => ({
     network: {
       chainID: undefined,
@@ -57,6 +61,13 @@ export const useTokenStore = create<TokenStore>()(
     },
     tokens: [],
     setTokens: (tokens: GTokens[]) => set({ tokens: tokens }),
+    transactionType: "Bridge",
+    setTransactionType: (value) =>
+      set({
+        transactionType: value,
+      }),
+    amount: "",
+    setAmount: (value) => set({ amount: value }),
     selectedToken: selectedEmptyToken,
     setSelectedToken: (token: NativeGTokens) => {
       set({

@@ -5,7 +5,7 @@ import { chain, fee, memo } from "../config/networks";
 import { ethers } from "ethers";
 import { NativeGTokens } from "../hooks/useCosmosTokens";
 import { useEffect, useState } from "react";
-import { selectedEmptyToken } from "../stores/tokens";
+import { selectedEmptyToken } from "../stores/gravityStore";
 import {
   txConvertCoin,
   txConvertERC20,
@@ -20,9 +20,10 @@ interface ConvertTransferBoxProps {
   ETHAddress: string;
   token: NativeGTokens;
   chainId: number;
+  tokenSelector: React.ReactNode;
 }
 export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
-  const { activateBrowserWallet } = useEthers();
+  const { activateBrowserWallet, switchNetwork } = useEthers();
   //CONVERT STATES
   const [convertAmount, setConvertAmount] = useState("0");
   //convert states to update the user
@@ -87,6 +88,7 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
 
   return (
     <TransferBox
+      tokenSelector={props.tokenSelector}
       from={{
         address: props.cantoToEVM ? props.cantoAddress : props.ETHAddress,
         name: props.cantoToEVM ? "canto (bridge)" : "canto (EVM)",
@@ -102,6 +104,7 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
       onSwitch={() => {
         activateBrowserWallet();
         addNetwork();
+        switchNetwork(7700);
       }}
       tokenSymbol={props.token.data.symbol}
       connected={CantoMainnet.chainId == props.chainId}

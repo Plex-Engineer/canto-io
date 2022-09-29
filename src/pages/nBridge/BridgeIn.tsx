@@ -1,27 +1,34 @@
 import { ADDRESSES, CantoMainnet, Text } from "cantoui";
-import ethIcon from "assets/icons/ETH.svg";
-import TransferBox from "./components/TransferBox";
+
 import { GTokens, useGravityTokens } from "./hooks/useGravityTokens";
 import { useEffect, useState } from "react";
-import { selectedEmptyToken, useTokenStore } from "./stores/tokens";
+import { selectedEmptyToken, useBridgeStore } from "./stores/gravityStore";
 import styled from "@emotion/styled";
-import { TokenWallet } from "./components/TokenSelect";
 import { getCantoBalance, NativeGTokens } from "./hooks/useCosmosTokens";
 import { useApprove, useCosmos } from "./hooks/useTransactions";
 import { useEthers } from "@usedapp/core";
-import { ReactiveButton } from "./components/ReactiveButton";
 import { BigNumber, ethers } from "ethers";
-import { ConvertTransferBox } from "./components/convertTransferBox";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import { useEthGravityTokens } from "./hooks/useEthGravityTokens";
-import { getNativeCantoBalance } from "./utils/nativeBalances";
+import SwitchBridging from "./components/SwitchBridging";
+
+import ethIcon from "assets/icons/ETH.svg";
+import TransferBox from "./components/TransferBox";
+import { ReactiveButton } from "./components/ReactiveButton";
+import { ConvertTransferBox } from "./components/convertTransferBox";
+import { TokenWallet } from "./components/TokenSelect";
+// import { useEthGravityTokens } from "./hooks/useEthGravityTokens";
+// import { getNativeCantoBalance } from "./utils/nativeBalances";
+
 const BridgeIn = () => {
   const networkInfo = useNetworkInfo();
-  const tokenStore = useTokenStore();
+  const tokenStore = useBridgeStore();
   const { switchNetwork, activateBrowserWallet } = useEthers();
-  const activeToken = useTokenStore().selectedToken;
+  const activeToken = useBridgeStore().selectedToken;
   const [bridgeAmount, setBridgeAmount] = useState("0");
-
+  const [transactionType, SetTransactionType] = useBridgeStore((state) => [
+    state.transactionType,
+    state.setTransactionType,
+  ]);
   //set the gravity token info from ethMainnet
   const { gravityTokens, gravityAddress } = useGravityTokens(
     networkInfo.account
@@ -122,70 +129,76 @@ const BridgeIn = () => {
 
   return (
     <Container>
-      <Text type="title" color="white">
+      <Text type="title" color="primary">
         send funds to canto
       </Text>
-      <TokenWallet
-        tokens={cantoGravityTokens}
-        activeToken={tokenStore.selectedToken}
-        onSelect={(value) => {
-          tokenStore.setSelectedToken(value ?? selectedEmptyToken);
-          resetCosmos();
-          resetApprove();
-        }}
-      />
-      <Text type="text" color="white" style={{ width: "70%" }}>
-        it takes several minutes for your bridged assets to arrive on the canto
-        network. for more details, read more{" "}
+
+      <Text type="text" color="primary" style={{ width: "70%" }}>
+        funds are transferred in two steps through our canto bridge. it takes
+        several minutes. for more details{" "}
         <a
           href="https://docs.canto.io/user-guides/bridging-assets/ethereum"
           style={{
-            color: "white",
+            color: "var(--primary-color)",
             cursor: "pointer",
             textDecoration: "underline",
           }}
         >
-          here
+          read more
         </a>
         .
       </Text>
-      <TransferBox
-        from={{
-          address: networkInfo.account,
-          name: "ethereum",
-          icon: ethIcon,
-        }}
-        to={{
-          address: networkInfo.cantoAddress,
-          name: "canto (bridge)",
-        }}
-        tokenIcon={tokenStore.selectedToken.data.icon}
-        networkName="ethereum"
-        onSwitch={() => {
-          activateBrowserWallet();
-          switchNetwork(1);
-        }}
-        tokenSymbol={tokenStore.selectedToken.data.symbol}
-        connected={1 == Number(networkInfo.chainId)}
-        onChange={(amount: string) => setBridgeAmount(amount)}
-        max={tokenStore.selectedToken.balanceOf.toString()}
-        amount={bridgeAmount}
-        button={
-          <ReactiveButton
-            destination={networkInfo.cantoAddress}
-            amount={bridgeAmount}
-            account={networkInfo.account}
-            token={tokenStore.selectedToken}
-            gravityAddress={gravityAddress}
-            disabled={false}
-            onClick={() =>
-              1 == Number(networkInfo.chainId) ? send(bridgeAmount) : {}
-            }
-          />
-        }
-      />
+      <SwitchBridging />
+      {transactionType == "Bridge" && (
+        <TransferBox
+          tokenSelector={
+            <TokenWallet
+              tokens={cantoGravityTokens}
+              activeToken={tokenStore.selectedToken}
+              onSelect={(value) => {
+                tokenStore.setSelectedToken(value ?? selectedEmptyToken);
+                resetCosmos();
+                resetApprove();
+              }}
+            />
+          }
+          from={{
+            address: networkInfo.account,
+            name: "ethereum",
+            icon: ethIcon,
+          }}
+          to={{
+            address: networkInfo.cantoAddress,
+            name: "canto (bridge)",
+          }}
+          tokenIcon={tokenStore.selectedToken.data.icon}
+          networkName="ethereum"
+          onSwitch={() => {
+            activateBrowserWallet();
+            switchNetwork(1);
+          }}
+          tokenSymbol={tokenStore.selectedToken.data.symbol}
+          connected={1 == Number(networkInfo.chainId)}
+          onChange={(amount: string) => setBridgeAmount(amount)}
+          max={tokenStore.selectedToken.balanceOf.toString()}
+          amount={bridgeAmount}
+          button={
+            <ReactiveButton
+              destination={networkInfo.cantoAddress}
+              amount={bridgeAmount}
+              account={networkInfo.account}
+              token={tokenStore.selectedToken}
+              gravityAddress={gravityAddress}
+              disabled={false}
+              onClick={() =>
+                1 == Number(networkInfo.chainId) ? send(bridgeAmount) : {}
+              }
+            />
+          }
+        />
+      )}
 
-      <Text type="text" color="white" style={{ width: "70%" }}>
+      {/* <Text type="text" color="white" style={{ width: "70%" }}>
         you must bridge your assets from canto (bridge) to the canto EVM to use
         them on the canto network. read more{" "}
         <a
@@ -199,25 +212,31 @@ const BridgeIn = () => {
           here
         </a>
         .
-      </Text>
+      </Text> */}
 
-      <ConvertTransferBox
-        cantoToEVM={true}
-        cantoAddress={networkInfo.cantoAddress}
-        ETHAddress={networkInfo.account ?? ""}
-        token={tokenStore.selectedToken}
-        chainId={Number(networkInfo.chainId)}
-      />
+      {transactionType == "Convert" && (
+        <ConvertTransferBox
+          tokenSelector={
+            <TokenWallet
+              tokens={cantoGravityTokens}
+              activeToken={tokenStore.selectedToken}
+              onSelect={(value) => {
+                tokenStore.setSelectedToken(value ?? selectedEmptyToken);
+                resetCosmos();
+                resetApprove();
+              }}
+            />
+          }
+          cantoToEVM={true}
+          cantoAddress={networkInfo.cantoAddress}
+          ETHAddress={networkInfo.account ?? ""}
+          token={tokenStore.selectedToken}
+          chainId={Number(networkInfo.chainId)}
+        />
+      )}
     </Container>
   );
 };
-
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 560px;
-`;
 
 const Container = styled.div`
   display: flex;

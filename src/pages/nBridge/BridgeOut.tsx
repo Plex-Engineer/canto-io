@@ -1,7 +1,7 @@
 import { CantoMainnet, PrimaryButton, Text } from "cantoui";
 import { GTokens } from "./hooks/useGravityTokens";
 import { useEffect, useState } from "react";
-import { selectedEmptyToken, useTokenStore } from "./stores/tokens";
+import { selectedEmptyToken, useBridgeStore } from "./stores/gravityStore";
 import styled from "@emotion/styled";
 import { TokenWallet } from "./components/TokenSelect";
 import {
@@ -26,7 +26,7 @@ import { useCantoGravityTokens } from "./hooks/useCantoGravityTokens";
 
 const BridgeOut = () => {
   const networkInfo = useNetworkInfo();
-  const tokenStore = useTokenStore();
+  const tokenStore = useBridgeStore();
   const { activateBrowserWallet } = useEthers();
 
   //BRIDGE OUT STATES

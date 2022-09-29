@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useTokenStore } from "../stores/tokens";
+import { useBridgeStore } from "../stores/gravityStore";
 import loading from "assets/loading.svg";
 import { PrimaryButton } from "cantoui";
 import {
@@ -23,7 +23,7 @@ export const ReactiveButton = ({
   onClick,
   disabled,
 }: RBProps) => {
-  const [approveStatus, cosmosStatus] = useTokenStore((state) => [
+  const [approveStatus, cosmosStatus] = useBridgeStore((state) => [
     state.approveStatus,
     state.cosmosStatus,
   ]);

@@ -1,8 +1,7 @@
 import styled from "@emotion/styled";
 
 export const Container = styled.div`
-  background-color: black;
-  width: 800px;
+  background-color: red;
   margin: 4rem auto;
   padding-bottom: 2.5rem;
   /* min-height: calc(100vh - 5rem); */

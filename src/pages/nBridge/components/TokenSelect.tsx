@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import down from "assets/down.svg";
 import { useState } from "react";
 import TokenModal from "../components/tokenModal";
-import { useTokenStore } from "../stores/tokens";
+import { useBridgeStore } from "../stores/gravityStore";
 import { NativeGTokens } from "../hooks/useCosmosTokens";
 import { StyledPopup } from "global/components/Styled";
 
@@ -14,7 +14,7 @@ interface ITokenSelect {
 
 export const TokenWallet = ({ onSelect, tokens }: ITokenSelect) => {
   const [isOpen, setOpen] = useState(false);
-  const [activeToken] = useTokenStore((state) => [state.selectedToken]);
+  const [activeToken] = useBridgeStore((state) => [state.selectedToken]);
 
   const Box = styled.div`
     background-color: #1c1c1c;

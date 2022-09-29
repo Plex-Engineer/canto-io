@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import backBtn from "../../../assets/back-btn.svg";
 import { NativeGTokens } from "../hooks/useCosmosTokens";
-import { selectedEmptyToken } from "../stores/tokens";
+import { selectedEmptyToken } from "../stores/gravityStore";
 
 const Container = styled.div`
   display: flex;
@@ -49,26 +49,27 @@ const Container = styled.div`
     scrollbar-color: var(--primary-color);
     scroll-behavior: smooth;
     /* width */
-    
-  .token-item {
-    display: flex;
-    font-weight: 400;
-    font-size: 18px;
-    letter-spacing: -0.02em;
-    /* text-transform: lowercase; */
-    color: var(--off-white-color);
-    padding: 2rem 0;
-    border: 1px solid black;
 
-    img {
-      margin: 0 1rem;
-      width: 28px;
-      height: 28px;
-    }
+    .token-item {
+      display: flex;
+      font-weight: 400;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      /* text-transform: lowercase; */
+      color: var(--off-white-color);
+      padding: 2rem 0;
+      border: 1px solid black;
 
-    &:hover {
-      background-color: #001a0e;
-      border: 1px solid var(--primary-color);
+      img {
+        margin: 0 1rem;
+        width: 28px;
+        height: 28px;
+      }
+
+      &:hover {
+        background-color: #001a0e;
+        border: 1px solid var(--primary-color);
+      }
     }
   }
 `;

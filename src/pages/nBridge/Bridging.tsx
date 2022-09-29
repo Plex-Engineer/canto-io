@@ -1,27 +1,29 @@
 import styled from "@emotion/styled";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
-import { selectedEmptyToken, useTokenStore } from "./stores/tokens";
+import { selectedEmptyToken, useBridgeStore } from "./stores/gravityStore";
 import BridgeIn from "./BridgeIn";
 import BridgeOut from "./BridgeOut";
 
 const NBridgingPage = () => {
-  const tokenStore = useTokenStore();
+  const bridgeStore = useBridgeStore();
   return (
-    <Container>
+    <Styled>
       <Tabs className="tabs">
         <TabList className="tablist">
           <Tab
             className="tab"
-            onClick={() => tokenStore.setSelectedToken(selectedEmptyToken)}
+            // resetting the selected token when a new tab is selected
+            onClick={() => bridgeStore.setSelectedToken(selectedEmptyToken)}
           >
-            Bridge In
+            bridge In
           </Tab>
           <Tab
             className="tab"
-            onClick={() => tokenStore.setSelectedToken(selectedEmptyToken)}
+            // resetting the selected token when a new tab is selected
+            onClick={() => bridgeStore.setSelectedToken(selectedEmptyToken)}
           >
-            Bridge Out
+            bridge Out
           </Tab>
         </TabList>
         <TabPanel>
@@ -31,17 +33,16 @@ const NBridgingPage = () => {
           <BridgeOut />
         </TabPanel>
       </Tabs>
-    </Container>
+    </Styled>
   );
 };
 
-const Container = styled.div`
-  background-color: var(--pitch-black-color);
-  border: 1px solid var(--primary-color);
+const Styled = styled.div`
+  background-color: black;
   min-height: 1000px;
-  width: 800px;
-  margin: 4rem auto;
-  color: white;
+  max-width: 1024px;
+
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -53,28 +54,29 @@ const Container = styled.div`
     height: 50px;
     color: var(--primary-color);
     outline: none;
-    width: 100%;
+    width: 200px;
     border-radius: 0%;
     border: 1px solid transparent;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-bottom: 1px solid var(--primary-color);
     cursor: pointer;
-    font-size: 22px;
+    font-size: 16px;
 
     &:hover {
       background-color: #283b2d;
+      border-bottom: 4px solid var(--primary-color);
     }
   }
   .tablist {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    background-color: var(--pitch-black-color);
   }
   .react-tabs__tab--selected {
-    border: 1px solid var(--primary-color);
+    border-bottom: 4px solid var(--primary-color);
     border-top: none;
-    background-color: #1e2d22;
+    background-color: #19251c;
   }
   .react-tabs__tab--disabled {
   }
