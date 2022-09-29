@@ -24,10 +24,10 @@ const BridgeIn = () => {
   const tokenStore = useBridgeStore();
   const { switchNetwork, activateBrowserWallet } = useEthers();
   const activeToken = useBridgeStore().selectedToken;
-  const [bridgeAmount, setBridgeAmount] = useState("0");
-  const [transactionType, SetTransactionType] = useBridgeStore((state) => [
+  const [transactionType, amount, setAmount] = useBridgeStore((state) => [
     state.transactionType,
-    state.setTransactionType,
+    state.amount,
+    state.setAmount,
   ]);
   //set the gravity token info from ethMainnet
   const { gravityTokens, gravityAddress } = useGravityTokens(
@@ -179,19 +179,19 @@ const BridgeIn = () => {
           }}
           tokenSymbol={tokenStore.selectedToken.data.symbol}
           connected={1 == Number(networkInfo.chainId)}
-          onChange={(amount: string) => setBridgeAmount(amount)}
+          onChange={(amount: string) => setAmount(amount)}
           max={tokenStore.selectedToken.balanceOf.toString()}
-          amount={bridgeAmount}
+          amount={amount}
           button={
             <ReactiveButton
               destination={networkInfo.cantoAddress}
-              amount={bridgeAmount}
+              amount={amount}
               account={networkInfo.account}
               token={tokenStore.selectedToken}
               gravityAddress={gravityAddress}
               disabled={false}
               onClick={() =>
-                1 == Number(networkInfo.chainId) ? send(bridgeAmount) : {}
+                1 == Number(networkInfo.chainId) ? send(amount) : {}
               }
             />
           }

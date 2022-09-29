@@ -41,16 +41,8 @@ const TransferBox = (props: Props) => {
     <TransferBoxStyled disabled={!props.connected}>
       <div className="overlay">
         <HighlightButton
-          as={FilledButton}
           className="switch"
           id="network-switch"
-          // disabled={props.connected}
-          // style={{
-          //   width: "100%",
-          //   color: !props.connected ? "var(--warning-color)" : "",
-          //   border: !props.connected ? "1px solid var(--warning-color)" : "",
-          //   backgroundColor: !props.connected ? "#382e1f" : "",
-          // }}
           onClick={props.onSwitch}
         >
           {!props.connected
@@ -66,7 +58,7 @@ const TransferBox = (props: Props) => {
             gap: "1rem",
           }}
         >
-          <img src={props.from.icon ?? ""} height={26} />
+          {props.from.icon && <img src={props.from.icon ?? ""} height={26} />}
           <Text type="text" color="white" align="left">
             {props.from.name}
           </Text>
@@ -183,17 +175,19 @@ interface StyeldProps {
 }
 const TransferBoxStyled = styled.div<StyeldProps>`
   background-color: black;
-
-  width: 600px;
+  border-radius: 18px;
+  width: 40rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 2rem;
+  gap: 2rem;
+  padding: 2rem 3rem;
   border: ${(props) =>
-    props.disabled ? " 1px solid var(--warning-color)" : "1px solid #333"};
+    props.disabled ? " 2px solid var(--warning-color)" : "2px solid #333"};
   /* border: ${(props) =>
     props.disabled ? " 1px solid #333" : "1px solid var(--primary-color)"}; */
   margin: 2rem 0;
+  position: relative;
+
   .row {
     display: flex;
     /* gap: 1rem; */
@@ -208,10 +202,14 @@ const TransferBoxStyled = styled.div<StyeldProps>`
       flex-basis: 0;
     }
   }
-  position: relative;
 
+  button {
+    border-radius: 4px;
+  }
   .overlay {
     background-color: #222222d2;
+    border-radius: 18px;
+
     width: 100%;
     height: 100%;
     top: 0;
@@ -223,10 +221,9 @@ const TransferBoxStyled = styled.div<StyeldProps>`
   }
   .max {
     position: absolute;
-    right: 1.4rem;
-    /* left: 1.4rem; */
-    bottom: 4px;
-    font-size: 14px;
+    right: 2.55rem;
+    bottom: 0px;
+    font-size: 13px;
   }
   .token {
     display: flex;
@@ -253,13 +250,15 @@ const TransferBoxStyled = styled.div<StyeldProps>`
     justify-content: space-between;
     position: relative;
     padding: 1.4rem;
-    border: 1px solid var(--primary-color);
-    background-color: #203128;
+    border: 1px solid #333;
+    background-color: #0c0c0c;
 
     .amount-input {
       display: flex;
       justify-content: center;
       align-items: center;
+      border: 1px solid #333;
+      padding: 1rem;
       gap: 1rem;
     }
   }

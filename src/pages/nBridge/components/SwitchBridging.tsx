@@ -3,6 +3,7 @@
 import styled from "@emotion/styled";
 import EthIcon from "assets/icons/ETH.svg";
 import CantoIcon from "assets/logo.svg";
+import { Text } from "cantoui";
 import ImageButton from "global/components/ImageButton";
 import { useBridgeStore } from "../stores/gravityStore";
 import LoadingBlip from "./LoadingBlip";
@@ -26,6 +27,7 @@ const SwitchBridging = () => {
           ></div>
         </div>
         <div
+          className="center"
           style={{
             filter: transactionType != "Bridge" ? "grayscale(100%)" : "",
           }}
@@ -33,22 +35,25 @@ const SwitchBridging = () => {
           <ImageButton
             src={EthIcon}
             alt="Ethereum"
-            height={30}
+            height={24}
             onClick={() => SetTransactionType("Bridge")}
           />
+          {/* <Text>Ethereum</Text> */}
         </div>
         <LoadingBlip active={transactionType == "Bridge"} />
-        <img
-          src={CantoIcon}
-          alt="Canto (Bridge)"
-          height={30}
-          style={{
-            filter: "grayscale(100%)",
-            width: "20%",
-          }}
-        />
+        <div className="center">
+          <img
+            src={CantoIcon}
+            alt="Canto (Bridge)"
+            height={20}
+            style={{
+              filter: "grayscale(100%)",
+            }}
+          />
+        </div>
         <LoadingBlip active={transactionType == "Convert"} />
         <div
+          className="center"
           style={{
             filter: transactionType != "Convert" ? "grayscale(100%)" : "",
           }}
@@ -56,9 +61,10 @@ const SwitchBridging = () => {
           <ImageButton
             src={CantoIcon}
             alt="Canto (EVM)"
-            height={30}
+            height={20}
             onClick={() => SetTransactionType("Convert")}
           />
+          {/* <Text type>Canto (EVM)</Text> */}
         </div>
       </div>
     </Styled>
@@ -70,15 +76,20 @@ const Styled = styled.div`
   margin: 2rem;
   position: relative;
   .Switch {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr 1fr 1fr;
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    padding: 2.5rem 5rem;
+    padding: 1rem 3rem;
 
     /* border: 2px solid var(--primary-color); */
   }
-
+  .center {
+    display: grid;
+    justify-content: center;
+    pointer-events: none;
+  }
   .backdrop {
     position: absolute;
     top: 0;
@@ -95,6 +106,8 @@ const Styled = styled.div`
   }
   .left,
   .right {
+    pointer-events: fill;
+
     width: 100%;
     height: 100%;
     border-radius: 36px;
