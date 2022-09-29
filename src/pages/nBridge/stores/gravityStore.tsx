@@ -2,7 +2,6 @@ import create from "zustand";
 import { devtools } from "zustand/middleware";
 import emptyToken from "assets/empty.svg";
 import { ChainId, TransactionState, TransactionStatus } from "@usedapp/core";
-import { providers } from "ethers";
 import { GTokens } from "../hooks/useGravityTokens";
 import { NativeGTokens } from "../hooks/useCosmosTokens";
 
