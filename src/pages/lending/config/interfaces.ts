@@ -59,6 +59,7 @@ export interface UserLMRewards {
   accrued: BigNumber;
   cantroller: string;
   wallet?: string;
+  comptrollerBalance: BigNumber;
 }
 
 export const EmptyActiveLMToken: UserLMTokenDetails = {
@@ -125,4 +126,5 @@ export const EmptyUserRewards: UserLMRewards = {
   price: BigNumber.from(0),
   accrued: BigNumber.from(0),
   cantroller: "",
+  comptrollerBalance: BigNumber.from(0),
 };

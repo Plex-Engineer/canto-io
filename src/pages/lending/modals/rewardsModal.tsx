@@ -6,12 +6,13 @@ import {
   transactionStatusActions,
   truncateNumber,
 } from "global/utils/utils";
-import { useClaim } from "pages/lending/hooks/useTransaction";
+import { useClaim, useDrip } from "pages/lending/hooks/useTransaction";
 import { UserLMRewards } from "pages/lending/config/interfaces";
 import { ethers } from "ethers";
 import { valueInNote } from "pages/dexLP/utils/utils";
 import { PrimaryButton } from "cantoui";
 import { RewardsContainer } from "../components/Styled";
+import { reservoirAdddress } from "../config/lendingMarketTokens";
 
 interface Props {
   rewardsObj: UserLMRewards;
@@ -20,6 +21,7 @@ interface Props {
 const formatUnits = ethers.utils.formatUnits;
 const RewardsModal = ({ rewardsObj, onClose }: Props) => {
   const { send, state } = useClaim(rewardsObj.cantroller);
+  const { send: sendDrip, state: stateDrip } = useDrip(reservoirAdddress);
 
   useEffect(() => {
     // console.log(enterState)
@@ -28,6 +30,8 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
     }
   }, [state.status]);
   const statusObj = transactionStatusActions("claim");
+  //boolean for if the user needs to call drip in order to claim their rewards
+  const needDrip = rewardsObj.comptrollerBalance.lt(rewardsObj.accrued);
   return (
     <RewardsContainer>
       <div className="title">canto balance</div>
@@ -71,11 +75,16 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
         size="lg"
         disabled={rewardsObj.accrued.isZero()}
         onClick={() => {
+          if (needDrip) {
+            sendDrip();
+          }
           if (state.status != "Mining" && state.status != "Success")
             send(rewardsObj.wallet);
         }}
       >
-        {!rewardsObj.accrued.isZero()
+        {needDrip
+          ? "drip and claim"
+          : !rewardsObj.accrued.isZero()
           ? getTransactionStatusString(
               statusObj.action,
               statusObj.inAction,

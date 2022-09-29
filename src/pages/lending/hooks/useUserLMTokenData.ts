@@ -36,6 +36,8 @@ export function useUserLMTokenData(
   const bal = useEtherBalance(account) ?? BigNumber.from(0);
   //comptroller contract
   const comptroller = new Contract(address?.Comptroller, comptrollerAbi);
+  const WCanto = new Contract(address?.WCANTO, ERC20Abi);
+
   //canto contract
   const calls =
     LMTokens?.map((token) => {
@@ -95,6 +97,11 @@ export function useUserLMTokenData(
   const globalCalls = [
     ...calls.flat(),
     {
+      contract: WCanto,
+      method: "balanceOf",
+      args: [comptroller.address],
+    },
+    {
       contract: comptroller,
       method: "compAccrued",
       args: [account],
@@ -102,7 +109,7 @@ export function useUserLMTokenData(
   ];
 
   const results = useCalls(LMTokens && onCanto ? globalCalls : []) ?? {};
-  const chuckSize = !LMTokens ? 0 : (results.length - 1) / LMTokens.length;
+  const chuckSize = !LMTokens ? 0 : (results.length - 2) / LMTokens.length;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let processedTokens: Array<any>;
   const array_chunks = (
@@ -112,8 +119,8 @@ export function useUserLMTokenData(
     const rep = array.map((array) => array?.value);
     const chunks = [];
 
-    //array length minus 1, since we are ading the global functions that will increase the array size by 1
-    for (let i = 0; i < array.length - 1; i += chunk_size) {
+    //array length minus 2, since we are ading the global functions that will increase the array size by 2
+    for (let i = 0; i < array.length - 2; i += chunk_size) {
       chunks.push(rep.slice(i, i + chunk_size));
     }
     return chunks;
@@ -197,6 +204,7 @@ export function useUserLMTokenData(
     //results.length-1 will get comp accrued method
     //canto accrued must be added to total rewards for each token, so that distributed rewards are included
     const cantoAccrued = results[results.length - 1]?.value[0];
+    const comptrollerBalance = results[results.length - 2]?.value[0];
 
     const canto = userLMTokens.find((item) => item.data.symbol == "cCANTO");
 
@@ -206,6 +214,7 @@ export function useUserLMTokenData(
       accrued: totalRewards.add(cantoAccrued),
       cantroller: address.Comptroller,
       wallet: account,
+      comptrollerBalance,
     };
 
     const position: UserLMPosition = {
