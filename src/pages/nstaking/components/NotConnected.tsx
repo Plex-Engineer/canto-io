@@ -1,13 +1,23 @@
 import { OutlinedButton } from "cantoui";
 import walletIcon from "assets/wallet.svg";
 import styled from "@emotion/styled";
+import { useEthers } from "@usedapp/core";
+import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 
 const NotConnected = () => {
+  const { activateBrowserWallet } = useEthers();
   return (
     <Styled>
       <img src={walletIcon} alt="wallet" />
       <h1>you have not connected the wallet</h1>
-      <OutlinedButton>Connect Wallet</OutlinedButton>
+      <OutlinedButton
+        onClick={() => {
+          activateBrowserWallet();
+          addNetwork();
+        }}
+      >
+        connect wallet
+      </OutlinedButton>
     </Styled>
   );
 };

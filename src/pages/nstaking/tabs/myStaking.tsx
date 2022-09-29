@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import { CantoMainnet, OutlinedButton } from "cantoui";
 import { formatEther } from "ethers/lib/utils";
 import { chain, memo } from "global/config/cosmosConstants";
+import { truncateNumber } from "global/utils/utils";
 import { claimRewardFee } from "pages/staking/config/fees";
 import { txClaimRewards } from "pages/staking/utils/transactions";
 import InfoBar from "../components/InfoBar";
@@ -43,24 +44,16 @@ const MyStaking = (props: MyStakingProps) => {
         <NotConnected />
       ) : (
         <div>
+          <InfoBar
+            balance={truncateNumber(formatEther(props.balance))}
+            totalStaked={truncateNumber(formatEther(props.totalStaked))}
+            totalUnbonding={truncateNumber(formatEther(props.totalUnbonding))}
+            rewards={truncateNumber(formatEther(props.totalRewards))}
+            apr={props.apr}
+          />
           <OutlinedButton onClick={handleClaimRewards}>
             claim rewards
           </OutlinedButton>
-          {/* <ul>
-            <li>{formatEther(props.balance)}</li>
-            <li>{formatEther(props.totalStaked)}</li>
-            <li>{formatEther(props.totalUnbonding)}</li>
-            <li>{formatEther(props.totalRewards)}</li>
-            <li>{props.apr}</li>
-          </ul> */}
-
-          <InfoBar
-            balance={formatEther(props.balance)}
-            totalStaked={formatEther(props.totalStaked)}
-            totalUnbonding={formatEther(props.totalUnbonding)}
-            rewards={formatEther(props.totalRewards)}
-            apr={props.apr}
-          />
           <ValidatorTable
             validators={props.userValidationInfo}
             sortBy="userTotal"

@@ -35,7 +35,7 @@ const InfoBar = ({
       </div>
       <div className="dual-item">
         <div className="top">apr</div>
-        <div className="bottom">{apr}</div>
+        <div className="bottom">{apr + "%"}</div>
       </div>
     </Styled>
   );

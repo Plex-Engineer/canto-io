@@ -40,8 +40,6 @@ const NStaking = () => {
   const [rewards, setRewards] = useState<BigNumber>(BigNumber.from("0"));
 
   async function getAllData() {
-    setValidators(await getValidators(CantoMainnet.cosmosAPIEndpoint));
-    setStakingApr(await getStakingApr());
     if (networkInfo.account) {
       setDelegations(
         await getDelegationsForAddress(
@@ -62,6 +60,8 @@ const NStaking = () => {
         )
       );
     }
+    setValidators(await getValidators(CantoMainnet.cosmosAPIEndpoint));
+    setStakingApr(await getStakingApr());
   }
 
   //get new data every 6 seconds for the block time
@@ -70,6 +70,9 @@ const NStaking = () => {
       await getAllData();
     }, 6000);
     return () => clearInterval(interval);
+  }, [networkInfo.account]);
+  useEffect(() => {
+    getAllData();
   }, [networkInfo.account]);
 
   const userValidators = validators.filter((validator) => {
