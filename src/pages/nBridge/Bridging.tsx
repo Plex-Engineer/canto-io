@@ -39,7 +39,7 @@ const NBridgingPage = () => {
 
 const Styled = styled.div`
   background-color: black;
-  min-height: 1000px;
+  min-height: 80vh;
   max-width: 1024px;
 
   margin: 0 auto;
