@@ -82,4 +82,46 @@ const HighlightButton = styled(FilledButton)<Props>`
     border: 1px solid var(--off-white-color);
   }
 `;
-export { PrimaryButton, OutlinedButton, FilledButton, HighlightButton };
+
+interface HybridProps {
+  size?: "x-sm" | "sm" | "md" | "lg" | "x-lg";
+  padding?: "x-sm" | "sm" | "md" | "lg" | "x-lg";
+  type: "primary" | "filled" | "highlight" | "outlined";
+  children: React.ReactNode;
+}
+const HybirdButton = (props: HybridProps) => {
+  switch (props.type) {
+    case "outlined":
+      return (
+        <OutlinedButton size={props.size} padding={props.padding}>
+          {props.children}
+        </OutlinedButton>
+      );
+    case "filled":
+      return (
+        <FilledButton size={props.size} padding={props.padding}>
+          {props.children}
+        </FilledButton>
+      );
+    case "highlight":
+      return (
+        <HighlightButton size={props.size} padding={props.padding}>
+          {props.children}
+        </HighlightButton>
+      );
+    case "primary":
+    default:
+      return (
+        <PrimaryButton size={props.size} padding={props.padding}>
+          {props.children}
+        </PrimaryButton>
+      );
+  }
+};
+export {
+  PrimaryButton,
+  OutlinedButton,
+  FilledButton,
+  HighlightButton,
+  HybirdButton,
+};

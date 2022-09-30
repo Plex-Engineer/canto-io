@@ -24,7 +24,7 @@ import { useCoingeckoTokenPrice } from "@usedapp/coingecko";
 import Footer from "global/components/nFooter";
 import NStaking from "pages/nstaking/Staking";
 import LandingPage from "pages/landing_page/LandingPage";
-
+import NBridgingPage from "pages/nBridge/Bridging";
 
 //Styling
 const Container = styled.div`
@@ -52,6 +52,7 @@ function App() {
           <Routes>
             <Route path="/" key={"home"} element={<LandingPage />} />
             <Route path="/bridge" key={"bridge"} element={<BridgingPage />} />
+            <Route path="/nbridge" key={"bridge"} element={<NBridgingPage />} />
             <Route
               path="/governance"
               key="governance"
