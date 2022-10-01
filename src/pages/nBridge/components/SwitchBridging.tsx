@@ -114,6 +114,7 @@ const Styled = styled.div`
     border: 2px solid #4b4b4b;
     background-color: #4b4b4b3c;
     cursor: pointer;
+    transition: all 0.2s;
     &:hover {
       border: 2px solid var(--primary-color);
       background-color: #06fc9a37;
@@ -129,8 +130,8 @@ const Styled = styled.div`
   }
 
   .active {
-    border: 2px solid var(--primary-color);
-    background-color: #06fc9a37;
+    /* border: 2px solid var(--primary-color);
+    background-color: #06fc9a37; */
   }
 `;
 

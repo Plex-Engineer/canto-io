@@ -40,9 +40,9 @@ function App() {
   return (
     <React.Fragment>
       <ToastContainer />
-      <StaticNoiseOverlay />
+      {/* <StaticNoiseOverlay /> */}
       <ScanlinesOverlay />
-      <ScanLine />
+      {/* <ScanLine /> */}
       <Overlay />
       <GlobalStyle />
 

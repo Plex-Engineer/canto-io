@@ -96,20 +96,7 @@ const BridgeOut = () => {
       <Text type="title" color="white">
         send funds from canto
       </Text>
-      <TokenWallet
-        tokens={cantoGravityTokens}
-        activeToken={tokenStore.selectedToken}
-        onSelect={(value) => {
-          tokenStore.setSelectedToken(value ?? selectedEmptyToken);
-          setBridgeConfirmation(
-            checkBridgeAmountConfirmation(
-              Number(bridgeAmount),
-              Number(tokenStore.selectedToken.nativeBalanceOf)
-            )
-          );
-          setInBridgeTransaction(false);
-        }}
-      />
+
       <Text type="text" color="white" style={{ width: "70%" }}>
         you must bridge your assets from the canto EVM to the canto (bridge) to
         bridge out. read more{" "}
@@ -126,6 +113,22 @@ const BridgeOut = () => {
         .
       </Text>
       <ConvertTransferBox
+        tokenSelector={
+          <TokenWallet
+            tokens={cantoGravityTokens}
+            activeToken={tokenStore.selectedToken}
+            onSelect={(value) => {
+              tokenStore.setSelectedToken(value ?? selectedEmptyToken);
+              setBridgeConfirmation(
+                checkBridgeAmountConfirmation(
+                  Number(bridgeAmount),
+                  Number(tokenStore.selectedToken.nativeBalanceOf)
+                )
+              );
+              setInBridgeTransaction(false);
+            }}
+          />
+        }
         cantoToEVM={false}
         cantoAddress={networkInfo.cantoAddress}
         ETHAddress={networkInfo.account ?? ""}

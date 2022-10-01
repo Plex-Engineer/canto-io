@@ -62,7 +62,7 @@ const Styled = styled.div`
     justify-content: center;
     cursor: pointer;
     font-size: 16px;
-
+    transition: all 0.4s;
     &:hover {
       background-color: #283b2d;
       border-bottom: 4px solid var(--primary-color);
