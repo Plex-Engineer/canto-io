@@ -47,25 +47,27 @@ export const ValidatorTable = (props: TableProps) => {
           "commission",
         ]}
       >
-        {sortedValidators.map((validator, idx) => {
-          return (
-            <Row
-              key={idx}
-              rank={idx + 1}
-              name={validator.validator.description.moniker}
-              totalStake={validator.validator.tokens}
-              userStake={validator.userDelegations?.balance.amount ?? "0"}
-              undelegationInfo={validator.undelagatingInfo}
-              commission={Number(
-                validator.validator.commission.commission_rates.rate
-              )}
-              onClick={() => {
-                validatorModalStore.setActiveValidator(validator);
-                validatorModalStore.open(ValidatorModalType.STAKE);
-              }}
-            />
-          );
-        })}
+        <FadeIn>
+          {sortedValidators.map((validator, idx) => {
+            return (
+              <Row
+                key={idx}
+                rank={idx + 1}
+                name={validator.validator.description.moniker}
+                totalStake={validator.validator.tokens}
+                userStake={validator.userDelegations?.balance.amount ?? "0"}
+                undelegationInfo={validator.undelagatingInfo}
+                commission={Number(
+                  validator.validator.commission.commission_rates.rate
+                )}
+                onClick={() => {
+                  validatorModalStore.setActiveValidator(validator);
+                  validatorModalStore.open(ValidatorModalType.STAKE);
+                }}
+              />
+            );
+          })}
+        </FadeIn>
       </TableB>
     );
   } else {
@@ -148,6 +150,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Toolbar, Typography } from "@mui/material";
 import moment from "moment";
+import FadeIn from "react-fade-in";
 function AcccessibleTable(validator?: UndelegatingValidator) {
   // const styles: React.CSSProperties = {
   //     fontWeight: 300,

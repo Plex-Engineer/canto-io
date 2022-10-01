@@ -7,6 +7,7 @@ import useValidatorModalStore, {
 } from "../stores/validatorModalStore";
 import { StakingModal } from "./stakingModal";
 import close from "assets/close.svg";
+import FadeIn from "react-fade-in";
 
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
@@ -14,6 +15,16 @@ const StyledPopup = styled(Popup)`
     background-color: #1f4a2c6e;
     backdrop-filter: blur(2px);
     z-index: 10;
+    animation: fadein 0.2s;
+    @keyframes fadein {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
   }
   // use your custom style for ".popup-content"
   &-content {
@@ -24,7 +35,19 @@ const StyledPopup = styled(Popup)`
     background-color: black;
     border: 1px solid var(--primary-color);
     scroll-behavior: smooth;
-    /* width */
+    animation: fadein 0.5s 1;
+    @keyframes fadein {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(0px);
+      }
+    }
   }
 
   & {
