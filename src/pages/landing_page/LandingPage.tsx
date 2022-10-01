@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { openLink } from "./landingScript";
-// import "./style.scss";
+import { Styled } from "./styled";
 import Typing from "./Typing";
 
 const LandingPage = () => {
@@ -54,7 +54,7 @@ const LandingPage = () => {
     setUserInput(value.replace("█", ""));
   }
   return (
-    <div>
+    <Styled>
       <div className="layer"></div>
       <div className="overlayScan"></div>
       <div className="overlayStatic"></div>
@@ -65,8 +65,9 @@ const LandingPage = () => {
           Canto
           <span>Canto</span>
         </div>
-        <div className="dim">*** enter a command to continue ***</div>
         <Typing />
+
+        <div className="dim">*** enter a command to continue ***</div>
         <ul className="options" id="routes">
           {pageList.map((page, idx) => {
             return (
@@ -97,7 +98,7 @@ const LandingPage = () => {
           <div id="warning">launching soon.</div>
         </div>
       </div>
-    </div>
+    </Styled>
   );
 };
 export default LandingPage;

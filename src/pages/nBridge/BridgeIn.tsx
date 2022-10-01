@@ -10,6 +10,8 @@ import { useEthers } from "@usedapp/core";
 import { BigNumber, ethers } from "ethers";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import SwitchBridging from "./components/SwitchBridging";
+import cantoIcon from "assets/logo.svg";
+import bridgeIcon from "assets/bridge.svg";
 
 import ethIcon from "assets/icons/ETH.svg";
 import TransferBox from "./components/TransferBox";
@@ -148,7 +150,16 @@ const BridgeIn = () => {
         </a>
         .
       </Text>
-      <SwitchBridging />
+      <SwitchBridging
+        left={{
+          icon: ethIcon,
+          name: "Ethereum",
+        }}
+        right={{
+          icon: cantoIcon,
+          name: "Canto (EVM)",
+        }}
+      />
       {transactionType == "Bridge" && (
         <TransferBox
           tokenSelector={
@@ -170,6 +181,7 @@ const BridgeIn = () => {
           to={{
             address: networkInfo.cantoAddress,
             name: "canto (bridge)",
+            icon: bridgeIcon,
           }}
           tokenIcon={tokenStore.selectedToken.data.icon}
           networkName="ethereum"

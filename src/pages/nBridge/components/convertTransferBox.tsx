@@ -13,6 +13,7 @@ import {
 import TransferBox from "./TransferBox";
 import { toastBridge } from "../utils/bridgeConfirmations";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
+import bridgeIcon from "assets/bridge.svg";
 
 interface ConvertTransferBoxProps {
   cantoToEVM: boolean;
@@ -92,12 +93,12 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
       from={{
         address: props.cantoToEVM ? props.cantoAddress : props.ETHAddress,
         name: props.cantoToEVM ? "canto (bridge)" : "canto (EVM)",
-        icon: props.cantoToEVM ? "" : cantoIcon,
+        icon: props.cantoToEVM ? bridgeIcon : cantoIcon,
       }}
       to={{
         address: !props.cantoToEVM ? props.cantoAddress : props.ETHAddress,
         name: !props.cantoToEVM ? "canto (bridge)" : "canto (EVM)",
-        icon: !props.cantoToEVM ? "" : cantoIcon,
+        icon: !props.cantoToEVM ? bridgeIcon : cantoIcon,
       }}
       tokenIcon={props.token.data.icon}
       networkName="canto"

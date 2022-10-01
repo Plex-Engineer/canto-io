@@ -21,6 +21,7 @@ import {
 import { delegateFee, unbondingFee } from "../config/fees";
 import { chain, memo } from "global/config/cosmosConstants";
 import { getActiveTransactionMessage } from "../utils/utils";
+import FadeIn from "react-fade-in";
 
 interface StakingModalProps {
   validator: MasterValidatorProps;
