@@ -1,11 +1,8 @@
-import { FilledButton, HighlightButton, PrimaryButton, Text } from "cantoui";
-import { useRef } from "react";
+import { HighlightButton, Text } from "cantoui";
 import styled from "@emotion/styled";
 import arrow from "../../../assets/right.svg";
 import CopyIcon from "../../../assets/copy.svg";
 import { toast } from "react-toastify";
-import { TokenWallet } from "./TokenSelect";
-import { selectedEmptyToken, useBridgeStore } from "../stores/gravityStore";
 import FadeIn from "react-fade-in";
 
 interface Props {
@@ -178,7 +175,7 @@ const TransferBox = (props: Props) => {
 interface StyeldProps {
   disabled?: boolean;
 }
-const TransferBoxStyled = styled.div<StyeldProps>`
+export const TransferBoxStyled = styled.div<StyeldProps>`
   background-color: black;
   border-radius: 18px;
   width: 40rem;

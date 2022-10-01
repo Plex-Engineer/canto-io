@@ -1,13 +1,25 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable sonarjs/no-duplicate-string */
 import styled from "@emotion/styled";
-import EthIcon from "assets/icons/ETH.svg";
-import CantoIcon from "assets/logo.svg";
-import { Text } from "cantoui";
+import bridgeIcon from "assets/bridge.svg";
+
 import ImageButton from "global/components/ImageButton";
 import { useBridgeStore } from "../stores/gravityStore";
 import LoadingBlip from "./LoadingBlip";
-const SwitchBridging = () => {
+
+interface Props {
+  left: {
+    icon: string;
+    name: string;
+    height?: number;
+  };
+  right: {
+    icon: string;
+    name: string;
+    height?: number;
+  };
+}
+const SwitchBridging = (props: Props) => {
   const [transactionType, SetTransactionType] = useBridgeStore((state) => [
     state.transactionType,
     state.setTransactionType,
@@ -33,9 +45,9 @@ const SwitchBridging = () => {
           }}
         >
           <ImageButton
-            src={EthIcon}
-            alt="Ethereum"
-            height={24}
+            src={props.left.icon}
+            alt={props.left.name}
+            height={props.left.height ?? 24}
             onClick={() => SetTransactionType("Bridge")}
           />
           {/* <Text>Ethereum</Text> */}
@@ -43,9 +55,9 @@ const SwitchBridging = () => {
         <LoadingBlip active={transactionType == "Bridge"} />
         <div className="center">
           <img
-            src={CantoIcon}
-            alt="Canto (Bridge)"
-            height={20}
+            src={bridgeIcon}
+            alt={"canto (Bridge)"}
+            height={40}
             style={{
               filter: "grayscale(100%)",
             }}
@@ -59,9 +71,9 @@ const SwitchBridging = () => {
           }}
         >
           <ImageButton
-            src={CantoIcon}
-            alt="Canto (EVM)"
-            height={20}
+            src={props.right.icon}
+            alt={props.right.name}
+            height={props.right.height ?? 20}
             onClick={() => SetTransactionType("Convert")}
           />
           {/* <Text type>Canto (EVM)</Text> */}
