@@ -1,84 +1,60 @@
 import { CantoMainnet, PrimaryButton, Text } from "cantoui";
-import { GTokens } from "./hooks/useGravityTokens";
 import { useEffect, useState } from "react";
-import { selectedEmptyToken, useBridgeStore } from "./stores/gravityStore";
+import { useBridgeStore } from "./stores/gravityStore";
 import styled from "@emotion/styled";
 import { TokenWallet } from "./components/TokenSelect";
-import {
-  getCantoBalance,
-  NativeGTokens,
-  useCosmosTokens,
-} from "./hooks/useCosmosTokens";
 import bridgeIcon from "assets/bridge.svg";
-
 import { useEthers } from "@usedapp/core";
-import { ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { chain, fee, memo } from "./config/networks";
-import TransferOutBox from "./components/TransferOutBox";
 import { txIBCTransfer } from "./utils/IBC/IBCTransfer";
-import {
-  checkBridgeAmountConfirmation,
-  checkGravityAddress,
-  toastBridge,
-} from "./utils/bridgeConfirmations";
+import { toastBridge } from "./utils/bridgeConfirmations";
 import { ConvertTransferBox } from "./components/convertTransferBox";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import cantoIcon from "assets/logo.svg";
-
 import SwitchBridging from "./components/SwitchBridging";
+import { UserNativeGTokens } from "pages/bridge/config/interfaces";
+import { emptySelectedToken } from "./config/interfaces";
+import { useTokenStore } from "./stores/cosmosTokens";
+import { GeneralTransferBox } from "./components/generalTransferBox";
+import { formatUnits } from "ethers/lib/utils";
+import { getBridgeOutButtonText } from "./utils/reactiveButtonText";
+import { convertStringToBigNumber } from "./utils/stringToBigNumber";
 
-const BridgeOut = () => {
+interface BridgeOutProps {
+  userCantoNativeGTokens: UserNativeGTokens[];
+}
+const BridgeOut = ({ userCantoNativeGTokens }: BridgeOutProps) => {
   const networkInfo = useNetworkInfo();
-  const tokenStore = useBridgeStore();
+  const tokenStore = useTokenStore();
+  const bridgeStore = useBridgeStore();
   const { activateBrowserWallet } = useEthers();
 
   //BRIDGE OUT STATES
   const [userGravityAddress, setUserGravityAddress] = useState("");
-  const [transactionType, amount, setAmount] = useBridgeStore((state) => [
-    state.transactionType,
-    state.amount,
-    state.setAmount,
-  ]);
   //bridging to gravity bridge status
   const [bridgeConfirmation, setBridgeConfirmation] =
     useState("select a token");
   const [inBridgeTransaction, setInBridgeTransaction] =
     useState<boolean>(false);
-  const [prevBridgeBalance, setPrevBridgeBalance] = useState(0);
+  const [prevBridgeBalance, setPrevBridgeBalance] = useState(BigNumber.from(0));
+  const [amount, setAmount] = useState("");
 
-  //set the gravity token info from canto mainnet
-  const { gravityTokens } = useCosmosTokens(networkInfo.account);
-  //will contain the eth gravity tokens with the native canto balances
-  const [cantoGravityTokens, setCantoGravityTokens] = useState<
-    NativeGTokens[] | undefined
-  >([]);
-
-  async function getBalances(gravityTokens: GTokens[]) {
-    const tokensWithBalances: NativeGTokens[] = await getCantoBalance(
-      CantoMainnet.cosmosAPIEndpoint,
-      networkInfo.cantoAddress,
-      gravityTokens
-    );
-    setCantoGravityTokens(tokensWithBalances);
-  }
+  const [buttonText, disabled] = getBridgeOutButtonText(
+    convertStringToBigNumber(amount, tokenStore.selectedToken.data.decimals),
+    tokenStore.selectedToken,
+    tokenStore.selectedToken.nativeBalanceOf,
+    userGravityAddress
+  );
 
   //Useffect for calling data per block
   useEffect(() => {
     const interval = setInterval(async () => {
-      if (gravityTokens) {
-        await getBalances(gravityTokens);
-        tokenStore.setSelectedToken(
-          cantoGravityTokens?.find(
-            (token) =>
-              token.data.address == tokenStore.selectedToken.data.address
-          ) ?? tokenStore.selectedToken
-        );
-      }
       //check if bridging
       if (
         inBridgeTransaction &&
-        Number(tokenStore.selectedToken.nativeBalanceOf) != prevBridgeBalance
+        !tokenStore.selectedToken.nativeBalanceOf.eq(prevBridgeBalance)
       ) {
         setBridgeConfirmation(
           "you have successfully bridged " +
@@ -90,14 +66,7 @@ const BridgeOut = () => {
       }
     }, 6000);
     return () => clearInterval(interval);
-  }, [gravityTokens]);
-
-  //setting native canto balances whenever eth gravity tokens change
-  useEffect(() => {
-    if (gravityTokens) {
-      getBalances(gravityTokens);
-    }
-  }, [gravityTokens?.length]);
+  }, [userCantoNativeGTokens]);
 
   return (
     <Container>
@@ -132,20 +101,13 @@ const BridgeOut = () => {
         }}
       />
 
-      {transactionType == "Bridge" && (
+      {bridgeStore.transactionType == "Bridge" && (
         <ConvertTransferBox
           tokenSelector={
             <TokenWallet
-              tokens={cantoGravityTokens}
-              activeToken={tokenStore.selectedToken}
+              tokens={userCantoNativeGTokens}
               onSelect={(value) => {
-                tokenStore.setSelectedToken(value ?? selectedEmptyToken);
-                setBridgeConfirmation(
-                  checkBridgeAmountConfirmation(
-                    Number(amount),
-                    Number(tokenStore.selectedToken.nativeBalanceOf)
-                  )
-                );
+                tokenStore.setSelectedToken(value ?? emptySelectedToken);
                 setInBridgeTransaction(false);
               }}
             />
@@ -153,8 +115,14 @@ const BridgeOut = () => {
           cantoToEVM={false}
           cantoAddress={networkInfo.cantoAddress}
           ETHAddress={networkInfo.account ?? ""}
-          token={tokenStore.selectedToken}
           chainId={Number(networkInfo.chainId)}
+          amount={amount}
+          max={tokenStore.selectedToken.balanceOf}
+          onChange={(amount: string) => setAmount(amount)}
+          onSwitch={() => {
+            activateBrowserWallet();
+            addNetwork();
+          }}
         />
       )}
 
@@ -173,36 +141,20 @@ const BridgeOut = () => {
         </a>
         .
       </Text> */}
-      {transactionType == "Convert" && (
-        <TransferOutBox
+      {bridgeStore.transactionType == "Convert" && (
+        <GeneralTransferBox
           tokenSelector={
             <TokenWallet
-              tokens={cantoGravityTokens}
-              activeToken={tokenStore.selectedToken}
+              tokens={userCantoNativeGTokens}
               onSelect={(value) => {
-                tokenStore.setSelectedToken(value ?? selectedEmptyToken);
-                setBridgeConfirmation(
-                  checkBridgeAmountConfirmation(
-                    Number(amount),
-                    Number(tokenStore.selectedToken.nativeBalanceOf)
-                  )
-                );
+                tokenStore.setSelectedToken(value ?? emptySelectedToken);
                 setInBridgeTransaction(false);
               }}
             />
           }
-          onAddressChange={(e) => {
-            setUserGravityAddress(e.currentTarget.value);
-            if (!checkGravityAddress(e.target.value)) {
-              setBridgeConfirmation("enter valid gravity address");
-            } else {
-              setBridgeConfirmation(
-                checkBridgeAmountConfirmation(
-                  Number(amount),
-                  Number(tokenStore.selectedToken.nativeBalanceOf)
-                )
-              );
-            }
+          needAddressBox={true}
+          onAddressChange={(value) => {
+            setUserGravityAddress(value);
           }}
           from={{
             address: networkInfo.cantoAddress,
@@ -214,45 +166,36 @@ const BridgeOut = () => {
             name: "gravity bridge",
             icon: "https://raw.githubusercontent.com/Gravity-Bridge/Gravity-Docs/main/assets/Graviton-Grey.svg",
           }}
-          tokenIcon={tokenStore.selectedToken.data.icon}
           networkName="canto"
           onSwitch={() => {
             activateBrowserWallet();
             addNetwork();
           }}
-          tokenSymbol={tokenStore.selectedToken.data.symbol}
           connected={CantoMainnet.chainId == Number(networkInfo.chainId)}
-          onChange={(amount: string) => {
+          onChange={(amount) => {
             setAmount(amount);
-            setBridgeConfirmation(
-              checkBridgeAmountConfirmation(
-                Number(amount),
-                Number(tokenStore.selectedToken.nativeBalanceOf)
-              )
-            );
           }}
-          max={tokenStore.selectedToken.nativeBalanceOf}
+          max={formatUnits(
+            tokenStore.selectedToken.nativeBalanceOf,
+            tokenStore.selectedToken.data.decimals
+          )}
           amount={amount}
           button={
             <PrimaryButton
-              disabled={
-                !(CantoMainnet.chainId == Number(networkInfo.chainId)) ||
-                tokenStore.selectedToken == selectedEmptyToken ||
-                Number(amount) <= 0 ||
-                Number(amount) >
-                  Number(tokenStore.selectedToken.nativeBalanceOf) ||
-                !checkGravityAddress(userGravityAddress)
-              }
+              disabled={disabled}
               onClick={async () => {
+                setInBridgeTransaction(true);
                 setBridgeConfirmation(
                   "waiting for the metamask transaction to be signed..."
                 );
-                const response = await txIBCTransfer(
+                setPrevBridgeBalance(tokenStore.selectedToken.nativeBalanceOf);
+                await txIBCTransfer(
                   userGravityAddress,
                   "channel-0",
-                  ethers.utils
-                    .parseUnits(amount, tokenStore.selectedToken.data.decimals)
-                    .toString(),
+                  convertStringToBigNumber(
+                    amount,
+                    tokenStore.selectedToken.data.decimals
+                  ).toString(),
                   tokenStore.selectedToken.data.nativeName,
                   CantoMainnet.cosmosAPIEndpoint,
                   "https://gravitychain.io:1317",
@@ -263,13 +206,9 @@ const BridgeOut = () => {
                 setBridgeConfirmation(
                   "waiting for the transaction to be verified..."
                 );
-                setInBridgeTransaction(true);
-                setPrevBridgeBalance(
-                  Number(tokenStore.selectedToken.nativeBalanceOf)
-                );
               }}
             >
-              {bridgeConfirmation}
+              {inBridgeTransaction ? bridgeConfirmation : buttonText}
             </PrimaryButton>
           }
         />
@@ -277,13 +216,6 @@ const BridgeOut = () => {
     </Container>
   );
 };
-
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 560px;
-`;
 
 const Container = styled.div`
   display: flex;

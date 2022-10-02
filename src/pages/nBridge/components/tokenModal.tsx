@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
+import { UserNativeGTokens } from "pages/bridge/config/interfaces";
 import backBtn from "../../../assets/back-btn.svg";
-import { NativeGTokens } from "../hooks/useCosmosTokens";
-import { selectedEmptyToken } from "../stores/gravityStore";
+import { emptySelectedToken } from "../config/interfaces";
 
 const Container = styled.div`
   display: flex;
@@ -75,8 +75,8 @@ const Container = styled.div`
 `;
 
 interface Props {
-  onClose: (value?: NativeGTokens) => void;
-  tokens: NativeGTokens[] | undefined;
+  onClose: (value?: UserNativeGTokens) => void;
+  tokens: UserNativeGTokens[] | undefined;
 }
 
 const TokenModal = (props: Props) => {
@@ -87,7 +87,7 @@ const TokenModal = (props: Props) => {
           role="button"
           tabIndex={0}
           onClick={() => {
-            props.onClose(selectedEmptyToken);
+            props.onClose(emptySelectedToken);
           }}
         >
           <img src={backBtn} />

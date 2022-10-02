@@ -7,7 +7,7 @@ import { ERC20Abi } from "global/config/abi";
 import { EmptyUserGTokenData, UserGravityTokens } from "../config/interfaces";
 
 export function useCantoGravityTokens(account: string | undefined): {
-  userGravityTokens: UserGravityTokens[] | undefined;
+  userGravityTokens: UserGravityTokens[];
 } {
   const tokens = CantoGravityTokens;
 

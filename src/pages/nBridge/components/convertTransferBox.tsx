@@ -1,55 +1,64 @@
-import { useEthers } from "@usedapp/core";
 import { CantoMainnet, PrimaryButton } from "cantoui";
 import cantoIcon from "assets/logo.svg";
 import { chain, fee, memo } from "../config/networks";
-import { ethers } from "ethers";
-import { NativeGTokens } from "../hooks/useCosmosTokens";
-import { useEffect, useState } from "react";
-import { selectedEmptyToken } from "../stores/gravityStore";
+import { BigNumber } from "ethers";
+import { useState } from "react";
 import {
   txConvertCoin,
   txConvertERC20,
 } from "../utils/convertCoin/convertTransactions";
-import TransferBox from "./TransferBox";
 import { toastBridge } from "../utils/bridgeConfirmations";
-import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import bridgeIcon from "assets/bridge.svg";
+import { useTokenStore } from "../stores/cosmosTokens";
+import { emptySelectedToken } from "../config/interfaces";
+import { getConvertButtonText } from "../utils/reactiveButtonText";
+import { convertStringToBigNumber } from "../utils/stringToBigNumber";
+import { formatUnits } from "ethers/lib/utils";
+import { GeneralTransferBox } from "./generalTransferBox";
 
 interface ConvertTransferBoxProps {
   cantoToEVM: boolean;
   cantoAddress: string;
   ETHAddress: string;
-  token: NativeGTokens;
   chainId: number;
   tokenSelector: React.ReactNode;
+  amount: string;
+  onChange: (value: string) => void;
+  max: BigNumber;
+  onSwitch: () => void;
 }
 export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
-  const { activateBrowserWallet, switchNetwork } = useEthers();
-  //CONVERT STATES
-  const [convertAmount, setConvertAmount] = useState("0");
+  const activeToken = useTokenStore().selectedToken;
   //convert states to update the user
   const [convertConfirmation, setConvertConfirmation] =
     useState("select a token");
   const [inConvertTransaction, setInConvertTransaction] =
     useState<boolean>(false);
   //used to check if convert coin ws successful
-  const [prevConvertBalance, setPrevConvertBalance] = useState(0);
-
-  const [convertDisabled, setConvertDisabled] = useState<boolean>(true);
-  const [currentToken, setCurrentToken] = useState(selectedEmptyToken);
+  const [prevConvertBalance, setPrevConvertBalance] = useState(
+    BigNumber.from(0)
+  );
+  const [currentToken, setCurrentToken] = useState(emptySelectedToken);
 
   const maxAmount = props.cantoToEVM
-    ? props.token.nativeBalanceOf
-    : props.token.balanceOf;
+    ? activeToken.nativeBalanceOf
+    : activeToken.balanceOf;
+
+  const [buttonText, disabled] = getConvertButtonText(
+    convertStringToBigNumber(props.amount, activeToken.data.decimals),
+    activeToken,
+    props.max,
+    props.cantoToEVM
+  );
 
   if (inConvertTransaction) {
-    if (currentToken.data.address == props.token.data.address) {
-      if (Number(props.token.nativeBalanceOf) != prevConvertBalance) {
+    if (currentToken.data.address == activeToken.data.address) {
+      if (!activeToken.nativeBalanceOf.eq(prevConvertBalance)) {
         const msg = props.cantoToEVM
           ? " from canto to evm"
           : " from evm to canto";
         setConvertConfirmation(
-          "you have successfully bridged " + props.token.data.symbol + msg
+          "you have successfully bridged " + activeToken.data.symbol + msg
         );
         setInConvertTransaction(false);
         toastBridge(true);
@@ -58,38 +67,11 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
       setInConvertTransaction(false);
     }
   }
-  function checkConvertConfirmation(amount: string) {
-    if (props.token == selectedEmptyToken) {
-      setConvertConfirmation("select a token");
-      setConvertDisabled(true);
-    } else if (Number(amount) <= 0) {
-      setConvertConfirmation("enter amount");
-      setConvertDisabled(true);
-    } else if (Number(amount) > maxAmount) {
-      setConvertConfirmation("insufficient funds");
-      setConvertDisabled(true);
-    } else {
-      if (
-        props.chainId != CantoMainnet.chainId ||
-        !props.cantoAddress ||
-        !props.ETHAddress
-      ) {
-        setConvertDisabled(true);
-      } else {
-        setConvertDisabled(false);
-      }
-      setConvertConfirmation(props.cantoToEVM ? "bridge in" : "bridge out");
-    }
-  }
-  useEffect(() => {
-    if (!inConvertTransaction) {
-      checkConvertConfirmation(convertAmount);
-    }
-  }, [inConvertTransaction, props.token]);
 
   return (
-    <TransferBox
+    <GeneralTransferBox
       tokenSelector={props.tokenSelector}
+      needAddressBox={false}
       from={{
         address: props.cantoToEVM ? props.cantoAddress : props.ETHAddress,
         name: props.cantoToEVM ? "canto (bridge)" : "canto (EVM)",
@@ -100,35 +82,33 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
         name: !props.cantoToEVM ? "canto (bridge)" : "canto (EVM)",
         icon: !props.cantoToEVM ? bridgeIcon : cantoIcon,
       }}
-      tokenIcon={props.token.data.icon}
       networkName="canto"
-      onSwitch={() => {
-        activateBrowserWallet();
-        addNetwork();
-        switchNetwork(7700);
-      }}
-      tokenSymbol={props.token.data.symbol}
+      onSwitch={props.onSwitch}
       connected={CantoMainnet.chainId == props.chainId}
       onChange={(amount: string) => {
-        setConvertAmount(amount);
-        checkConvertConfirmation(amount);
+        props.onChange(amount);
+        setInConvertTransaction(false);
       }}
-      max={maxAmount.toString()}
-      amount={convertAmount}
+      max={formatUnits(maxAmount, activeToken.data.decimals)}
+      amount={props.amount}
       button={
         <PrimaryButton
-          disabled={convertDisabled}
+          disabled={disabled}
           onClick={async () => {
+            setInConvertTransaction(true);
             setConvertConfirmation(
               "waiting for the metamask transaction to be signed..."
             );
+            setPrevConvertBalance(activeToken.nativeBalanceOf);
+            setCurrentToken(activeToken);
             if (props.cantoToEVM) {
               await txConvertCoin(
                 props.cantoAddress,
-                props.token.data.nativeName,
-                ethers.utils
-                  .parseUnits(convertAmount, props.token.data.decimals)
-                  .toString(),
+                activeToken.data.nativeName,
+                convertStringToBigNumber(
+                  props.amount,
+                  activeToken.data.decimals
+                ).toString(),
                 CantoMainnet.cosmosAPIEndpoint,
                 fee,
                 chain,
@@ -136,10 +116,11 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
               );
             } else {
               await txConvertERC20(
-                props.token.data.address,
-                ethers.utils
-                  .parseUnits(convertAmount, props.token.data.decimals)
-                  .toString(),
+                activeToken.data.address,
+                convertStringToBigNumber(
+                  props.amount,
+                  activeToken.data.decimals
+                ).toString(),
                 props.cantoAddress,
                 CantoMainnet.cosmosAPIEndpoint,
                 fee,
@@ -150,12 +131,9 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
             setConvertConfirmation(
               "waiting for the transaction to be verified..."
             );
-            setPrevConvertBalance(Number(props.token.nativeBalanceOf));
-            setInConvertTransaction(true);
-            setCurrentToken(props.token);
           }}
         >
-          {convertConfirmation}
+          {inConvertTransaction ? convertConfirmation : buttonText}
         </PrimaryButton>
       }
     />

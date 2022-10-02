@@ -2,31 +2,36 @@ import { useEffect } from "react";
 import { useBridgeStore } from "../stores/gravityStore";
 import loading from "assets/loading.svg";
 import { PrimaryButton } from "cantoui";
-import {
-  getTransactionStatusString,
-  transactionStatusActions,
-} from "global/utils/utils";
-import { NativeGTokens } from "../hooks/useCosmosTokens";
+import { UserNativeGTokens } from "pages/bridge/config/interfaces";
+import { getReactiveButtonText } from "../utils/reactiveButtonText";
+import { emptySelectedToken } from "../config/interfaces";
+import { convertStringToBigNumber } from "../utils/stringToBigNumber";
 
 interface RBProps {
   amount: string;
   account: string | undefined;
-  token: NativeGTokens | undefined;
+  token: UserNativeGTokens | undefined;
   destination: string | undefined;
   gravityAddress: string | undefined;
   onClick: () => void;
-  disabled: boolean;
 }
-export const ReactiveButton = ({
-  amount,
-  token,
-  onClick,
-  disabled,
-}: RBProps) => {
+export const ReactiveButton = ({ amount, token, onClick }: RBProps) => {
   const [approveStatus, cosmosStatus] = useBridgeStore((state) => [
     state.approveStatus,
     state.cosmosStatus,
   ]);
+  const parsedAmount = convertStringToBigNumber(
+    amount,
+    token?.data.decimals ?? 18
+  );
+
+  const [buttonText, disabled] = getReactiveButtonText(
+    parsedAmount,
+    token ?? emptySelectedToken,
+    approveStatus,
+    cosmosStatus
+  );
+
   useEffect(() => {
     if (approveStatus == "Success") {
       setTimeout(() => {
@@ -34,54 +39,10 @@ export const ReactiveButton = ({
       }, 1000);
     }
   }, [approveStatus]);
-  if (token == undefined) {
-    return <PrimaryButton>Loading</PrimaryButton>;
-  }
-
-  //? refactor this into a single component
-  //if the token hasn't been approved
-  if (token?.allowance == -1) {
-    return <PrimaryButton disabled>select a token</PrimaryButton>;
-  }
-  //if the amount enter is greater than balance available in the wallet && the token has been approved
-  if (Number(amount) > Number(token.balanceOf) && token.allowance != 0) {
-    return <PrimaryButton disabled>insufficient funds</PrimaryButton>;
-  }
-
-  //if amount entered is greater than allowance approved for the token
-  if (Number(amount) <= 0 && token.allowance != 0) {
-    return <PrimaryButton disabled>enter amount</PrimaryButton>;
-  }
-  if (disabled) {
-    return <PrimaryButton disabled>enter gravity address</PrimaryButton>;
-  }
-  const increaseAllowanceActions =
-    transactionStatusActions("increase allowance");
-  const enableActions = transactionStatusActions("enable");
-  const sendTokenActions = transactionStatusActions("send token");
 
   return (
-    <PrimaryButton onClick={onClick}>
-      {Number(amount) > token.allowance && token.allowance != 0
-        ? getTransactionStatusString(
-            increaseAllowanceActions.action,
-            increaseAllowanceActions.inAction,
-            increaseAllowanceActions.postAction,
-            approveStatus
-          )
-        : token.allowance == 0
-        ? getTransactionStatusString(
-            enableActions.action,
-            enableActions.inAction,
-            enableActions.postAction,
-            approveStatus
-          )
-        : getTransactionStatusString(
-            sendTokenActions.action,
-            sendTokenActions.inAction,
-            sendTokenActions.postAction,
-            cosmosStatus
-          )}
+    <PrimaryButton onClick={onClick} disabled={disabled}>
+      {buttonText}
       {approveStatus == "Mining" || cosmosStatus == "Mining" ? (
         <img
           style={{

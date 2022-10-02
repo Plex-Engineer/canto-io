@@ -1,12 +1,94 @@
 import styled from "@emotion/styled";
+import { CantoMainnet } from "cantoui";
+import { useNetworkInfo } from "global/stores/networkInfo";
+import { useCantoGravityTokens } from "pages/bridge/hooks/useCantoGravityTokens";
+import { useEffect, useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
-import { selectedEmptyToken, useBridgeStore } from "./stores/gravityStore";
 import BridgeIn from "./BridgeIn";
 import BridgeOut from "./BridgeOut";
+import {
+  emptySelectedToken,
+  UserGravityTokens,
+  UserNativeGTokens,
+} from "./config/interfaces";
+import { useEthGravityTokens } from "./hooks/useEthGravityTokens";
+import { useTokenStore } from "./stores/cosmosTokens";
+import { getNativeCantoBalance } from "./utils/nativeBalances";
 
 const NBridgingPage = () => {
-  const bridgeStore = useBridgeStore();
+  const tokenStore = useTokenStore();
+  const networkInfo = useNetworkInfo();
+  const [selectedTab, setSelectedTab] = useState(0);
+  //set the gravity token info from ethMainnet
+  const { userEthGTokens, gravityAddress } = useEthGravityTokens(
+    networkInfo.account
+  );
+  //set the gravity token info from Canto Mainnet
+  const { userGravityTokens: userCantoGTokens } = useCantoGravityTokens(
+    networkInfo.account
+  );
+
+  //will contain the gravity tokens with the native canto balances
+  const [userEthNativeGTokens, setUserEthNativeGTokens] = useState<
+    UserNativeGTokens[]
+  >([]);
+
+  const [userCantoNativeGTokens, setUserCantoNativeGTokens] = useState<
+    UserNativeGTokens[]
+  >([]);
+
+  async function getBalances(
+    ethGravityTokens: UserGravityTokens[],
+    cantoGravityTokens: UserGravityTokens[]
+  ) {
+    if (selectedTab === 0) {
+      const EthTokensWithBalances: UserNativeGTokens[] =
+        await getNativeCantoBalance(
+          CantoMainnet.cosmosAPIEndpoint,
+          networkInfo.cantoAddress,
+          ethGravityTokens
+        );
+      setUserEthNativeGTokens(EthTokensWithBalances);
+    } else {
+      const CantoTokensWithBalances: UserNativeGTokens[] =
+        await getNativeCantoBalance(
+          CantoMainnet.cosmosAPIEndpoint,
+          networkInfo.cantoAddress,
+          cantoGravityTokens
+        );
+      setUserCantoNativeGTokens(CantoTokensWithBalances);
+    }
+  }
+  useEffect(() => {
+    if (userEthGTokens && userCantoGTokens) {
+      getBalances(userEthGTokens, userCantoGTokens);
+    }
+  }, [userEthGTokens?.length, userCantoGTokens?.length]);
+  //Useffect for calling data per block
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await getBalances(userEthGTokens, userCantoGTokens);
+      //reselecting the token so it is the most updated version
+      if (selectedTab === 0) {
+        tokenStore.setSelectedToken(
+          userEthNativeGTokens?.find(
+            (token) =>
+              token.data.address == tokenStore.selectedToken.data.address
+          ) ?? tokenStore.selectedToken
+        );
+      } else {
+        tokenStore.setSelectedToken(
+          userCantoNativeGTokens?.find(
+            (token) =>
+              token.data.address == tokenStore.selectedToken.data.address
+          ) ?? tokenStore.selectedToken
+        );
+      }
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [userEthGTokens, userCantoGTokens]);
+
   return (
     <Styled>
       <Tabs className="tabs">
@@ -14,23 +96,32 @@ const NBridgingPage = () => {
           <Tab
             className="tab"
             // resetting the selected token when a new tab is selected
-            onClick={() => bridgeStore.setSelectedToken(selectedEmptyToken)}
+            onClick={() => {
+              setSelectedTab(0);
+              tokenStore.setSelectedToken(emptySelectedToken);
+            }}
           >
             bridge In
           </Tab>
           <Tab
             className="tab"
             // resetting the selected token when a new tab is selected
-            onClick={() => bridgeStore.setSelectedToken(selectedEmptyToken)}
+            onClick={() => {
+              setSelectedTab(1);
+              tokenStore.setSelectedToken(emptySelectedToken);
+            }}
           >
             bridge Out
           </Tab>
         </TabList>
         <TabPanel>
-          <BridgeIn />
+          <BridgeIn
+            userEthNativeGTokens={userEthNativeGTokens}
+            gravityAddress={gravityAddress}
+          />
         </TabPanel>
         <TabPanel>
-          <BridgeOut />
+          <BridgeOut userCantoNativeGTokens={userCantoNativeGTokens} />
         </TabPanel>
       </Tabs>
     </Styled>

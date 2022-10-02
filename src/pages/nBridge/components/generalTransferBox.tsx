@@ -1,22 +1,18 @@
-import { HighlightButton, Text } from "cantoui";
 import styled from "@emotion/styled";
+import { HighlightButton, Text } from "cantoui";
+import FadeIn from "react-fade-in";
+import { toast } from "react-toastify";
 import arrow from "../../../assets/right.svg";
 import CopyIcon from "../../../assets/copy.svg";
-import { toast } from "react-toastify";
-import FadeIn from "react-fade-in";
+import { truncateNumber } from "global/utils/utils";
 
 interface Props {
-  tokenSymbol: string;
-  tokenIcon: string;
-  networkName: string;
-  onSwitch: () => void;
-  onChange: (s: string) => void;
-  disabled?: boolean;
   connected: boolean;
+  tokenSelector: React.ReactNode;
+  networkName: string;
   button: React.ReactNode;
   max: string;
-  amount?: string;
-  tokenSelector: React.ReactNode;
+  amount: string;
   from: {
     name: string;
     address?: string;
@@ -27,14 +23,19 @@ interface Props {
     address?: string;
     icon?: string;
   };
+  onSwitch: () => void;
+  onChange: (s: string) => void;
+  //if we need to send to specific address
+  needAddressBox: boolean;
+  onAddressChange?: (s: string) => void;
 }
-const TransferBox = (props: Props) => {
-  function copyAddress(value: string | undefined) {
-    navigator.clipboard.writeText(value ?? "");
-    toast("copied address", {
-      autoClose: 300,
-    });
-  }
+function copyAddress(value: string | undefined) {
+  navigator.clipboard.writeText(value ?? "");
+  toast("copied address", {
+    autoClose: 300,
+  });
+}
+export const GeneralTransferBox = (props: Props) => {
   return (
     <FadeIn>
       <TransferBoxStyled disabled={!props.connected}>
@@ -143,7 +144,6 @@ const TransferBox = (props: Props) => {
               name="amount-bridge"
               id="amount-bridge"
               placeholder="0.00"
-              // ref={amountRef}
               value={props.amount}
               onChange={(e) => props.onChange(e.target.value)}
             />
@@ -151,22 +151,31 @@ const TransferBox = (props: Props) => {
               ""
             ) : (
               <div
+                role="button"
+                tabIndex={0}
                 className="max"
                 style={{ cursor: "pointer" }}
                 onClick={() => props.onChange(props.max)}
               >
-                max: {Number(props.max)}
+                max: {truncateNumber(props.max)}
               </div>
             )}
           </div>
         </div>
+        {props.needAddressBox && (
+          <input
+            placeholder="gravity address (gravity...)"
+            type="text"
+            name="address"
+            id="address"
+            onChange={(e) => {
+              if (props.onAddressChange) {
+                props.onAddressChange(e.target.value);
+              }
+            }}
+          />
+        )}
         <div className="row">{props.button}</div>
-        {/* <div
-        style={{ cursor: "pointer" }}
-        onClick={() => props.onChange(props.max)}
-      >
-        max: {props.max}
-      </div> */}
       </TransferBoxStyled>
     </FadeIn>
   );
@@ -294,6 +303,16 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
       -moz-appearance: textfield;
     }
   }
+  #address {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: none;
+    border-bottom: 1px solid var(--just-grey-color);
+    text-align: center;
+    font-size: 18px;
+    &:focus {
+      outline: none;
+      border-bottom: 1px solid var(--primary-color);
+    }
+  }
 `;
-
-export default TransferBox;
