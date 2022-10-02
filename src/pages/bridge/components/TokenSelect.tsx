@@ -1,15 +1,14 @@
 import styled from "@emotion/styled";
 import down from "assets/down.svg";
 import { useState } from "react";
-import TokenModal from "../components/tokenModal";
-import { useTokenStore } from "../stores/tokens";
-import { NativeGTokens } from "../hooks/useCosmosTokens";
+import TokenModal from "./tokenModal";
 import { StyledPopup } from "global/components/Styled";
+import { useTokenStore } from "../stores/cosmosTokens";
+import { UserNativeGTokens } from "../config/interfaces";
 
 interface ITokenSelect {
-  activeToken: NativeGTokens;
-  tokens: NativeGTokens[] | undefined;
-  onSelect: (value: NativeGTokens | undefined) => void;
+  tokens: UserNativeGTokens[] | undefined;
+  onSelect: (value: UserNativeGTokens | undefined) => void;
 }
 
 export const TokenWallet = ({ onSelect, tokens }: ITokenSelect) => {

@@ -4,8 +4,8 @@ import {
   getTransactionStatusString,
   transactionStatusActions,
 } from "global/utils/utils";
-import { checkGravityAddress } from "pages/bridge/utils/bridgeConfirmations";
 import { emptySelectedToken, UserNativeGTokens } from "../config/interfaces";
+import { checkGravityAddress } from "./bridgeConfirmations";
 
 const increaseAllowanceActions = transactionStatusActions("increase allowance");
 const enableActions = transactionStatusActions("enable");
