@@ -1,7 +1,6 @@
 import { useCalls } from "@usedapp/core";
 import { Contract } from "ethers";
 import { ETHGravityTokens } from "../config/gravityBridgeTokens";
-import { ethers } from "ethers";
 import { ADDRESSES } from "cantoui";
 import { ERC20Abi } from "global/config/abi";
 import { EmptyUserGTokenData, UserGravityTokens } from "../config/interfaces";

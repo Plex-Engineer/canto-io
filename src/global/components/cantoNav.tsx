@@ -63,10 +63,6 @@ export const CantoNav = () => {
       link: "/bridge",
     },
     {
-      name: "new bridge",
-      link: "/nbridge",
-    },
-    {
       name: "governance",
       link: "/governance",
     },
