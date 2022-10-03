@@ -9,8 +9,11 @@ import {
 } from "../utils/convertCoin/convertTransactions";
 import { toastBridge } from "../utils/bridgeConfirmations";
 import bridgeIcon from "assets/bridge.svg";
-import { useTokenStore } from "../stores/cosmosTokens";
-import { emptySelectedToken } from "../config/interfaces";
+import {
+  EmptySelectedConvertToken,
+  EmptySelectedNativeToken,
+  UserConvertToken,
+} from "../config/interfaces";
 import { getConvertButtonText } from "../utils/reactiveButtonText";
 import { convertStringToBigNumber } from "../utils/stringToBigNumber";
 import { formatUnits } from "ethers/lib/utils";
@@ -26,9 +29,9 @@ interface ConvertTransferBoxProps {
   onChange: (value: string) => void;
   max: BigNumber;
   onSwitch: () => void;
+  activeToken: UserConvertToken;
 }
 export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
-  const activeToken = useTokenStore().selectedToken;
   //convert states to update the user
   const [convertConfirmation, setConvertConfirmation] =
     useState("select a token");
@@ -38,27 +41,29 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
   const [prevConvertBalance, setPrevConvertBalance] = useState(
     BigNumber.from(0)
   );
-  const [currentToken, setCurrentToken] = useState(emptySelectedToken);
+  const [currentToken, setCurrentToken] = useState(
+    props.cantoToEVM ? EmptySelectedNativeToken : EmptySelectedConvertToken
+  );
 
   const maxAmount = props.cantoToEVM
-    ? activeToken.nativeBalanceOf
-    : activeToken.balanceOf;
+    ? props.activeToken.nativeBalance
+    : props.activeToken.erc20Balance;
 
   const [buttonText, disabled] = getConvertButtonText(
-    convertStringToBigNumber(props.amount, activeToken.data.decimals),
-    activeToken,
+    convertStringToBigNumber(props.amount, props.activeToken.decimals),
+    props.activeToken,
     props.max,
     props.cantoToEVM
   );
 
   if (inConvertTransaction) {
-    if (currentToken.data.address == activeToken.data.address) {
-      if (!activeToken.nativeBalanceOf.eq(prevConvertBalance)) {
+    if (currentToken.address == props.activeToken.address) {
+      if (!props.activeToken.nativeBalance.eq(prevConvertBalance)) {
         const msg = props.cantoToEVM
           ? " from canto to evm"
           : " from evm to canto";
         setConvertConfirmation(
-          "you have successfully bridged " + activeToken.data.symbol + msg
+          "you have successfully bridged " + props.activeToken.symbol + msg
         );
         setInConvertTransaction(false);
         toastBridge(true);
@@ -89,7 +94,7 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
         props.onChange(amount);
         setInConvertTransaction(false);
       }}
-      max={formatUnits(maxAmount, activeToken.data.decimals)}
+      max={formatUnits(maxAmount, props.activeToken.decimals)}
       amount={props.amount}
       button={
         <PrimaryButton
@@ -99,15 +104,15 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
             setConvertConfirmation(
               "waiting for the metamask transaction to be signed..."
             );
-            setPrevConvertBalance(activeToken.nativeBalanceOf);
-            setCurrentToken(activeToken);
+            setPrevConvertBalance(props.activeToken.nativeBalance);
+            setCurrentToken(props.activeToken);
             if (props.cantoToEVM) {
               await txConvertCoin(
                 props.cantoAddress,
-                activeToken.data.nativeName,
+                props.activeToken.nativeName,
                 convertStringToBigNumber(
                   props.amount,
-                  activeToken.data.decimals
+                  props.activeToken.decimals
                 ).toString(),
                 CantoMainnet.cosmosAPIEndpoint,
                 fee,
@@ -116,10 +121,10 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
               );
             } else {
               await txConvertERC20(
-                activeToken.data.address,
+                props.activeToken.address,
                 convertStringToBigNumber(
                   props.amount,
-                  activeToken.data.decimals
+                  props.activeToken.decimals
                 ).toString(),
                 props.cantoAddress,
                 CantoMainnet.cosmosAPIEndpoint,

@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import backBtn from "../../../assets/back-btn.svg";
-import { emptySelectedToken, UserNativeGTokens } from "../config/interfaces";
+import { BaseToken, EmptySelectedETHToken } from "../config/interfaces";
 
 const Container = styled.div`
   display: flex;
@@ -74,8 +74,8 @@ const Container = styled.div`
 `;
 
 interface Props {
-  onClose: (value?: UserNativeGTokens) => void;
-  tokens: UserNativeGTokens[] | undefined;
+  onClose: (value?: BaseToken) => void;
+  tokens: BaseToken[] | undefined;
 }
 
 const TokenModal = (props: Props) => {
@@ -86,7 +86,7 @@ const TokenModal = (props: Props) => {
           role="button"
           tabIndex={0}
           onClick={() => {
-            props.onClose(emptySelectedToken);
+            props.onClose(EmptySelectedETHToken);
           }}
         >
           <img src={backBtn} />
@@ -110,14 +110,14 @@ const TokenModal = (props: Props) => {
           <div
             role="button"
             tabIndex={0}
-            key={token.data.icon}
+            key={token.icon}
             className="token-item"
             onClick={() => {
               props.onClose(token);
             }}
           >
-            <img src={token.data.icon} alt="" />
-            <p>{token.data.name}</p>
+            <img src={token.icon} alt="" />
+            <p>{token.name}</p>
           </div>
         ))}
       </div>

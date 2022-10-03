@@ -6,88 +6,93 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import BridgeIn from "./BridgeIn";
 import BridgeOut from "./BridgeOut";
-import {
-  emptySelectedToken,
-  UserGravityTokens,
-  UserNativeGTokens,
-} from "./config/interfaces";
-import { useCantoGravityTokens } from "./hooks/useCantoGravityTokens";
+import { UserConvertToken, UserNativeTokens } from "./config/interfaces";
 import { useEthGravityTokens } from "./hooks/useEthGravityTokens";
-import { useTokenStore } from "./stores/cosmosTokens";
+import { SelectedTokens, useTokenStore } from "./stores/cosmosTokens";
 import { getNativeCantoBalance } from "./utils/nativeBalances";
+import { useCantoERC20Balances } from "./hooks/useERC20Balances";
+import { convertCoinTokens } from "./config/gravityBridgeTokens";
+import { ETHGravityTokens } from "./config/gravityBridgeTokens";
+import { BigNumber } from "ethers";
 
 const BridgingPage = () => {
   const tokenStore = useTokenStore();
   const networkInfo = useNetworkInfo();
   const [selectedTab, setSelectedTab] = useState(0);
+
+  //set the convert erc20 tokens
+  const { userTokens: userConvertERC20Tokens } = useCantoERC20Balances(
+    networkInfo.account,
+    convertCoinTokens,
+    CantoMainnet.chainId
+  );
+  const [userConvertTokens, setUserConvertTokens] = useState<
+    UserConvertToken[]
+  >([]);
   //set the gravity token info from ethMainnet
   const { userEthGTokens, gravityAddress } = useEthGravityTokens(
-    networkInfo.account
+    networkInfo.account,
+    ETHGravityTokens
   );
-  //set the gravity token info from Canto Mainnet
-  const { userGravityTokens: userCantoGTokens } = useCantoGravityTokens(
-    networkInfo.account
-  );
-
-  //will contain the gravity tokens with the native canto balances
-  const [userEthNativeGTokens, setUserEthNativeGTokens] = useState<
-    UserNativeGTokens[]
+  const [userBridgeOutTokens, setUserBridgeOutTokens] = useState<
+    UserNativeTokens[]
   >([]);
+  async function getAllBalances() {
+    const convertNativeWithBalance = await getNativeCantoBalance(
+      CantoMainnet.cosmosAPIEndpoint,
+      networkInfo.cantoAddress,
+      convertCoinTokens
+    );
+    setUserConvertTokens(
+      userConvertERC20Tokens.map((token) => {
+        return {
+          ...token,
+          nativeBalance:
+            convertNativeWithBalance.find(
+              (nativeToken) => nativeToken.nativeName === token.nativeName
+            )?.nativeBalance ?? BigNumber.from(0),
+        };
+      })
+    );
 
-  const [userCantoNativeGTokens, setUserCantoNativeGTokens] = useState<
-    UserNativeGTokens[]
-  >([]);
-
-  async function getBalances(
-    ethGravityTokens: UserGravityTokens[],
-    cantoGravityTokens: UserGravityTokens[]
-  ) {
-    if (selectedTab === 0) {
-      const EthTokensWithBalances: UserNativeGTokens[] =
-        await getNativeCantoBalance(
-          CantoMainnet.cosmosAPIEndpoint,
-          networkInfo.cantoAddress,
-          ethGravityTokens
-        );
-      setUserEthNativeGTokens(EthTokensWithBalances);
-    } else {
-      const CantoTokensWithBalances: UserNativeGTokens[] =
-        await getNativeCantoBalance(
-          CantoMainnet.cosmosAPIEndpoint,
-          networkInfo.cantoAddress,
-          cantoGravityTokens
-        );
-      setUserCantoNativeGTokens(CantoTokensWithBalances);
-    }
+    const cantoGravityBridgeTokens = await getNativeCantoBalance(
+      CantoMainnet.cosmosAPIEndpoint,
+      networkInfo.cantoAddress,
+      convertCoinTokens
+    );
+    setUserBridgeOutTokens(cantoGravityBridgeTokens);
   }
+
   useEffect(() => {
-    if (userEthGTokens && userCantoGTokens) {
-      getBalances(userEthGTokens, userCantoGTokens);
-    }
-  }, [userEthGTokens?.length, userCantoGTokens?.length]);
+    getAllBalances();
+  }, []);
+
+  function reSelectTokens(selectedToken: SelectedTokens, tokenList?: any) {
+    tokenStore.setSelectedToken(
+      tokenList?.find(
+        (token: any) =>
+          token.address === tokenStore.selectedTokens[selectedToken].address
+      ) ?? tokenStore.selectedTokens[selectedToken],
+      selectedToken
+    );
+  }
   //Useffect for calling data per block
   useEffect(() => {
     const interval = setInterval(async () => {
-      await getBalances(userEthGTokens, userCantoGTokens);
-      //reselecting the token so it is the most updated version
-      if (selectedTab === 0) {
-        tokenStore.setSelectedToken(
-          userEthNativeGTokens?.find(
-            (token) =>
-              token.data.address == tokenStore.selectedToken.data.address
-          ) ?? tokenStore.selectedToken
-        );
-      } else {
-        tokenStore.setSelectedToken(
-          userCantoNativeGTokens?.find(
-            (token) =>
-              token.data.address == tokenStore.selectedToken.data.address
-          ) ?? tokenStore.selectedToken
-        );
-      }
+      await getAllBalances();
+      //reselecting the tokens so it is the most updated version
+      reSelectTokens(SelectedTokens.ETHTOKEN, userEthGTokens);
+      reSelectTokens(SelectedTokens.CONVERTIN, userConvertTokens);
+      reSelectTokens(SelectedTokens.CONVERTOUT, userConvertERC20Tokens);
+      reSelectTokens(SelectedTokens.BRIDGEOUT, userBridgeOutTokens);
     }, 6000);
     return () => clearInterval(interval);
-  }, [userEthGTokens, userCantoGTokens]);
+  }, [
+    userEthGTokens,
+    userConvertERC20Tokens,
+    userBridgeOutTokens,
+    userConvertTokens,
+  ]);
 
   return (
     <Styled>
@@ -98,7 +103,6 @@ const BridgingPage = () => {
             // resetting the selected token when a new tab is selected
             onClick={() => {
               setSelectedTab(0);
-              tokenStore.setSelectedToken(emptySelectedToken);
             }}
           >
             bridge In
@@ -108,7 +112,6 @@ const BridgingPage = () => {
             // resetting the selected token when a new tab is selected
             onClick={() => {
               setSelectedTab(1);
-              tokenStore.setSelectedToken(emptySelectedToken);
             }}
           >
             bridge Out
@@ -116,12 +119,16 @@ const BridgingPage = () => {
         </TabList>
         <TabPanel>
           <BridgeIn
-            userEthNativeGTokens={userEthNativeGTokens}
+            userEthTokens={userEthGTokens}
             gravityAddress={gravityAddress}
+            userConvertCoinNativeTokens={userConvertTokens}
           />
         </TabPanel>
         <TabPanel>
-          <BridgeOut userCantoNativeGTokens={userCantoNativeGTokens} />
+          <BridgeOut
+            userCantoNativeGTokens={userBridgeOutTokens}
+            userConvertERC20Tokens={userConvertTokens}
+          />
         </TabPanel>
       </Tabs>
     </Styled>

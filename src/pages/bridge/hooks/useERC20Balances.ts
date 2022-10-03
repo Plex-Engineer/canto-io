@@ -1,49 +1,42 @@
 import { useCalls } from "@usedapp/core";
-import { Contract } from "ethers";
-import { ADDRESSES, Token } from "cantoui";
-import { ERC20Abi } from "global/config/abi";
+import { BigNumber, Contract } from "ethers";
 import {
-  EmptyUserGTokenData,
-  UserGravityBridgeTokens,
+  NativeERC20Tokens,
+  UserERC20Tokens,
 } from "../config/interfaces";
+import { ERC20Abi } from "../../../global/config/abi";
 
-export function useEthGravityTokens(
+export function useCantoERC20Balances(
   account: string | undefined,
-  tokens: Token[]
+  tokens: NativeERC20Tokens[],
+  chainId: number
 ): {
-  userEthGTokens: UserGravityBridgeTokens[];
-  gravityAddress: string | undefined;
+  userTokens: UserERC20Tokens[];
 } {
-  const gravityAddress = ADDRESSES.ETHMainnet.GravityBridge;
-
   const calls =
     tokens?.map((token) => {
       const ERC20Contract = new Contract(token.address, ERC20Abi);
-
       return [
         {
           contract: ERC20Contract,
           method: "balanceOf",
           args: [account],
         },
-        {
-          contract: ERC20Contract,
-          method: "allowance",
-          args: [account, gravityAddress],
-        },
       ];
     }) ?? [];
   const results =
-    useCalls(tokens && account ? calls.flat() : [], { chainId: 1 }) ?? {};
+    useCalls(tokens && account ? calls.flat() : [], {
+      chainId: chainId,
+    }) ?? {};
 
   if (tokens == undefined) {
-    return { userEthGTokens: [], gravityAddress: undefined };
+    return { userTokens: [] };
   }
   const chuckSize = results.length / tokens.length;
   let processedTokens: Array<any>;
   const array_chunks = (array: any[], chunk_size: number) => {
     const rep = array.map((array) => array?.value);
-    const chunks = [];
+    const chunks: any[] = [];
 
     for (let i = 0; i < array.length; i += chunk_size) {
       chunks.push(rep.slice(i, i + chunk_size));
@@ -54,24 +47,22 @@ export function useEthGravityTokens(
     processedTokens = array_chunks(results, chuckSize);
     const val = processedTokens.map((tokenData, idx) => {
       const balanceOf = tokenData[0][0];
-      const allowance = tokenData[1][0];
-
       return {
         ...tokens[idx],
         wallet: account ?? "",
-        balanceOf,
-        allowance,
+        erc20Balance: balanceOf,
       };
     });
-
-    return { userEthGTokens: val, gravityAddress: gravityAddress };
+    return { userTokens: val };
   }
-  const emptyUserTokens = tokens.map((token) => {
-    return {
-      ...token,
-      ...EmptyUserGTokenData,
-    };
-  });
 
-  return { userEthGTokens: emptyUserTokens, gravityAddress: undefined };
+  return {
+    userTokens: tokens.map((token) => {
+      return {
+        ...token,
+        wallet: "",
+        erc20Balance: BigNumber.from(0),
+      };
+    }),
+  };
 }

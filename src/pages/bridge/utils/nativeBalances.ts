@@ -1,12 +1,12 @@
 import { generateEndpointBalances } from "@tharsis/provider";
 import { BigNumber } from "ethers";
-import { UserGravityTokens, UserNativeGTokens } from "../config/interfaces";
+import { NativeERC20Tokens, UserNativeTokens } from "../config/interfaces";
 
 export async function getNativeCantoBalance(
   nodeAddressIP: string,
   cantoAddress: string,
-  gravityTokens: UserGravityTokens[]
-): Promise<UserNativeGTokens[]> {
+  nativeTokens: NativeERC20Tokens[]
+): Promise<UserNativeTokens[]> {
   const url = nodeAddressIP + "/" + generateEndpointBalances(cantoAddress);
   const options = {
     method: "GET",
@@ -23,12 +23,12 @@ export async function getNativeCantoBalance(
     .catch((err) => {
       console.log(err);
     });
-  return gravityTokens.map((token) => {
+  return nativeTokens.map((token) => {
     return {
       ...token,
-      nativeBalanceOf: BigNumber.from(
-        result.find((data: any) => data.denom == token.data.nativeName)
-          ?.amount ?? 0
+      wallet: cantoAddress,
+      nativeBalance: BigNumber.from(
+        result.find((data: any) => data.denom == token.nativeName)?.amount ?? 0
       ),
     };
   });

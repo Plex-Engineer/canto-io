@@ -1,21 +1,43 @@
 import create from "zustand";
 import { devtools } from "zustand/middleware";
-import { emptySelectedToken, UserNativeGTokens } from "../config/interfaces";
+import {
+  EmptySelectedConvertToken,
+  EmptySelectedETHToken,
+  EmptySelectedNativeToken,
+  UserConvertToken,
+  UserGravityBridgeTokens,
+  UserNativeTokens,
+} from "../config/interfaces";
 
+export enum SelectedTokens {
+  ETHTOKEN,
+  CONVERTIN,
+  CONVERTOUT,
+  BRIDGEOUT,
+}
 interface TokenStore {
-  tokens: UserNativeGTokens[];
-  setTokens: (tokens: UserNativeGTokens[]) => void;
-  selectedToken: UserNativeGTokens;
-  setSelectedToken: (token: UserNativeGTokens) => void;
+  selectedTokens: {
+    [SelectedTokens.ETHTOKEN]: UserGravityBridgeTokens;
+    [SelectedTokens.CONVERTIN]: UserConvertToken;
+    [SelectedTokens.CONVERTOUT]: UserConvertToken;
+    [SelectedTokens.BRIDGEOUT]: UserNativeTokens;
+  };
+  setSelectedToken: (token: any, selectedFrom: SelectedTokens) => void;
 }
 export const useTokenStore = create<TokenStore>()(
-  devtools((set) => ({
-    tokens: [],
-    setTokens: (tokens: UserNativeGTokens[]) => set({ tokens: tokens }),
-    selectedToken: emptySelectedToken,
-    setSelectedToken: (token: UserNativeGTokens) => {
+  devtools((set, get) => ({
+    selectedTokens: {
+      [SelectedTokens.ETHTOKEN]: EmptySelectedETHToken,
+      [SelectedTokens.CONVERTIN]: EmptySelectedConvertToken,
+      [SelectedTokens.CONVERTOUT]: EmptySelectedConvertToken,
+      [SelectedTokens.BRIDGEOUT]: EmptySelectedNativeToken,
+    },
+    setSelectedToken: (token: any, selectedFrom: SelectedTokens) => {
       set({
-        selectedToken: token,
+        selectedTokens: {
+          ...get().selectedTokens,
+          [selectedFrom]: token,
+        },
       });
     },
   }))
