@@ -17,7 +17,7 @@ import SwitchBridging from "./components/SwitchBridging";
 import {
   EmptySelectedConvertToken,
   EmptySelectedNativeToken,
-  UserERC20Tokens,
+  UserConvertToken,
   UserNativeTokens,
 } from "./config/interfaces";
 import { SelectedTokens, useTokenStore } from "./stores/cosmosTokens";
@@ -27,7 +27,7 @@ import { convertStringToBigNumber } from "./utils/stringToBigNumber";
 import { getBridgeOutButtonText } from "./utils/reactiveButtonText";
 
 interface BridgeOutProps {
-  userConvertERC20Tokens: UserERC20Tokens[];
+  userConvertERC20Tokens: UserConvertToken[];
   userCantoNativeGTokens: UserNativeTokens[];
 }
 const BridgeOut = ({

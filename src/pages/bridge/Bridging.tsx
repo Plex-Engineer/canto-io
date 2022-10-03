@@ -83,7 +83,7 @@ const BridgingPage = () => {
       //reselecting the tokens so it is the most updated version
       reSelectTokens(SelectedTokens.ETHTOKEN, userEthGTokens);
       reSelectTokens(SelectedTokens.CONVERTIN, userConvertTokens);
-      reSelectTokens(SelectedTokens.CONVERTOUT, userConvertERC20Tokens);
+      reSelectTokens(SelectedTokens.CONVERTOUT, userConvertTokens);
       reSelectTokens(SelectedTokens.BRIDGEOUT, userBridgeOutTokens);
     }, 6000);
     return () => clearInterval(interval);

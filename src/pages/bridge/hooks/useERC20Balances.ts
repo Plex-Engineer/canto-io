@@ -1,9 +1,6 @@
 import { useCalls } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
-import {
-  NativeERC20Tokens,
-  UserERC20Tokens,
-} from "../config/interfaces";
+import { NativeERC20Tokens, UserERC20Tokens } from "../config/interfaces";
 import { ERC20Abi } from "../../../global/config/abi";
 
 export function useCantoERC20Balances(

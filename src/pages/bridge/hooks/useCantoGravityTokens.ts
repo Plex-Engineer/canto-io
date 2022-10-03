@@ -1,13 +1,12 @@
 import { useCalls } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { CantoGravityTokens } from "../config/gravityBridgeTokens";
-import { ethers } from "ethers";
 import { CantoMainnet } from "cantoui";
 import { ERC20Abi } from "global/config/abi";
-import { EmptyUserGTokenData, UserGravityTokens } from "../config/interfaces";
+import { UserERC20Tokens } from "../config/interfaces";
 
 export function useCantoGravityTokens(account: string | undefined): {
-  userGravityTokens: UserGravityTokens[];
+  userGravityTokens: UserERC20Tokens[];
 } {
   const tokens = CantoGravityTokens;
 
@@ -46,12 +45,10 @@ export function useCantoGravityTokens(account: string | undefined): {
     processedTokens = array_chunks(results, chuckSize);
     const val = processedTokens.map((tokenData, idx) => {
       const balanceOf = tokenData[0][0];
-      const allowance = BigNumber.from(ethers.constants.MaxUint256);
       return {
-        data: tokens[idx],
+        ...tokens[idx],
         wallet: account ?? "",
-        balanceOf,
-        allowance,
+        erc20Balance: balanceOf,
       };
     });
     return { userGravityTokens: val };
@@ -60,8 +57,9 @@ export function useCantoGravityTokens(account: string | undefined): {
   return {
     userGravityTokens: tokens.map((token) => {
       return {
-        data: token,
-        ...EmptyUserGTokenData,
+        ...token,
+        wallet: account ?? "",
+        erc20Balance: BigNumber.from(0),
       };
     }),
   };
