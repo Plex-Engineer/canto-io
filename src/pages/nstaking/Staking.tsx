@@ -87,6 +87,11 @@ const NStaking = () => {
     return false;
   });
 
+  const undelagatingValidators = getAllValidatorData(
+    validators,
+    delegations,
+    undelegations
+  ).filter((validator) => !!validator.undelagatingInfo);
   return (
     <Styled>
       <ModalManager allValidators={validators} />
