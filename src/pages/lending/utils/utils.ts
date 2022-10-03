@@ -15,11 +15,11 @@ export function formatLiquidity(liquidity: number) {
   return (liquidity / 1000000000).toFixed(1) + "B";
 }
 
-//special function, input must be factored by 100% (i.e 1000%) since Big Numbers are to the whole number and precision will be to the hundreths place
-export function formatBigNumberToPercentage(percent: BigNumber) {
-  const bnString = percent.toString();
-  const decimalIndex = bnString.length - 2;
-  return Number(
-    bnString.slice(0, decimalIndex) + "." + bnString.slice(decimalIndex)
-  );
+//exchange rate is always scaled to 1e18
+export function getSupplyBalanceFromCTokens(
+  cTokenBalance: BigNumber,
+  exchangeRate: BigNumber
+) {
+  //exchange rate is always scaled to 1e18
+  return cTokenBalance.mul(exchangeRate).div(BigNumber.from(10).pow(18));
 }

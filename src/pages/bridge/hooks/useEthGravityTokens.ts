@@ -1,30 +1,12 @@
 import { useCalls } from "@usedapp/core";
 import { Contract } from "ethers";
 import { ETHGravityTokens } from "../config/gravityBridgeTokens";
-import { ethers } from "ethers";
 import { ADDRESSES } from "cantoui";
 import { ERC20Abi } from "global/config/abi";
+import { EmptyUserGTokenData, UserGravityTokens } from "../config/interfaces";
 
-export interface GTokens {
-  data: {
-    symbol: string;
-    name: string;
-    decimals: number;
-    address: string;
-    isERC20: boolean;
-    isLP: boolean;
-    icon: string;
-    cTokenAddress: string;
-    nativeName: string;
-  };
-  wallet: string;
-  balanceOf: number;
-  allowance: number;
-}
-[];
-
-export function useGravityTokens(account: string | undefined): {
-  gravityTokens: GTokens[] | undefined;
+export function useEthGravityTokens(account: string | undefined): {
+  userEthGTokens: UserGravityTokens[];
   gravityAddress: string | undefined;
 } {
   const tokens = ETHGravityTokens;
@@ -47,13 +29,11 @@ export function useGravityTokens(account: string | undefined): {
         },
       ];
     }) ?? [];
-  const results = useCalls(tokens ? calls.flat() : [], { chainId: 1 }) ?? {};
+  const results =
+    useCalls(tokens && account ? calls.flat() : [], { chainId: 1 }) ?? {};
 
-  if (account == undefined) {
-    return { gravityTokens: undefined, gravityAddress: undefined };
-  }
   if (tokens == undefined) {
-    return { gravityTokens: [], gravityAddress: undefined };
+    return { userEthGTokens: [], gravityAddress: undefined };
   }
   const chuckSize = results.length / tokens.length;
   let processedTokens: Array<any>;
@@ -69,26 +49,25 @@ export function useGravityTokens(account: string | undefined): {
   if (chuckSize > 0 && results?.[0] != undefined && !results?.[0].error) {
     processedTokens = array_chunks(results, chuckSize);
     const val = processedTokens.map((tokenData, idx) => {
-      const balanceOf = Number(
-        ethers.utils.formatUnits(tokenData[0][0], tokens[idx].decimals)
-      );
-      const allowance = Number(
-        ethers.utils.formatUnits(tokenData[1][0], tokens[idx].decimals)
-      );
+      const balanceOf = tokenData[0][0];
+      const allowance = tokenData[1][0];
 
       return {
         data: tokens[idx],
-        wallet: account,
+        wallet: account ?? "",
         balanceOf,
         allowance,
       };
     });
 
-    if (val[0].balanceOf == undefined)
-      return { gravityTokens: undefined, gravityAddress: gravityAddress };
-
-    return { gravityTokens: val, gravityAddress: gravityAddress };
+    return { userEthGTokens: val, gravityAddress: gravityAddress };
   }
+  const emptyUserTokens = tokens.map((token) => {
+    return {
+      data: token,
+      ...EmptyUserGTokenData,
+    };
+  });
 
-  return { gravityTokens: undefined, gravityAddress: undefined };
+  return { userEthGTokens: emptyUserTokens, gravityAddress: undefined };
 }

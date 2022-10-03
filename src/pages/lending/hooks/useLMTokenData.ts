@@ -154,7 +154,7 @@ export function useLMTokenData(chainId?: string): LMTokenDetails[] {
         tokens[idx].symbol == "cNOTE" ||
         tokens[idx].symbol == "cUSDC" ||
         tokens[idx].symbol == "cUSDT"
-          ? parseUnits("1", 18)
+          ? parseUnits("1", 36 - tokens[idx].underlying.decimals)
           : tokenData[5][0];
       const borrowCap = tokenData[7][0].eq(ethers.BigNumber.from("0"))
         ? BigNumber.from(Number.MAX_SAFE_INTEGER - 1)

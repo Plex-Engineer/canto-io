@@ -1,10 +1,12 @@
 import styled from "@emotion/styled";
-import TokenModal from "pages/bridge/components/tokenModal";
 import Popup from "reactjs-popup";
 import useGlobalModals, { ModalType } from "../../stores/useModals";
 import TokensModal from "./TokensModal";
 
-const ModalManager = () => {
+interface ModalManagerProps {
+  chainId: number;
+}
+const ModalManager = ({ chainId }: ModalManagerProps) => {
   const [modalType, setModalType] = useGlobalModals((state) => [
     state.modalType,
     state.setModalType,
@@ -20,7 +22,7 @@ const ModalManager = () => {
       position="center center"
       nested
     >
-      {modalType === ModalType.TOKENS && <TokensModal />}
+      {modalType === ModalType.TOKENS && <TokensModal chainId={chainId} />}
     </StyledPopup>
   );
 };

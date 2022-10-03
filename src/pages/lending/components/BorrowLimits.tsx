@@ -1,6 +1,10 @@
 import styled from "@emotion/styled";
 import CANTO from "assets/icons/canto.png";
-import { noteSymbol, truncateNumber } from "global/utils/utils";
+import {
+  convertBigNumberRatioIntoPercentage,
+  noteSymbol,
+  truncateNumber,
+} from "global/utils/utils";
 import { BigNumber } from "ethers";
 import { UserLMTokenDetails } from "../config/interfaces";
 import {
@@ -14,7 +18,7 @@ import {
 } from "../utils/borrowRepayLimits";
 import React from "react";
 
-enum TransactionType {
+export enum TransactionType {
   SUPPLY,
   WITHDRAW,
   BORROW,
@@ -62,20 +66,19 @@ const Details = ({
   );
   const cBorrowLimitUsed = borrowLimit.isZero()
     ? 0
-    : (Number(borrowBalance) * 100) / Number(borrowLimit);
+    : convertBigNumberRatioIntoPercentage(borrowBalance, borrowLimit) * 100;
+
   const cBorrowLimitHypo = formatUnits(
     isBorrowing
       ? newBorrowAmount(
           transactionType == TransactionType.BORROW,
           amount,
-          token.data.underlying.decimals,
           borrowBalance,
           token.price
         )
       : newBorrowLimit(
           transactionType == TransactionType.SUPPLY,
           amount,
-          token.data.underlying.decimals,
           token.collateralFactor,
           token.price,
           borrowLimit
@@ -87,20 +90,18 @@ const Details = ({
     ? expectedBorrowLimitUsedInBorrowOrRepay(
         transactionType == TransactionType.BORROW,
         amount,
-        token.data.underlying.decimals,
         borrowBalance,
         token.price,
         borrowLimit
-      )
+      ) * 100
     : expectedBorrowLimitUsedInSupplyOrWithdraw(
         transactionType == TransactionType.SUPPLY,
         amount,
-        token.data.underlying.decimals,
         token.collateralFactor,
         token.price,
         borrowLimit,
         borrowBalance
-      );
+      ) * 100;
 
   return (
     <div>

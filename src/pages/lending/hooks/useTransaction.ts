@@ -5,7 +5,12 @@ import {
 } from "@usedapp/core";
 import { Contract, utils } from "ethers";
 import { TOKENS, CantoTestnet, ADDRESSES } from "cantoui";
-import { cERC20Abi, comptrollerAbi, ERC20Abi } from "global/config/abi";
+import {
+  cERC20Abi,
+  comptrollerAbi,
+  ERC20Abi,
+  reservoirAbi,
+} from "global/config/abi";
 
 //Ex : DAI 50
 //On enter market : Collateralizing DAI : DAI is being collateralized: DAI has been collateralized
@@ -161,6 +166,24 @@ export function useBorrow(props: Details) {
     "borrow",
     {
       transactionName: JSON.stringify(props),
+    }
+  );
+  return { state, send };
+}
+
+//function to call Drip in the reservoir so that rewards can always be claimed
+export function useDrip(address: string) {
+  const reservoirInterfacse = new utils.Interface(reservoirAbi);
+  const { state, send } = useContractFunction(
+    new Contract(address, reservoirInterfacse),
+    "drip",
+    {
+      transactionName: JSON.stringify({
+        name: "WCANTO",
+        icon: TOKENS.cantoMainnet.WCANTO.icon,
+        amount: -1,
+        type: "dripped",
+      }),
     }
   );
   return { state, send };

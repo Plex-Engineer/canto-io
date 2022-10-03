@@ -1,14 +1,24 @@
 import { BigNumber } from "ethers";
-import { formatUnits } from "ethers/lib/utils";
+import { formatEther, formatUnits } from "ethers/lib/utils";
 import { noteSymbol, truncateNumber } from "global/utils/utils";
-import React from "react";
+import React, { useState } from "react";
 import Popup from "reactjs-popup";
 import { UserLMPosition, UserLMTokenDetails } from "../config/interfaces";
-import { Hero, TinyTable, ToolTipL } from "./Container";
+import { Hero, TinyTable, ToolTipL } from "./Styled";
 import CypherText from "./CypherText";
 import { BorrowRow, SupplyRow } from "./lendingRow";
-import LendingTable from "./lendingTable";
+import LendingTable from "./table";
 
+function sortColumnsByType(value1: unknown, value2: unknown) {
+  if (typeof value1 === "string") {
+    return value1.localeCompare(value2 as string);
+  } else if (typeof value1 === "number") {
+    return (value2 as number) - (value1 as number);
+  } else if (typeof value1 === "boolean") {
+    return value1 === value2 ? 0 : value1 ? -1 : 1;
+  }
+  return 0;
+}
 interface SupplyingProps {
   visible: boolean;
   supplying: boolean;
@@ -23,17 +33,22 @@ export const SupplyTable = ({
   onClick,
   onToggle,
 }: SupplyingProps) => {
-  //this should prevent the table from showing up if there are not items to be displayed
-  if (userLMTokens.length == 0 || !visible) return null;
+  const [columnClicked, setColumnClicked] = useState(0);
   const columns = supplying
     ? ["asset", "apr", "rewards", "balance", "collateral"]
     : ["asset", "apr", "wallet", "collateral"];
+  //this should prevent the table from showing up if there are not items to be displayed
+  if (userLMTokens.length == 0 || !visible) return null;
 
   return (
     <div className="left">
       <p>{supplying ? "supplying" : "available"}</p>
 
-      <LendingTable columns={columns} isLending>
+      <LendingTable
+        columns={columns}
+        isLending
+        onColumnClicked={(column) => setColumnClicked(column)}
+      >
         {userLMTokens
           .map((token) => {
             const amount = supplying ? token.supplyBalance : token.balanceOf;
@@ -57,11 +72,21 @@ export const SupplyTable = ({
                 collateral={token.collateral}
                 rewards={truncateNumber(formatUnits(token.rewards))}
                 onToggle={() => onToggle(token)}
+                sortableProps={[
+                  token.data.underlying.symbol,
+                  token.distAPY,
+                  Number(formatEther(token.rewards)),
+                  Number(formatEther(token.supplyBalanceinNote)),
+                  token.collateral,
+                ]}
               />
             );
           })
           .sort((a, b) => {
-            return String(a?.props.symbol).localeCompare(b?.props.symbol);
+            return sortColumnsByType(
+              a.props.sortableProps?.[columnClicked],
+              b.props.sortableProps?.[columnClicked]
+            );
           })}
       </LendingTable>
     </div>

@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { useState } from "react";
 
 const Table = styled.table`
   border: none;
@@ -24,6 +25,10 @@ const Table = styled.table`
     padding: 8px;
     font-weight: 400;
     line-height: 1rem;
+    &:hover {
+      background-color: #14392a;
+      cursor: pointer;
+    }
   }
 
   tr {
@@ -33,7 +38,6 @@ const Table = styled.table`
     background-color: black;
     border-bottom: var(--primary-color) solid 1px;
     animation-fill-mode: forwards;
-
     @keyframes fader {
       from {
         border-bottom: transparent solid 1px;
@@ -80,6 +84,7 @@ interface Props {
   columns: string[];
   children: React.ReactNode;
   isLending: boolean;
+  onColumnClicked?: (column: number) => void;
 }
 
 const LendingTable = (props: Props) => {
@@ -92,8 +97,13 @@ const LendingTable = (props: Props) => {
       <Table>
         <thead>
           <tr>
-            {props.columns.map((heading) => (
-              <th key={heading + (Math.random() + 1).toString(36).substring(7)}>
+            {props.columns.map((heading, key) => (
+              <th
+                key={heading + (Math.random() + 1).toString(36).substring(7)}
+                onClick={() =>
+                  props.onColumnClicked ? props.onColumnClicked(key) : {}
+                }
+              >
                 {heading}
               </th>
             ))}

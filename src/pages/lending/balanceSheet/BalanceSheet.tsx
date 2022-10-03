@@ -10,7 +10,7 @@ import { useLPInfo } from "./useLPInfo";
 import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { truncateNumber } from "global/utils/utils";
-import LendingTable from "pages/lending/components/lendingTable";
+import LendingTable from "pages/lending/components/table";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { noteSymbol } from "global/utils/utils";
 import { useLMTokenData } from "../hooks/useLMTokenData";

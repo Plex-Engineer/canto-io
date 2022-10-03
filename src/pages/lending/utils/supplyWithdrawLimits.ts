@@ -1,7 +1,7 @@
 //used and limit both in terms of note, collateral factor is raised to 10^18
 
 import { BigNumber, ethers } from "ethers";
-import { formatBigNumberToPercentage } from "./utils";
+import { convertBigNumberRatioIntoPercentage } from "global/utils/utils";
 
 //percent of limit will give how much, in terms of underlying can be withdrawn to stay under this limit
 export function maxWithdrawalInUnderlying(
@@ -9,18 +9,18 @@ export function maxWithdrawalInUnderlying(
   limit: BigNumber,
   collateralFactor: BigNumber,
   percentOfLimit: number,
-  price: BigNumber,
-  tokenDecimals: number
+  price: BigNumber
 ) {
-  if (collateralFactor.isZero() || price.isZero() || tokenDecimals == 0) {
+  if (collateralFactor.isZero() || price.isZero()) {
     return ethers.constants.MaxUint256;
   }
   if (percentOfLimit == 0) {
     return BigNumber.from(0);
   }
+  //collateral factor is scaled to 1e18 and price scaled to 1e18, so .mul(1e36) to cancel
   const max = limit
     .sub(used.mul(100).div(percentOfLimit))
-    .mul(BigNumber.from(10).pow(18 + tokenDecimals))
+    .mul(BigNumber.from(10).pow(36))
     .div(collateralFactor.mul(price));
 
   return max.isNegative() ? BigNumber.from(0) : max;
@@ -34,8 +34,7 @@ export function willWithdrawalGoOverLimit(
   collateralFactor: BigNumber,
   percentOfLimit: number,
   withdrawAmount: BigNumber,
-  price: BigNumber,
-  tokenDecimals: number
+  price: BigNumber
 ) {
   if (used.isZero()) {
     return false;
@@ -45,8 +44,7 @@ export function willWithdrawalGoOverLimit(
     limit,
     collateralFactor,
     percentOfLimit,
-    price,
-    tokenDecimals
+    price
   ).lt(withdrawAmount);
 }
 
@@ -54,17 +52,11 @@ export function willWithdrawalGoOverLimit(
 export function newBorrowLimit(
   supply: boolean,
   amount: BigNumber,
-  tokenDecimals: number,
   collateralFactor: BigNumber,
   price: BigNumber,
   currentLimit: BigNumber
 ) {
-  if (tokenDecimals == 0) {
-    return BigNumber.from(currentLimit);
-  }
-  const amountInNote = amount
-    .mul(price)
-    .div(BigNumber.from(10).pow(tokenDecimals));
+  const amountInNote = amount.mul(price).div(BigNumber.from(10).pow(18));
   const change = amountInNote
     .mul(collateralFactor)
     .div(BigNumber.from(10).pow(18));
@@ -75,7 +67,6 @@ export function newBorrowLimit(
 export function expectedBorrowLimitUsedInSupplyOrWithdraw(
   supply: boolean,
   amount: BigNumber,
-  tokenDecimals: number,
   collateralFactor: BigNumber,
   price: BigNumber,
   currentLimit: BigNumber,
@@ -84,7 +75,6 @@ export function expectedBorrowLimitUsedInSupplyOrWithdraw(
   const expectedBorrowLimit = newBorrowLimit(
     supply,
     amount,
-    tokenDecimals,
     collateralFactor,
     price,
     currentLimit
@@ -92,8 +82,9 @@ export function expectedBorrowLimitUsedInSupplyOrWithdraw(
   if (expectedBorrowLimit.lte(0)) {
     return 0;
   }
-  return formatBigNumberToPercentage(
-    currentBorrows.mul(10000).div(expectedBorrowLimit)
+  return convertBigNumberRatioIntoPercentage(
+    currentBorrows,
+    expectedBorrowLimit
   );
 }
 /*
@@ -104,7 +95,6 @@ returns [
 */
 export function userMaximumWithdrawal(
   supplyBalance: BigNumber,
-  tokenDecimals: number,
   totalBorrow: BigNumber,
   borrowLimit: BigNumber,
   collateralFactor: BigNumber,
@@ -119,16 +109,14 @@ export function userMaximumWithdrawal(
       borrowLimit,
       collateralFactor,
       80,
-      price,
-      tokenDecimals
+      price
     );
     const totalLimit = maxWithdrawalInUnderlying(
       totalBorrow,
       borrowLimit,
       collateralFactor,
       100,
-      price,
-      tokenDecimals
+      price
     );
     const canWithdrawAllFor80Percent = supplyBalance.lte(eightyPercentLimit);
     const canWithdrawAllForTotalLimit = supplyBalance.lte(totalLimit);

@@ -1,14 +1,12 @@
 const userInput = document.querySelector("#inputData");
-const userClickRoute = document.querySelector("#routes")
+const userClickRoute = document.querySelector("#routes");
 let showingCursor = false;
 function blinkAnimation() {
   setTimeout(function () {
     showingCursor = !showingCursor;
     let input = userInput.value.toString().replace("█", "");
     userInput.value = input + (showingCursor ? "█" : "");
-    if (true) {
-      blinkAnimation();
-    }
+    blinkAnimation();
   }, 400);
 }
 
@@ -21,7 +19,7 @@ function blinkAnimation() {
 
 userClickRoute.addEventListener("click", function (event) {
   openLink(event.path[1].id);
-})
+});
 
 userInput.addEventListener("change", function () {
   let input = userInput.value.toString().replace("█", "");
@@ -67,31 +65,34 @@ typer();
 function openLink(input) {
   switch (input) {
     case "1":
-      window.open("https://bridge.canto.io","_self");
+      window.open("https://bridge.canto.io", "_self");
       // alert();
       break;
     case "2":
-      window.open("https://convert.canto.io","_self");
+      window.open("https://convert.canto.io", "_self");
       // alert();
       break;
     case "3":
-      window.open("https://staking.canto.io","_self");
+      window.open("https://staking.canto.io", "_self");
       // alert();
       break;
     case "4":
-      window.open("https://lp.canto.io","_self");
+      window.open("https://lp.canto.io", "_self");
       // alert();
       break;
     case "5":
-      window.open("https://lending.canto.io","_self");
+      window.open("https://lending.canto.io", "_self");
       // alert();
       break;
     case "6":
-      window.open("https://governance.canto.io","_self");
+      window.open("https://governance.canto.io", "_self");
       // alert();
       break;
     case "7":
-      window.open("https://canto.gitbook.io/canto/overview/about-canto","_self");
+      window.open(
+        "https://canto.gitbook.io/canto/overview/about-canto",
+        "_self"
+      );
       break;
     default:
       alert(true);

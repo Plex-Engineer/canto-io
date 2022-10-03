@@ -1,111 +1,23 @@
-import styled from "@emotion/styled";
 import Input from "../components/input";
-import { AllPairInfo } from "../hooks/useTokens";
 import { useEffect, useState } from "react";
 import { noteSymbol, truncateNumber } from "global/utils/utils";
 import LoadingModal from "./loadingModal";
-import { DexLoadingOverlay, PopIn } from "./addModal";
 import SettingsIcon from "assets/settings.svg";
 import IconPair from "../components/iconPair";
 import useModals, { ModalType } from "../hooks/useModals";
 import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
+import { UserLPPairInfo } from "../config/interfaces";
+import { BigNumber } from "ethers";
+import { getLPOut, getReserveRatioAtoB, valueInNote } from "../utils/utils";
+import { formatUnits } from "ethers/lib/utils";
+import { PrimaryButton } from "cantoui";
+import { getRemoveButtonTextAndOnClick } from "../utils/modalButtonParams";
+import {
+  DexModalContainer,
+  DexLoadingOverlay,
+  SettingsPopIn,
+} from "../components/Styled";
 
-const Container = styled.div`
-  background-color: #040404;
-  height: 36rem;
-  width: 30rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: start;
-  gap: 1rem;
-  /* padding: 1rem; */
-  .title {
-    font-style: normal;
-    font-weight: 300;
-    font-size: 22px;
-    line-height: 130%;
-    text-align: center;
-    letter-spacing: -0.1em;
-    color: var(--primary-color);
-    /* margin-top: 0.3rem; */
-    width: 100%;
-    background-color: #06fc991a;
-    padding: 1rem;
-    border-bottom: 1px solid var(--primary-color);
-    z-index: 5;
-  }
-
-  .tokenBox {
-    margin: 0 2rem !important;
-    background-color: #131313;
-    border: 1px solid #606060;
-    padding: 1rem;
-  }
-
-  .line {
-    border-bottom: 1px solid #222;
-  }
-  .logo {
-    /* padding: 1rem; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid var(--primary-color);
-    height: 60px;
-    width: 60px;
-    border-radius: 50%;
-    margin-bottom: 1.2rem;
-  }
-
-  .fields {
-    display: flex;
-    padding: 1rem;
-    gap: 0.3rem;
-  }
-
-  .rowCell {
-    p:first-child {
-      text-transform: lowercase;
-      color: #888;
-    }
-    p:last-child {
-      color: white;
-    }
-  }
-  @media (max-width: 1000px) {
-    width: 100%;
-  }
-`;
-
-const Button = styled.button`
-  font-weight: 400;
-  width: 18rem;
-  font-size: 22px;
-  color: black;
-  background-color: var(--primary-color);
-  padding: 0.6rem;
-  border: 1px solid var(--primary-color);
-  margin: 2rem auto;
-  /* margin: 3rem auto; */
-
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-
-const DisabledButton = styled(Button)`
-  background-color: #222;
-  color: #666;
-  border: none;
-  &:hover {
-    color: #eee;
-    cursor: default;
-    background-color: #222;
-  }
-`;
 interface RowCellProps {
   type: string;
   value?: string;
@@ -130,10 +42,10 @@ export const RowCell = (props: RowCellProps) => {
 };
 
 interface ConfirmButtonProps {
-  pair: AllPairInfo;
+  pair: UserLPPairInfo;
   percentage: number;
-  amount1: number;
-  amount2: number;
+  amount1: BigNumber;
+  amount2: BigNumber;
   slippage: number;
   deadline: number;
   chainId?: number;
@@ -159,16 +71,10 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
   });
 
   const routerAddress = getRouterAddress(props.chainId);
-  const LPOut = (
-    (Number(props.pair.userSupply.totalLP) * Number(props.percentage)) /
-    100
-  ).toFixed(props.pair.basePairInfo.decimals);
-
-  const needLPTokenAllowance =
-    Number(LPOut) > Number(props.pair.allowance.LPtoken);
+  const LPOut = getLPOut(props.percentage, props.pair.userSupply.totalLP);
 
   useEffect(() => {
-    if (Number(props.pair.allowance.LPtoken) == 0) {
+    if (props.pair.allowance.LPtoken.isZero()) {
       setModalType(ModalType.ENABLE);
     }
   }, []);
@@ -181,97 +87,91 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
     }
   }, [addAllowance.status]);
 
-  if (needLPTokenAllowance) {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceSend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        Enable {props.pair.basePairInfo.token1.symbol} /{" "}
-        {props.pair.basePairInfo.token2.symbol}
-      </Button>
-    );
-  } else if (
-    Number(props.percentage) > 100 ||
-    Number(props.percentage) <= 0 ||
-    isNaN(Number(props.percentage))
-  ) {
-    return <DisabledButton>enter percentage</DisabledButton>;
-  } else if (Number(props.slippage) <= 0 || Number(props.deadline) <= 1) {
-    return <DisabledButton>invalid settings</DisabledButton>;
-  } else {
-    return (
-      <Button
-        onClick={() => {
-          setConfirmationValues({
-            amount1: props.amount1,
-            amount2: props.amount2,
-            percentage: props.percentage,
-            slippage: props.slippage,
-            deadline: props.deadline,
-          });
-          setModalType(ModalType.REMOVE_CONFIRM);
-        }}
-      >
-        remove liquidity
-      </Button>
-    );
-  }
+  const [buttonText, buttonOnClick, disabled] = getRemoveButtonTextAndOnClick(
+    props.pair.basePairInfo.token1.symbol +
+      " / " +
+      props.pair.basePairInfo.token2.symbol,
+    props.pair.allowance.LPtoken,
+    LPOut,
+    props.slippage,
+    props.deadline,
+    props.percentage,
+    () =>
+      addAllowanceSend(
+        routerAddress,
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ),
+    () => {
+      setConfirmationValues({
+        amount1: props.amount1,
+        amount2: props.amount2,
+        percentage: props.percentage,
+        slippage: props.slippage,
+        deadline: props.deadline,
+      });
+      setModalType(ModalType.REMOVE_CONFIRM);
+    }
+  );
+
+  return (
+    <PrimaryButton disabled={disabled} onClick={buttonOnClick}>
+      {buttonText}
+    </PrimaryButton>
+  );
 };
 
 interface Props {
-  value: AllPairInfo;
+  activePair: UserLPPairInfo;
   onClose: () => void;
   chainId?: number;
   account?: string;
 }
-const RemoveModal = ({ value, chainId }: Props) => {
+const RemoveModal = ({ activePair, chainId, account }: Props) => {
   const [percentage, setPercentage] = useState("1");
-
   const [slippage, setSlippage] = useState("1");
   const [deadline, setDeadline] = useState("10");
-  const [value1, setValue1] = useState(0);
-  const [value2, setValue2] = useState(0);
+  const [value1, setValue1] = useState(BigNumber.from(0));
+  const [value2, setValue2] = useState(BigNumber.from(0));
   const [openSettings, setOpenSettings] = useState(false);
 
   const [tokenAllowanceStatus, setTokenAllowanceStatus] = useState("None");
+  const displayReserveRatio = getReserveRatioAtoB(
+    activePair.totalSupply.ratio.ratio,
+    activePair.totalSupply.ratio.aTob,
+    activePair.basePairInfo.token1.decimals,
+    activePair.basePairInfo.token2.decimals
+  );
 
   useEffect(() => {
-    setValue1(
-      isNaN(Number(percentage))
-        ? 0
-        : (Number(percentage) * Number(value.userSupply.token1)) / 100
-    );
-    setValue2(
-      isNaN(Number(percentage))
-        ? 0
-        : (Number(percentage) * Number(value.userSupply.token2)) / 100
-    );
+    if (isNaN(Number(percentage)) || Number(percentage) <= 0) {
+      setValue1(BigNumber.from(0));
+      setValue2(BigNumber.from(0));
+    } else {
+      setValue1(activePair.userSupply.token1.mul(Number(percentage)).div(100));
+      setValue2(activePair.userSupply.token2.mul(Number(percentage)).div(100));
+    }
   }, [percentage]);
   return (
-    <Container>
+    <DexModalContainer>
       <DexLoadingOverlay
-        isLoading={["Mining", "PendingSignature", "Success"].includes(
+        show={["Mining", "PendingSignature", "Success"].includes(
           tokenAllowanceStatus
         )}
       >
         <LoadingModal
           icons={{
-            icon1: value.basePairInfo.token1.icon,
-            icon2: value.basePairInfo.token2.icon,
+            icon1: activePair.basePairInfo.token1.icon,
+            icon2: activePair.basePairInfo.token2.icon,
           }}
           name={
-            value.basePairInfo.token1.symbol +
+            activePair.basePairInfo.token1.symbol +
             " / " +
-            value.basePairInfo.token2.symbol
+            activePair.basePairInfo.token2.symbol
           }
           amount={"0"}
           type="remove"
           status={tokenAllowanceStatus}
+          account={account}
         />
       </DexLoadingOverlay>
       <div className="title">
@@ -294,15 +194,16 @@ const RemoveModal = ({ value, chainId }: Props) => {
           onClick={() => {
             setOpenSettings(!openSettings);
           }}
-        ></div>
-        <img
-          src={SettingsIcon}
-          height="30px"
-          style={{
-            cursor: "pointer",
-            zIndex: "5",
-          }}
-        />
+        >
+          <img
+            src={SettingsIcon}
+            height="30px"
+            style={{
+              cursor: "pointer",
+              zIndex: "5",
+            }}
+          />
+        </div>
       </div>
       <div
         style={{
@@ -310,8 +211,8 @@ const RemoveModal = ({ value, chainId }: Props) => {
         }}
       >
         <IconPair
-          iconLeft={value.basePairInfo.token1.icon}
-          iconRight={value.basePairInfo.token2.icon}
+          iconLeft={activePair.basePairInfo.token1.icon}
+          iconRight={activePair.basePairInfo.token2.icon}
         />
       </div>
       <div
@@ -323,15 +224,13 @@ const RemoveModal = ({ value, chainId }: Props) => {
           value={percentage}
           onChange={(percentage) => {
             setPercentage(percentage);
-            // setValue1(isNaN(Number(percentage)) ? 0 : (Number(percentage) * Number(value.userSupply.token1) / 100))
-            // setValue2(isNaN(Number(percentage)) ? 0 : (Number(percentage) * Number(value.userSupply.token2) / 100))
           }}
         />
       </div>
       <div style={{ color: "white" }}>
-        1 {value.basePairInfo.token1.symbol} ={" "}
-        {truncateNumber((1 / value.totalSupply.ratio).toString())}{" "}
-        {value.basePairInfo.token2.symbol}
+        1 {activePair.basePairInfo.token1.symbol} ={" "}
+        {truncateNumber(displayReserveRatio.toString())}{" "}
+        {activePair.basePairInfo.token2.symbol}
       </div>
 
       <div className="tokenBox">
@@ -347,30 +246,38 @@ const RemoveModal = ({ value, chainId }: Props) => {
         </p>
         <RowCell
           type={
-            truncateNumber(value1.toString()) +
+            truncateNumber(
+              formatUnits(value1, activePair.basePairInfo.token1.decimals)
+            ) +
             " " +
-            value.basePairInfo.token1.symbol
+            activePair.basePairInfo.token1.symbol
           }
           value={
             noteSymbol +
-            truncateNumber((value1 * Number(value.prices.token1)).toString())
+            truncateNumber(
+              formatUnits(valueInNote(value1, activePair.prices.token1))
+            )
           }
         />
         <RowCell
           type={
-            truncateNumber(value2.toString()) +
+            truncateNumber(
+              formatUnits(value2, activePair.basePairInfo.token2.decimals)
+            ) +
             " " +
-            value.basePairInfo.token2.symbol
+            activePair.basePairInfo.token2.symbol
           }
           value={
             noteSymbol +
-            truncateNumber((value2 * Number(value.prices.token2)).toString())
+            truncateNumber(
+              formatUnits(valueInNote(value2, activePair.prices.token2))
+            )
           }
         />
       </div>
       <ConfirmButton
         status={setTokenAllowanceStatus}
-        pair={value}
+        pair={activePair}
         percentage={Number(percentage)}
         amount1={value1}
         amount2={value2}
@@ -386,7 +293,7 @@ const RemoveModal = ({ value, chainId }: Props) => {
           gap: "1rem",
         }}
       >
-        <PopIn
+        <SettingsPopIn
           show={openSettings}
           style={!openSettings ? { zIndex: "-1" } : { marginBottom: "-15px" }}
         >
@@ -404,16 +311,15 @@ const RemoveModal = ({ value, chainId }: Props) => {
               onChange={(d) => setDeadline(d)}
             />
           </div>
-          {Number(slippage) <= 0 || Number(deadline) <= 0 ? (
-            <DisabledButton>save settings</DisabledButton>
-          ) : (
-            <Button onClick={() => setOpenSettings(false)}>
-              save settings
-            </Button>
-          )}
-        </PopIn>
+          <PrimaryButton
+            disabled={Number(slippage) <= 0 || Number(deadline) <= 0}
+            onClick={() => setOpenSettings(false)}
+          >
+            save settings
+          </PrimaryButton>
+        </SettingsPopIn>
       </div>
-    </Container>
+    </DexModalContainer>
   );
 };
 

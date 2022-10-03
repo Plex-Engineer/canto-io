@@ -1,106 +1,34 @@
-import styled from "@emotion/styled";
 import Field from "../components/field";
 import Input from "../components/input";
-import { AllPairInfo } from "../hooks/useTokens";
 import { useEffect, useState } from "react";
 import LoadingModal from "./loadingModal";
 import SettingsIcon from "assets/settings.svg";
 import IconPair from "../components/iconPair";
 import {
+  getReserveRatioAtoB,
   getToken1Limit,
   getToken2Limit,
   getTokenAFromB,
   getTokenBFromA,
+  valueInNote,
 } from "pages/dexLP/utils/utils";
 import useModals, { ModalType } from "../hooks/useModals";
 import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
 import { truncateNumber } from "global/utils/utils";
-
-const Container = styled.div`
-  background-color: #040404;
-  height: 36rem;
-  width: 30rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: start;
-  gap: 1rem;
-  /* padding: 1rem; */
-  .title {
-    font-style: normal;
-    font-weight: 300;
-    font-size: 22px;
-    line-height: 130%;
-    text-align: center;
-    letter-spacing: -0.1em;
-    color: var(--primary-color);
-    /* margin-top: 0.3rem; */
-    width: 100%;
-    background-color: #06fc991a;
-    padding: 1rem;
-    border-bottom: 1px solid var(--primary-color);
-    z-index: 2;
-  }
-
-  .line {
-    border-bottom: 1px solid #222;
-  }
-  .logo {
-    /* padding: 1rem; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid var(--primary-color);
-    height: 60px;
-    width: 60px;
-    border-radius: 50%;
-    margin-bottom: 1.2rem;
-  }
-
-  .fields {
-    display: flex;
-    padding: 1rem;
-    gap: 0.3rem;
-  }
-
-  @media (max-width: 1000px) {
-    width: 100%;
-  }
-`;
-
-const Button = styled.button`
-  font-weight: 400;
-  width: 18rem;
-  font-size: 20px;
-  color: black;
-  background-color: var(--primary-color);
-  padding: 0.6rem;
-  border: 1px solid var(--primary-color);
-  margin: 2rem auto;
-  /* margin: 3rem auto; */
-
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-
-const DisabledButton = styled(Button)`
-  background-color: black;
-  color: #939393;
-  border: 1px solid #939393;
-  &:hover {
-    color: #eee;
-    cursor: default;
-    background-color: #222;
-  }
-`;
-
+import { UserLPPairInfo } from "../config/interfaces";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
+import { getAddButtonTextAndOnClick } from "../utils/modalButtonParams";
+import { PrimaryButton } from "cantoui";
+import {
+  DexModalContainer,
+  SettingsPopIn,
+  DexLoadingOverlay,
+} from "../components/Styled";
 interface AddAllowanceProps {
-  pair: AllPairInfo;
-  value1: number;
-  value2: number;
+  pair: UserLPPairInfo;
+  value1: string;
+  value2: string;
   slippage: number;
   deadline: number;
   chainId: number | undefined;
@@ -113,12 +41,29 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
     state.setModalType,
     state.setConfirmationValues,
   ]);
+  let bnValue1: BigNumber;
+  let bnValue2: BigNumber;
+  if (
+    !props.value1 ||
+    isNaN(Number(props.value1)) ||
+    !props.value2 ||
+    isNaN(Number(props.value2))
+  ) {
+    bnValue1 = BigNumber.from(0);
+    bnValue2 = BigNumber.from(0);
+  } else {
+    bnValue1 = parseUnits(
+      truncateNumber(props.value1, props.pair.basePairInfo.token1.decimals),
+      props.pair.basePairInfo.token1.decimals
+    );
+    bnValue2 = parseUnits(
+      truncateNumber(props.value2, props.pair.basePairInfo.token2.decimals),
+      props.pair.basePairInfo.token2.decimals
+    );
+  }
 
   const routerAddress = getRouterAddress(props.chainId);
-  const needToken1Allowance =
-    Number(props.value1) > Number(props.pair.allowance.token1);
-  const needToken2Allowance =
-    Number(props.value2) > Number(props.pair.allowance.token2);
+
   const { state: addAllowanceA, send: addAllowanceASend } = useSetAllowance({
     type: "Enable",
     address: props.pair.basePairInfo.token1.address,
@@ -136,8 +81,8 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
 
   useEffect(() => {
     if (
-      Number(props.pair.allowance.token1) == 0 ||
-      Number(props.pair.allowance.token2) == 0
+      props.pair.allowance.token1.isZero() ||
+      props.pair.allowance.token2.isZero()
     ) {
       setModalType(ModalType.ENABLE);
     }
@@ -159,129 +104,55 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
       }, 500);
     }
   }, [addAllowanceB.status]);
-  if (needToken1Allowance && needToken2Allowance) {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceASend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-          addAllowanceBSend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        {"enable" +
-          props.pair.basePairInfo.token1.symbol +
-          " & " +
-          props.pair.basePairInfo.token2.symbol}
-      </Button>
-    );
-  } else if (needToken1Allowance && !needToken2Allowance) {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceASend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        enable {props.pair.basePairInfo.token1.symbol}
-      </Button>
-    );
-  } else if (!needToken1Allowance && needToken2Allowance) {
-    return (
-      <Button
-        onClick={() => {
-          addAllowanceBSend(
-            routerAddress,
-            "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-          );
-        }}
-      >
-        enable For {props.pair.basePairInfo.token2.symbol}
-      </Button>
-    );
-  } else {
-    if (isNaN(Number(props.value1)) || isNaN(Number(props.value2))) {
-      return <DisabledButton>enter valid amount</DisabledButton>;
-    } else if (
-      Number(props.value1) > Number(props.pair.balances.token1) ||
-      Number(props.value2) > Number(props.pair.balances.token2)
-    ) {
-      return <DisabledButton>no funds</DisabledButton>;
-    } else if (Number(props.slippage) <= 0 || Number(props.deadline) <= 0) {
-      return <DisabledButton>invalid settings</DisabledButton>;
-    } else if (!(props.value1 && props.value2)) {
-      return <DisabledButton>enter amount</DisabledButton>;
-    } else {
-      return (
-        <Button
-          onClick={() => {
-            setConfirmationValues({
-              amount1: props.value1,
-              amount2: props.value2,
-              slippage: props.slippage,
-              deadline: props.deadline,
-              percentage: 0,
-            });
-            setModalType(ModalType.ADD_CONFIRM);
-          }}
-        >
-          add liquidity
-        </Button>
-      );
+
+  const [buttonText, buttonOnClick, disabled] = getAddButtonTextAndOnClick(
+    props.pair.basePairInfo.token1.symbol,
+    props.pair.basePairInfo.token2.symbol,
+    props.pair.allowance.token1,
+    props.pair.allowance.token2,
+    props.pair.balances.token1,
+    props.pair.balances.token2,
+    bnValue1,
+    bnValue2,
+    props.slippage,
+    props.deadline,
+    () =>
+      addAllowanceASend(
+        routerAddress,
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ),
+    () =>
+      addAllowanceBSend(
+        routerAddress,
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ),
+    () => {
+      setConfirmationValues({
+        amount1: bnValue1,
+        amount2: bnValue2,
+        slippage: props.slippage,
+        deadline: props.deadline,
+        percentage: 0,
+      });
+      setModalType(ModalType.ADD_CONFIRM);
     }
-  }
+  );
+
+  return (
+    <PrimaryButton disabled={disabled} onClick={buttonOnClick}>
+      {buttonText}
+    </PrimaryButton>
+  );
 };
 
 interface Props {
-  value: AllPairInfo;
+  activePair: UserLPPairInfo;
   onClose: () => void;
   chainId?: number;
   account?: string;
 }
 
-interface StyleProps {
-  isLoading: boolean;
-}
-export const DexLoadingOverlay = styled.div<StyleProps>`
-  display: ${(props) => (props.isLoading ? "block" : "none")};
-  position: absolute;
-  top: 0%;
-  bottom: 0%;
-  width: 100%;
-  max-height: 45.6rem;
-  z-index: 2;
-  background-color: black;
-  @media (max-width: 1000px) {
-    width: 99vw;
-  }
-`;
-
-interface showProps {
-  show: boolean;
-}
-export const PopIn = styled.div<showProps>`
-  opacity: ${(showProps) => (showProps.show ? "100" : "0")};
-  transition: all 0.2s;
-  height: 100%;
-  position: absolute;
-  background-color: black;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  padding: 2rem;
-  justify-content: center;
-  top: 0;
-  left: 0;
-  z-index: 1;
-`;
-const AddModal = ({ value, chainId }: Props) => {
+const AddModal = ({ activePair, chainId, account }: Props) => {
   const [value1, setValue1] = useState("");
   const [value2, setValue2] = useState("");
   const [slippage, setSlippage] = useState("1");
@@ -289,47 +160,55 @@ const AddModal = ({ value, chainId }: Props) => {
   const [token1AllowanceStatus, setToken1AllowanceStatus] = useState("None");
   const [token2AllowanceStatus, setToken2AllowanceStatus] = useState("None");
   const [openSettings, setOpenSettings] = useState(false);
+  const displayReserveRatio = getReserveRatioAtoB(
+    activePair.totalSupply.ratio.ratio,
+    activePair.totalSupply.ratio.aTob,
+    activePair.basePairInfo.token1.decimals,
+    activePair.basePairInfo.token2.decimals
+  );
 
   return (
-    <Container>
+    <DexModalContainer>
       <DexLoadingOverlay
-        isLoading={["Mining", "PendingSignature", "Success"].includes(
+        show={["Mining", "PendingSignature", "Success"].includes(
           token1AllowanceStatus
         )}
       >
         <LoadingModal
           icons={{
-            icon1: value.basePairInfo.token1.icon,
-            icon2: value.basePairInfo.token2.icon,
+            icon1: activePair.basePairInfo.token1.icon,
+            icon2: activePair.basePairInfo.token2.icon,
           }}
           name={
-            value.basePairInfo.token1.symbol +
+            activePair.basePairInfo.token1.symbol +
             " / " +
-            value.basePairInfo.token2.symbol
+            activePair.basePairInfo.token2.symbol
           }
           amount={"0"}
           type="add"
           status={token1AllowanceStatus}
+          account={account}
         />
       </DexLoadingOverlay>
       <DexLoadingOverlay
-        isLoading={["Mining", "PendingSignature", "Success"].includes(
+        show={["Mining", "PendingSignature", "Success"].includes(
           token2AllowanceStatus
         )}
       >
         <LoadingModal
           icons={{
-            icon1: value.basePairInfo.token1.icon,
-            icon2: value.basePairInfo.token2.icon,
+            icon1: activePair.basePairInfo.token1.icon,
+            icon2: activePair.basePairInfo.token2.icon,
           }}
           name={
-            value.basePairInfo.token1.symbol +
+            activePair.basePairInfo.token1.symbol +
             "/ " +
-            value.basePairInfo.token2.symbol
+            activePair.basePairInfo.token2.symbol
           }
           amount={"0"}
           type="add"
           status={token2AllowanceStatus}
+          account={account}
         />
       </DexLoadingOverlay>
       <div className="title">
@@ -344,8 +223,8 @@ const AddModal = ({ value, chainId }: Props) => {
         }}
       >
         <IconPair
-          iconLeft={value.basePairInfo.token1.icon}
-          iconRight={value.basePairInfo.token2.icon}
+          iconLeft={activePair.basePairInfo.token1.icon}
+          iconRight={activePair.basePairInfo.token2.icon}
         />
       </div>
       <div
@@ -376,57 +255,91 @@ const AddModal = ({ value, chainId }: Props) => {
       <div className="fields">
         <div className="field">
           <Field
-            token={value.basePairInfo.token1.symbol}
-            icon={value.basePairInfo.token1.icon}
-            remaining={Number(value.balances.token1)}
-            balance={Number(value.balances.token1)}
-            limit={Number(
+            token={activePair.basePairInfo.token1.symbol}
+            icon={activePair.basePairInfo.token1.icon}
+            balance={formatUnits(
+              activePair.balances.token1,
+              activePair.basePairInfo.token1.decimals
+            )}
+            limit={formatUnits(
               getToken1Limit(
-                Number(value.balances.token1),
-                Number(value.balances.token2),
-                value.totalSupply.ratio
-              )
+                activePair.balances.token1,
+                activePair.balances.token2,
+                activePair.totalSupply.ratio.ratio,
+                activePair.totalSupply.ratio.aTob
+              ),
+              activePair.basePairInfo.token1.decimals
             )}
             placeholder="0.00"
             value={value1}
             onChange={(val) => {
               setValue1(val);
-              setValue2(
-                truncateNumber(
-                  getTokenBFromA(
-                    Number(val),
-                    value.totalSupply.ratio
-                  ).toString()
-                )
-              );
+              if (!val || isNaN(Number(val))) {
+                setValue2("");
+              } else {
+                const truncatedVal = truncateNumber(
+                  val,
+                  activePair.basePairInfo.token1.decimals
+                );
+                setValue2(
+                  formatUnits(
+                    getTokenBFromA(
+                      parseUnits(
+                        truncatedVal,
+                        activePair.basePairInfo.token1.decimals
+                      ),
+                      activePair.totalSupply.ratio.ratio,
+                      activePair.totalSupply.ratio.aTob
+                    ),
+                    activePair.basePairInfo.token2.decimals
+                  )
+                );
+              }
             }}
           />
         </div>
         <div className="field">
           <Field
-            icon={value.basePairInfo.token2.icon}
-            token={value.basePairInfo.token2.symbol}
-            remaining={Number(value.balances.token2)}
-            balance={Number(value.balances.token2)}
-            limit={Number(
+            icon={activePair.basePairInfo.token2.icon}
+            token={activePair.basePairInfo.token2.symbol}
+            balance={formatUnits(
+              activePair.balances.token2,
+              activePair.basePairInfo.token2.decimals
+            )}
+            limit={formatUnits(
               getToken2Limit(
-                Number(value.balances.token1),
-                Number(value.balances.token2),
-                value.totalSupply.ratio
-              )
+                activePair.balances.token1,
+                activePair.balances.token2,
+                activePair.totalSupply.ratio.ratio,
+                activePair.totalSupply.ratio.aTob
+              ),
+              activePair.basePairInfo.token2.decimals
             )}
             placeholder="0.00"
             value={value2}
             onChange={(val) => {
               setValue2(val);
-              setValue1(
-                truncateNumber(
-                  getTokenAFromB(
-                    Number(val),
-                    value.totalSupply.ratio
-                  ).toString()
-                )
-              );
+              if (!val || isNaN(Number(val))) {
+                setValue1("");
+              } else {
+                const truncatedVal = truncateNumber(
+                  val,
+                  activePair.basePairInfo.token2.decimals
+                );
+                setValue1(
+                  formatUnits(
+                    getTokenAFromB(
+                      parseUnits(
+                        truncatedVal,
+                        activePair.basePairInfo.token2.decimals
+                      ),
+                      activePair.totalSupply.ratio.ratio,
+                      activePair.totalSupply.ratio.aTob
+                    ),
+                    activePair.basePairInfo.token1.decimals
+                  )
+                );
+              }
             }}
           />
         </div>
@@ -434,18 +347,25 @@ const AddModal = ({ value, chainId }: Props) => {
       <div style={{ color: "white" }}>
         {
           <p style={{ textAlign: "right" }}>
-            <a>reserve ratio: </a> 1 {value.basePairInfo.token1.symbol} ={" "}
-            {truncateNumber((1 / value.totalSupply.ratio).toString())}{" "}
-            {value.basePairInfo.token2.symbol}
+            <a>reserve ratio: </a> 1 {activePair.basePairInfo.token1.symbol} ={" "}
+            {truncateNumber(displayReserveRatio.toString())}{" "}
+            {activePair.basePairInfo.token2.symbol}
           </p>
         }
         <br />
-        {value.basePairInfo.stable ? (
+        {activePair.basePairInfo.stable ? (
           <p style={{ textAlign: "right" }}>
             <a style={{ textAlign: "left" }}>price: </a> 1{" "}
-            {value.basePairInfo.token1.symbol} ={" "}
-            {truncateNumber(value.prices.token2)}{" "}
-            {value.basePairInfo.token2.symbol}
+            {activePair.basePairInfo.token1.symbol} ={" "}
+            {truncateNumber(
+              formatUnits(
+                valueInNote(
+                  parseUnits("1", activePair.basePairInfo.token2.decimals),
+                  activePair.prices.token2
+                )
+              )
+            )}{" "}
+            {activePair.basePairInfo.token2.symbol}
           </p>
         ) : (
           ""
@@ -459,7 +379,7 @@ const AddModal = ({ value, chainId }: Props) => {
           gap: "1rem",
         }}
       >
-        <PopIn
+        <SettingsPopIn
           show={openSettings}
           style={!openSettings ? { zIndex: "-1" } : { marginBottom: "-15px" }}
         >
@@ -477,26 +397,25 @@ const AddModal = ({ value, chainId }: Props) => {
               onChange={(d) => setDeadline(d)}
             />
           </div>
-          {Number(slippage) <= 0 || Number(deadline) <= 0 ? (
-            <DisabledButton>save settings</DisabledButton>
-          ) : (
-            <Button onClick={() => setOpenSettings(false)}>
-              save settings
-            </Button>
-          )}
-        </PopIn>
+          <PrimaryButton
+            disabled={Number(slippage) <= 0 || Number(deadline) <= 0}
+            onClick={() => setOpenSettings(false)}
+          >
+            save settings
+          </PrimaryButton>
+        </SettingsPopIn>
       </div>
       <AddAllowanceButton
         status1={setToken1AllowanceStatus}
         status2={setToken2AllowanceStatus}
-        pair={value}
-        value1={Number(value1)}
-        value2={Number(value2)}
+        pair={activePair}
+        value1={value1}
+        value2={value2}
         chainId={chainId}
         deadline={Number(deadline)}
         slippage={Number(slippage)}
       />
-    </Container>
+    </DexModalContainer>
   );
 };
 

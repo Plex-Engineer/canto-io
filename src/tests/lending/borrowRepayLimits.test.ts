@@ -27,7 +27,7 @@ test("Max borrow in underlying", () => {
       used: parseUnits("1000", 18),
       limit: parseUnits("10000", 18),
       percentOfLimit: 100,
-      price: parseUnits("1.5", 18),
+      price: parseUnits("1.5", 30),
       tokenDecimals: 6,
       expected: parseUnits("6000", 6),
     },
@@ -35,7 +35,7 @@ test("Max borrow in underlying", () => {
       used: parseUnits("1000", 18),
       limit: parseUnits("10000", 18),
       percentOfLimit: 80,
-      price: parseUnits("1.5", 18),
+      price: parseUnits("1.5", 30),
       tokenDecimals: 6,
       expected: parseUnits("4666.666666", 6),
     },
@@ -43,7 +43,7 @@ test("Max borrow in underlying", () => {
       used: parseUnits("1000", 18),
       limit: parseUnits("10000", 18),
       percentOfLimit: 0,
-      price: parseUnits("1.5", 18),
+      price: parseUnits("1.5", 30),
       tokenDecimals: 6,
       expected: parseUnits("0", 6),
     },
@@ -51,7 +51,7 @@ test("Max borrow in underlying", () => {
       used: parseUnits("1000", 18),
       limit: parseUnits("10000", 18),
       percentOfLimit: 50,
-      price: parseUnits("0", 18),
+      price: parseUnits("0", 30),
       tokenDecimals: 6,
       expected: parseUnits("0", 6),
     },
@@ -61,8 +61,7 @@ test("Max borrow in underlying", () => {
       testCase.used,
       testCase.limit,
       testCase.percentOfLimit,
-      testCase.price,
-      testCase.tokenDecimals
+      testCase.price
     );
     expect(test).toEqual(testCase.expected);
   }
@@ -91,7 +90,7 @@ test("New borrow amount", () => {
       amount: parseUnits("10000", 6),
       tokenDecimals: 6,
       borrowBalance: parseUnits("1000", 18),
-      price: parseUnits("5", 18),
+      price: parseUnits("5", 30),
       expected: parseUnits("51000", 18),
     },
     {
@@ -99,7 +98,7 @@ test("New borrow amount", () => {
       amount: parseUnits("2000", 6),
       tokenDecimals: 6,
       borrowBalance: parseUnits("1000", 18),
-      price: parseUnits("0.5", 18),
+      price: parseUnits("0.5", 30),
       expected: parseUnits("0", 18),
     },
     {
@@ -107,7 +106,7 @@ test("New borrow amount", () => {
       amount: parseUnits("2000", 6),
       tokenDecimals: 6,
       borrowBalance: parseUnits("1000", 18),
-      price: parseUnits("0", 18),
+      price: parseUnits("0", 30),
       expected: parseUnits("1000", 18),
     },
     {
@@ -115,23 +114,7 @@ test("New borrow amount", () => {
       amount: parseUnits("2000", 6),
       tokenDecimals: 6,
       borrowBalance: parseUnits("1000", 18),
-      price: parseUnits("0", 18),
-      expected: parseUnits("1000", 18),
-    },
-    {
-      borrow: true,
-      amount: parseUnits("2000", 6),
-      tokenDecimals: 0,
-      borrowBalance: parseUnits("1000", 18),
-      price: parseUnits("1000", 18),
-      expected: parseUnits("1000", 18),
-    },
-    {
-      borrow: false,
-      amount: parseUnits("2000", 6),
-      tokenDecimals: 0,
-      borrowBalance: parseUnits("1000", 18),
-      price: parseUnits("1000", 18),
+      price: parseUnits("0", 30),
       expected: parseUnits("1000", 18),
     },
   ];
@@ -139,7 +122,6 @@ test("New borrow amount", () => {
     const test = newBorrowAmount(
       testCase.borrow,
       testCase.amount,
-      testCase.tokenDecimals,
       testCase.borrowBalance,
       testCase.price
     );
@@ -156,7 +138,7 @@ test("Expected borrow limit used for borrows", () => {
       borrowBalance: parseUnits("1000", 18),
       price: parseUnits("1", 18),
       currentLimit: parseUnits("10000", 18),
-      expected: 20,
+      expected: 0.2,
     },
     {
       borrow: true,
@@ -165,7 +147,7 @@ test("Expected borrow limit used for borrows", () => {
       borrowBalance: parseUnits("1000", 18),
       price: parseUnits("1", 18),
       currentLimit: parseUnits("10000", 18),
-      expected: 75,
+      expected: 0.75,
     },
     {
       borrow: true,
@@ -174,7 +156,7 @@ test("Expected borrow limit used for borrows", () => {
       borrowBalance: parseUnits("0", 18),
       price: parseUnits("1", 18),
       currentLimit: parseUnits("10", 18),
-      expected: 10.1,
+      expected: 0.101,
     },
     {
       borrow: true,
@@ -190,34 +172,24 @@ test("Expected borrow limit used for borrows", () => {
       amount: parseUnits("10", 6),
       tokenDecimals: 6,
       borrowBalance: parseUnits("0", 18),
-      price: parseUnits("0.5", 18),
+      price: parseUnits("0.5", 30),
       currentLimit: parseUnits("10", 18),
-      expected: 50,
+      expected: 0.5,
     },
     {
       borrow: true,
       amount: parseUnits("10", 6),
       tokenDecimals: 6,
       borrowBalance: parseUnits("20", 18),
-      price: parseUnits("0", 18),
+      price: parseUnits("0", 30),
       currentLimit: parseUnits("50", 18),
-      expected: 40,
-    },
-    {
-      borrow: true,
-      amount: parseUnits("10", 6),
-      tokenDecimals: 0,
-      borrowBalance: parseUnits("20", 18),
-      price: parseUnits("10", 18),
-      currentLimit: parseUnits("50", 18),
-      expected: 40,
+      expected: 0.4,
     },
   ];
   for (const testCase of testCases) {
     const test = expectedBorrowLimitUsedInBorrowOrRepay(
       testCase.borrow,
       testCase.amount,
-      testCase.tokenDecimals,
       testCase.borrowBalance,
       testCase.price,
       testCase.currentLimit
@@ -244,7 +216,7 @@ test("Expected borrow limit used for repays", () => {
       borrowBalance: parseUnits("9000", 18),
       price: parseUnits("1", 18),
       currentLimit: parseUnits("10000", 18),
-      expected: 75,
+      expected: 0.75,
     },
     {
       borrow: false,
@@ -253,7 +225,7 @@ test("Expected borrow limit used for repays", () => {
       borrowBalance: parseUnits("10", 18),
       price: parseUnits("1", 18),
       currentLimit: parseUnits("10", 18),
-      expected: 10.1,
+      expected: 0.101,
     },
     {
       borrow: false,
@@ -269,34 +241,24 @@ test("Expected borrow limit used for repays", () => {
       amount: parseUnits("10", 6),
       tokenDecimals: 6,
       borrowBalance: parseUnits("20", 18),
-      price: parseUnits("0.5", 18),
+      price: parseUnits("0.5", 30),
       currentLimit: parseUnits("50", 18),
-      expected: 30,
+      expected: 0.3,
     },
     {
       borrow: false,
       amount: parseUnits("10", 6),
       tokenDecimals: 6,
       borrowBalance: parseUnits("20", 18),
-      price: parseUnits("0", 18),
+      price: parseUnits("0", 30),
       currentLimit: parseUnits("50", 18),
-      expected: 40,
-    },
-    {
-      borrow: false,
-      amount: parseUnits("10", 6),
-      tokenDecimals: 0,
-      borrowBalance: parseUnits("20", 18),
-      price: parseUnits("10", 18),
-      currentLimit: parseUnits("50", 18),
-      expected: 40,
+      expected: 0.4,
     },
   ];
   for (const testCase of testCases) {
     const test = expectedBorrowLimitUsedInBorrowOrRepay(
       testCase.borrow,
       testCase.amount,
-      testCase.tokenDecimals,
       testCase.borrowBalance,
       testCase.price,
       testCase.currentLimit

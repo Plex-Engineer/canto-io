@@ -1,53 +1,13 @@
 import styled from "@emotion/styled";
-import { formatBalance } from "global/utils/utils";
-import { useEffect, useState } from "react";
+import { truncateNumber } from "global/utils/utils";
+import { useState } from "react";
+import { FieldContainer } from "./Styled";
 
 type styleProps = {
   focused: boolean;
 };
 
 const primaryColor = "var(--primary-color)";
-const Container = styled.div<styleProps>`
-  display: flex;
-  flex-direction: column;
-  background-color: ${(props) => (props.focused ? "#001A0E" : "#191919")};
-  border: ${(props) =>
-    props.focused ? "1px solid #06FC99" : "1px solid #191919"};
-  color: #efefef;
-  height: 130px;
-  flex: 1;
-  margin: 1px;
-
-  &:hover {
-    background-color: #001a0e;
-    cursor: text;
-    input {
-      background-color: #001a0e !important;
-    }
-  }
-  input[type="text"] {
-    padding: 0 1rem;
-    margin-top: 1rem;
-    background-color: ${(props) => (props.focused ? "#001A0E" : "#191919")};
-    font-size: 24px;
-    width: 100%;
-    border: none;
-    font-weight: 300;
-    color: ${(props) => (props.focused ? primaryColor : "#efefef")};
-    &:focus {
-      outline: none;
-    }
-  }
-
-  p {
-    margin-top: 0.4rem;
-    color: #6f6f6f;
-    letter-spacing: -0.03em;
-    text-align: right;
-    font-size: 16px;
-    padding: 0 1rem;
-  }
-`;
 
 const Max = styled.span`
   color: var(--primary-color);
@@ -81,29 +41,20 @@ const IconName = styled.div<styleProps>`
 
 type Props = {
   placeholder: string;
-  balance: number;
+  balance: string;
   type?: string;
   hasToken?: boolean;
   token?: string;
-  limit: number;
+  limit: string;
   onChange: (value: string) => void;
   value: string;
   icon: string;
-  remaining: number;
 };
 
 const Field = (props: Props) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [remaining, setRemaining] = useState(props.balance);
   const [cursorPosition, setCursorPosition] = useState(0);
 
-  useEffect(() => {
-    if (props.remaining < 0 || isNaN(props.remaining)) {
-      setRemaining(0);
-    } else {
-      setRemaining(props.remaining);
-    }
-  }, [props.remaining]);
   const InputValue = () => (
     <input
       type="text"
@@ -126,7 +77,7 @@ const Field = (props: Props) => {
     />
   );
   return (
-    <Container onClick={() => setIsFocused(true)} focused={isFocused}>
+    <FieldContainer onClick={() => setIsFocused(true)} focused={isFocused}>
       <IconName focused={isFocused}>
         <img src={props.icon} height={20} />
         <p>{props.token}</p>
@@ -145,7 +96,7 @@ const Field = (props: Props) => {
           justifyContent: "space-between",
         }}
       >
-        <p>{formatBalance(remaining)}</p>
+        <p>{truncateNumber(props.balance)}</p>
         <p>
           <Max
             onClick={() => {
@@ -156,7 +107,7 @@ const Field = (props: Props) => {
           </Max>
         </p>
       </div>
-    </Container>
+    </FieldContainer>
   );
 };
 

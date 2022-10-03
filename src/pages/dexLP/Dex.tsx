@@ -1,72 +1,19 @@
-import styled from "@emotion/styled";
 import Table from "./components/table";
 import Row, { TransactionRow } from "./components/row";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useNotifications, Notification } from "@usedapp/core";
+import { useNotifications } from "@usedapp/core";
 import useModals, { ModalType } from "./hooks/useModals";
 import { ModalManager } from "./modals/ModalManager";
 import { ethers } from "ethers";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import useDex, {
-  AllPairInfo,
-  emptyPairInfo,
-} from "pages/dexLP/hooks/useTokens";
 import { noteSymbol, truncateNumber } from "global/utils/utils";
 import style from "./Dex.module.scss";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  color: #fff;
-  min-height: 100vh;
-  h1 {
-    font-size: 12rem;
-    color: var(--primary-color);
-    text-align: center;
-    font-weight: 300;
-    letter-spacing: -0.13em;
-    position: relative;
-    height: 26rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-shadow: 0px 14px 14px rgba(6, 252, 153, 0.2);
-  }
-
-  .tableName {
-    width: 1200px;
-    margin: 0 auto;
-    padding: 0;
-  }
-
-  & > button {
-    background-color: var(--primary-color);
-    border: none;
-    border-radius: 0px;
-    padding: 0.6rem 2.4rem;
-    font-size: 1.2rem;
-    font-weight: 500;
-    letter-spacing: -0.03em;
-    width: fit-content;
-    margin: 0 auto;
-    margin-bottom: 3rem;
-
-    &:hover {
-      background-color: var(--primary-color-dark);
-    }
-  }
-
-  @media (max-width: 1000px) {
-    h1 {
-      font-size: 20vw;
-    }
-    .tableName {
-      width: 100%;
-      padding: 0 2rem;
-    }
-  }
-`;
+import useLPTokenData from "./hooks/useLPTokenData";
+import useUserLPTokenInfo from "./hooks/useUserLPTokenData";
+import { LPPairInfo, UserLPPairInfo } from "./config/interfaces";
+import { formatUnits } from "ethers/lib/utils";
+import { DexContainer } from "./components/Styled";
 
 const Dex = () => {
   // Mixpanel.events.pageOpened("Dex Market", '');
@@ -77,13 +24,16 @@ const Dex = () => {
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<any[]>([]);
 
-  const [setModalType, activePair, setActivePair] = useModals((state) => [
+  const [setModalType, setActivePair] = useModals((state) => [
     state.setModalType,
-    state.activePair,
     state.setActivePair,
   ]);
-
-  const pairs = useDex(networkInfo.account, Number(networkInfo.chainId));
+  const pairs: LPPairInfo[] = useLPTokenData(Number(networkInfo.chainId));
+  const userPairs: UserLPPairInfo[] = useUserLPTokenInfo(
+    pairs,
+    networkInfo.account,
+    Number(networkInfo.chainId)
+  );
 
   useEffect(() => {
     notifications.forEach((item) => {
@@ -162,10 +112,9 @@ const Dex = () => {
   }, [notifications]);
 
   return (
-    <Container style={style}>
+    <DexContainer style={style}>
       <div style={{ marginBottom: "75px" }}>
         <ModalManager
-          data={activePair ?? emptyPairInfo}
           chainId={Number(networkInfo.chainId)}
           account={networkInfo.account}
           onClose={() => {
@@ -225,22 +174,21 @@ const Dex = () => {
                   />
                 );
               }
+              return null;
             })}
           </Table>
         </div>
       ) : null}
-      {pairs?.filter(
-        (pair: AllPairInfo) =>
-          Number(pair.userSupply.totalLP) > 0 ||
-          Number(pair.userSupply.percentOwned) > 0
+      {userPairs?.filter(
+        (pair: UserLPPairInfo) =>
+          !pair.userSupply.totalLP.isZero() || pair.userSupply.percentOwned > 0
       ).length ? (
         <div>
           <p className="tableName">current position</p>
           <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-            {pairs?.map((pair: AllPairInfo, idx) => {
-              console.log(0.2 * idx);
-              return Number(pair.userSupply.totalLP) > 0 ||
-                Number(pair.userSupply.percentOwned) > 0 ? (
+            {userPairs?.map((pair: UserLPPairInfo, idx) => {
+              return !pair.userSupply.totalLP.isZero() ||
+                pair.userSupply.percentOwned > 0 ? (
                 <Row
                   delay={0.2 * idx}
                   key={pair.basePairInfo.address}
@@ -249,7 +197,7 @@ const Dex = () => {
                   onClick={() => {
                     setActivePair(pair);
                     setModalType(
-                      Number(pair.userSupply.totalLP) > 0
+                      !pair.userSupply.totalLP.isZero()
                         ? ModalType.ADD_OR_REMOVE
                         : ModalType.ADD
                     );
@@ -260,11 +208,19 @@ const Dex = () => {
                     pair.basePairInfo.token2.symbol
                   }
                   totalValueLocked={
-                    noteSymbol + ethers.utils.commify(pair.totalSupply.tvl)
+                    noteSymbol +
+                    ethers.utils.commify(
+                      truncateNumber(formatUnits(pair.totalSupply.tvl))
+                    )
                   }
                   apr={"23.2"}
                   position={
-                    truncateNumber(pair.userSupply.totalLP) + " LP Tokens"
+                    truncateNumber(
+                      formatUnits(
+                        pair.userSupply.totalLP,
+                        pair.basePairInfo.decimals
+                      )
+                    ) + " LP Tokens"
                   }
                   share={truncateNumber(
                     (pair.userSupply.percentOwned * 100).toString()
@@ -277,18 +233,18 @@ const Dex = () => {
       ) : null}
 
       {
-        pairs?.filter(
-          (pair: AllPairInfo) =>
-            Number(pair.userSupply.totalLP) == 0 &&
-            Number(pair.userSupply.percentOwned) == 0
+        userPairs?.filter(
+          (pair: UserLPPairInfo) =>
+            pair.userSupply.totalLP.isZero() &&
+            pair.userSupply.percentOwned == 0
         ).length ? (
           <div>
             <p className="tableName">pools</p>
             <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-              {pairs?.map((pair: AllPairInfo, idx) => {
+              {userPairs?.map((pair: UserLPPairInfo, idx) => {
                 return !(
-                  Number(pair.userSupply.totalLP) == 0 &&
-                  Number(pair.userSupply.percentOwned) == 0
+                  pair.userSupply.totalLP.isZero() &&
+                  pair.userSupply.percentOwned == 0
                 ) ? null : (
                   <Row
                     delay={0.1 * idx}
@@ -309,11 +265,15 @@ const Dex = () => {
                       pair.basePairInfo.token2.symbol
                     }
                     totalValueLocked={
-                      noteSymbol + ethers.utils.commify(pair.totalSupply.tvl)
+                      noteSymbol +
+                      ethers.utils.commify(
+                        truncateNumber(formatUnits(pair.totalSupply.tvl))
+                      )
                     }
                     apr={"23.2"}
                     position={
-                      truncateNumber(pair.userSupply.totalLP) + " LP Tokens"
+                      truncateNumber(formatUnits(pair.userSupply.totalLP)) +
+                      " LP Tokens"
                     }
                     share={truncateNumber(
                       (pair.userSupply.percentOwned * 100).toString()
@@ -331,7 +291,7 @@ const Dex = () => {
         //   <LoadingRow colSpan={4} />
         // </Table>
       }
-    </Container>
+    </DexContainer>
   );
 };
 export default Dex;

@@ -1,6 +1,6 @@
 import Row from "./Row";
 import { Validator, DelegationResponse, UndelegationMap } from "../utils/utils";
-import LendingTable from "pages/lending/components/lendingTable";
+import LendingTable from "pages/lending/components/table";
 import { BigNumber } from "ethers";
 
 type props = {
