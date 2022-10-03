@@ -24,6 +24,7 @@ import { formatUnits } from "ethers/lib/utils";
 import { convertStringToBigNumber } from "./utils/stringToBigNumber";
 import { GeneralTransferBox } from "./components/generalTransferBox";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
+import FadeIn from "react-fade-in";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];
@@ -102,12 +103,19 @@ const BridgeIn = ({
   };
 
   return (
-    <Container>
+    <Styled as={FadeIn}>
       <Text type="title" color="primary">
         send funds to canto
       </Text>
 
-      <Text type="text" color="primary" style={{ width: "70%" }}>
+      <Text
+        type="text"
+        color="primary"
+        style={{
+          margin: "0 8rem",
+          lineHeight: "1.8rem",
+        }}
+      >
         funds are transferred in two steps through our canto bridge. it takes
         several minutes. for more details{" "}
         <a
@@ -232,11 +240,11 @@ const BridgeIn = ({
           }}
         />
       )}
-    </Container>
+    </Styled>
   );
 };
 
-const Container = styled.div`
+const Styled = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
