@@ -192,8 +192,8 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
   flex-direction: column;
   gap: 2rem;
   padding: 2rem 3rem;
-  border: ${(props) =>
-    props.disabled ? " 2px solid var(--warning-color)" : "2px solid #333"};
+  border: ${(props) => (props.disabled ? " 2px solid #333" : "2px solid #333")};
+
   /* border: ${(props) =>
     props.disabled ? " 1px solid #333" : "1px solid var(--primary-color)"}; */
   margin: 2rem 0;
