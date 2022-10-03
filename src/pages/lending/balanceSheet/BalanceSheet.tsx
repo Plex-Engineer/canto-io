@@ -16,6 +16,7 @@ import { noteSymbol } from "global/utils/utils";
 import { useLMTokenData } from "../hooks/useLMTokenData";
 import { useUserLMTokenData } from "../hooks/useUserLMTokenData";
 import { LMTokenDetails } from "../config/interfaces";
+import { getUserLPTokenData } from "./getLPTokenData";
 
 export const BalanceSheet = () => {
   //get network info and token list
@@ -26,6 +27,9 @@ export const BalanceSheet = () => {
     networkInfo.account,
     networkInfo.chainId
   );
+  useEffect(() => {
+    getUserLPTokenData(7700, userLMTokens, undefined);
+  }, [userLMTokens]);
 
   //get base token prices used for pricing LP tokens
   const [tokenPrices, setTokenPrices] = useState<TokenPriceObject[]>([]);
@@ -52,7 +56,6 @@ export const BalanceSheet = () => {
     tokenPrices,
     LPInfo
   );
-
   return (
     <div>
       <BalanceSheetTable
@@ -120,7 +123,7 @@ const BalanceSheetTable = (props: BalanceTableProps) => {
         })}
         <BalanceSheetRow
           key={props.name}
-          assetName={"total " + props.name}
+          assetName={props.name == "total" ? props.name : "total " + props.name}
           value={truncateNumber(props.total.toString())}
         />
       </LendingTable>

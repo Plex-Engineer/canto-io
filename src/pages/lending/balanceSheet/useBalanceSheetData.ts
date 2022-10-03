@@ -3,7 +3,6 @@ import { TokenPriceObject } from "./tokenPrices";
 import { LPTokenInfo } from "./useLPInfo";
 import { UserLMTokenDetails } from "../config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
-import { BigNumber } from "ethers";
 
 export interface BalanceSheetToken {
   icon: string;
