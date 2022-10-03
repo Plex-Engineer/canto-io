@@ -1,37 +1,43 @@
 import create from "zustand";
 import { devtools } from "zustand/middleware";
-import emptyToken from "assets/empty.svg";
+import {
+  EmptySelectedConvertToken,
+  EmptySelectedETHToken,
+  EmptySelectedNativeToken,
+  UserConvertToken,
+  UserGravityBridgeTokens,
+  UserNativeTokens,
+} from "../config/interfaces";
 
-export interface CantoToken {
-  name: string; // native canonical name
-  wName: string; // ERC20 canonical name
-  icon: null;
-  value: string;
-  nativeName: string; // mapping to the actual native token name,
-  decimals: number;
+export enum SelectedTokens {
+  ETHTOKEN,
+  CONVERTIN,
+  CONVERTOUT,
+  BRIDGEOUT,
 }
-
 interface TokenStore {
-  tokens: CantoToken[];
-  setTokens: (tokens: CantoToken[]) => void;
-  selectedToken: CantoToken;
-  setSelectedToken: (token: CantoToken) => void;
+  selectedTokens: {
+    [SelectedTokens.ETHTOKEN]: UserGravityBridgeTokens;
+    [SelectedTokens.CONVERTIN]: UserConvertToken;
+    [SelectedTokens.CONVERTOUT]: UserConvertToken;
+    [SelectedTokens.BRIDGEOUT]: UserNativeTokens;
+  };
+  setSelectedToken: (token: any, selectedFrom: SelectedTokens) => void;
 }
 export const useTokenStore = create<TokenStore>()(
-  devtools((set) => ({
-    tokens: [],
-    setTokens: (tokens: CantoToken[]) => set({ tokens: tokens }),
-    selectedToken: {
-      name: "select native coin", // native canonical name
-      wName: "select erc20 token", // ERC20 canonical name
-      icon: null,
-      value: "0",
-      nativeName: "erc20/", // mapping to the actual native token name,
-      decimals: 18,
+  devtools((set, get) => ({
+    selectedTokens: {
+      [SelectedTokens.ETHTOKEN]: EmptySelectedETHToken,
+      [SelectedTokens.CONVERTIN]: EmptySelectedConvertToken,
+      [SelectedTokens.CONVERTOUT]: EmptySelectedConvertToken,
+      [SelectedTokens.BRIDGEOUT]: EmptySelectedNativeToken,
     },
-    setSelectedToken: (token: CantoToken) => {
+    setSelectedToken: (token: any, selectedFrom: SelectedTokens) => {
       set({
-        selectedToken: token,
+        selectedTokens: {
+          ...get().selectedTokens,
+          [selectedFrom]: token,
+        },
       });
     },
   }))

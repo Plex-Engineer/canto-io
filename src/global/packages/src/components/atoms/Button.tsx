@@ -1,19 +1,19 @@
-import styled from 'styled-components';
+import styled from "@emotion/styled";
 
 const Sizes = {
-  'x-sm': 16,
+  "x-sm": 16,
   sm: 18,
   md: 20,
   lg: 22,
-  'x-lg': 28,
+  "x-lg": 28,
 };
 interface Props {
-  size?: 'x-sm' | 'sm' | 'md' | 'lg' | 'x-lg';
-  padding?: 'x-sm' | 'sm' | 'md' | 'lg' | 'x-lg';
+  size?: "x-sm" | "sm" | "md" | "lg" | "x-lg";
+  padding?: "x-sm" | "sm" | "md" | "lg" | "x-lg";
 }
 const PrimaryButton = styled.button<Props>`
   font-weight: 300;
-  font-size: ${({ size }) => Sizes[size ?? 'md'] + 'px'};
+  font-size: ${({ size }) => Sizes[size ?? "md"] + "px"};
   background-color: var(--primary-color);
   color: var(--pitch-black-color);
   padding: 0.4rem 2rem;
@@ -82,4 +82,46 @@ const HighlightButton = styled(FilledButton)<Props>`
     border: 1px solid var(--off-white-color);
   }
 `;
-export { PrimaryButton, OutlinedButton, FilledButton, HighlightButton };
+
+interface HybridProps {
+  size?: "x-sm" | "sm" | "md" | "lg" | "x-lg";
+  padding?: "x-sm" | "sm" | "md" | "lg" | "x-lg";
+  type: "primary" | "filled" | "highlight" | "outlined";
+  children: React.ReactNode;
+}
+const HybirdButton = (props: HybridProps) => {
+  switch (props.type) {
+    case "outlined":
+      return (
+        <OutlinedButton size={props.size} padding={props.padding}>
+          {props.children}
+        </OutlinedButton>
+      );
+    case "filled":
+      return (
+        <FilledButton size={props.size} padding={props.padding}>
+          {props.children}
+        </FilledButton>
+      );
+    case "highlight":
+      return (
+        <HighlightButton size={props.size} padding={props.padding}>
+          {props.children}
+        </HighlightButton>
+      );
+    case "primary":
+    default:
+      return (
+        <PrimaryButton size={props.size} padding={props.padding}>
+          {props.children}
+        </PrimaryButton>
+      );
+  }
+};
+export {
+  PrimaryButton,
+  OutlinedButton,
+  FilledButton,
+  HighlightButton,
+  HybirdButton,
+};

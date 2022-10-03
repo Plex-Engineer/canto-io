@@ -5,7 +5,8 @@ import Glitch from "../../components/molecules/Glitch";
 import { OutlinedButton } from "../atoms/Button";
 import { Text } from "../atoms/Text";
 import Alert from "../atoms/Alert";
-import styled from "styled-components";
+import styled from "@emotion/styled";
+import ModalManager from "../molecules/ModalManager";
 
 export interface Page {
   name: string;
@@ -67,7 +68,14 @@ export const NavBar = (props: Props) => {
         <Text id="title" type="title">
           {currentPage}
         </Text>
-        {ConnectionButton(isConnected, balance, currency, account, onClick)}
+        {ConnectionButton(
+          isConnected,
+          balance,
+          currency,
+          account,
+          chainId,
+          onClick
+        )}
       </nav>
     </Container>
   );
@@ -134,6 +142,7 @@ function ConnectionButton(
   balance: string,
   currency: string,
   account: string,
+  chainId: number,
   onClick: () => void
 ) {
   return (
@@ -173,6 +182,7 @@ function ConnectionButton(
           connect <span className="hide-on-mobile">&nbsp;wallet</span>
         </OutlinedButton>
       )}
+      <ModalManager chainId={chainId} />
     </div>
   );
 }

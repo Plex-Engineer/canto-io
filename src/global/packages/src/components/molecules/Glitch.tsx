@@ -1,14 +1,15 @@
-import styled from "styled-components";
+import styled from "@emotion/styled";
 
 const GlitchWrapper = styled.p`
   & {
     color: var(--primary-color);
-    font-family: 'IBM Plex Mono';
+    font-family: "IBM Plex Mono";
     font-size: 26px;
     font-weight: 300;
     margin: 0 1rem;
     position: relative;
-    text-shadow: 0.05em 0 0 #00ffd5, -0.03em -0.04em 0 #1d7407, 0.025em 0.04em 0 #8bff9f;
+    text-shadow: 0.05em 0 0 #00ffd5, -0.03em -0.04em 0 #1d7407,
+      0.025em 0.04em 0 #8bff9f;
     animation: glitch 725ms infinite;
   }
   & span {
@@ -30,25 +31,32 @@ const GlitchWrapper = styled.p`
   }
   @keyframes glitch {
     0% {
-      text-shadow: 0.05em 0 0 #00ffd5, -0.03em -0.04em 0 #1d7407, 0.025em 0.04em 0 #8bff9f;
+      text-shadow: 0.05em 0 0 #00ffd5, -0.03em -0.04em 0 #1d7407,
+        0.025em 0.04em 0 #8bff9f;
     }
     15% {
-      text-shadow: 0.05em 0 0 #00ffd5, -0.03em -0.04em 0 #1d7407, 0.025em 0.04em 0 #8bff9f;
+      text-shadow: 0.05em 0 0 #00ffd5, -0.03em -0.04em 0 #1d7407,
+        0.025em 0.04em 0 #8bff9f;
     }
     16% {
-      text-shadow: -0.05em -0.025em 0 #00ffd5, 0.025em 0.035em 0 #1d7407, -0.05em -0.05em 0 #8bff9f;
+      text-shadow: -0.05em -0.025em 0 #00ffd5, 0.025em 0.035em 0 #1d7407,
+        -0.05em -0.05em 0 #8bff9f;
     }
     49% {
-      text-shadow: -0.05em -0.025em 0 #00ffd5, 0.025em 0.035em 0 #1d7407, -0.05em -0.05em 0 #8bff9f;
+      text-shadow: -0.05em -0.025em 0 #00ffd5, 0.025em 0.035em 0 #1d7407,
+        -0.05em -0.05em 0 #8bff9f;
     }
     50% {
-      text-shadow: 0.05em 0.035em 0 #00ffd5, 0.03em 0 0 #1d7407, 0 -0.04em 0 #8bff9f;
+      text-shadow: 0.05em 0.035em 0 #00ffd5, 0.03em 0 0 #1d7407,
+        0 -0.04em 0 #8bff9f;
     }
     99% {
-      text-shadow: 0.05em 0.035em 0 #00ffd5, 0.03em 0 0 #1d7407, 0 -0.04em 0 #8bff9f;
+      text-shadow: 0.05em 0.035em 0 #00ffd5, 0.03em 0 0 #1d7407,
+        0 -0.04em 0 #8bff9f;
     }
     100% {
-      text-shadow: -0.05em 0 0 #00ffd5, -0.025em -0.04em 0 #1d7407, -0.04em -0.025em 0 #8bff9f;
+      text-shadow: -0.05em 0 0 #00ffd5, -0.025em -0.04em 0 #1d7407,
+        -0.04em -0.025em 0 #8bff9f;
     }
   }
 `;

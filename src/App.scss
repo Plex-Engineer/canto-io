@@ -1,60 +1,87 @@
 #root {
-    width: 100%;
-    --primary-color : #06fc99;
-    --primary-color : #06fc99;
-    --primary-color-dark : #05de87;
-    --off-white-color : #EFEFEF;
-    --error-color : #FE4256;
-    --toastify-color-progress-light: var(--primary-color) !important;
-  }
-  
-  :root{
-    --primary-color : #06fc99;
-    --primary-color-dark : #05de87;
-    --off-white-color : #EFEFEF;
-    --error-color : #FE4256;
-    --toastify-color-progress-light: var(--primary-color) !important;
-    scrollbar-color: var(--primary-color);
-    scroll-behavior: smooth;
-  
-  }
-    /* Chrome, Safari, Edge, Opera */
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  
-  /* Firefox */
-  input[type=number] {
-    -moz-appearance: textfield;
-  }
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  /* Track */
-  ::-webkit-scrollbar-track {
-    background: #151515;
-  
-  }
-  
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
-    box-shadow: inset 2 2 5px var(--primary-color);
-    border-radius: 6px;
-    width: 6px;
-    background: var(--primary-color);
-  }
-  
-  /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
-    background: #07e48c;
-  }
-  .App {
-      background: repeating-linear-gradient(0deg, #010000 0%, #010000 4px, #021911 4px, #021911  8px);
-      background-repeat: repeat-y;
-      text-shadow: 0 0 4px #2cffab, 0 0 20px var(--primary-color);
-      display: flex;
-      flex-direction: column;
-  }
+  width: 100%;
+  --primary-color-dark: #05de87;
+  --off-white-color: #efefef;
+  //   --error-color: #fe4256;
+  --toastify-color-progress-light: var(--primary-color) !important;
+}
+@import url("https://fonts.googleapis.com/css2?family=Silkscreen&display=swap");
+
+:root {
+  --primary-color: #06fc99;
+  --primary-dark-color: #11d888;
+  --primary-darker-color: #05955b;
+
+  --error-color: #ff4141;
+  --warning-color: #ffda58;
+
+  --off-white-color: #f2f2f2;
+  --semi-grey-color: #b3b3b3;
+  --holy-grey-color: #8b8b8b;
+  --just-grey-color: #717171;
+  --dark-grey-color: #424242;
+  --too-dark-color: #222222;
+  --pitch-black-color: #111111;
+}
+
+:root {
+  --primary-color: #06fc99;
+  --primary-color-dark: #05de87;
+  --off-white-color: #efefef;
+  //   --error-color: #fe4256;
+
+  --toastify-color-progress-light: var(--primary-color) !important;
+  scrollbar-color: var(--primary-color);
+  scroll-behavior: smooth;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+// /* Handle */
+::-webkit-scrollbar-thumb {
+  box-shadow: inset 2 2 5px var(--primary-color);
+  border-radius: 6px;
+  width: 6px;
+  background: var(--primary-color);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #151515;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #07e48c;
+}
+
+:hover::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+}
+.App {
+  background: repeating-linear-gradient(
+    0deg,
+    #010000 0%,
+    #010000 4px,
+    #131816 4px,
+    #131816 8px
+  );
+  background-repeat: repeat-y;
+  text-shadow: 0 0 4px #2cffab, 0 0 20px var(--primary-color);
+  display: flex;
+  flex-direction: column;
+}

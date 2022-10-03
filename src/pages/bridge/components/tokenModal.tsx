@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import backBtn from "../../../assets/back-btn.svg";
-import emptyToken from "assets/empty.svg";
+import { BaseToken, EmptySelectedETHToken } from "../config/interfaces";
 
 const Container = styled.div`
   display: flex;
@@ -48,73 +48,49 @@ const Container = styled.div`
     scrollbar-color: var(--primary-color);
     scroll-behavior: smooth;
     /* width */
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
 
-    /* Track */
-    &::-webkit-scrollbar-track {
-      background: #151515;
-    }
+    .token-item {
+      display: flex;
+      font-weight: 400;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      /* text-transform: lowercase; */
+      color: var(--off-white-color);
+      padding: 2rem 0;
+      border: 1px solid black;
 
-    /* Handle */
-    &::-webkit-scrollbar-thumb {
-      box-shadow: inset 2 2 5px var(--primary-color);
+      img {
+        margin: 0 1rem;
+        width: 28px;
+        height: 28px;
+      }
 
-      background: var(--primary-color);
-    }
-
-    /* Handle on hover */
-    &::-webkit-scrollbar-thumb:hover {
-      background: #07e48c;
-    }
-  }
-  .token-item {
-    display: flex;
-    font-weight: 400;
-    font-size: 18px;
-    letter-spacing: -0.02em;
-    /* text-transform: lowercase; */
-    color: var(--off-white-color);
-    padding: 2rem 0;
-    border: 1px solid black;
-
-    img {
-      margin: 0 1rem;
-      width: 28px;
-      height: 28px;
-    }
-
-    &:hover {
-      background-color: #001a0e;
-      border: 1px solid var(--primary-color);
+      &:hover {
+        background-color: #001a0e;
+        border: 1px solid var(--primary-color);
+      }
     }
   }
 `;
 
 interface Props {
-  onClose: (value?: any) => void;
-  tokens: any[];
+  onClose: (value?: BaseToken) => void;
+  tokens: BaseToken[] | undefined;
 }
 
 const TokenModal = (props: Props) => {
   return (
     <Container>
       <header>
-        <img
+        <div
+          role="button"
+          tabIndex={0}
           onClick={() => {
-            props.onClose({
-              data: {
-                icon: emptyToken,
-                name: "select token",
-                address: "0x0412C7c846bb6b7DC462CF6B453f76D8440b2609",
-              },
-              allowance: -1,
-              balanceOf: -1,
-            });
+            props.onClose(EmptySelectedETHToken);
           }}
-          src={backBtn}
-        />
+        >
+          <img src={backBtn} />
+        </div>
         <h1>select a token</h1>
         <span
           style={{
@@ -130,16 +106,18 @@ const TokenModal = (props: Props) => {
         placeholder="type name or paste address..."
       /> */}
       <div className="token-list">
-        {props.tokens.map((token) => (
+        {props.tokens?.map((token) => (
           <div
-            key={token.data.icon}
+            role="button"
+            tabIndex={0}
+            key={token.icon}
             className="token-item"
             onClick={() => {
               props.onClose(token);
             }}
           >
-            <img src={token.data.icon} alt="" />
-            <p>{token.data.name}</p>
+            <img src={token.icon} alt="" />
+            <p>{token.name}</p>
           </div>
         ))}
       </div>

@@ -9,8 +9,8 @@ import {
   MSG_CONVERT_COIN_TYPES,
 } from "@tharsis/eip712";
 import { createTransaction } from "@tharsis/proto";
-import * as coin from "./../prototypes/coin";
-import * as erc20 from "./../prototypes/proto-tx";
+import * as coin from "../prototypes/coin";
+import * as erc20 from "../prototypes/proto-tx";
 
 export interface MessageMsgConvertCoin {
   denom: string;

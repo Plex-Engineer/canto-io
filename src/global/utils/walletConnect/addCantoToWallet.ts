@@ -1,28 +1,41 @@
 import { CantoMainnet, NodeAddresses } from "cantoui";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 
-export function addNetwork() {
+export async function addNetwork() {
   //@ts-ignore
-  window.ethereum
-    .request({
-      method: "wallet_addEthereumChain",
-      params: [
-        {
-          chainId: "0x" + CantoMainnet.chainId.toString(16),
-          chainName: "Canto",
-          nativeCurrency: {
-            name: "Canto Coin",
-            symbol: "CANTO",
-            decimals: 18,
-          },
-          rpcUrls: [NodeAddresses.CantoMainnet.ChandraRPC],
-          blockExplorerUrls: [CantoMainnet.blockExplorerUrl],
-        },
-      ],
-    })
-    .catch((error: any) => {
-      console.log(error);
-    });
+  if (window.ethereum) {
+    try {
+      //@ts-ignore
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: "0x" + CantoMainnet.chainId.toString(16) }],
+      });
+    } catch (error: any) {
+      if (error.code === 4902) {
+        //@ts-ignore
+        window?.ethereum
+          .request({
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: "0x" + CantoMainnet.chainId.toString(16),
+                chainName: "Canto",
+                nativeCurrency: {
+                  name: "Canto Coin",
+                  symbol: "CANTO",
+                  decimals: 18,
+                },
+                rpcUrls: [NodeAddresses.CantoMainnet.Plex.rpcUrl],
+                blockExplorerUrls: [CantoMainnet.blockExplorerUrl],
+              },
+            ],
+          })
+          .catch((error: any) => {
+            // console.log(error);
+          });
+      }
+    }
+  }
 }
 
 export async function getChainIdandAccount(): Promise<string[] | undefined[]> {
@@ -48,13 +61,12 @@ export async function getAccountBalance(account: string | undefined) {
   //@ts-ignore
   if (window.ethereum) {
     //@ts-ignore
-    const balance = await window.ethereum.request({
+    return await window.ethereum.request({
       method: "eth_getBalance",
       params: [account, "latest"],
     });
-    return ethers.utils.formatEther(balance);
   }
-  return "0";
+  return BigNumber.from(0);
 }
 
 export async function getCantoAddressFromMetaMask(address: string | undefined) {
@@ -68,7 +80,6 @@ export async function getCantoAddressFromMetaMask(address: string | undefined) {
       },
     }
   );
-  console.log("setting canto address");
   return (await result.json()).cosmos_address;
 }
 

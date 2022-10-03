@@ -26,32 +26,6 @@ const StyledPopup = styled(Popup)`
     border: 1px solid var(--primary-color);
     scroll-behavior: smooth;
     /* width */
-    &::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    /* Track */
-    &::-webkit-scrollbar-track {
-      background: #151515;
-    }
-
-    /* Handle */
-    &::-webkit-scrollbar-thumb {
-      box-shadow: inset 2 2 5px var(--primary-color);
-      background: #111111;
-    }
-
-    /* Handle on hover */
-    &::-webkit-scrollbar-thumb:hover {
-      background: #07e48c;
-    }
-
-    & {
-      overflow-y: auto;
-    }
-    &:hover::-webkit-scrollbar-thumb {
-      background: #353535;
-    }
 
     @media (max-width: 1000px) {
       width: 100%;
@@ -61,13 +35,15 @@ const StyledPopup = styled(Popup)`
 
 interface Props {
   onClose: () => void;
-  data?: any;
   chainId?: number;
   account?: string;
 }
 
 const ModalManager = (props: Props) => {
-  const modalType = useModals((state) => state.modalType);
+  const [modalType, activePair] = useModals((state) => [
+    state.modalType,
+    state.activePair,
+  ]);
   return (
     <StyledPopup
       open={modalType != ModalType.NONE}
@@ -85,24 +61,25 @@ const ModalManager = (props: Props) => {
       position="center center"
       nested
     >
-      <img
-        src={close}
-        style={{
-          position: "absolute",
-          top: ".5rem",
-          right: ".5rem",
-          width: "40px",
-          cursor: "pointer",
-          zIndex: "6",
-        }}
-        alt="close"
-        onClick={props.onClose}
-      />
+      <div role="button" tabIndex={0} onClick={props.onClose}>
+        <img
+          src={close}
+          style={{
+            position: "absolute",
+            top: ".5rem",
+            right: ".5rem",
+            width: "40px",
+            cursor: "pointer",
+            zIndex: "6",
+          }}
+          alt="close"
+        />
+      </div>
 
       {modalType === ModalType.ENABLE && (
         <EnableModal
           onClose={props.onClose}
-          value={props.data}
+          activePair={activePair}
           chainId={props.chainId}
           account={props.account}
         />
@@ -110,7 +87,7 @@ const ModalManager = (props: Props) => {
       {modalType === ModalType.ADD && (
         <AddModal
           onClose={props.onClose}
-          value={props.data}
+          activePair={activePair}
           chainId={props.chainId}
           account={props.account}
         />
@@ -118,7 +95,7 @@ const ModalManager = (props: Props) => {
       {modalType === ModalType.REMOVE && (
         <RemoveModal
           onClose={props.onClose}
-          value={props.data}
+          activePair={activePair}
           chainId={props.chainId}
           account={props.account}
         />
@@ -126,7 +103,7 @@ const ModalManager = (props: Props) => {
       {modalType === ModalType.ADD_OR_REMOVE && (
         <AddRemoveModal
           onClose={props.onClose}
-          value={props.data}
+          activePair={activePair}
           chainId={props.chainId}
           account={props.account}
         />
@@ -134,7 +111,7 @@ const ModalManager = (props: Props) => {
       {modalType === ModalType.REMOVE_CONFIRM && (
         <RemoveLiquidityConfirmation
           onClose={props.onClose}
-          value={props.data}
+          activePair={activePair}
           chainId={props.chainId}
           account={props.account}
         />
@@ -142,7 +119,7 @@ const ModalManager = (props: Props) => {
       {modalType === ModalType.ADD_CONFIRM && (
         <AddLiquidityConfirmation
           onClose={props.onClose}
-          value={props.data}
+          activePair={activePair}
           chainId={props.chainId}
           account={props.account}
         />

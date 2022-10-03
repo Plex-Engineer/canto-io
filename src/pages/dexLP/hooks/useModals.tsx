@@ -1,7 +1,8 @@
 import { TransactionState } from "@usedapp/core";
+import { BigNumber } from "ethers";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
-import { AllPairInfo } from "./useTokens";
+import { EmptySelectedLPToken, UserLPPairInfo } from "../config/interfaces";
 export enum ModalType {
   NONE,
   ADD,
@@ -15,23 +16,23 @@ export enum ModalType {
 interface ModalProps {
   loading: boolean;
   setLoading: (val: boolean) => void;
-  activePair: AllPairInfo | undefined;
-  setActivePair: (pair: AllPairInfo) => void;
+  activePair: UserLPPairInfo;
+  setActivePair: (pair: UserLPPairInfo) => void;
   status: TransactionState;
   setStatus: (status: TransactionState) => void;
   modalType: ModalType;
   prevModalType: ModalType;
   setModalType: (modalType: ModalType) => void;
   confirmationValues: {
-    amount1: number;
-    amount2: number;
+    amount1: BigNumber;
+    amount2: BigNumber;
     percentage: number;
     slippage: number;
     deadline: number;
   };
   setConfirmationValues: (value: {
-    amount1: number;
-    amount2: number;
+    amount1: BigNumber;
+    amount2: BigNumber;
     percentage: number;
     slippage: number;
     deadline: number;
@@ -47,7 +48,7 @@ const useModals = create<ModalProps>()(
       set({
         status,
       }),
-    activePair: undefined,
+    activePair: EmptySelectedLPToken,
     setActivePair: (pair) =>
       set({
         activePair: pair,
@@ -63,8 +64,8 @@ const useModals = create<ModalProps>()(
       }
     },
     confirmationValues: {
-      amount1: 0,
-      amount2: 0,
+      amount1: BigNumber.from(0),
+      amount2: BigNumber.from(0),
       deadline: 0,
       slippage: 0,
       percentage: 0,

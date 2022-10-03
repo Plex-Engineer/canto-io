@@ -7,39 +7,47 @@ import {
 describe("Testing Truncation Helpers", () => {
   it("should remove leading zeros correctly", () => {
     const testCases = [
-      "000000000000",
-      "0000000000.10101203",
-      "01",
-      "0000012.12",
+      { number: "000000000000", expected: "0" },
+      { number: "0000000000.10101203", expected: "0.10101203" },
+      { number: "01", expected: "1" },
+      { number: "0000012.12", expected: "12.12" },
     ];
-    const expectedLeadingZerosRemoved = ["0", "0.10101203", "1", "12.12"];
     const testRemovalOfZeros = testCases.map((testCase) =>
-      removeLeadingZeros(testCase)
+      removeLeadingZeros(testCase.number)
     );
     for (let i = 0; i < testCases.length; i++) {
-      expect(testRemovalOfZeros[i]).toBe(expectedLeadingZerosRemoved[i]);
+      expect(testRemovalOfZeros[i]).toBe(testCases[i].expected);
     }
   });
 
   it("should convert negative scientific notation to regular string", () => {
-    const testCases = ["5e-5", "1.98727E-9", "9.00001e-3", "1.0008e-1"];
-    const expected = ["0.00005", "0.00000000198727", "0.00900001", "0.10008"];
+    const testCases = [
+      { number: "5e-5", expected: "0.00005" },
+      { number: "1.98727E-9", expected: "0.00000000198727" },
+      { number: "9.00001e-3", expected: "0.00900001" },
+      { number: "1.0008e-1", expected: "0.10008" },
+    ];
     const testSciNotation = testCases.map((testCase) =>
-      convertFromScientificNotation(testCase)
+      convertFromScientificNotation(testCase.number)
     );
     for (let i = 0; i < testCases.length; i++) {
-      expect(testSciNotation[i]).toBe(expected[i]);
+      expect(testSciNotation[i]).toBe(testCases[i].expected);
     }
   });
 
   it("should convert positive scientific notation to regular string", () => {
-    const testCases = ["5e5", "1.98727E9", "9.00001e3", "1.0008e1"];
-    const expected = ["500000.", "1987270000.", "9000.01", "10.008"];
+    const testCases = [
+      { number: "5e5", expected: "500000." },
+      { number: "1.98727E9", expected: "1987270000." },
+      { number: "9.00001e3", expected: "9000.01" },
+      { number: "1.0008e1", expected: "10.008" },
+    ];
+
     const testSciNotation = testCases.map((testCase) =>
-      convertFromScientificNotation(testCase)
+      convertFromScientificNotation(testCase.number)
     );
     for (let i = 0; i < testCases.length; i++) {
-      expect(testSciNotation[i]).toBe(expected[i]);
+      expect(testSciNotation[i]).toBe(testCases[i].expected);
     }
   });
 });

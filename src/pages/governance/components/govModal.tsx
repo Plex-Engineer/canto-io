@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 
 const Container = styled.div`
   background-color: #040404;
@@ -65,9 +65,6 @@ const GovModal = () => {
     setOption(value);
   };
 
-  const resetRadioState = () => {
-    setOption("");
-  };
   return (
     <Container>
       <p

@@ -1,37 +1,22 @@
 import styled from "@emotion/styled";
 import down from "assets/down.svg";
-import Popup from "reactjs-popup";
 import { useState } from "react";
-import TokenModal from "../components/tokenModal";
-import { useTokenStore } from "../stores/tokens";
-import { GTokens } from "../hooks/useGravityTokens";
+import TokenModal from "./tokenModal";
+import { StyledPopup } from "global/components/Styled";
+import { BaseToken } from "../config/interfaces";
 
 interface ITokenSelect {
-  activeToken: GTokens;
-  tokens: GTokens[] | undefined;
-  onSelect: (value: any) => void;
+  tokens: BaseToken[] | undefined;
+  activeToken: BaseToken;
+  onSelect: (value: BaseToken | undefined) => void;
 }
 
-export const StyledPopup = styled(Popup)`
-  // use your custom style for ".popup-overlay"
-
-  &-overlay {
-    background-color: #1f4a2c6e;
-    backdrop-filter: blur(2px);
-    z-index: 10;
-  }
-
-  &-content {
-    background-color: black;
-    border: 1px solid var(--primary-color);
-  }
-`;
-export const TokenWallet = ({ onSelect, tokens }: ITokenSelect) => {
+export const TokenWallet = ({
+  onSelect,
+  tokens,
+  activeToken,
+}: ITokenSelect) => {
   const [isOpen, setOpen] = useState(false);
-  const [activeToken, setActiveToken] = useTokenStore((state) => [
-    state.selectedToken,
-    state.setSelectedToken,
-  ]);
 
   const Box = styled.div`
     background-color: #1c1c1c;
@@ -54,8 +39,8 @@ export const TokenWallet = ({ onSelect, tokens }: ITokenSelect) => {
       }}
     >
       <img
-        src={activeToken.data.icon}
-        alt={activeToken.data.name}
+        src={activeToken.icon}
+        alt={activeToken.name}
         height={30}
         width={30}
       />
@@ -64,7 +49,7 @@ export const TokenWallet = ({ onSelect, tokens }: ITokenSelect) => {
           flex: "2",
         }}
       >
-        {tokens ? activeToken.data.name : "loading tokens"}
+        {tokens ? activeToken.name : "loading tokens"}
       </span>
       <img src={down} alt="" />
       {tokens ? (

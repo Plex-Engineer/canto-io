@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import {
   addCTokens,
   addTokens,
@@ -7,9 +8,10 @@ import { slide as Menu } from "react-burger-menu";
 import { OutlinedButton } from "../atoms/Button";
 import { Text } from "../atoms/Text";
 import { StylesDictionary } from "../../utils/StylesDictionary";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { Page } from "./Navbar";
 import { Link } from "react-router-dom";
+import useGlobalModals, { ModalType } from "../../stores/useModals";
 
 interface BurgerMenuProps {
   chainId: number;
@@ -22,6 +24,7 @@ export const BurgerMenu = ({
   currentPage,
   pageList,
 }: BurgerMenuProps) => {
+  const setModalType = useGlobalModals((state) => state.setModalType);
   return (
     <WrapperMenu styles={BurgerStyles}>
       <h2 className="title">terminal</h2>
@@ -44,20 +47,21 @@ export const BurgerMenu = ({
       <div style={styles.buttonDiv}>
         <OutlinedButton
           onClick={() => {
-            addTokens(chainId);
+            // addTokens(chainId);
+            setModalType(ModalType.TOKENS);
           }}
           style={styles.buttonStyle}
         >
           import tokens
         </OutlinedButton>
-        <OutlinedButton
+        {/* <OutlinedButton
           onClick={() => {
             addCTokens(chainId);
           }}
           style={styles.buttonStyle}
         >
           import cTokens
-        </OutlinedButton>
+        </OutlinedButton> */}
         <OutlinedButton
           onClick={() => {
             addCantoToKeplr();
@@ -120,6 +124,7 @@ const BurgerStyles = {
   },
   bmMenu: {
     background: "#000000",
+    borderRight: "1px solid var(--primary-color)",
     padding: "0em .5em 0",
     fontSize: "1.15em",
   },
@@ -128,6 +133,7 @@ const BurgerStyles = {
   },
   bmItemList: {
     color: "var(--primary-color)",
+    height: "90%",
     // padding: '.8em',
     textAlign: "center",
     // marginTop: '30px',
@@ -137,7 +143,7 @@ const BurgerStyles = {
     color: "var(--primary-color)",
   },
   bmOverlay: {
-    background: "rgba(0, 0, 0, 0.3)",
+    background: "rgba(9, 40, 26, 0.599)",
     width: "0",
     height: "0",
   },

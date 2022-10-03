@@ -1,3 +1,6 @@
+import { BigNumber } from "ethers";
+import { formatUnits } from "ethers/lib/utils";
+
 export function classNames(...classes: unknown[]): string {
   return classes.filter(Boolean).join(" ");
 }
@@ -16,7 +19,19 @@ export const formatBalance = (num: string | number) => {
 
 export const noteSymbol = "Ꞥ";
 
+export function convertBigNumberRatioIntoPercentage(
+  numerator: BigNumber,
+  denominator: BigNumber
+) {
+  return Number(
+    formatUnits(numerator.mul(BigNumber.from(10).pow(18)).div(denominator))
+  );
+}
+
 export function truncateNumber(value: string, decimals?: number) {
+  if (!value || isNaN(Number(value))) {
+    return "";
+  }
   value = removeLeadingZeros(value);
   value = convertFromScientificNotation(value);
   const decimalLocation = value.indexOf(".");
@@ -117,27 +132,33 @@ export const transactionStatusActions = (
   switch (actionType) {
     case "enable":
       return {
-        action: `enable  ${token}`,
-        inAction: `enabling  ${token}`,
-        postAction: "enabled",
+        action: `enable ${token}`,
+        inAction: `enabling ${token}`,
+        postAction: `enabled ${token}`,
       };
     case "increase allowance":
       return {
         action: "increase allowance",
         inAction: "increasing allowance",
-        postAction: "allowance increased",
+        postAction: "increased allowance",
       };
     case "send token":
       return {
         action: `send ${token}`,
         inAction: `sending ${token}`,
-        postAction: `${token} sent`,
+        postAction: `sent ${token}`,
       };
     case "add":
       return {
         action: "add liquidity",
         inAction: "adding liquidity",
         postAction: "added liquidity",
+      };
+    case "claim":
+      return {
+        action: "claim",
+        inAction: "claiming",
+        postAction: "claimed",
       };
     case "remove":
       return {
