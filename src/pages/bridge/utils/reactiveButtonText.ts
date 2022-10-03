@@ -4,7 +4,13 @@ import {
   getTransactionStatusString,
   transactionStatusActions,
 } from "global/utils/utils";
-import { emptySelectedToken, UserNativeGTokens } from "../config/interfaces";
+import {
+  BaseToken,
+  EmptySelectedConvertToken,
+  EmptySelectedNativeToken,
+  UserGravityBridgeTokens,
+  UserNativeTokens,
+} from "../config/interfaces";
 import { checkGravityAddress } from "./bridgeConfirmations";
 
 const increaseAllowanceActions = transactionStatusActions("increase allowance");
@@ -13,7 +19,7 @@ const sendTokenActions = transactionStatusActions("send token");
 //returns button text and if it is disabled
 export function getReactiveButtonText(
   amount: BigNumber,
-  token: UserNativeGTokens,
+  token: UserGravityBridgeTokens,
   approveStatus: TransactionState,
   cosmosStatus: TransactionState
 ): [string, boolean] {
@@ -58,11 +64,11 @@ export function getReactiveButtonText(
 
 export function getConvertButtonText(
   amount: BigNumber,
-  token: UserNativeGTokens,
+  token: BaseToken,
   maxAmount: BigNumber,
   cantoToEVM: boolean
 ): [string, boolean] {
-  if (token == emptySelectedToken) {
+  if (token == EmptySelectedNativeToken || token == EmptySelectedConvertToken) {
     return ["select a token", true];
   } else if (amount.isZero()) {
     return ["enter amount", true];
@@ -75,7 +81,7 @@ export function getConvertButtonText(
 
 export function getBridgeOutButtonText(
   amount: BigNumber,
-  token: UserNativeGTokens,
+  token: UserNativeTokens,
   maxAmount: BigNumber,
   gravityAddress: string
 ): [string, boolean] {

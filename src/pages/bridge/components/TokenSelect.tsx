@@ -3,17 +3,20 @@ import down from "assets/down.svg";
 import { useState } from "react";
 import TokenModal from "./tokenModal";
 import { StyledPopup } from "global/components/Styled";
-import { useTokenStore } from "../stores/cosmosTokens";
-import { UserNativeGTokens } from "../config/interfaces";
+import { BaseToken } from "../config/interfaces";
 
 interface ITokenSelect {
-  tokens: UserNativeGTokens[] | undefined;
-  onSelect: (value: UserNativeGTokens | undefined) => void;
+  tokens: BaseToken[] | undefined;
+  activeToken: BaseToken;
+  onSelect: (value: BaseToken | undefined) => void;
 }
 
-export const TokenWallet = ({ onSelect, tokens }: ITokenSelect) => {
+export const TokenWallet = ({
+  onSelect,
+  tokens,
+  activeToken,
+}: ITokenSelect) => {
   const [isOpen, setOpen] = useState(false);
-  const [activeToken] = useTokenStore((state) => [state.selectedToken]);
 
   const Box = styled.div`
     background-color: #1c1c1c;
@@ -36,8 +39,8 @@ export const TokenWallet = ({ onSelect, tokens }: ITokenSelect) => {
       }}
     >
       <img
-        src={activeToken.data.icon}
-        alt={activeToken.data.name}
+        src={activeToken.icon}
+        alt={activeToken.name}
         height={30}
         width={30}
       />
@@ -46,7 +49,7 @@ export const TokenWallet = ({ onSelect, tokens }: ITokenSelect) => {
           flex: "2",
         }}
       >
-        {tokens ? activeToken.data.name : "loading tokens"}
+        {tokens ? activeToken.name : "loading tokens"}
       </span>
       <img src={down} alt="" />
       {tokens ? (

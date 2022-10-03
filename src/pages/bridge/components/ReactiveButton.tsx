@@ -2,15 +2,17 @@ import { useEffect } from "react";
 import { useBridgeStore } from "../stores/gravityStore";
 import loading from "assets/loading.svg";
 import { PrimaryButton } from "cantoui";
-import { UserNativeGTokens } from "pages/bridge/config/interfaces";
+import {
+  EmptySelectedETHToken,
+  UserGravityBridgeTokens,
+} from "pages/bridge/config/interfaces";
 import { getReactiveButtonText } from "../utils/reactiveButtonText";
-import { emptySelectedToken } from "../config/interfaces";
 import { convertStringToBigNumber } from "../utils/stringToBigNumber";
 
 interface RBProps {
   amount: string;
   account: string | undefined;
-  token: UserNativeGTokens | undefined;
+  token: UserGravityBridgeTokens | undefined;
   destination: string | undefined;
   gravityAddress: string | undefined;
   onClick: () => void;
@@ -20,14 +22,11 @@ export const ReactiveButton = ({ amount, token, onClick }: RBProps) => {
     state.approveStatus,
     state.cosmosStatus,
   ]);
-  const parsedAmount = convertStringToBigNumber(
-    amount,
-    token?.data.decimals ?? 18
-  );
+  const parsedAmount = convertStringToBigNumber(amount, token?.decimals ?? 18);
 
   const [buttonText, disabled] = getReactiveButtonText(
     parsedAmount,
-    token ?? emptySelectedToken,
+    token ?? EmptySelectedETHToken,
     approveStatus,
     cosmosStatus
   );

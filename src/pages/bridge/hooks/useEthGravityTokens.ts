@@ -1,15 +1,19 @@
 import { useCalls } from "@usedapp/core";
 import { Contract } from "ethers";
-import { ETHGravityTokens } from "../config/gravityBridgeTokens";
-import { ADDRESSES } from "cantoui";
+import { ADDRESSES, Token } from "cantoui";
 import { ERC20Abi } from "global/config/abi";
-import { EmptyUserGTokenData, UserGravityTokens } from "../config/interfaces";
+import {
+  EmptyUserGTokenData,
+  UserGravityBridgeTokens,
+} from "../config/interfaces";
 
-export function useEthGravityTokens(account: string | undefined): {
-  userEthGTokens: UserGravityTokens[];
+export function useEthGravityTokens(
+  account: string | undefined,
+  tokens: Token[]
+): {
+  userEthGTokens: UserGravityBridgeTokens[];
   gravityAddress: string | undefined;
 } {
-  const tokens = ETHGravityTokens;
   const gravityAddress = ADDRESSES.ETHMainnet.GravityBridge;
 
   const calls =
@@ -53,7 +57,7 @@ export function useEthGravityTokens(account: string | undefined): {
       const allowance = tokenData[1][0];
 
       return {
-        data: tokens[idx],
+        ...tokens[idx],
         wallet: account ?? "",
         balanceOf,
         allowance,
@@ -64,7 +68,7 @@ export function useEthGravityTokens(account: string | undefined): {
   }
   const emptyUserTokens = tokens.map((token) => {
     return {
-      data: token,
+      ...token,
       ...EmptyUserGTokenData,
     };
   });

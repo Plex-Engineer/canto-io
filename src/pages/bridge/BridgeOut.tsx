@@ -14,19 +14,33 @@ import { useNetworkInfo } from "global/stores/networkInfo";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import cantoIcon from "assets/logo.svg";
 import SwitchBridging from "./components/SwitchBridging";
-import { emptySelectedToken, UserNativeGTokens } from "./config/interfaces";
-import { useTokenStore } from "./stores/cosmosTokens";
+import {
+  EmptySelectedConvertToken,
+  EmptySelectedNativeToken,
+  UserConvertToken,
+  UserNativeTokens,
+} from "./config/interfaces";
+import { SelectedTokens, useTokenStore } from "./stores/cosmosTokens";
 import { GeneralTransferBox } from "./components/generalTransferBox";
 import { formatUnits } from "ethers/lib/utils";
-import { getBridgeOutButtonText } from "./utils/reactiveButtonText";
 import { convertStringToBigNumber } from "./utils/stringToBigNumber";
+import { getBridgeOutButtonText } from "./utils/reactiveButtonText";
 
 interface BridgeOutProps {
-  userCantoNativeGTokens: UserNativeGTokens[];
+  userConvertERC20Tokens: UserConvertToken[];
+  userCantoNativeGTokens: UserNativeTokens[];
 }
-const BridgeOut = ({ userCantoNativeGTokens }: BridgeOutProps) => {
+const BridgeOut = ({
+  userCantoNativeGTokens,
+  userConvertERC20Tokens,
+}: BridgeOutProps) => {
   const networkInfo = useNetworkInfo();
   const tokenStore = useTokenStore();
+  const selectedConvertToken =
+    tokenStore.selectedTokens[SelectedTokens.CONVERTOUT];
+  const selectedNativeToken =
+    tokenStore.selectedTokens[SelectedTokens.BRIDGEOUT];
+
   const bridgeStore = useBridgeStore();
   const { activateBrowserWallet } = useEthers();
 
@@ -41,9 +55,9 @@ const BridgeOut = ({ userCantoNativeGTokens }: BridgeOutProps) => {
   const [amount, setAmount] = useState("");
 
   const [buttonText, disabled] = getBridgeOutButtonText(
-    convertStringToBigNumber(amount, tokenStore.selectedToken.data.decimals),
-    tokenStore.selectedToken,
-    tokenStore.selectedToken.nativeBalanceOf,
+    convertStringToBigNumber(amount, selectedNativeToken.decimals),
+    selectedNativeToken,
+    selectedNativeToken.nativeBalance,
     userGravityAddress
   );
 
@@ -53,11 +67,11 @@ const BridgeOut = ({ userCantoNativeGTokens }: BridgeOutProps) => {
       //check if bridging
       if (
         inBridgeTransaction &&
-        !tokenStore.selectedToken.nativeBalanceOf.eq(prevBridgeBalance)
+        !selectedNativeToken.nativeBalance.eq(prevBridgeBalance)
       ) {
         setBridgeConfirmation(
           "you have successfully bridged " +
-            tokenStore.selectedToken.data.symbol +
+            selectedNativeToken.symbol +
             " from canto to gravity bridge"
         );
         setInBridgeTransaction(false);
@@ -104,19 +118,24 @@ const BridgeOut = ({ userCantoNativeGTokens }: BridgeOutProps) => {
         <ConvertTransferBox
           tokenSelector={
             <TokenWallet
-              tokens={userCantoNativeGTokens}
+              tokens={userConvertERC20Tokens}
+              activeToken={selectedConvertToken}
               onSelect={(value) => {
-                tokenStore.setSelectedToken(value ?? emptySelectedToken);
+                tokenStore.setSelectedToken(
+                  value ?? EmptySelectedConvertToken,
+                  SelectedTokens.CONVERTOUT
+                );
                 setInBridgeTransaction(false);
               }}
             />
           }
+          activeToken={selectedConvertToken}
           cantoToEVM={false}
           cantoAddress={networkInfo.cantoAddress}
           ETHAddress={networkInfo.account ?? ""}
           chainId={Number(networkInfo.chainId)}
           amount={amount}
-          max={tokenStore.selectedToken.balanceOf}
+          max={selectedConvertToken.erc20Balance}
           onChange={(amount: string) => setAmount(amount)}
           onSwitch={() => {
             activateBrowserWallet();
@@ -145,14 +164,18 @@ const BridgeOut = ({ userCantoNativeGTokens }: BridgeOutProps) => {
           tokenSelector={
             <TokenWallet
               tokens={userCantoNativeGTokens}
+              activeToken={selectedNativeToken}
               onSelect={(value) => {
-                tokenStore.setSelectedToken(value ?? emptySelectedToken);
+                tokenStore.setSelectedToken(
+                  value ?? EmptySelectedNativeToken,
+                  SelectedTokens.BRIDGEOUT
+                );
                 setInBridgeTransaction(false);
               }}
             />
           }
           needAddressBox={true}
-          onAddressChange={(value) => {
+          onAddressChange={(value: string) => {
             setUserGravityAddress(value);
           }}
           from={{
@@ -171,12 +194,12 @@ const BridgeOut = ({ userCantoNativeGTokens }: BridgeOutProps) => {
             addNetwork();
           }}
           connected={CantoMainnet.chainId == Number(networkInfo.chainId)}
-          onChange={(amount) => {
+          onChange={(amount: string) => {
             setAmount(amount);
           }}
           max={formatUnits(
-            tokenStore.selectedToken.nativeBalanceOf,
-            tokenStore.selectedToken.data.decimals
+            selectedNativeToken.nativeBalance,
+            selectedNativeToken.decimals
           )}
           amount={amount}
           button={
@@ -187,15 +210,15 @@ const BridgeOut = ({ userCantoNativeGTokens }: BridgeOutProps) => {
                 setBridgeConfirmation(
                   "waiting for the metamask transaction to be signed..."
                 );
-                setPrevBridgeBalance(tokenStore.selectedToken.nativeBalanceOf);
+                setPrevBridgeBalance(selectedNativeToken.nativeBalance);
                 await txIBCTransfer(
                   userGravityAddress,
                   "channel-0",
                   convertStringToBigNumber(
                     amount,
-                    tokenStore.selectedToken.data.decimals
+                    selectedNativeToken.decimals
                   ).toString(),
-                  tokenStore.selectedToken.data.nativeName,
+                  selectedNativeToken.nativeName,
                   CantoMainnet.cosmosAPIEndpoint,
                   "https://gravitychain.io:1317",
                   fee,

@@ -13,21 +13,32 @@ import ethIcon from "assets/icons/ETH.svg";
 import { ReactiveButton } from "./components/ReactiveButton";
 import { ConvertTransferBox } from "./components/convertTransferBox";
 import { TokenWallet } from "./components/TokenSelect";
-import { emptySelectedToken, UserNativeGTokens } from "./config/interfaces";
-import { useTokenStore } from "./stores/cosmosTokens";
+import {
+  UserGravityBridgeTokens,
+  EmptySelectedETHToken,
+  EmptySelectedNativeToken,
+  UserConvertToken,
+} from "./config/interfaces";
+import { SelectedTokens, useTokenStore } from "./stores/cosmosTokens";
 import { formatUnits } from "ethers/lib/utils";
 import { convertStringToBigNumber } from "./utils/stringToBigNumber";
 import { GeneralTransferBox } from "./components/generalTransferBox";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 
 interface BridgeInProps {
-  userEthNativeGTokens: UserNativeGTokens[];
+  userEthTokens: UserGravityBridgeTokens[];
   gravityAddress: string | undefined;
+  userConvertCoinNativeTokens: UserConvertToken[];
 }
-const BridgeIn = ({ userEthNativeGTokens, gravityAddress }: BridgeInProps) => {
+const BridgeIn = ({
+  userEthTokens,
+  gravityAddress,
+  userConvertCoinNativeTokens,
+}: BridgeInProps) => {
   const networkInfo = useNetworkInfo();
   const { switchNetwork, activateBrowserWallet } = useEthers();
   const tokenStore = useTokenStore();
+  const selectedETHToken = tokenStore.selectedTokens[SelectedTokens.ETHTOKEN];
   const bridgeStore = useBridgeStore();
   const [amount, setAmount] = useState("");
   //function states for approving/bridging
@@ -35,7 +46,7 @@ const BridgeIn = ({ userEthNativeGTokens, gravityAddress }: BridgeInProps) => {
     state: stateApprove,
     send: sendApprove,
     resetState: resetApprove,
-  } = useApprove(tokenStore.selectedToken.data.address);
+  } = useApprove(selectedETHToken.address);
   const {
     state: stateCosmos,
     send: sendCosmos,
@@ -46,10 +57,13 @@ const BridgeIn = ({ userEthNativeGTokens, gravityAddress }: BridgeInProps) => {
   useEffect(() => {
     bridgeStore.setApproveStatus(stateApprove.status);
     if (stateApprove.status == "Success") {
-      tokenStore.setSelectedToken({
-        ...tokenStore.selectedToken,
-        allowance: BigNumber.from(ethers.constants.MaxUint256),
-      });
+      tokenStore.setSelectedToken(
+        {
+          ...selectedETHToken,
+          allowance: BigNumber.from(ethers.constants.MaxUint256),
+        },
+        SelectedTokens.ETHTOKEN
+      );
       setTimeout(() => {
         resetApprove();
       }, 1000);
@@ -64,12 +78,12 @@ const BridgeIn = ({ userEthNativeGTokens, gravityAddress }: BridgeInProps) => {
     //Checking if amount enter is greater than balance available in wallet and token has been approved.
     const parsedAmount = convertStringToBigNumber(
       amount,
-      tokenStore.selectedToken.data.decimals
+      selectedETHToken.decimals
     );
     if (!networkInfo.cantoAddress) return;
     if (
-      (parsedAmount.gte(tokenStore.selectedToken.allowance) ||
-        tokenStore.selectedToken.allowance.lte(0)) &&
+      (parsedAmount.gte(selectedETHToken.allowance) ||
+        selectedETHToken.allowance.lte(0)) &&
       stateApprove.status == "None"
     ) {
       sendApprove(
@@ -80,7 +94,7 @@ const BridgeIn = ({ userEthNativeGTokens, gravityAddress }: BridgeInProps) => {
       );
     } else if (parsedAmount.gt(0) && stateCosmos.status == "None") {
       sendCosmos(
-        tokenStore.selectedToken.data.address,
+        selectedETHToken.address,
         networkInfo.cantoAddress,
         parsedAmount
       );
@@ -122,9 +136,13 @@ const BridgeIn = ({ userEthNativeGTokens, gravityAddress }: BridgeInProps) => {
         <GeneralTransferBox
           tokenSelector={
             <TokenWallet
-              tokens={userEthNativeGTokens}
+              tokens={userEthTokens}
+              activeToken={selectedETHToken}
               onSelect={(value) => {
-                tokenStore.setSelectedToken(value ?? emptySelectedToken);
+                tokenStore.setSelectedToken(
+                  value ?? EmptySelectedETHToken,
+                  SelectedTokens.ETHTOKEN
+                );
                 resetCosmos();
                 resetApprove();
               }}
@@ -149,8 +167,8 @@ const BridgeIn = ({ userEthNativeGTokens, gravityAddress }: BridgeInProps) => {
           connected={1 == Number(networkInfo.chainId)}
           onChange={(amount: string) => setAmount(amount)}
           max={formatUnits(
-            tokenStore.selectedToken.balanceOf,
-            tokenStore.selectedToken.data.decimals
+            selectedETHToken.balanceOf,
+            selectedETHToken.decimals
           )}
           amount={amount}
           button={
@@ -158,7 +176,7 @@ const BridgeIn = ({ userEthNativeGTokens, gravityAddress }: BridgeInProps) => {
               destination={networkInfo.cantoAddress}
               amount={amount}
               account={networkInfo.account}
-              token={tokenStore.selectedToken}
+              token={selectedETHToken}
               gravityAddress={gravityAddress}
               onClick={() => send(amount)}
             />
@@ -186,20 +204,27 @@ const BridgeIn = ({ userEthNativeGTokens, gravityAddress }: BridgeInProps) => {
         <ConvertTransferBox
           tokenSelector={
             <TokenWallet
-              tokens={userEthNativeGTokens}
+              tokens={userConvertCoinNativeTokens}
+              activeToken={tokenStore.selectedTokens[SelectedTokens.CONVERTIN]}
               onSelect={(value) => {
-                tokenStore.setSelectedToken(value ?? emptySelectedToken);
+                tokenStore.setSelectedToken(
+                  value ?? EmptySelectedNativeToken,
+                  SelectedTokens.CONVERTIN
+                );
                 resetCosmos();
                 resetApprove();
               }}
             />
           }
+          activeToken={tokenStore.selectedTokens[SelectedTokens.CONVERTIN]}
           cantoToEVM={true}
           cantoAddress={networkInfo.cantoAddress}
           ETHAddress={networkInfo.account ?? ""}
           chainId={Number(networkInfo.chainId)}
           amount={amount}
-          max={tokenStore.selectedToken.nativeBalanceOf}
+          max={
+            tokenStore.selectedTokens[SelectedTokens.CONVERTIN].nativeBalance
+          }
           onChange={(amount: string) => setAmount(amount)}
           onSwitch={() => {
             activateBrowserWallet();
