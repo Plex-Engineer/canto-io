@@ -1,6 +1,7 @@
 import create from "zustand";
 import { devtools } from "zustand/middleware";
 import {
+  BaseToken,
   EmptySelectedConvertToken,
   EmptySelectedETHToken,
   EmptySelectedNativeToken,
@@ -22,7 +23,7 @@ interface TokenStore {
     [SelectedTokens.CONVERTOUT]: UserConvertToken;
     [SelectedTokens.BRIDGEOUT]: UserNativeTokens;
   };
-  setSelectedToken: (token: any, selectedFrom: SelectedTokens) => void;
+  setSelectedToken: (token: BaseToken, selectedFrom: SelectedTokens) => void;
 }
 export const useTokenStore = create<TokenStore>()(
   devtools((set, get) => ({
@@ -32,7 +33,7 @@ export const useTokenStore = create<TokenStore>()(
       [SelectedTokens.CONVERTOUT]: EmptySelectedConvertToken,
       [SelectedTokens.BRIDGEOUT]: EmptySelectedNativeToken,
     },
-    setSelectedToken: (token: any, selectedFrom: SelectedTokens) => {
+    setSelectedToken: (token: BaseToken, selectedFrom: SelectedTokens) => {
       set({
         selectedTokens: {
           ...get().selectedTokens,

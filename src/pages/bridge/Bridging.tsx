@@ -6,7 +6,11 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import BridgeIn from "./BridgeIn";
 import BridgeOut from "./BridgeOut";
-import { UserConvertToken, UserNativeTokens } from "./config/interfaces";
+import {
+  BaseToken,
+  UserConvertToken,
+  UserNativeTokens,
+} from "./config/interfaces";
 import { useEthGravityTokens } from "./hooks/useEthGravityTokens";
 import { SelectedTokens, useTokenStore } from "./stores/cosmosTokens";
 import { getNativeCantoBalance } from "./utils/nativeBalances";
@@ -67,10 +71,13 @@ const BridgingPage = () => {
     getAllBalances();
   }, []);
 
-  function reSelectTokens(selectedToken: SelectedTokens, tokenList?: any) {
+  function reSelectTokens(
+    selectedToken: SelectedTokens,
+    tokenList?: BaseToken[]
+  ) {
     tokenStore.setSelectedToken(
       tokenList?.find(
-        (token: any) =>
+        (token) =>
           token.address === tokenStore.selectedTokens[selectedToken].address
       ) ?? tokenStore.selectedTokens[selectedToken],
       selectedToken
