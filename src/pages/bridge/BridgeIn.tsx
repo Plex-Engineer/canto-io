@@ -104,7 +104,13 @@ const BridgeIn = ({
 
   return (
     <Styled as={FadeIn}>
-      <Text type="title" color="primary">
+      <Text
+        type="title"
+        color="primary"
+        style={{
+          fontFamily: "Silkscreen",
+        }}
+      >
         send funds to canto
       </Text>
 
@@ -147,7 +153,7 @@ const BridgeIn = ({
           name: "Canto (EVM)",
         }}
       />
-      <div style={{ marginTop: "-1rem", alignItems: "center" }}>
+      {/* <div style={{ marginTop: "-1rem", alignItems: "center" }}>
         <p
           style={{
             fontWeight: bridgeStore.transactionType == "Bridge" ? "900" : "100",
@@ -165,7 +171,7 @@ const BridgeIn = ({
         >
           step 2: bridge assets from canto (bridge) to canto (evm)
         </p>
-      </div>
+      </div> */}
       {bridgeStore.transactionType == "Bridge" && (
         <GeneralTransferBox
           tokenSelector={
@@ -186,12 +192,12 @@ const BridgeIn = ({
           from={{
             address: networkInfo.account,
             name: "ethereum",
-            icon: ethIcon,
+            // icon: ethIcon,
           }}
           to={{
             address: networkInfo.cantoAddress,
             name: "canto (bridge)",
-            icon: bridgeIcon,
+            // icon: bridgeIcon,
           }}
           networkName="ethereum"
           onSwitch={() => {

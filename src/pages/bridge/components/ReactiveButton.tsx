@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 import { useBridgeStore } from "../stores/gravityStore";
 import loading from "assets/loading.svg";
-import { PrimaryButton } from "cantoui";
 import {
   EmptySelectedETHToken,
   UserGravityBridgeTokens,
 } from "pages/bridge/config/interfaces";
 import { getReactiveButtonText } from "../utils/reactiveButtonText";
 import { convertStringToBigNumber } from "../utils/stringToBigNumber";
+import { OutlinedButton } from "global/packages/src";
 
 interface RBProps {
   amount: string;
@@ -40,7 +40,7 @@ export const ReactiveButton = ({ amount, token, onClick }: RBProps) => {
   }, [approveStatus]);
 
   return (
-    <PrimaryButton onClick={onClick} disabled={disabled}>
+    <OutlinedButton padding="x-lg" onClick={onClick} disabled={disabled}>
       {buttonText}
       {approveStatus == "Mining" || cosmosStatus == "Mining" ? (
         <img
@@ -52,6 +52,6 @@ export const ReactiveButton = ({ amount, token, onClick }: RBProps) => {
           src={loading}
         />
       ) : null}
-    </PrimaryButton>
+    </OutlinedButton>
   );
 };

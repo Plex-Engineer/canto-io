@@ -84,7 +84,13 @@ const BridgeOut = ({
 
   return (
     <Styled as={FadeIn}>
-      <Text type="title" color="primary">
+      <Text
+        type="title"
+        color="primary"
+        style={{
+          fontFamily: "Silkscreen",
+        }}
+      >
         send funds from canto
       </Text>
 
@@ -129,7 +135,7 @@ const BridgeOut = ({
           height: 30,
         }}
       />
-      <div style={{ marginTop: "-1rem", alignContent: "center" }}>
+      {/* <div style={{ marginTop: "-1rem", alignContent: "center" }}>
         <p
           style={{
             fontWeight: bridgeStore.transactionType == "Bridge" ? "900" : "100",
@@ -147,7 +153,7 @@ const BridgeOut = ({
         >
           step 2: bridge assets from canto (bridge) to gravity bridge
         </p>
-      </div>
+      </div> */}
 
       {bridgeStore.transactionType == "Bridge" && (
         <ConvertTransferBox
@@ -216,12 +222,12 @@ const BridgeOut = ({
           from={{
             address: networkInfo.cantoAddress,
             name: "canto (bridge)",
-            icon: bridgeIcon,
+            // icon: bridgeIcon,
           }}
           to={{
             address: userGravityAddress,
             name: "gravity bridge",
-            icon: "https://raw.githubusercontent.com/Gravity-Bridge/Gravity-Docs/main/assets/Graviton-Grey.svg",
+            // icon: "https://raw.githubusercontent.com/Gravity-Bridge/Gravity-Docs/main/assets/Graviton-Grey.svg",
           }}
           networkName="canto"
           onSwitch={() => {

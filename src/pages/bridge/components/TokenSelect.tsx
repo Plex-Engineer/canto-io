@@ -19,17 +19,19 @@ export const TokenWallet = ({
   const [isOpen, setOpen] = useState(false);
 
   const Box = styled.div`
-    background-color: #1c1c1c;
+    background-color: #222222;
     padding: 1rem 1.4rem;
     color: white;
     display: flex;
     align-items: center;
     gap: 1rem;
     width: 15rem;
+    height: 100%;
     cursor: pointer;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     &:hover {
-      border: 1px solid var(--primary-color);
+      /* border: 1px solid var(--primary-color); */
+      background-color: #333333;
     }
   `;
   return (

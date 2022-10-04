@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { HighlightButton, Text } from "cantoui";
 import FadeIn from "react-fade-in";
 import { toast } from "react-toastify";
-import arrow from "../../../assets/right.svg";
+import arrow from "../../../assets/next.svg";
 import CopyIcon from "../../../assets/copy.svg";
 import { truncateNumber } from "global/utils/utils";
 
@@ -50,6 +50,41 @@ export const GeneralTransferBox = (props: Props) => {
               : "connected to " + props.networkName}
           </HighlightButton>
         </div>
+        <div className="amount">
+          {props.tokenSelector}
+
+          <div className="amount-input">
+            <Text type="text" align="left" color="primary">
+              amount :
+            </Text>
+            <input
+              autoComplete="off"
+              type="number"
+              name="amount-bridge"
+              id="amount-bridge"
+              placeholder="0.00"
+              value={props.amount}
+              onChange={(e) => props.onChange(e.target.value)}
+            />
+            {Number(props.max) < 0 ? (
+              ""
+            ) : (
+              <div className="max">
+                balance {truncateNumber(props.max)}{" "}
+                <span
+                  tabIndex={0}
+                  role="button"
+                  style={{ cursor: "pointer", textDecoration: "underline" }}
+                  onClick={() => props.onChange(props.max)}
+                >
+                  max
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="row">{props.button}</div>
+
         <div className="row">
           <div
             style={{
@@ -59,7 +94,7 @@ export const GeneralTransferBox = (props: Props) => {
             }}
           >
             {props.from.icon && <img src={props.from.icon ?? ""} height={26} />}
-            <Text type="text" color="white" align="left">
+            <Text type="text" color="primary" align="left">
               {props.from.name}
             </Text>
           </div>
@@ -69,7 +104,7 @@ export const GeneralTransferBox = (props: Props) => {
             }}
             src={arrow}
             alt="right arrow"
-            height={40}
+            height={16}
           />
           <div
             style={{
@@ -80,7 +115,7 @@ export const GeneralTransferBox = (props: Props) => {
             }}
           >
             <img src={props.to.icon ?? ""} height={26} />
-            <Text type="text" color="white" align="right">
+            <Text type="text" color="primary" align="right">
               {props.to.name}
             </Text>
           </div>
@@ -88,7 +123,7 @@ export const GeneralTransferBox = (props: Props) => {
         <div className="row">
           <Text
             type="text"
-            color="white"
+            color="primary"
             align="left"
             onClick={() => copyAddress(props.from.address)}
             style={{ cursor: "pointer" }}
@@ -108,9 +143,17 @@ export const GeneralTransferBox = (props: Props) => {
               }}
             />
           </Text>
+          <img
+            style={{
+              flex: "0",
+            }}
+            src={arrow}
+            alt="right arrow"
+            height={16}
+          />
           <Text
             type="text"
-            color="white"
+            color="primary"
             align="right"
             onClick={() => copyAddress(props.to.address)}
             style={{ cursor: "pointer" }}
@@ -131,37 +174,7 @@ export const GeneralTransferBox = (props: Props) => {
             />
           </Text>
         </div>
-        <div className="amount">
-          {props.tokenSelector}
 
-          <div className="amount-input">
-            <Text type="text" align="left" color="primary">
-              amount :
-            </Text>
-            <input
-              autoComplete="off"
-              type="number"
-              name="amount-bridge"
-              id="amount-bridge"
-              placeholder="0.00"
-              value={props.amount}
-              onChange={(e) => props.onChange(e.target.value)}
-            />
-            {Number(props.max) < 0 ? (
-              ""
-            ) : (
-              <div
-                role="button"
-                tabIndex={0}
-                className="max"
-                style={{ cursor: "pointer" }}
-                onClick={() => props.onChange(props.max)}
-              >
-                max: {truncateNumber(props.max)}
-              </div>
-            )}
-          </div>
-        </div>
         {props.needAddressBox && (
           <input
             placeholder="gravity address (gravity...)"
@@ -175,7 +188,6 @@ export const GeneralTransferBox = (props: Props) => {
             }}
           />
         )}
-        <div className="row">{props.button}</div>
       </TransferBoxStyled>
     </FadeIn>
   );
@@ -192,7 +204,8 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
   flex-direction: column;
   gap: 2rem;
   padding: 2rem 3rem;
-  border: ${(props) => (props.disabled ? " 2px solid #333" : "2px solid #333")};
+  /* border: ${(props) =>
+    props.disabled ? " 2px solid #333" : "2px solid #333"}; */
 
   /* border: ${(props) =>
     props.disabled ? " 1px solid #333" : "1px solid var(--primary-color)"}; */
@@ -231,9 +244,10 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
   }
   .max {
     position: absolute;
-    right: 2.55rem;
-    bottom: 0px;
+    right: 1rem;
+    bottom: 5px;
     font-size: 13px;
+    color: var(--primary-color);
   }
   .token {
     display: flex;
@@ -254,20 +268,23 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
 
   .amount {
     filter: ${(props) => (props.disabled ? "grayscale(100%)" : "none")};
-
     display: flex;
     align-items: center;
     justify-content: space-between;
     position: relative;
-    padding: 1.4rem;
-    border: 1px solid #333;
-    background-color: #0c0c0c;
+    height: 6rem;
+    /* padding: 1.4rem; */
+    /* border: 1px solid #333; */
+    border-radius: 4px;
+    background-color: #222222;
 
     .amount-input {
+      height: 100%;
+      width: 100%;
       display: flex;
-      justify-content: center;
+      justify-content: start;
       align-items: center;
-      border: 1px solid #333;
+      /* border: 1px solid #333; */
       padding: 1rem;
       gap: 1rem;
     }
@@ -278,7 +295,7 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     border: none;
     outline: none;
     color: var(--primary-color);
-    text-align: right;
+    text-align: left;
     font-size: 22px;
     width: 100px;
     border-bottom: 1px solid transparent;
