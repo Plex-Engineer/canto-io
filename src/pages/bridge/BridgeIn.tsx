@@ -24,6 +24,7 @@ import { formatUnits } from "ethers/lib/utils";
 import { convertStringToBigNumber } from "./utils/stringToBigNumber";
 import { GeneralTransferBox } from "./components/generalTransferBox";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
+import FadeIn from "react-fade-in";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];
@@ -102,23 +103,37 @@ const BridgeIn = ({
   };
 
   return (
-    <Container>
+    <Styled as={FadeIn}>
       <Text type="title" color="primary">
         send funds to canto
       </Text>
 
-      <Text type="text" color="primary" style={{ width: "70%" }}>
+      <Text
+        type="text"
+        color="primary"
+        style={{
+          margin: "0 8rem",
+          lineHeight: "1.8rem",
+        }}
+      >
         funds are transferred in two steps through our canto bridge. it takes
         several minutes. for more details{" "}
         <a
-          href="https://docs.canto.io/user-guides/bridging-assets/ethereum"
+          role="button"
+          tabIndex={0}
+          onClick={() =>
+            window.open(
+              "https://docs.canto.io/user-guides/bridging-assets/ethereum",
+              "_blank"
+            )
+          }
           style={{
             color: "var(--primary-color)",
             cursor: "pointer",
             textDecoration: "underline",
           }}
         >
-          read more
+          read here
         </a>
         .
       </Text>
@@ -132,6 +147,25 @@ const BridgeIn = ({
           name: "Canto (EVM)",
         }}
       />
+      <div style={{ marginTop: "-1rem", alignItems: "center" }}>
+        <p
+          style={{
+            fontWeight: bridgeStore.transactionType == "Bridge" ? "900" : "100",
+            textAlign: "left",
+          }}
+        >
+          step 1: bridge assets from ethereum to canto (bridge)
+        </p>
+        <p
+          style={{
+            fontWeight:
+              bridgeStore.transactionType == "Convert" ? "900" : "100",
+            textAlign: "left",
+          }}
+        >
+          step 2: bridge assets from canto (bridge) to canto (evm)
+        </p>
+      </div>
       {bridgeStore.transactionType == "Bridge" && (
         <GeneralTransferBox
           tokenSelector={
@@ -232,11 +266,11 @@ const BridgeIn = ({
           }}
         />
       )}
-    </Container>
+    </Styled>
   );
 };
 
-const Container = styled.div`
+const Styled = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;

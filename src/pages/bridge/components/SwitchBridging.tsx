@@ -85,7 +85,7 @@ const SwitchBridging = (props: Props) => {
 
 const Styled = styled.div`
   width: 40rem;
-  margin: 2rem;
+  margin: 1rem;
   position: relative;
   .Switch {
     display: grid;
