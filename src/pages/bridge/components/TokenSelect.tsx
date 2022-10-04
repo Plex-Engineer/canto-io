@@ -21,7 +21,7 @@ export const TokenWallet = ({
   const Box = styled.div`
     background-color: #222222;
     padding: 1rem 1.4rem;
-    color: white;
+    color: var(--primary-color);
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -40,12 +40,14 @@ export const TokenWallet = ({
         setOpen(true);
       }}
     >
-      <img
-        src={activeToken.icon}
-        alt={activeToken.name}
-        height={30}
-        width={30}
-      />
+      {activeToken.name != "choose token" && (
+        <img
+          src={activeToken.icon}
+          alt={activeToken.name}
+          height={30}
+          width={30}
+        />
+      )}
       <span
         style={{
           flex: "2",

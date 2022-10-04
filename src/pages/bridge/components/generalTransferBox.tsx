@@ -290,7 +290,8 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
 
     .amount-input {
       height: 100%;
-      width: 100%;
+      width: 80%;
+      border-left: 2px solid black;
       display: flex;
       justify-content: start;
       align-items: center;
