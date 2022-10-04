@@ -1,7 +1,8 @@
 import styled from "@emotion/styled";
-import { CantoMainnet, OutlinedButton } from "cantoui";
+import { CantoMainnet } from "cantoui";
 import { formatEther } from "ethers/lib/utils";
 import { chain, memo } from "global/config/cosmosConstants";
+import { Text } from "global/packages/src";
 import { truncateNumber } from "global/utils/utils";
 import { claimRewardFee } from "pages/staking/config/fees";
 import { txClaimRewards } from "pages/staking/utils/transactions";
@@ -51,12 +52,21 @@ const MyStaking = (props: MyStakingProps) => {
             rewards={truncateNumber(formatEther(props.totalRewards))}
             apr={props.apr}
           />
-          <OutlinedButton onClick={handleClaimRewards}>
-            claim rewards
-          </OutlinedButton>
+          <Text type="text" color="primary" align="left">
+            current staking position
+          </Text>
           <ValidatorTable
             validators={props.userValidationInfo}
             sortBy="userTotal"
+          />
+
+          <Text type="text" color="primary" align="left">
+            currently undelegating
+          </Text>
+          <ValidatorTable
+            validators={props.userValidationInfo}
+            sortBy="userTotal"
+            undelegationOnly={true}
           />
         </div>
       )}
@@ -66,6 +76,9 @@ const MyStaking = (props: MyStakingProps) => {
 
 const Styled = styled.div`
   height: 100%;
+  width: 70%;
+  margin: 0 auto;
+  justify-content: center;
 `;
 
 export default MyStaking;

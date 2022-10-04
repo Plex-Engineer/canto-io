@@ -7,6 +7,7 @@ import Styled from "./style";
 import { useEffect, useState } from "react";
 import {
   DelegationResponse,
+  StakingTransactionType,
   UndelegationMap,
   Validator,
 } from "./config/interfaces";
@@ -15,6 +16,7 @@ import {
   getDistributionRewards,
   getUndelegationsForAddress,
   getValidators,
+  txClaimRewards,
 } from "pages/staking/utils/transactions";
 import { CantoMainnet } from "cantoui";
 import { calculateTotalStaked, getStakingApr } from "pages/staking/utils/utils";
@@ -23,6 +25,11 @@ import { BigNumber } from "ethers";
 import { getAllValidatorData } from "./utils/allUserValidatorInfo";
 import { ModalManager } from "./modals/modalManager";
 import useTransactionStore from "./stores/transactionStore";
+import { OutlinedButton } from "global/packages/src/components/atoms/Button";
+import { userTxMessages } from "./config/messages";
+import { getActiveTransactionMessage } from "./utils/utils";
+import { chain, memo } from "global/config/cosmosConstants";
+import { claimRewardFee } from "./config/fees";
 
 const NStaking = () => {
   const networkInfo = useNetworkInfo();
@@ -38,6 +45,28 @@ const NStaking = () => {
   });
   // get all of the rewards for the user
   const [rewards, setRewards] = useState<BigNumber>(BigNumber.from("0"));
+
+  async function handleClaimRewards() {
+    transactionStore.setTransactionMessage(userTxMessages.waitSign);
+    await txClaimRewards(
+      networkInfo.account ?? "",
+      CantoMainnet.cosmosAPIEndpoint,
+      claimRewardFee,
+      chain,
+      memo,
+      userValidators
+    );
+    transactionStore.setTransactionMessage(userTxMessages.waitVerify);
+    transactionStore.setTransactionMessage(
+      await getActiveTransactionMessage(
+        networkInfo.account ?? "",
+        "",
+        rewards,
+        networkInfo.balance,
+        StakingTransactionType.CLAIM_REWARDS
+      )
+    );
+  }
 
   async function getAllData() {
     if (networkInfo.account) {
@@ -87,11 +116,14 @@ const NStaking = () => {
     return false;
   });
 
-  const undelagatingValidators = getAllValidatorData(
-    validators,
-    delegations,
-    undelegations
-  ).filter((validator) => !!validator.undelagatingInfo);
+  //   useEffect(() => {
+  //     toast
+  //   }, [transactionStore.transactionMessage]);
+  //   const undelagatingValidators = getAllValidatorData(
+  //     validators,
+  //     delegations,
+  //     undelegations
+  //   ).filter((validator) => !!validator.undelagatingInfo);
   return (
     <Styled>
       <ModalManager allValidators={validators} />
@@ -99,7 +131,21 @@ const NStaking = () => {
         <TabList>
           <Tab>my staking</Tab>
           <Tab>all validators</Tab>
-          <Tab>transactions</Tab>
+          <div
+            style={{
+              flex: "5",
+              display: "flex",
+              justifyContent: "right",
+            }}
+          >
+            <OutlinedButton
+              onClick={() => {
+                handleClaimRewards();
+              }}
+            >
+              claim rewards
+            </OutlinedButton>
+          </div>
         </TabList>
         {transactionStore.transactionMessage}
         <TabPanel>
@@ -127,9 +173,6 @@ const NStaking = () => {
               undelegations
             )}
           />
-        </TabPanel>
-        <TabPanel>
-          <Transactions />
         </TabPanel>
       </Tabs>
     </Styled>
