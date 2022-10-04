@@ -143,7 +143,6 @@ const BridgingPage = () => {
 };
 
 const Styled = styled.div`
-  background-color: black;
   min-height: 80vh;
   max-width: 1024px;
 
@@ -151,8 +150,14 @@ const Styled = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   .tabs {
     width: 100%;
+    display: flex;
+    min-height: 75vh;
+    flex-direction: column;
+    justify-content: start;
+    background-color: black;
   }
   .tab {
     background-color: var(--pitch-black-color);
@@ -167,7 +172,6 @@ const Styled = styled.div`
     justify-content: center;
     cursor: pointer;
     font-size: 16px;
-    /* transition: all 0.4s; */
     &:hover {
       background-color: #283b2d;
       border-bottom: 4px solid var(--primary-color);

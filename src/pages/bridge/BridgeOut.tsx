@@ -25,6 +25,7 @@ import { GeneralTransferBox } from "./components/generalTransferBox";
 import { formatUnits } from "ethers/lib/utils";
 import { convertStringToBigNumber } from "./utils/stringToBigNumber";
 import { getBridgeOutButtonText } from "./utils/reactiveButtonText";
+import FadeIn from "react-fade-in";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -82,13 +83,21 @@ const BridgeOut = ({
   }, [userCantoNativeGTokens]);
 
   return (
-    <Container>
+    <Styled as={FadeIn}>
       <Text type="title" color="primary">
         send funds from canto
       </Text>
 
-      <Text type="text" color="primary" style={{ width: "70%" }}>
-        funds are bridged out through the two steps below.{" "}
+      <Text
+        type="text"
+        color="primary"
+        style={{
+          margin: "0 8rem",
+          lineHeight: "1.8rem",
+        }}
+      >
+        you must bridge your assets from the canto EVM to the canto (bridge) to
+        bridge out{" "}
         <a
           role="button"
           tabIndex={0}
@@ -120,7 +129,7 @@ const BridgeOut = ({
           height: 30,
         }}
       />
-      <div style={{ marginTop: "-2rem", alignContent: "center" }}>
+      <div style={{ marginTop: "-1rem", alignContent: "center" }}>
         <p
           style={{
             fontWeight: bridgeStore.transactionType == "Bridge" ? "900" : "100",
@@ -261,13 +270,14 @@ const BridgeOut = ({
           }
         />
       )}
-    </Container>
+    </Styled>
   );
 };
 
-const Container = styled.div`
+const Styled = styled.div`
   display: flex;
   flex-direction: column;
+
   align-items: center;
   gap: 1rem;
   margin: 2rem 0;

@@ -196,7 +196,6 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
 
   /* border: ${(props) =>
     props.disabled ? " 1px solid #333" : "1px solid var(--primary-color)"}; */
-  margin: 2rem 0;
   position: relative;
 
   .row {
