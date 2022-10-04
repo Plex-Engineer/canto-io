@@ -1,14 +1,14 @@
 import { useEtherBalance, useEthers } from "@usedapp/core";
 import { useEffect, useState } from "react";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import logo from "./../../assets/logo.svg";
 import { useLocation } from "react-router-dom";
 import { getBaseTokenName } from "global/utils/walletConnect/getTokenSymbol";
 import { useAlert, NavBar } from "../packages/src";
-import { GenPubKey } from "./genPubKey";
 import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
+import { showAlerts } from "global/utils/alerts";
+import { pageList } from "global/config/pageList";
 
 export const CantoNav = () => {
   const netWorkInfo = useNetworkInfo();
@@ -25,10 +25,7 @@ export const CantoNav = () => {
   }, [chainId]);
 
   function getTitle(location: string) {
-    if (location == "lp") {
-      return "lp interface";
-    }
-    return location;
+    return pageList.find((page) => page.link === location)?.pageTitle ?? "";
   }
 
   useEffect(() => {
@@ -48,42 +45,23 @@ export const CantoNav = () => {
   }
 
   useEffect(() => {
-    if (!netWorkInfo.hasPubKey) {
-      alert.show("Failure", <GenPubKey />);
-    } else if (!netWorkInfo.account) {
-      alert.show("Warning", <p> please connect your wallet to use canto</p>);
-    } else {
-      alert.close();
-    }
-  }, [netWorkInfo.account, netWorkInfo.chainId, netWorkInfo.hasPubKey]);
-
-  const pageList = [
-    {
-      name: "bridge",
-      link: "/bridge",
-    },
-    {
-      name: "governance",
-      link: "/governance",
-    },
-    {
-      name: "lending",
-      link: "/lending",
-    },
-    {
-      name: "lp interface",
-      link: "/lp",
-    },
-    {
-      name: "staking",
-      link: "/staking",
-    },
-    {
-      name: "new staking",
-      link: "/nstaking",
-    },
-  ];
-
+    showAlerts(
+      alert.show,
+      alert.close,
+      Number(netWorkInfo.chainId),
+      netWorkInfo.hasPubKey,
+      account,
+      netWorkInfo.balance,
+      location.pathname,
+      pageList
+    );
+  }, [
+    netWorkInfo.account,
+    netWorkInfo.chainId,
+    netWorkInfo.hasPubKey,
+    netWorkInfo.balance,
+    location,
+  ]);
   return (
     <NavBar
       onClick={() => {
@@ -96,7 +74,7 @@ export const CantoNav = () => {
       currency={tokenName}
       logo={logo}
       pageList={pageList}
-      currentPage={getTitle(location.pathname.slice(1))}
+      currentPage={getTitle(location.pathname)}
     />
   );
 };
