@@ -26,6 +26,7 @@ import { formatUnits } from "ethers/lib/utils";
 import { convertStringToBigNumber } from "./utils/stringToBigNumber";
 import { getBridgeOutButtonText } from "./utils/reactiveButtonText";
 import FadeIn from "react-fade-in";
+import { OutlinedButton } from "global/packages/src";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -244,7 +245,7 @@ const BridgeOut = ({
           )}
           amount={amount}
           button={
-            <PrimaryButton
+            <OutlinedButton
               disabled={disabled}
               onClick={async () => {
                 setInBridgeTransaction(true);
@@ -272,7 +273,7 @@ const BridgeOut = ({
               }}
             >
               {inBridgeTransaction ? bridgeConfirmation : buttonText}
-            </PrimaryButton>
+            </OutlinedButton>
           }
         />
       )}

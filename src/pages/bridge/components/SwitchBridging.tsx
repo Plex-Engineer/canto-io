@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable sonarjs/no-duplicate-string */
 import styled from "@emotion/styled";
-import bridgeIcon from "assets/bridge.svg";
+import bridgeIcon from "assets/logo.svg";
 
 import ImageButton from "global/components/ImageButton";
 import { useBridgeStore } from "../stores/gravityStore";
@@ -57,7 +57,7 @@ const SwitchBridging = (props: Props) => {
           <img
             src={bridgeIcon}
             alt={"canto (Bridge)"}
-            height={40}
+            height={24}
             style={{
               filter: "grayscale(100%)",
             }}

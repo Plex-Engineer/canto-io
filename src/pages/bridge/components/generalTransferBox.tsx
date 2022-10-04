@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import arrow from "../../../assets/next.svg";
 import CopyIcon from "../../../assets/copy.svg";
 import { truncateNumber } from "global/utils/utils";
+import { OutlinedButton } from "global/packages/src";
 
 interface Props {
   connected: boolean;
@@ -40,15 +41,15 @@ export const GeneralTransferBox = (props: Props) => {
     <FadeIn>
       <TransferBoxStyled disabled={!props.connected}>
         <div className="overlay">
-          <HighlightButton
-            className="switch"
+          <OutlinedButton
+            className="switchd"
             id="network-switch"
             onClick={props.onSwitch}
           >
             {!props.connected
               ? "switch to " + props.networkName
               : "connected to " + props.networkName}
-          </HighlightButton>
+          </OutlinedButton>
         </div>
         <div className="amount">
           {props.tokenSelector}
@@ -83,97 +84,103 @@ export const GeneralTransferBox = (props: Props) => {
             )}
           </div>
         </div>
-        <div className="row">{props.button}</div>
+        {props.connected && <div className="row">{props.button}</div>}
 
-        <div className="row">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-            }}
-          >
-            {props.from.icon && <img src={props.from.icon ?? ""} height={26} />}
-            <Text type="text" color="primary" align="left">
-              {props.from.name}
+        {props.connected && (
+          <div className="row">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "1rem",
+              }}
+            >
+              {props.from.icon && (
+                <img src={props.from.icon ?? ""} height={26} />
+              )}
+              <Text type="text" color="primary" align="left">
+                {props.from.name}
+              </Text>
+            </div>
+            <img
+              style={{
+                flex: "0",
+              }}
+              src={arrow}
+              alt="right arrow"
+              height={16}
+            />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                gap: "1rem",
+              }}
+            >
+              <img src={props.to.icon ?? ""} height={26} />
+              <Text type="text" color="primary" align="right">
+                {props.to.name}
+              </Text>
+            </div>
+          </div>
+        )}
+        {props.connected && (
+          <div className="row">
+            <Text
+              type="text"
+              color="primary"
+              align="left"
+              onClick={() => copyAddress(props.from.address)}
+              style={{ cursor: "pointer" }}
+            >
+              {props.from.address
+                ? props.from.address.slice(0, 4) +
+                  "..." +
+                  props.from.address.slice(-4)
+                : "retrieving wallet"}
+              <img
+                src={CopyIcon}
+                style={{
+                  height: "22px",
+                  position: "relative",
+                  top: "5px",
+                  left: "4px",
+                }}
+              />
+            </Text>
+            <img
+              style={{
+                flex: "0",
+              }}
+              src={arrow}
+              alt="right arrow"
+              height={16}
+            />
+            <Text
+              type="text"
+              color="primary"
+              align="right"
+              onClick={() => copyAddress(props.to.address)}
+              style={{ cursor: "pointer" }}
+            >
+              {props.to.address
+                ? props.to.address.slice(0, 4) +
+                  "..." +
+                  props.to.address.slice(-4)
+                : "retrieving wallet"}{" "}
+              <img
+                src={CopyIcon}
+                style={{
+                  height: "22px",
+                  marginLeft: "-6px",
+                  position: "relative",
+                  top: "5px",
+                }}
+              />
             </Text>
           </div>
-          <img
-            style={{
-              flex: "0",
-            }}
-            src={arrow}
-            alt="right arrow"
-            height={16}
-          />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              gap: "1rem",
-            }}
-          >
-            <img src={props.to.icon ?? ""} height={26} />
-            <Text type="text" color="primary" align="right">
-              {props.to.name}
-            </Text>
-          </div>
-        </div>
-        <div className="row">
-          <Text
-            type="text"
-            color="primary"
-            align="left"
-            onClick={() => copyAddress(props.from.address)}
-            style={{ cursor: "pointer" }}
-          >
-            {props.from.address
-              ? props.from.address.slice(0, 4) +
-                "..." +
-                props.from.address.slice(-4)
-              : "retrieving wallet"}
-            <img
-              src={CopyIcon}
-              style={{
-                height: "22px",
-                position: "relative",
-                top: "5px",
-                left: "4px",
-              }}
-            />
-          </Text>
-          <img
-            style={{
-              flex: "0",
-            }}
-            src={arrow}
-            alt="right arrow"
-            height={16}
-          />
-          <Text
-            type="text"
-            color="primary"
-            align="right"
-            onClick={() => copyAddress(props.to.address)}
-            style={{ cursor: "pointer" }}
-          >
-            {props.to.address
-              ? props.to.address.slice(0, 4) +
-                "..." +
-                props.to.address.slice(-4)
-              : "retrieving wallet"}{" "}
-            <img
-              src={CopyIcon}
-              style={{
-                height: "22px",
-                marginLeft: "-6px",
-                position: "relative",
-                top: "5px",
-              }}
-            />
-          </Text>
-        </div>
+        )}
 
         {props.needAddressBox && (
           <input
@@ -230,7 +237,7 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     border-radius: 4px;
   }
   .overlay {
-    background-color: #222222d2;
+    /* background-color: #080808d2; */
     border-radius: 18px;
 
     width: 100%;
@@ -253,7 +260,10 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     display: flex;
     gap: 1rem;
   }
-
+  .switchd {
+    margin-top: 12rem;
+    width: 34rem !important;
+  }
   .switch {
     width: 400px;
 
