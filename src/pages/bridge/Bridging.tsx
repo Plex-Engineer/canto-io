@@ -6,7 +6,11 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import BridgeIn from "./BridgeIn";
 import BridgeOut from "./BridgeOut";
-import { UserConvertToken, UserNativeTokens } from "./config/interfaces";
+import {
+  BaseToken,
+  UserConvertToken,
+  UserNativeTokens,
+} from "./config/interfaces";
 import { useEthGravityTokens } from "./hooks/useEthGravityTokens";
 import { SelectedTokens, useTokenStore } from "./stores/cosmosTokens";
 import { getNativeCantoBalance } from "./utils/nativeBalances";
@@ -67,10 +71,13 @@ const BridgingPage = () => {
     getAllBalances();
   }, []);
 
-  function reSelectTokens(selectedToken: SelectedTokens, tokenList?: any) {
+  function reSelectTokens(
+    selectedToken: SelectedTokens,
+    tokenList?: BaseToken[]
+  ) {
     tokenStore.setSelectedToken(
       tokenList?.find(
-        (token: any) =>
+        (token) =>
           token.address === tokenStore.selectedTokens[selectedToken].address
       ) ?? tokenStore.selectedTokens[selectedToken],
       selectedToken
@@ -136,7 +143,6 @@ const BridgingPage = () => {
 };
 
 const Styled = styled.div`
-  background-color: black;
   min-height: 80vh;
   max-width: 1024px;
 
@@ -144,8 +150,14 @@ const Styled = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   .tabs {
     width: 100%;
+    display: flex;
+    min-height: 75vh;
+    flex-direction: column;
+    justify-content: start;
+    background-color: black;
   }
   .tab {
     background-color: var(--pitch-black-color);
@@ -160,7 +172,6 @@ const Styled = styled.div`
     justify-content: center;
     cursor: pointer;
     font-size: 16px;
-    /* transition: all 0.4s; */
     &:hover {
       background-color: #283b2d;
       border-bottom: 4px solid var(--primary-color);
