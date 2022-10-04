@@ -41,9 +41,9 @@ function App() {
         <Container className="App">
           <CantoNav />
           <Routes>
-            <Route path="/" key={"home"} element={<LandingPage />} />
+            {/* <Route path="/" key={"home"} element={<LandingPage />} /> */}
             <Route path="/bridge" key={"bridge"} element={<BridgingPage />} />
-            <Route
+            {/* <Route
               path="/governance"
               key="governance"
               element={<Governance />}
@@ -56,7 +56,7 @@ function App() {
               element={<BalanceSheet />}
             />
             <Route path="/staking" key={"staking"} element={<Staking />} />
-            <Route path="/nstaking" key={"staking"} element={<NStaking />} />
+            <Route path="/nstaking" key={"staking"} element={<NStaking />} /> */}
           </Routes>
         </Container>
         <Footer />
