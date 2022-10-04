@@ -108,17 +108,24 @@ const BridgeIn = ({
       </Text>
 
       <Text type="text" color="primary" style={{ width: "70%" }}>
-        funds are transferred in two steps through our canto bridge. it takes
-        several minutes. for more details{" "}
+        funds are transferred in two steps through the canto bridge. it could
+        take several minutes. for more details{" "}
         <a
-          href="https://docs.canto.io/user-guides/bridging-assets/ethereum"
+          role="button"
+          tabIndex={0}
+          onClick={() =>
+            window.open(
+              "https://docs.canto.io/user-guides/bridging-assets/ethereum",
+              "_blank"
+            )
+          }
           style={{
             color: "var(--primary-color)",
             cursor: "pointer",
             textDecoration: "underline",
           }}
         >
-          read more
+          read here
         </a>
         .
       </Text>
@@ -132,6 +139,25 @@ const BridgeIn = ({
           name: "Canto (EVM)",
         }}
       />
+      <div style={{ marginTop: "-2rem", alignItems: "center" }}>
+        <p
+          style={{
+            fontWeight: bridgeStore.transactionType == "Bridge" ? "900" : "100",
+            textAlign: "left",
+          }}
+        >
+          step 1: bridge assets from ethereum to canto (bridge)
+        </p>
+        <p
+          style={{
+            fontWeight:
+              bridgeStore.transactionType == "Convert" ? "900" : "100",
+            textAlign: "left",
+          }}
+        >
+          step 2: bridge assets from canto (bridge) to canto (evm)
+        </p>
+      </div>
       {bridgeStore.transactionType == "Bridge" && (
         <GeneralTransferBox
           tokenSelector={

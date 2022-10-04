@@ -88,18 +88,25 @@ const BridgeOut = ({
       </Text>
 
       <Text type="text" color="primary" style={{ width: "70%" }}>
-        you must bridge your assets from the canto EVM to the canto (bridge) to
-        bridge out{" "}
+        funds are bridged out through the two steps below.{" "}
         <a
-          href="https://docs.canto.io/user-guides/converting-assets"
+          role="button"
+          tabIndex={0}
+          onClick={() =>
+            window.open(
+              "https://docs.canto.io/user-guides/converting-assets",
+              "_blank"
+            )
+          }
           style={{
+            color: "var(--primary-color)",
             cursor: "pointer",
             textDecoration: "underline",
           }}
         >
-          read more
-        </a>
-        .
+          read here
+        </a>{" "}
+        for more information.
       </Text>
 
       <SwitchBridging
@@ -113,6 +120,25 @@ const BridgeOut = ({
           height: 30,
         }}
       />
+      <div style={{ marginTop: "-2rem", alignContent: "center" }}>
+        <p
+          style={{
+            fontWeight: bridgeStore.transactionType == "Bridge" ? "900" : "100",
+            textAlign: "left",
+          }}
+        >
+          step 1: bridge assets from canto (evm) to canto (bridge)
+        </p>
+        <p
+          style={{
+            fontWeight:
+              bridgeStore.transactionType == "Convert" ? "900" : "100",
+            textAlign: "left",
+          }}
+        >
+          step 2: bridge assets from canto (bridge) to gravity bridge
+        </p>
+      </div>
 
       {bridgeStore.transactionType == "Bridge" && (
         <ConvertTransferBox
