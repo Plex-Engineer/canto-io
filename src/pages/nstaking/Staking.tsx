@@ -104,26 +104,21 @@ const NStaking = () => {
     getAllData();
   }, [networkInfo.account]);
 
-  const userValidators = validators.filter((validator) => {
-    for (let i = 0; i < delegations.length; i++) {
-      const delegation = delegations[i];
-      if (
-        delegation.delegation.validator_address == validator.operator_address
-      ) {
-        return true;
-      }
-    }
-    return false;
-  });
-
   //   useEffect(() => {
   //     toast
   //   }, [transactionStore.transactionMessage]);
-  //   const undelagatingValidators = getAllValidatorData(
-  //     validators,
-  //     delegations,
-  //     undelegations
-  //   ).filter((validator) => !!validator.undelagatingInfo);
+  const allValidatorData = getAllValidatorData(
+    validators,
+    delegations,
+    undelegations
+  );
+
+  const undelagatingValidators = allValidatorData.filter(
+    (validator) => !!validator.undelagatingInfo
+  );
+  const userValidators = allValidatorData.filter(
+    (validator) => !!validator.userDelegations
+  );
   return (
     <Styled>
       <ModalManager allValidators={validators} />
@@ -157,12 +152,8 @@ const NStaking = () => {
             totalUnbonding={undelegations.total_unbonding}
             totalRewards={rewards}
             apr={stakingApr}
-            userValidationInfo={getAllValidatorData(
-              userValidators,
-              delegations,
-              undelegations
-            )}
-            userDelegations={userValidators}
+            userValidationInfo={userValidators}
+            undelegationValidators={undelagatingValidators}
           />
         </TabPanel>
         <TabPanel>
