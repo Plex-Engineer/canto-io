@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable sonarjs/no-duplicate-string */
 import styled from "@emotion/styled";
-import bridgeIcon from "assets/bridge.svg";
+import bridgeIcon from "assets/logo.svg";
 
 import ImageButton from "global/components/ImageButton";
 import { useBridgeStore } from "../stores/gravityStore";
@@ -57,7 +57,7 @@ const SwitchBridging = (props: Props) => {
           <img
             src={bridgeIcon}
             alt={"canto (Bridge)"}
-            height={40}
+            height={24}
             style={{
               filter: "grayscale(100%)",
             }}
@@ -89,7 +89,7 @@ const Styled = styled.div`
   position: relative;
   .Switch {
     display: grid;
-    grid-template-columns: 1fr 1fr 2fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     width: 100%;
     justify-content: center;
     align-items: center;
@@ -111,8 +111,8 @@ const Styled = styled.div`
     display: flex;
   }
   .mid {
-    width: 40%;
-    border: 2px solid #4b4b4b;
+    /* width: 40%; */
+    /* border: 2px solid #4b4b4b; */
     border-left: none;
     border-right: none;
   }
@@ -123,14 +123,14 @@ const Styled = styled.div`
     width: 100%;
     height: 100%;
     border-radius: 36px;
-    border: 2px solid #4b4b4b;
-    background-color: #4b4b4b3c;
+    /* border: 2px solid #4b4b4b; */
+    /* background-color: #4b4b4b3c; */
     cursor: pointer;
     transition: all 0.2s;
-    &:hover {
+    /* &:hover {
       border: 2px solid var(--primary-color);
       background-color: #06fc9a37;
-    }
+    } */
   }
 
   .right {

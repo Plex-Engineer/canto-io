@@ -19,17 +19,19 @@ export const TokenWallet = ({
   const [isOpen, setOpen] = useState(false);
 
   const Box = styled.div`
-    background-color: #1c1c1c;
+    background-color: #222222;
     padding: 1rem 1.4rem;
-    color: white;
+    color: var(--primary-color);
     display: flex;
     align-items: center;
     gap: 1rem;
     width: 15rem;
+    height: 100%;
     cursor: pointer;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     &:hover {
-      border: 1px solid var(--primary-color);
+      /* border: 1px solid var(--primary-color); */
+      background-color: #333333;
     }
   `;
   return (
@@ -38,12 +40,14 @@ export const TokenWallet = ({
         setOpen(true);
       }}
     >
-      <img
-        src={activeToken.icon}
-        alt={activeToken.name}
-        height={30}
-        width={30}
-      />
+      {activeToken.name != "choose token" && (
+        <img
+          src={activeToken.icon}
+          alt={activeToken.name}
+          height={30}
+          width={30}
+        />
+      )}
       <span
         style={{
           flex: "2",

@@ -2,9 +2,10 @@ import styled from "@emotion/styled";
 import { HighlightButton, Text } from "cantoui";
 import FadeIn from "react-fade-in";
 import { toast } from "react-toastify";
-import arrow from "../../../assets/right.svg";
+import arrow from "../../../assets/next.svg";
 import CopyIcon from "../../../assets/copy.svg";
 import { truncateNumber } from "global/utils/utils";
+import { OutlinedButton } from "global/packages/src";
 
 interface Props {
   connected: boolean;
@@ -40,96 +41,15 @@ export const GeneralTransferBox = (props: Props) => {
     <FadeIn>
       <TransferBoxStyled disabled={!props.connected}>
         <div className="overlay">
-          <HighlightButton
-            className="switch"
+          <OutlinedButton
+            className="switchd"
             id="network-switch"
             onClick={props.onSwitch}
           >
             {!props.connected
               ? "switch to " + props.networkName
               : "connected to " + props.networkName}
-          </HighlightButton>
-        </div>
-        <div className="row">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-            }}
-          >
-            {props.from.icon && <img src={props.from.icon ?? ""} height={26} />}
-            <Text type="text" color="white" align="left">
-              {props.from.name}
-            </Text>
-          </div>
-          <img
-            style={{
-              flex: "0",
-            }}
-            src={arrow}
-            alt="right arrow"
-            height={40}
-          />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              gap: "1rem",
-            }}
-          >
-            <img src={props.to.icon ?? ""} height={26} />
-            <Text type="text" color="white" align="right">
-              {props.to.name}
-            </Text>
-          </div>
-        </div>
-        <div className="row">
-          <Text
-            type="text"
-            color="white"
-            align="left"
-            onClick={() => copyAddress(props.from.address)}
-            style={{ cursor: "pointer" }}
-          >
-            {props.from.address
-              ? props.from.address.slice(0, 4) +
-                "..." +
-                props.from.address.slice(-4)
-              : "retrieving wallet"}
-            <img
-              src={CopyIcon}
-              style={{
-                height: "22px",
-                position: "relative",
-                top: "5px",
-                left: "4px",
-              }}
-            />
-          </Text>
-          <Text
-            type="text"
-            color="white"
-            align="right"
-            onClick={() => copyAddress(props.to.address)}
-            style={{ cursor: "pointer" }}
-          >
-            {props.to.address
-              ? props.to.address.slice(0, 4) +
-                "..." +
-                props.to.address.slice(-4)
-              : "retrieving wallet"}{" "}
-            <img
-              src={CopyIcon}
-              style={{
-                height: "22px",
-                marginLeft: "-6px",
-                position: "relative",
-                top: "5px",
-              }}
-            />
-          </Text>
+          </OutlinedButton>
         </div>
         <div className="amount">
           {props.tokenSelector}
@@ -150,18 +70,118 @@ export const GeneralTransferBox = (props: Props) => {
             {Number(props.max) < 0 ? (
               ""
             ) : (
-              <div
-                role="button"
-                tabIndex={0}
-                className="max"
-                style={{ cursor: "pointer" }}
-                onClick={() => props.onChange(props.max)}
-              >
-                max: {truncateNumber(props.max)}
+              <div className="max">
+                balance {truncateNumber(props.max)}{" "}
+                <span
+                  tabIndex={0}
+                  role="button"
+                  style={{ cursor: "pointer", textDecoration: "underline" }}
+                  onClick={() => props.onChange(props.max)}
+                >
+                  max
+                </span>
               </div>
             )}
           </div>
         </div>
+        {props.connected && <div className="row">{props.button}</div>}
+
+        {props.connected && (
+          <div className="row">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "1rem",
+              }}
+            >
+              {props.from.icon && (
+                <img src={props.from.icon ?? ""} height={26} />
+              )}
+              <Text type="text" color="primary" align="left">
+                {props.from.name}
+              </Text>
+            </div>
+            <img
+              style={{
+                flex: "0",
+              }}
+              src={arrow}
+              alt="right arrow"
+              height={16}
+            />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                gap: "1rem",
+              }}
+            >
+              <img src={props.to.icon ?? ""} height={26} />
+              <Text type="text" color="primary" align="right">
+                {props.to.name}
+              </Text>
+            </div>
+          </div>
+        )}
+        {props.connected && (
+          <div className="row">
+            <Text
+              type="text"
+              color="primary"
+              align="left"
+              onClick={() => copyAddress(props.from.address)}
+              style={{ cursor: "pointer" }}
+            >
+              {props.from.address
+                ? props.from.address.slice(0, 4) +
+                  "..." +
+                  props.from.address.slice(-4)
+                : "retrieving wallet"}
+              <img
+                src={CopyIcon}
+                style={{
+                  height: "22px",
+                  position: "relative",
+                  top: "5px",
+                  left: "4px",
+                }}
+              />
+            </Text>
+            <img
+              style={{
+                flex: "0",
+              }}
+              src={arrow}
+              alt="right arrow"
+              height={16}
+            />
+            <Text
+              type="text"
+              color="primary"
+              align="right"
+              onClick={() => copyAddress(props.to.address)}
+              style={{ cursor: "pointer" }}
+            >
+              {props.to.address
+                ? props.to.address.slice(0, 4) +
+                  "..." +
+                  props.to.address.slice(-4)
+                : "retrieving wallet"}{" "}
+              <img
+                src={CopyIcon}
+                style={{
+                  height: "22px",
+                  marginLeft: "-6px",
+                  position: "relative",
+                  top: "5px",
+                }}
+              />
+            </Text>
+          </div>
+        )}
+
         {props.needAddressBox && (
           <input
             placeholder="gravity address (gravity...)"
@@ -175,7 +195,6 @@ export const GeneralTransferBox = (props: Props) => {
             }}
           />
         )}
-        <div className="row">{props.button}</div>
       </TransferBoxStyled>
     </FadeIn>
   );
@@ -192,7 +211,8 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
   flex-direction: column;
   gap: 2rem;
   padding: 2rem 3rem;
-  border: ${(props) => (props.disabled ? " 2px solid #333" : "2px solid #333")};
+  /* border: ${(props) =>
+    props.disabled ? " 2px solid #333" : "2px solid #333"}; */
 
   /* border: ${(props) =>
     props.disabled ? " 1px solid #333" : "1px solid var(--primary-color)"}; */
@@ -217,7 +237,7 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     border-radius: 4px;
   }
   .overlay {
-    background-color: #222222d2;
+    /* background-color: #080808d2; */
     border-radius: 18px;
 
     width: 100%;
@@ -231,15 +251,19 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
   }
   .max {
     position: absolute;
-    right: 2.55rem;
-    bottom: 0px;
+    right: 1rem;
+    bottom: 5px;
     font-size: 13px;
+    color: var(--primary-color);
   }
   .token {
     display: flex;
     gap: 1rem;
   }
-
+  .switchd {
+    margin-top: 12rem;
+    width: 34rem !important;
+  }
   .switch {
     width: 400px;
 
@@ -254,20 +278,24 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
 
   .amount {
     filter: ${(props) => (props.disabled ? "grayscale(100%)" : "none")};
-
     display: flex;
     align-items: center;
     justify-content: space-between;
     position: relative;
-    padding: 1.4rem;
-    border: 1px solid #333;
-    background-color: #0c0c0c;
+    height: 6rem;
+    /* padding: 1.4rem; */
+    /* border: 1px solid #333; */
+    border-radius: 4px;
+    background-color: #222222;
 
     .amount-input {
+      height: 100%;
+      width: 80%;
+      border-left: 2px solid black;
       display: flex;
-      justify-content: center;
+      justify-content: start;
       align-items: center;
-      border: 1px solid #333;
+      /* border: 1px solid #333; */
       padding: 1rem;
       gap: 1rem;
     }
@@ -278,7 +306,7 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     border: none;
     outline: none;
     color: var(--primary-color);
-    text-align: right;
+    text-align: left;
     font-size: 22px;
     width: 100px;
     border-bottom: 1px solid transparent;

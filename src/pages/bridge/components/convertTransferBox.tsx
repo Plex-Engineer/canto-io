@@ -18,6 +18,7 @@ import { getConvertButtonText } from "../utils/reactiveButtonText";
 import { convertStringToBigNumber } from "../utils/stringToBigNumber";
 import { formatUnits } from "ethers/lib/utils";
 import { GeneralTransferBox } from "./generalTransferBox";
+import { OutlinedButton } from "global/packages/src";
 
 interface ConvertTransferBoxProps {
   cantoToEVM: boolean;
@@ -80,12 +81,12 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
       from={{
         address: props.cantoToEVM ? props.cantoAddress : props.ETHAddress,
         name: props.cantoToEVM ? "canto (bridge)" : "canto (EVM)",
-        icon: props.cantoToEVM ? bridgeIcon : cantoIcon,
+        // icon: props.cantoToEVM ? bridgeIcon : cantoIcon,
       }}
       to={{
         address: !props.cantoToEVM ? props.cantoAddress : props.ETHAddress,
         name: !props.cantoToEVM ? "canto (bridge)" : "canto (EVM)",
-        icon: !props.cantoToEVM ? bridgeIcon : cantoIcon,
+        // icon: !props.cantoToEVM ? bridgeIcon : cantoIcon,
       }}
       networkName="canto"
       onSwitch={props.onSwitch}
@@ -97,7 +98,7 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
       max={formatUnits(maxAmount, props.activeToken.decimals)}
       amount={props.amount}
       button={
-        <PrimaryButton
+        <OutlinedButton
           disabled={disabled}
           onClick={async () => {
             setInConvertTransaction(true);
@@ -139,7 +140,7 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
           }}
         >
           {inConvertTransaction ? convertConfirmation : buttonText}
-        </PrimaryButton>
+        </OutlinedButton>
       }
     />
   );
