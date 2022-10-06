@@ -109,6 +109,7 @@ const BridgeIn = ({
         color="primary"
         style={{
           fontFamily: "Silkscreen",
+          lineHeight: "3rem",
         }}
       >
         send funds to canto
@@ -118,7 +119,7 @@ const BridgeIn = ({
         type="text"
         color="primary"
         style={{
-          margin: "0 8rem",
+          margin: "0 1rem",
           lineHeight: "1.8rem",
         }}
       >
@@ -153,25 +154,7 @@ const BridgeIn = ({
           name: "Canto (EVM)",
         }}
       />
-      {/* <div style={{ marginTop: "-1rem", alignItems: "center" }}>
-        <p
-          style={{
-            fontWeight: bridgeStore.transactionType == "Bridge" ? "900" : "100",
-            textAlign: "left",
-          }}
-        >
-          step 1: bridge assets from ethereum to canto (bridge)
-        </p>
-        <p
-          style={{
-            fontWeight:
-              bridgeStore.transactionType == "Convert" ? "900" : "100",
-            textAlign: "left",
-          }}
-        >
-          step 2: bridge assets from canto (bridge) to canto (evm)
-        </p>
-      </div> */}
+
       {bridgeStore.transactionType == "Bridge" && (
         <GeneralTransferBox
           tokenSelector={
@@ -281,8 +264,7 @@ const Styled = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  border-top: 1px solid var(--primary-color);
-  padding: 4rem 0;
-  min-height: 47rem;
+  padding: 3rem 0;
+  min-height: 48rem;
 `;
 export default BridgeIn;

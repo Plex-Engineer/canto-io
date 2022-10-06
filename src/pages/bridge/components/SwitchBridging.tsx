@@ -145,6 +145,15 @@ const Styled = styled.div`
     /* border: 2px solid var(--primary-color);
     background-color: #06fc9a37; */
   }
+
+  @media (max-width: 1000px) {
+    width: 100%;
+    margin: 0;
+
+    .Switch {
+      padding: 1rem;
+    }
+  }
 `;
 
 export default SwitchBridging;

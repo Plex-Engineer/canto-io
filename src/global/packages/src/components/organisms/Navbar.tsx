@@ -161,7 +161,7 @@ function ConnectionButton(
             // setIsModalOpen(true)
           }}
         >
-          <span className="center">
+          <span className="center ">
             {currency == "CANTO" && <img src={cantoIMG} height={14} />}
             {formatBigNumber(balance)}&nbsp;
           </span>
@@ -183,7 +183,10 @@ function ConnectionButton(
           >
             |
           </div>
-          {account?.substring(0, 5) + "..."}
+          <span className="hide-on-mobile">
+            &nbsp;
+            {account?.substring(0, 5) + "..."}
+          </span>
         </OutlinedButton>
       ) : (
         <OutlinedButton onClick={onClick}>

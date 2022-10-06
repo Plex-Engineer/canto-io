@@ -90,6 +90,7 @@ const BridgeOut = ({
         color="primary"
         style={{
           fontFamily: "Silkscreen",
+          lineHeight: "3rem",
         }}
       >
         send funds from canto
@@ -99,7 +100,6 @@ const BridgeOut = ({
         type="text"
         color="primary"
         style={{
-          margin: "0 8rem",
           lineHeight: "1.8rem",
         }}
       >
@@ -133,7 +133,7 @@ const BridgeOut = ({
         right={{
           icon: "https://raw.githubusercontent.com/Gravity-Bridge/Gravity-Docs/main/assets/Graviton-Grey.svg",
           name: "gravity Bridge",
-          height: 30,
+          height: 48,
         }}
       />
       {/* <div style={{ marginTop: "-1rem", alignContent: "center" }}>
@@ -287,8 +287,7 @@ const Styled = styled.div`
 
   align-items: center;
   gap: 1rem;
-  border-top: 1px solid var(--primary-color);
-  padding: 4rem 0;
-  min-height: 47rem;
+  padding: 3rem 0;
+  min-height: 48rem;
 `;
 export default BridgeOut;

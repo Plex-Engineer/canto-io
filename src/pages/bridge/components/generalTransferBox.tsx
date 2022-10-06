@@ -336,8 +336,7 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     justify-content: space-between;
     position: relative;
     height: 6rem;
-    /* padding: 1.4rem; */
-    /* border: 1px solid #333; */
+
     border-radius: 4px;
     background-color: #222222;
 
@@ -348,7 +347,6 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
       display: flex;
       justify-content: start;
       align-items: center;
-      /* border: 1px solid #333; */
       padding: 1rem;
       gap: 1rem;
     }
@@ -393,6 +391,33 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     &:focus {
       outline: none;
       border-bottom: 1px solid var(--primary-color);
+    }
+  }
+
+  @media (max-width: 1000px) {
+    width: 100vw;
+    padding: 1rem;
+
+    .overlay {
+    }
+
+    .amount {
+      margin: 0rem !important;
+    }
+
+    .amount-input {
+      p {
+        font-size: 16px;
+        width: 100%;
+      }
+      input {
+        font-size: 16px;
+
+        width: 100%;
+      }
+    }
+    .switchd {
+      width: 80vw !important;
     }
   }
 `;
