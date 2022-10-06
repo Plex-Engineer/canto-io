@@ -7,7 +7,7 @@ import { Text } from "../atoms/Text";
 import Alert from "../atoms/Alert";
 import styled from "@emotion/styled";
 import ModalManager from "../molecules/ModalManager";
-
+import cantoIMG from "assets/logo.svg";
 export interface Page {
   name: string;
   link: string;
@@ -91,6 +91,13 @@ const Container = styled.div`
     background-color: #09221454;
     backdrop-filter: blur(5px);
   }
+
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+  }
   & > nav {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -154,7 +161,8 @@ function ConnectionButton(
             // setIsModalOpen(true)
           }}
         >
-          <span className="hide-on-mobile">
+          <span className="center">
+            {currency == "CANTO" && <img src={cantoIMG} height={14} />}
             {formatBigNumber(balance)}&nbsp;
           </span>
           <span
@@ -164,7 +172,7 @@ function ConnectionButton(
               gap: "10px",
             }}
           >
-            {currency}
+            {currency != "CANTO" ? currency : null}
           </span>
           <div
             className="hide-on-mobile"

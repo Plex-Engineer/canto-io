@@ -1,22 +1,31 @@
 import styled from "@emotion/styled";
 
 const Sizes = {
+  "xx-sm": 12,
   "x-sm": 16,
   sm: 18,
   md: 20,
   lg: 22,
   "x-lg": 28,
 };
+
+const Weight = {
+  normal: 400,
+  light: 300,
+  bold: 500,
+  "x-bold": 600,
+};
 interface Props {
-  size?: "x-sm" | "sm" | "md" | "lg" | "x-lg";
-  padding?: "x-sm" | "sm" | "md" | "lg" | "x-lg";
+  size?: "xx-sm" | "x-sm" | "sm" | "md" | "lg" | "x-lg";
+  padding?: "xx-sm" | "x-sm" | "sm" | "md" | "lg" | "x-lg";
+  weight?: "light" | "normal" | "bold" | "x-bold";
 }
 const PrimaryButton = styled.button<Props>`
-  font-weight: 300;
-  font-size: ${({ size }) => Sizes[size ?? "md"] + "px"};
+  font-size: ${({ size }) => Sizes[size ?? "x-sm"] + "px"};
+  font-weight: ${({ weight }) => Weight[weight ?? "normal"]};
   background-color: var(--primary-color);
   color: var(--pitch-black-color);
-  padding: 0.4rem 2rem;
+  padding: ${({ padding }) => Sizes[padding ?? "xx-sm"] + "px"};
   border: 1px solid transparent;
   display: flex;
   align-self: center;

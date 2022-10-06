@@ -1,11 +1,10 @@
 import styled from "@emotion/styled";
-import { HighlightButton, Text } from "cantoui";
 import FadeIn from "react-fade-in";
 import { toast } from "react-toastify";
 import arrow from "../../../assets/next.svg";
 import CopyIcon from "../../../assets/copy.svg";
 import { truncateNumber } from "global/utils/utils";
-import { OutlinedButton } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 interface Props {
@@ -31,19 +30,14 @@ interface Props {
   needAddressBox: boolean;
   onAddressChange?: (s: string) => void;
 }
-function copyAddress(value: string | undefined) {
-  navigator.clipboard.writeText(value ?? "").then(() => {
-    toast("copied address", {
-      autoClose: 300,
-    });
-  });
-}
+
 export const GeneralTransferBox = (props: Props) => {
   return (
     <FadeIn>
       <TransferBoxStyled disabled={!props.connected}>
         <div className="overlay">
-          <OutlinedButton
+          <PrimaryButton
+            weight="bold"
             className="switchd"
             id="network-switch"
             onClick={props.onSwitch}
@@ -51,7 +45,7 @@ export const GeneralTransferBox = (props: Props) => {
             {!props.connected
               ? "switch to " + props.networkName
               : "connected to " + props.networkName}
-          </OutlinedButton>
+          </PrimaryButton>
         </div>
         <div className="amount">
           {props.tokenSelector}
@@ -219,7 +213,7 @@ export const GeneralTransferBox = (props: Props) => {
                 type="text"
                 color="primary"
                 align="right"
-                onClick={() => copyAddress(props.to.address)}
+                // onClick={() => copyAddress(props.to.address)}
                 style={{ cursor: "pointer" }}
               >
                 {props.to.address
