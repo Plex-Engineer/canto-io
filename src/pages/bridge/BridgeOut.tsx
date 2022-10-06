@@ -287,6 +287,8 @@ const Styled = styled.div`
 
   align-items: center;
   gap: 1rem;
-  margin: 2rem 0;
+  border-top: 1px solid var(--primary-color);
+  padding: 4rem 0;
+  min-height: 47rem;
 `;
 export default BridgeOut;

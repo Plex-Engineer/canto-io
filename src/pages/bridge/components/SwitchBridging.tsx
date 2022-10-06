@@ -47,7 +47,7 @@ const SwitchBridging = (props: Props) => {
           <ImageButton
             src={props.left.icon}
             alt={props.left.name}
-            height={props.left.height ?? 24}
+            height={props.left.height ?? 44}
             onClick={() => SetTransactionType("Bridge")}
           />
           {/* <Text>Ethereum</Text> */}
@@ -57,7 +57,7 @@ const SwitchBridging = (props: Props) => {
           <img
             src={bridgeIcon}
             alt={"canto (Bridge)"}
-            height={24}
+            height={40}
             style={{
               filter: "grayscale(100%)",
             }}
@@ -73,7 +73,7 @@ const SwitchBridging = (props: Props) => {
           <ImageButton
             src={props.right.icon}
             alt={props.right.name}
-            height={props.right.height ?? 20}
+            height={props.right.height ?? 40}
             onClick={() => SetTransactionType("Convert")}
           />
           {/* <Text type>Canto (EVM)</Text> */}

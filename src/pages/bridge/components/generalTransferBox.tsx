@@ -6,6 +6,7 @@ import arrow from "../../../assets/next.svg";
 import CopyIcon from "../../../assets/copy.svg";
 import { truncateNumber } from "global/utils/utils";
 import { OutlinedButton } from "global/packages/src";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 interface Props {
   connected: boolean;
@@ -31,9 +32,10 @@ interface Props {
   onAddressChange?: (s: string) => void;
 }
 function copyAddress(value: string | undefined) {
-  navigator.clipboard.writeText(value ?? "");
-  toast("copied address", {
-    autoClose: 300,
+  navigator.clipboard.writeText(value ?? "").then(() => {
+    toast("copied address", {
+      autoClose: 300,
+    });
   });
 }
 export const GeneralTransferBox = (props: Props) => {
@@ -127,28 +129,56 @@ export const GeneralTransferBox = (props: Props) => {
         )}
         {props.connected && (
           <div className="row">
-            <Text
-              type="text"
-              color="primary"
-              align="left"
-              onClick={() => copyAddress(props.from.address)}
-              style={{ cursor: "pointer" }}
+            <CopyToClipboard
+              text={props.from.address ?? ""}
+              onCopy={() => {
+                toast("copied address", {
+                  position: "top-right",
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progressStyle: {
+                    color: `
+                        var(--primary-color)
+                      `,
+                  },
+                  style: {
+                    border: "1px solid var(--primary-color)",
+                    borderRadius: "0px",
+                    paddingBottom: "3px",
+                    background: "black",
+                    color: `var(--primary-color)
+                    `,
+                    height: "100px",
+                    fontSize: "20px",
+                  },
+                  autoClose: 300,
+                });
+              }}
             >
-              {props.from.address
-                ? props.from.address.slice(0, 4) +
-                  "..." +
-                  props.from.address.slice(-4)
-                : "retrieving wallet"}
-              <img
-                src={CopyIcon}
-                style={{
-                  height: "22px",
-                  position: "relative",
-                  top: "5px",
-                  left: "4px",
-                }}
-              />
-            </Text>
+              <Text
+                type="text"
+                color="primary"
+                align="left"
+                style={{ cursor: "pointer" }}
+              >
+                {props.from.address
+                  ? props.from.address.slice(0, 5) +
+                    "..." +
+                    props.from.address.slice(-4)
+                  : "retrieving wallet"}
+                <img
+                  src={CopyIcon}
+                  style={{
+                    height: "22px",
+                    position: "relative",
+                    top: "5px",
+                    left: "4px",
+                  }}
+                />
+              </Text>
+            </CopyToClipboard>
             <img
               style={{
                 flex: "0",
@@ -157,28 +187,57 @@ export const GeneralTransferBox = (props: Props) => {
               alt="right arrow"
               height={16}
             />
-            <Text
-              type="text"
-              color="primary"
-              align="right"
-              onClick={() => copyAddress(props.to.address)}
-              style={{ cursor: "pointer" }}
+            <CopyToClipboard
+              text={props.to.address ?? ""}
+              onCopy={() => {
+                toast("copied address", {
+                  position: "top-right",
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progressStyle: {
+                    color: `
+                          var(--primary-color)
+                        `,
+                  },
+                  style: {
+                    border: "1px solid var(--primary-color)",
+                    borderRadius: "0px",
+                    paddingBottom: "3px",
+                    background: "black",
+                    color: `var(--primary-color)
+                      `,
+                    height: "100px",
+                    fontSize: "20px",
+                  },
+                  autoClose: 300,
+                });
+              }}
             >
-              {props.to.address
-                ? props.to.address.slice(0, 4) +
-                  "..." +
-                  props.to.address.slice(-4)
-                : "retrieving wallet"}{" "}
-              <img
-                src={CopyIcon}
-                style={{
-                  height: "22px",
-                  marginLeft: "-6px",
-                  position: "relative",
-                  top: "5px",
-                }}
-              />
-            </Text>
+              <Text
+                type="text"
+                color="primary"
+                align="right"
+                onClick={() => copyAddress(props.to.address)}
+                style={{ cursor: "pointer" }}
+              >
+                {props.to.address
+                  ? props.to.address.slice(0, 5) +
+                    "..." +
+                    props.to.address.slice(-4)
+                  : "retrieving wallet"}{" "}
+                <img
+                  src={CopyIcon}
+                  style={{
+                    height: "22px",
+                    marginLeft: "-6px",
+                    position: "relative",
+                    top: "5px",
+                  }}
+                />
+              </Text>
+            </CopyToClipboard>
           </div>
         )}
 
