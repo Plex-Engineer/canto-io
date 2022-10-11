@@ -18,6 +18,7 @@ import { useCantoERC20Balances } from "./hooks/useERC20Balances";
 import { convertCoinTokens } from "./config/gravityBridgeTokens";
 import { ETHGravityTokens } from "./config/gravityBridgeTokens";
 import { BigNumber } from "ethers";
+import TransactionsTab from "./TransactionsTab";
 
 const BridgingPage = () => {
   const tokenStore = useTokenStore();
@@ -123,6 +124,15 @@ const BridgingPage = () => {
           >
             bridge Out
           </Tab>
+          <Tab
+            className="tab"
+            // resetting the selected token when a new tab is selected
+            onClick={() => {
+              setSelectedTab(1);
+            }}
+          >
+            transactions
+          </Tab>
         </TabList>
         <TabPanel>
           <BridgeIn
@@ -137,6 +147,9 @@ const BridgingPage = () => {
             userConvertERC20Tokens={userConvertTokens}
           />
         </TabPanel>
+        <TabPanel>
+          <TransactionsTab />
+        </TabPanel>
       </Tabs>
     </Styled>
   );
@@ -144,14 +157,12 @@ const BridgingPage = () => {
 
 const Styled = styled.div`
   min-height: 80vh;
-  max-width: 1024px;
-
+  max-width: 1124px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   .tabs {
     width: 100%;
     display: flex;
@@ -170,6 +181,7 @@ const Styled = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 1.8rem 0;
     cursor: pointer;
     font-size: 16px;
     &:hover {
@@ -191,7 +203,7 @@ const Styled = styled.div`
   .react-tabs__tab--disabled {
   }
   .react-tabs__tab-panel--selected {
-    width: 1024px;
+    width: 1124px;
     border-top: 1px solid var(--primary-color);
     display: flex;
     justify-content: center;

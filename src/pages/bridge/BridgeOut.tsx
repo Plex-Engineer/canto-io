@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useBridgeStore } from "./stores/gravityStore";
 import styled from "@emotion/styled";
 import { TokenWallet } from "./components/TokenSelect";
-import bridgeIcon from "assets/bridge.svg";
 import { useEthers } from "@usedapp/core";
 import { BigNumber } from "ethers";
 import { chain, fee, memo } from "./config/networks";
@@ -12,7 +11,7 @@ import { toastBridge } from "./utils/bridgeConfirmations";
 import { ConvertTransferBox } from "./components/convertTransferBox";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
-import cantoIcon from "assets/logo.svg";
+import cantoIcon from "assets/icons/canto-evm.svg";
 import SwitchBridging from "./components/SwitchBridging";
 import {
   EmptySelectedConvertToken,
@@ -128,7 +127,7 @@ const BridgeOut = ({
       <SwitchBridging
         left={{
           icon: cantoIcon,
-          name: "canto (EVM)",
+          name: "EVM",
         }}
         right={{
           icon: "https://raw.githubusercontent.com/Gravity-Bridge/Gravity-Docs/main/assets/Graviton-Grey.svg",
@@ -284,6 +283,7 @@ const BridgeOut = ({
 const Styled = styled.div`
   display: flex;
   flex-direction: column;
+  text-shadow: none;
 
   align-items: center;
   gap: 1rem;

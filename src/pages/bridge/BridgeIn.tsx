@@ -7,8 +7,7 @@ import { useEthers } from "@usedapp/core";
 import { BigNumber, ethers } from "ethers";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import SwitchBridging from "./components/SwitchBridging";
-import cantoIcon from "assets/logo.svg";
-import bridgeIcon from "assets/bridge.svg";
+import cantoIcon from "assets/icons/canto-evm.svg";
 import ethIcon from "assets/icons/ETH.svg";
 import { ReactiveButton } from "./components/ReactiveButton";
 import { ConvertTransferBox } from "./components/convertTransferBox";
@@ -151,7 +150,7 @@ const BridgeIn = ({
         }}
         right={{
           icon: cantoIcon,
-          name: "Canto (EVM)",
+          name: "EVM",
         }}
       />
 
@@ -266,5 +265,6 @@ const Styled = styled.div`
   gap: 1rem;
   padding: 3rem 0;
   min-height: 48rem;
+  text-shadow: none;
 `;
 export default BridgeIn;
