@@ -85,18 +85,20 @@ const SwitchBridging = (props: Props) => {
 const Styled = styled.div`
   width: 34rem;
   margin: 1rem;
+  height: 8rem;
+
   position: relative;
   background-color: #222222;
   border-radius: 4px;
-  z-index: 3;
   .Switch {
+    position: absolute;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     width: 100%;
+    height: 100%;
     justify-content: center;
     align-items: center;
     padding: 1rem;
-    z-index: 5;
   }
   .center {
     display: flex;

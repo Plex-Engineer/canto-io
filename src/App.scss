@@ -53,7 +53,10 @@ input[type="number"] {
   width: 6px;
   background: var(--primary-color);
 }
-
+::selection {
+  color: black;
+  background: var(--primary-color);
+}
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
