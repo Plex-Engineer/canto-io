@@ -11,6 +11,9 @@ const TransactionsTab = () => {
         style={{
           fontFamily: "Silkscreen",
           lineHeight: "3rem",
+          fontSize: "44px",
+          fontWeight: "400",
+          letterSpacing: "-0.08em",
         }}
       >
         In Progress
@@ -39,6 +42,9 @@ const TransactionsTab = () => {
         style={{
           fontFamily: "Silkscreen",
           lineHeight: "3rem",
+          fontSize: "44px",
+          fontWeight: "400",
+          letterSpacing: "-0.08em",
         }}
       >
         complete

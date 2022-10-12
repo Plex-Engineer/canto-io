@@ -14,7 +14,7 @@ import useUserLPTokenInfo from "./hooks/useUserLPTokenData";
 import { LPPairInfo, UserLPPairInfo } from "./config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
 import { DexContainer } from "./components/Styled";
-
+import FadeIn from "react-fade-in";
 const Dex = () => {
   // Mixpanel.events.pageOpened("Dex Market", '');
 
@@ -112,7 +112,7 @@ const Dex = () => {
   }, [notifications]);
 
   return (
-    <DexContainer style={style}>
+    <DexContainer as={FadeIn} style={style}>
       <div style={{ marginBottom: "75px" }}>
         <ModalManager
           chainId={Number(networkInfo.chainId)}

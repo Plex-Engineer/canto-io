@@ -56,6 +56,8 @@ const Styled = styled.div`
   .balance {
     grid-area: balance;
     font-family: "Silkscreen";
+    font-size: 20px;
+    letter-spacing: -0.07em;
   }
 
   .link {
