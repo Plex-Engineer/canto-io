@@ -159,6 +159,7 @@ const BridgeIn = ({
           tokenSelector={
             <TokenWallet
               tokens={userEthTokens}
+              balance={"balanceOf"}
               activeToken={selectedETHToken}
               onSelect={(value) => {
                 tokenStore.setSelectedToken(
@@ -227,6 +228,7 @@ const BridgeIn = ({
           tokenSelector={
             <TokenWallet
               tokens={userConvertCoinNativeTokens}
+              balance="nativeBalance"
               activeToken={tokenStore.selectedTokens[SelectedTokens.CONVERTIN]}
               onSelect={(value) => {
                 tokenStore.setSelectedToken(

@@ -59,13 +59,7 @@ const BridgingPage = () => {
         };
       })
     );
-
-    const cantoGravityBridgeTokens = await getNativeCantoBalance(
-      CantoMainnet.cosmosAPIEndpoint,
-      networkInfo.cantoAddress,
-      convertCoinTokens
-    );
-    setUserBridgeOutTokens(cantoGravityBridgeTokens);
+    setUserBridgeOutTokens(convertNativeWithBalance);
   }
 
   useEffect(() => {
@@ -95,12 +89,7 @@ const BridgingPage = () => {
       reSelectTokens(SelectedTokens.BRIDGEOUT, userBridgeOutTokens);
     }, 6000);
     return () => clearInterval(interval);
-  }, [
-    userEthGTokens,
-    userConvertERC20Tokens,
-    userBridgeOutTokens,
-    userConvertTokens,
-  ]);
+  }, [userEthGTokens, userBridgeOutTokens, userConvertTokens]);
 
   return (
     <Styled>
@@ -128,7 +117,7 @@ const BridgingPage = () => {
             className="tab"
             // resetting the selected token when a new tab is selected
             onClick={() => {
-              setSelectedTab(1);
+              setSelectedTab(2);
             }}
           >
             transactions

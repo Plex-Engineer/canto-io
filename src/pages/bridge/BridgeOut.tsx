@@ -160,6 +160,7 @@ const BridgeOut = ({
           tokenSelector={
             <TokenWallet
               tokens={userConvertERC20Tokens}
+              balance="erc20Balance"
               activeToken={selectedConvertToken}
               onSelect={(value) => {
                 tokenStore.setSelectedToken(
@@ -205,6 +206,7 @@ const BridgeOut = ({
           tokenSelector={
             <TokenWallet
               tokens={userCantoNativeGTokens}
+              balance="nativeBalance"
               activeToken={selectedNativeToken}
               onSelect={(value) => {
                 tokenStore.setSelectedToken(

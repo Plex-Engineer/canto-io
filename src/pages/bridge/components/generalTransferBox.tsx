@@ -32,6 +32,31 @@ interface Props {
 }
 
 export const GeneralTransferBox = (props: Props) => {
+  function copyAddress() {
+    toast("copied address", {
+      position: "top-right",
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progressStyle: {
+        color: `
+            var(--primary-color)
+          `,
+      },
+      style: {
+        border: "1px solid var(--primary-color)",
+        borderRadius: "0px",
+        paddingBottom: "3px",
+        background: "black",
+        color: `var(--primary-color)
+        `,
+        height: "100px",
+        fontSize: "20px",
+      },
+      autoClose: 300,
+    });
+  }
   return (
     <FadeIn>
       <TransferBoxStyled disabled={!props.connected}>
@@ -125,31 +150,7 @@ export const GeneralTransferBox = (props: Props) => {
           <div className="row">
             <CopyToClipboard
               text={props.from.address ?? ""}
-              onCopy={() => {
-                toast("copied address", {
-                  position: "top-right",
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-                  progressStyle: {
-                    color: `
-                        var(--primary-color)
-                      `,
-                  },
-                  style: {
-                    border: "1px solid var(--primary-color)",
-                    borderRadius: "0px",
-                    paddingBottom: "3px",
-                    background: "black",
-                    color: `var(--primary-color)
-                    `,
-                    height: "100px",
-                    fontSize: "20px",
-                  },
-                  autoClose: 300,
-                });
-              }}
+              onCopy={copyAddress}
             >
               <Text
                 type="text"
@@ -181,34 +182,7 @@ export const GeneralTransferBox = (props: Props) => {
               alt="right arrow"
               height={16}
             />
-            <CopyToClipboard
-              text={props.to.address ?? ""}
-              onCopy={() => {
-                toast("copied address", {
-                  position: "top-right",
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-                  progressStyle: {
-                    color: `
-                          var(--primary-color)
-                        `,
-                  },
-                  style: {
-                    border: "1px solid var(--primary-color)",
-                    borderRadius: "0px",
-                    paddingBottom: "3px",
-                    background: "black",
-                    color: `var(--primary-color)
-                      `,
-                    height: "100px",
-                    fontSize: "20px",
-                  },
-                  autoClose: 300,
-                });
-              }}
-            >
+            <CopyToClipboard text={props.to.address ?? ""} onCopy={copyAddress}>
               <Text
                 type="text"
                 color="primary"

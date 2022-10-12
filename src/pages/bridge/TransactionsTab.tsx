@@ -9,6 +9,7 @@ import {
   findGravityToken,
   getAllBridgeTransactionsForUser,
 } from "./utils/utils";
+import FadeIn from "react-fade-in";
 
 const TransactionsTab = () => {
   const networkInfo = useNetworkInfo();
