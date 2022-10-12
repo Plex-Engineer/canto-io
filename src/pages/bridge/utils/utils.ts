@@ -1,21 +1,30 @@
 import { ADDRESSES } from "cantoui";
-import { Contract, ethers } from "ethers";
+import { Contract, ethers, Event } from "ethers";
 import { ETHMainnet } from "pages/bridge/config/networks";
-import { gravityabi } from "./gravityBridgeAbi";
+import { gravityabi } from "../config/gravityBridgeAbi";
 
 export async function getAllBridgeTransactionsForUser(
   account?: string
-): Promise<[any[], number]> {
+): Promise<[Event[], Event[]]> {
   const provider = new ethers.providers.JsonRpcProvider(ETHMainnet.rpcUrl);
   const gbridgeContract = new Contract(
     ADDRESSES.ETHMainnet.GravityBridge,
     gravityabi,
     provider
   );
+  const completedEvents: Event[] = [];
+  const pendingEvents: Event[] = [];
   const blockNumber = await provider.getBlockNumber();
   const eventFilters = gbridgeContract.filters.SendToCosmosEvent(null, account);
   const events = await gbridgeContract.queryFilter(eventFilters);
-  return [events, blockNumber];
+  for (const event of events) {
+    if (blockNumber - event.blockNumber > 100) {
+      completedEvents.push(event);
+    } else {
+      pendingEvents.push(event);
+    }
+  }
+  return [completedEvents, pendingEvents];
 }
 
 export function findGravityToken(tokenAddress: string) {

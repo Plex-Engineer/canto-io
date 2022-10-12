@@ -1,8 +1,51 @@
 import styled from "@emotion/styled";
+import { Event } from "ethers";
+import { formatUnits } from "ethers/lib/utils";
 import { Text } from "global/packages/src";
+import { useNetworkInfo } from "global/stores/networkInfo";
+import { useEffect, useState } from "react";
 import TransactionBox from "./components/TransactionBox";
+import {
+  findGravityToken,
+  getAllBridgeTransactionsForUser,
+} from "./utils/utils";
 
 const TransactionsTab = () => {
+  const networkInfo = useNetworkInfo();
+  const [pendingBridgeTransactions, setPendingBridgeTransactions] = useState<
+    Event[]
+  >([]);
+  const [completedBridgeTransactions, setCompletedBridgeTransactions] =
+    useState<Event[]>([]);
+
+  async function getData() {
+    const [completedBridgeIn, pendingBridgeIn] =
+      await getAllBridgeTransactionsForUser(networkInfo.account);
+    setCompletedBridgeTransactions(completedBridgeIn);
+    setPendingBridgeTransactions(pendingBridgeIn);
+  }
+  useEffect(() => {
+    getData();
+  }, [networkInfo.account]);
+
+  // useEffect(() => {
+  //   filterTransactionSuccess(completedBridgeTransactions);
+  // }, [completedBridgeTransactions.length]);
+
+  // async function filterTransactionSuccess(tx: any[]) {
+  //   if (tx.length == 0) return;
+  //   let localTransactions = tx;
+  //   for (const t of tx) {
+  //     const txReceipt = await t.getTransactionReceipt();
+  //     if (txReceipt.status != 1) {
+  //       localTransactions = localTransactions.filter((x) => {
+  //         return x != t;
+  //       });
+  //       localTransactions.push({ ...t, statusError: "failed" });
+  //     }
+  //   }
+  //   setCompletedBridgeTransactions(localTransactions);
+  // }
   return (
     <Styled>
       <Text
@@ -16,26 +59,24 @@ const TransactionsTab = () => {
           letterSpacing: "-0.08em",
         }}
       >
-        In Progress
+        {pendingBridgeTransactions.length != 0 ? "In Progress" : ""}
       </Text>
-      <TransactionBox
-        balance="1.75"
-        id={234334}
-        status={"loading"}
-        symbol={"ETH"}
-        txnValue="98237498234879"
-        type="in"
-        key={98798}
-      />
-      <TransactionBox
-        balance="45.75"
-        id={234334}
-        status={"loading"}
-        symbol={"ETH"}
-        txnValue="98237498234879"
-        type="out"
-        key={9878}
-      />
+      {pendingBridgeTransactions
+        .map((tx) => {
+          const token = findGravityToken(tx.args?._tokenContract);
+          return (
+            <TransactionBox
+              balance={formatUnits(tx.args?._amount, token?.decimals)}
+              id={tx.blockNumber}
+              status={"loading"}
+              symbol={token?.symbol ?? "unknown"}
+              txnValue={tx.transactionHash}
+              type={"in"}
+              key={tx.blockNumber}
+            />
+          );
+        })
+        .sort((a: any, b: any) => (a.props.id > b.props.id ? -1 : 1))}
       <Text
         type="title"
         color="primary"
@@ -47,44 +88,24 @@ const TransactionsTab = () => {
           letterSpacing: "-0.08em",
         }}
       >
-        complete
+        {completedBridgeTransactions.length != 0 ? "complete" : ""}
       </Text>
-      <TransactionBox
-        balance="45.75"
-        id={234334}
-        status={"complete"}
-        symbol={"USDC"}
-        txnValue="98237498234879"
-        type="out"
-        key={9878}
-      />{" "}
-      <TransactionBox
-        balance="60000.45"
-        id={234334}
-        status={"complete"}
-        symbol={"USTC"}
-        txnValue="98237498234879"
-        type="out"
-        key={9878}
-      />{" "}
-      <TransactionBox
-        balance="1.005"
-        id={234334}
-        status={"complete"}
-        symbol={"ATOM"}
-        txnValue="98237498234879"
-        type="out"
-        key={9878}
-      />{" "}
-      <TransactionBox
-        balance="12.34"
-        id={234334}
-        status={"complete"}
-        symbol={"ETH"}
-        txnValue="98237498234879"
-        type="out"
-        key={9878}
-      />
+      {completedBridgeTransactions
+        .map((tx) => {
+          const token = findGravityToken(tx.args?._tokenContract);
+          return (
+            <TransactionBox
+              balance={formatUnits(tx.args?._amount, token?.decimals)}
+              id={tx.blockNumber}
+              status={"complete"}
+              symbol={token?.symbol ?? "unknown"}
+              txnValue={tx.transactionHash}
+              type={"in"}
+              key={tx.blockNumber}
+            />
+          );
+        })
+        .sort((a: any, b: any) => (a.props.id > b.props.id ? -1 : 1))}
     </Styled>
   );
 };

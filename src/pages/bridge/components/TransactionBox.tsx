@@ -24,7 +24,12 @@ const TransactionBox = (props: Props) => {
         #{props.id} {" bridge"} {props.type}
       </p>
       <h1 className="balance">{props.balance + " " + props.symbol}</h1>
-      <a href={props.txnValue} className="link">
+      <a
+        href={"https://etherscan.io/tx/" + props.txnValue}
+        target="_blank"
+        rel="noreferrer"
+        className="link"
+      >
         view on explorer
       </a>
     </Styled>
