@@ -16,6 +16,7 @@ import Footer from "global/components/nFooter";
 import NStaking from "pages/nstaking/Staking";
 import LandingPage from "pages/landing_page/LandingPage";
 import BridgingPage from "pages/bridge/Bridging";
+import { GBridgeTransactions } from "pages/gbridgeTransactions/GBridgeTransactions";
 
 //Styling
 const Container = styled.div`
@@ -41,6 +42,12 @@ function App() {
         <Container className="App">
           <CantoNav />
           <Routes>
+            <Route
+              path="/test"
+              key={"test"}
+              element={<GBridgeTransactions />}
+            />
+
             <Route path="/" key={"home"} element={<LandingPage />} />
             <Route path="/bridge" key={"bridge"} element={<BridgingPage />} />
             <Route
@@ -58,8 +65,8 @@ function App() {
             <Route path="/staking" key={"staking"} element={<Staking />} />
             <Route path="/nstaking" key={"staking"} element={<NStaking />} />
           </Routes>
+          <Footer />
         </Container>
-        <Footer />
       </Router>
     </React.Fragment>
   );

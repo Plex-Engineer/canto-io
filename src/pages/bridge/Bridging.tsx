@@ -157,7 +157,7 @@ const BridgingPage = () => {
 
 const Styled = styled.div`
   min-height: 80vh;
-  max-width: 1124px;
+  max-width: 1205px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -171,11 +171,11 @@ const Styled = styled.div`
     justify-content: start;
   }
   .tab {
-    /* background-color: var(--pitch-black-color); */
-    height: 50px;
+    height: 80px;
+
     color: var(--primary-color);
     outline: none;
-    width: 200px;
+    width: 174px;
     border-radius: 0%;
     border: 1px solid transparent;
     display: flex;
@@ -185,25 +185,28 @@ const Styled = styled.div`
     cursor: pointer;
     font-size: 16px;
     &:hover {
+      border: none;
       background-color: #06fc9a4c;
-
       border-bottom: 4px solid var(--primary-color);
     }
   }
   .tablist {
     display: flex;
     justify-content: center;
-    /* background-color: var(--pitch-black-color); */
   }
   .react-tabs__tab--selected {
+    border: none;
     border-bottom: 4px solid var(--primary-color);
-    border-top: none;
     background-color: #06fc991a;
   }
   .react-tabs__tab--disabled {
   }
+  .react-tabs__tab-panel {
+    max-width: 1205px;
+    width: 100vw;
+  }
+
   .react-tabs__tab-panel--selected {
-    width: 1124px;
     border-top: 1px solid var(--primary-color);
     display: flex;
     justify-content: center;

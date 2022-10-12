@@ -61,8 +61,11 @@ const Footer = () => {
 };
 
 const Styled = styled.div`
+  max-width: 1205px;
+  width: 100%;
+  text-shadow: none;
   border-top: 1px solid var(--primary-color);
-  margin: 0 1rem;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
