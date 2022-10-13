@@ -285,8 +285,6 @@ const BridgeOut = ({
 const Styled = styled.div`
   display: flex;
   flex-direction: column;
-  text-shadow: none;
-
   align-items: center;
   gap: 1rem;
   padding: 60px 0;

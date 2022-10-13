@@ -62,6 +62,7 @@ export const GeneralTransferBox = (props: Props) => {
       <TransferBoxStyled disabled={!props.connected}>
         <div className="overlay">
           <PrimaryButton
+            height="big"
             weight="bold"
             className="switchd"
             id="network-switch"
@@ -288,7 +289,7 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     gap: 1rem;
   }
   .switchd {
-    margin-top: 12rem;
+    margin-top: 10.6rem;
     width: 34rem !important;
   }
   .switch {

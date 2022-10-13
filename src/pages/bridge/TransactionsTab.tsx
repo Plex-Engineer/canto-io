@@ -92,7 +92,7 @@ const TransactionsTab = () => {
         style={{
           fontFamily: "Silkscreen",
           lineHeight: "3rem",
-          fontSize: "44px",
+          fontSize: "26px",
           fontWeight: "400",
           letterSpacing: "-0.08em",
         }}
@@ -121,7 +121,7 @@ const TransactionsTab = () => {
         style={{
           fontFamily: "Silkscreen",
           lineHeight: "3rem",
-          fontSize: "44px",
+          fontSize: "26px",
           fontWeight: "400",
           letterSpacing: "-0.08em",
         }}
@@ -144,7 +144,6 @@ const Styled = styled.div`
   gap: 1rem;
   padding: 3rem 0;
   min-height: 48rem;
-  text-shadow: none;
 `;
 
 export default TransactionsTab;

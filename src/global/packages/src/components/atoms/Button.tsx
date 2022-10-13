@@ -9,6 +9,12 @@ const Sizes = {
   "x-lg": 28,
 };
 
+const Height = {
+  big: 56,
+  normal: 42,
+  small: 32,
+};
+
 const Weight = {
   normal: 400,
   light: 300,
@@ -19,6 +25,7 @@ interface Props {
   size?: "xx-sm" | "x-sm" | "sm" | "md" | "lg" | "x-lg";
   padding?: "xx-sm" | "x-sm" | "sm" | "md" | "lg" | "x-lg";
   weight?: "light" | "normal" | "bold" | "x-bold";
+  height?: "small" | "normal" | "big";
 }
 const PrimaryButton = styled.button<Props>`
   font-size: ${({ size }) => Sizes[size ?? "x-sm"] + "px"};
@@ -28,7 +35,9 @@ const PrimaryButton = styled.button<Props>`
   padding: ${({ padding }) => Sizes[padding ?? "xx-sm"] + "px"};
   border: 1px solid transparent;
   display: flex;
-  align-self: center;
+  height: ${({ height }) => Height[height ?? "normal"] + "px"};
+  border-radius: 4px;
+  align-items: center;
   justify-content: center;
   text-align: center;
 
@@ -44,7 +53,8 @@ const PrimaryButton = styled.button<Props>`
 `;
 
 const OutlinedButton = styled(PrimaryButton)<Props>`
-  background-color: var(--pitch-black-color);
+  /* background-color: var(--pitch-black-color); */
+  background-color: transparent;
   color: var(--primary-color);
   border: 1px solid var(--primary-color);
 
