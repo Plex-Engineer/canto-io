@@ -120,10 +120,12 @@ const BridgeIn = ({
         style={{
           margin: "0 1rem",
           lineHeight: "1.8rem",
+          fontSize: "14px",
+          lineHeight: "20.3px",
         }}
       >
-        funds are transferred in two steps through our canto bridge. it takes
-        several minutes. for more details{" "}
+        funds are transferred in two steps through our canto bridge. <br></br>{" "}
+        it takes several minutes. for more details{" "}
         <a
           role="button"
           tabIndex={0}
@@ -262,10 +264,9 @@ const Styled = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 60px 0;
-  min-height: 48rem;
-
+  gap: 12px;
+  padding: 50px 0;
+  min-height: 45rem;
   text-shadow: none;
 `;
 export default BridgeIn;
