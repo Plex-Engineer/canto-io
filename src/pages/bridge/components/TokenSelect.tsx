@@ -9,12 +9,14 @@ interface ITokenSelect {
   tokens: BaseToken[] | undefined;
   activeToken: BaseToken;
   onSelect: (value: BaseToken | undefined) => void;
+  balance: string;
 }
 
 export const TokenWallet = ({
   onSelect,
   tokens,
   activeToken,
+  balance,
 }: ITokenSelect) => {
   const [isOpen, setOpen] = useState(false);
 
@@ -72,6 +74,7 @@ export const TokenWallet = ({
           />
           <TokenModal
             tokens={tokens}
+            balance={balance}
             onClose={(value) => {
               if (onSelect) {
                 onSelect(value);
