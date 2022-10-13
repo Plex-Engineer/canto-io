@@ -5,7 +5,7 @@ import completeIcon from "assets/complete.svg";
 interface Props {
   type: "in" | "out";
   balance: string;
-  id: number;
+  id: number | string;
   txnValue: string;
   symbol: string;
   status: "loading" | "complete";

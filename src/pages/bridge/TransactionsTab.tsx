@@ -6,10 +6,11 @@ import { useNetworkInfo } from "global/stores/networkInfo";
 import { useEffect, useState } from "react";
 import TransactionBox from "./components/TransactionBox";
 import {
+  EventWithTime,
   findGravityToken,
-  getAllBridgeTransactionsForUser,
+  getAllBridgeTransactionsWithStatus,
+  getBridgeOutTransactions,
 } from "./utils/utils";
-import FadeIn from "react-fade-in";
 
 const TransactionsTab = () => {
   const networkInfo = useNetworkInfo();
@@ -17,17 +18,25 @@ const TransactionsTab = () => {
     Event[]
   >([]);
   const [completedBridgeTransactions, setCompletedBridgeTransactions] =
-    useState<Event[]>([]);
+    useState<EventWithTime[]>([]);
+  const [bridgeOutTransactions, setBridgeOutTransactions] = useState<any[]>([]);
 
   async function getData() {
     const [completedBridgeIn, pendingBridgeIn] =
-      await getAllBridgeTransactionsForUser(networkInfo.account);
+      await getAllBridgeTransactionsWithStatus(
+        networkInfo.account,
+        networkInfo.cantoAddress
+      );
     setCompletedBridgeTransactions(completedBridgeIn);
     setPendingBridgeTransactions(pendingBridgeIn);
+
+    setBridgeOutTransactions(
+      await getBridgeOutTransactions(networkInfo.cantoAddress)
+    );
   }
   useEffect(() => {
     getData();
-  }, [networkInfo.account]);
+  }, [networkInfo.account, networkInfo.cantoAddress]);
 
   // useEffect(() => {
   //   filterTransactionSuccess(completedBridgeTransactions);
@@ -47,6 +56,34 @@ const TransactionsTab = () => {
   //   }
   //   setCompletedBridgeTransactions(localTransactions);
   // }
+
+  const completedBridgeIn = completedBridgeTransactions.map((tx) => {
+    const token = findGravityToken(tx.args?._tokenContract);
+    return (
+      <TransactionBox
+        balance={formatUnits(tx.args?._amount, token?.decimals)}
+        id={new Date(tx.timestamp).toLocaleDateString()}
+        status={"complete"}
+        symbol={token?.symbol ?? "unknown"}
+        txnValue={tx.transactionHash}
+        type={"in"}
+        key={tx.blockNumber}
+      />
+    );
+  });
+  const completedBridgeOut = bridgeOutTransactions.map((tx) => {
+    return (
+      <TransactionBox
+        balance={formatUnits(tx.amount, tx.token.decimals)}
+        id={new Date(tx.tx.timestamp).toLocaleDateString()}
+        status={"complete"}
+        symbol={tx.token.symbol}
+        txnValue={tx.tx.transactionHash}
+        type={"out"}
+        key={tx.tx.transactionHash}
+      />
+    );
+  });
   return (
     <Styled>
       <Text
@@ -89,24 +126,13 @@ const TransactionsTab = () => {
           letterSpacing: "-0.08em",
         }}
       >
-        {completedBridgeTransactions.length != 0 ? "complete" : ""}
+        {completedBridgeTransactions.length + bridgeOutTransactions.length != 0
+          ? "complete"
+          : ""}
       </Text>
-      {completedBridgeTransactions
-        .map((tx) => {
-          const token = findGravityToken(tx.args?._tokenContract);
-          return (
-            <TransactionBox
-              balance={formatUnits(tx.args?._amount, token?.decimals)}
-              id={tx.blockNumber}
-              status={"complete"}
-              symbol={token?.symbol ?? "unknown"}
-              txnValue={tx.transactionHash}
-              type={"in"}
-              key={tx.blockNumber}
-            />
-          );
-        })
-        .sort((a: any, b: any) => (a.props.id > b.props.id ? -1 : 1))}
+      {[...completedBridgeIn, ...completedBridgeOut].sort((a: any, b: any) =>
+        new Date(a.props.id) > new Date(b.props.id) ? -1 : 1
+      )}
     </Styled>
   );
 };
