@@ -119,7 +119,6 @@ const BridgeIn = ({
         color="primary"
         style={{
           margin: "0 1rem",
-          lineHeight: "1.8rem",
           fontSize: "14px",
           lineHeight: "20.3px",
         }}
@@ -269,6 +268,5 @@ const Styled = styled.div`
   gap: 12px;
   padding: 50px 0;
   min-height: 45rem;
-  text-shadow: none;
 `;
 export default BridgeIn;

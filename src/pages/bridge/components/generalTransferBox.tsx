@@ -288,7 +288,7 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     gap: 1rem;
   }
   .switchd {
-    margin-top: 12rem;
+    margin-top: 10.6rem;
     width: 34rem !important;
   }
   .switch {

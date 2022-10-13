@@ -118,7 +118,6 @@ const Styled = styled.div`
   gap: 1rem;
   padding: 3rem 0;
   min-height: 48rem;
-  text-shadow: none;
 `;
 
 export default TransactionsTab;

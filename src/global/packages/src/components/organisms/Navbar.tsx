@@ -112,7 +112,11 @@ const Container = styled.div`
       display: flex;
       justify-content: end;
     }
-
+    #title {
+      font-family: Silkscreen;
+      font-size: 44px;
+      letter-spacing: -0.08em;
+    }
     #logo {
       color: var(--primary-color);
       font-weight: bold;

@@ -59,7 +59,6 @@ const Styled = styled.div`
   .bottom {
     font-family: "Silkscreen", cursive;
     font-size: 30px;
-    text-shadow: none;
   }
 `;
 export default InfoBar;

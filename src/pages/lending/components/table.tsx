@@ -11,7 +11,6 @@ const Table = styled.table`
   text-align: center;
   border-collapse: collapse;
   border-spacing: 0;
-  text-shadow: none;
 
   thead {
     text-transform: lowercase;
