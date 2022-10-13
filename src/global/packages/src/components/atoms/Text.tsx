@@ -12,7 +12,7 @@ const Mapper = {
   title: "32px",
   subtitle: "30px",
   text: "18px",
-  subtext: "18px",
+  subtext: "16px",
 };
 
 export const Text = styled.p<Props>`

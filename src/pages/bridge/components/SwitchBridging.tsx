@@ -153,7 +153,7 @@ const Styled = styled.div`
     border-radius: 4px;
     width: 58%;
     margin: 1%;
-    height: 90%;
+    height: 92%;
     transition: right 0.3s;
   }
   @media (max-width: 1000px) {

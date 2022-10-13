@@ -62,6 +62,7 @@ export const GeneralTransferBox = (props: Props) => {
       <TransferBoxStyled disabled={!props.connected}>
         <div className="overlay">
           <PrimaryButton
+            height="big"
             weight="bold"
             className="switchd"
             id="network-switch"

@@ -13,7 +13,7 @@ import { pageList } from "global/config/pageList";
 export const CantoNav = () => {
   const netWorkInfo = useNetworkInfo();
   const alert = useAlert();
-  const { activateBrowserWallet, account, chainId } = useEthers();
+  const { activateBrowserWallet, account, chainId, active } = useEthers();
   const balance = useEtherBalance(account);
   const location = useLocation();
   const [tokenName, setTokenName] = useState("");
@@ -34,7 +34,7 @@ export const CantoNav = () => {
       netWorkInfo.setAccount(account);
       netWorkInfo.setBalance(balance ?? BigNumber.from(0));
     }
-  }, [account, chainId, balance]);
+  }, [account, chainId, balance, active]);
 
   //@ts-ignore
   if (window.ethereum) {

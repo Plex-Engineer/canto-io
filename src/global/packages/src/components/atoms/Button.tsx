@@ -36,8 +36,8 @@ const PrimaryButton = styled.button<Props>`
   border: 1px solid transparent;
   display: flex;
   height: ${({ height }) => Height[height ?? "normal"] + "px"};
-
-  align-self: center;
+  border-radius: 4px;
+  align-items: center;
   justify-content: center;
   text-align: center;
 
@@ -53,7 +53,8 @@ const PrimaryButton = styled.button<Props>`
 `;
 
 const OutlinedButton = styled(PrimaryButton)<Props>`
-  background-color: var(--pitch-black-color);
+  /* background-color: var(--pitch-black-color); */
+  background-color: transparent;
   color: var(--primary-color);
   border: 1px solid var(--primary-color);
 
