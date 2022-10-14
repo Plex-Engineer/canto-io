@@ -2,8 +2,8 @@ import styled from "@emotion/styled";
 import down from "assets/down.svg";
 import { useState } from "react";
 import TokenModal from "./tokenModal";
-import { StyledPopup } from "global/components/Styled";
 import { BaseToken } from "../config/interfaces";
+import Popup from "reactjs-popup";
 
 interface ITokenSelect {
   tokens: BaseToken[] | undefined;
@@ -20,24 +20,8 @@ export const TokenWallet = ({
 }: ITokenSelect) => {
   const [isOpen, setOpen] = useState(false);
 
-  const Box = styled.div`
-    background-color: #222222;
-    padding: 1rem 1.4rem;
-    color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    width: 15rem;
-    height: 100%;
-    cursor: pointer;
-    /* border: 1px solid black; */
-    &:hover {
-      /* border: 1px solid var(--primary-color); */
-      background-color: #333333;
-    }
-  `;
   return (
-    <Box
+    <Styled
       onClick={() => {
         setOpen(true);
       }}
@@ -65,13 +49,6 @@ export const TokenWallet = ({
             setOpen(false);
           }}
         >
-          <hr
-            style={{
-              border: "0px",
-              borderBottom: "1px solid #00502C",
-              marginBottom: "1rem",
-            }}
-          />
           <TokenModal
             tokens={tokens}
             balance={balance}
@@ -84,6 +61,35 @@ export const TokenWallet = ({
           />
         </StyledPopup>
       ) : null}
-    </Box>
+    </Styled>
   );
 };
+
+const StyledPopup = styled(Popup)`
+  // use your custom style for ".popup-overlay"
+  &-overlay {
+    z-index: 10;
+  }
+  &-content {
+    background: rgba(217, 217, 217, 0.2);
+    backdrop-filter: blur(35px);
+    border-radius: 7px;
+  }
+`;
+
+const Styled = styled.div`
+  background-color: #222222;
+  padding: 1rem 1.4rem;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 15rem;
+  height: 100%;
+  cursor: pointer;
+  /* border: 1px solid black; */
+  &:hover {
+    /* border: 1px solid var(--primary-color); */
+    background-color: #333333;
+  }
+`;
