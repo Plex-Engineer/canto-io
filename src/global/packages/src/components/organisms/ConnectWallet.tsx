@@ -1,6 +1,6 @@
 import { OutlinedButton } from "global/packages/src";
-import cantoIMG from "assets/logo.svg";
-import ethIMG from "assets/icons/eth.svg";
+import cantoIMG from "../../../../../assets/logo.svg";
+import ethIMG from "../../../../../assets/icons/eth.svg";
 import { formatBigNumber } from "../../utils/formatNumbers";
 import Popup from "reactjs-popup";
 import WalletModal from "./WalletModal";
