@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useBridgeStore } from "./stores/gravityStore";
 import styled from "@emotion/styled";
 import { TokenWallet } from "./components/TokenSelect";
-import bridgeIcon from "assets/bridge.svg";
 import { useEthers } from "@usedapp/core";
 import { BigNumber } from "ethers";
 import { chain, fee, memo } from "./config/networks";
@@ -12,7 +11,7 @@ import { toastBridge } from "./utils/bridgeConfirmations";
 import { ConvertTransferBox } from "./components/convertTransferBox";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
-import cantoIcon from "assets/logo.svg";
+import cantoIcon from "assets/icons/canto-evm.svg";
 import SwitchBridging from "./components/SwitchBridging";
 import {
   EmptySelectedConvertToken,
@@ -90,6 +89,7 @@ const BridgeOut = ({
         color="primary"
         style={{
           fontFamily: "Silkscreen",
+          lineHeight: "3rem",
         }}
       >
         send funds from canto
@@ -99,7 +99,6 @@ const BridgeOut = ({
         type="text"
         color="primary"
         style={{
-          margin: "0 8rem",
           lineHeight: "1.8rem",
         }}
       >
@@ -128,12 +127,12 @@ const BridgeOut = ({
       <SwitchBridging
         left={{
           icon: cantoIcon,
-          name: "canto (EVM)",
+          name: "EVM",
         }}
         right={{
           icon: "https://raw.githubusercontent.com/Gravity-Bridge/Gravity-Docs/main/assets/Graviton-Grey.svg",
           name: "gravity Bridge",
-          height: 30,
+          height: 48,
         }}
       />
       {/* <div style={{ marginTop: "-1rem", alignContent: "center" }}>
@@ -161,6 +160,7 @@ const BridgeOut = ({
           tokenSelector={
             <TokenWallet
               tokens={userConvertERC20Tokens}
+              balance="erc20Balance"
               activeToken={selectedConvertToken}
               onSelect={(value) => {
                 tokenStore.setSelectedToken(
@@ -206,6 +206,7 @@ const BridgeOut = ({
           tokenSelector={
             <TokenWallet
               tokens={userCantoNativeGTokens}
+              balance="nativeBalance"
               activeToken={selectedNativeToken}
               onSelect={(value) => {
                 tokenStore.setSelectedToken(
@@ -284,9 +285,9 @@ const BridgeOut = ({
 const Styled = styled.div`
   display: flex;
   flex-direction: column;
-
   align-items: center;
   gap: 1rem;
-  margin: 2rem 0;
+  padding: 60px 0;
+  min-height: 48rem;
 `;
 export default BridgeOut;

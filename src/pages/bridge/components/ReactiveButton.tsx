@@ -40,7 +40,7 @@ export const ReactiveButton = ({ amount, token, onClick }: RBProps) => {
   }, [approveStatus]);
 
   return (
-    <OutlinedButton padding="x-lg" onClick={onClick} disabled={disabled}>
+    <OutlinedButton onClick={onClick} disabled={disabled} height="big">
       {buttonText}
       {approveStatus == "Mining" || cosmosStatus == "Mining" ? (
         <img

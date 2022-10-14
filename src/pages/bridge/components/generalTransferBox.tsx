@@ -1,11 +1,11 @@
 import styled from "@emotion/styled";
-import { HighlightButton, Text } from "cantoui";
 import FadeIn from "react-fade-in";
 import { toast } from "react-toastify";
 import arrow from "../../../assets/next.svg";
 import CopyIcon from "../../../assets/copy.svg";
 import { truncateNumber } from "global/utils/utils";
-import { OutlinedButton } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 interface Props {
   connected: boolean;
@@ -30,18 +30,40 @@ interface Props {
   needAddressBox: boolean;
   onAddressChange?: (s: string) => void;
 }
-function copyAddress(value: string | undefined) {
-  navigator.clipboard.writeText(value ?? "");
-  toast("copied address", {
-    autoClose: 300,
-  });
-}
+
 export const GeneralTransferBox = (props: Props) => {
+  function copyAddress() {
+    toast("copied address", {
+      position: "top-right",
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progressStyle: {
+        color: `
+            var(--primary-color)
+          `,
+      },
+      style: {
+        border: "1px solid var(--primary-color)",
+        borderRadius: "0px",
+        paddingBottom: "3px",
+        background: "black",
+        color: `var(--primary-color)
+        `,
+        height: "100px",
+        fontSize: "20px",
+      },
+      autoClose: 300,
+    });
+  }
   return (
     <FadeIn>
       <TransferBoxStyled disabled={!props.connected}>
         <div className="overlay">
-          <OutlinedButton
+          <PrimaryButton
+            height="big"
+            weight="bold"
             className="switchd"
             id="network-switch"
             onClick={props.onSwitch}
@@ -49,7 +71,7 @@ export const GeneralTransferBox = (props: Props) => {
             {!props.connected
               ? "switch to " + props.networkName
               : "connected to " + props.networkName}
-          </OutlinedButton>
+          </PrimaryButton>
         </div>
         <div className="amount">
           {props.tokenSelector}
@@ -127,28 +149,32 @@ export const GeneralTransferBox = (props: Props) => {
         )}
         {props.connected && (
           <div className="row">
-            <Text
-              type="text"
-              color="primary"
-              align="left"
-              onClick={() => copyAddress(props.from.address)}
-              style={{ cursor: "pointer" }}
+            <CopyToClipboard
+              text={props.from.address ?? ""}
+              onCopy={copyAddress}
             >
-              {props.from.address
-                ? props.from.address.slice(0, 4) +
-                  "..." +
-                  props.from.address.slice(-4)
-                : "retrieving wallet"}
-              <img
-                src={CopyIcon}
-                style={{
-                  height: "22px",
-                  position: "relative",
-                  top: "5px",
-                  left: "4px",
-                }}
-              />
-            </Text>
+              <Text
+                type="text"
+                color="primary"
+                align="left"
+                style={{ cursor: "pointer" }}
+              >
+                {props.from.address
+                  ? props.from.address.slice(0, 5) +
+                    "..." +
+                    props.from.address.slice(-4)
+                  : "retrieving wallet"}
+                <img
+                  src={CopyIcon}
+                  style={{
+                    height: "22px",
+                    position: "relative",
+                    top: "5px",
+                    left: "4px",
+                  }}
+                />
+              </Text>
+            </CopyToClipboard>
             <img
               style={{
                 flex: "0",
@@ -157,28 +183,30 @@ export const GeneralTransferBox = (props: Props) => {
               alt="right arrow"
               height={16}
             />
-            <Text
-              type="text"
-              color="primary"
-              align="right"
-              onClick={() => copyAddress(props.to.address)}
-              style={{ cursor: "pointer" }}
-            >
-              {props.to.address
-                ? props.to.address.slice(0, 4) +
-                  "..." +
-                  props.to.address.slice(-4)
-                : "retrieving wallet"}{" "}
-              <img
-                src={CopyIcon}
-                style={{
-                  height: "22px",
-                  marginLeft: "-6px",
-                  position: "relative",
-                  top: "5px",
-                }}
-              />
-            </Text>
+            <CopyToClipboard text={props.to.address ?? ""} onCopy={copyAddress}>
+              <Text
+                type="text"
+                color="primary"
+                align="right"
+                // onClick={() => copyAddress(props.to.address)}
+                style={{ cursor: "pointer" }}
+              >
+                {props.to.address
+                  ? props.to.address.slice(0, 5) +
+                    "..." +
+                    props.to.address.slice(-4)
+                  : "retrieving wallet"}{" "}
+                <img
+                  src={CopyIcon}
+                  style={{
+                    height: "22px",
+                    marginLeft: "-6px",
+                    position: "relative",
+                    top: "5px",
+                  }}
+                />
+              </Text>
+            </CopyToClipboard>
           </div>
         )}
 
@@ -261,7 +289,7 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     gap: 1rem;
   }
   .switchd {
-    margin-top: 12rem;
+    margin-top: 10.6rem;
     width: 34rem !important;
   }
   .switch {
@@ -283,8 +311,7 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     justify-content: space-between;
     position: relative;
     height: 6rem;
-    /* padding: 1.4rem; */
-    /* border: 1px solid #333; */
+
     border-radius: 4px;
     background-color: #222222;
 
@@ -295,7 +322,6 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
       display: flex;
       justify-content: start;
       align-items: center;
-      /* border: 1px solid #333; */
       padding: 1rem;
       gap: 1rem;
     }
@@ -340,6 +366,33 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     &:focus {
       outline: none;
       border-bottom: 1px solid var(--primary-color);
+    }
+  }
+
+  @media (max-width: 1000px) {
+    width: 100vw;
+    padding: 1rem;
+
+    .overlay {
+    }
+
+    .amount {
+      margin: 0rem !important;
+    }
+
+    .amount-input {
+      p {
+        font-size: 16px;
+        width: 100%;
+      }
+      input {
+        font-size: 16px;
+
+        width: 100%;
+      }
+    }
+    .switchd {
+      width: 80vw !important;
     }
   }
 `;

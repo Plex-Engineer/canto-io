@@ -1,4 +1,7 @@
 import styled from "@emotion/styled";
+import { BigNumber } from "ethers";
+import { formatUnits } from "ethers/lib/utils";
+import { truncateNumber } from "global/utils/utils";
 import backBtn from "../../../assets/back-btn.svg";
 import { BaseToken, EmptySelectedETHToken } from "../config/interfaces";
 
@@ -76,6 +79,7 @@ const Container = styled.div`
 interface Props {
   onClose: (value?: BaseToken) => void;
   tokens: BaseToken[] | undefined;
+  balance: string;
 }
 
 const TokenModal = (props: Props) => {
@@ -118,6 +122,17 @@ const TokenModal = (props: Props) => {
           >
             <img src={token.icon} alt="" />
             <p>{token.name}</p>
+            <a style={{ textAlign: "right" }}>
+              balance{" "}
+              {props.balance
+                ? truncateNumber(
+                    formatUnits(
+                      BigNumber.from(token[props.balance]),
+                      token.decimals
+                    )
+                  )
+                : ""}
+            </a>
           </div>
         ))}
       </div>

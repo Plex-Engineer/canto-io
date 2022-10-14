@@ -150,7 +150,6 @@ const ConfirmationContainer = styled.div`
   padding: 1rem 2rem;
   background-color: #1e2c1d;
   border: 1px solid var(--primary-color);
-  text-shadow: none;
   .message {
     margin: auto;
   }

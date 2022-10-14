@@ -7,8 +7,7 @@ import { useEthers } from "@usedapp/core";
 import { BigNumber, ethers } from "ethers";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import SwitchBridging from "./components/SwitchBridging";
-import cantoIcon from "assets/logo.svg";
-import bridgeIcon from "assets/bridge.svg";
+import cantoIcon from "assets/icons/canto-evm.svg";
 import ethIcon from "assets/icons/ETH.svg";
 import { ReactiveButton } from "./components/ReactiveButton";
 import { ConvertTransferBox } from "./components/convertTransferBox";
@@ -109,6 +108,7 @@ const BridgeIn = ({
         color="primary"
         style={{
           fontFamily: "Silkscreen",
+          lineHeight: "3rem",
         }}
       >
         send funds to canto
@@ -118,12 +118,13 @@ const BridgeIn = ({
         type="text"
         color="primary"
         style={{
-          margin: "0 8rem",
-          lineHeight: "1.8rem",
+          margin: "0 1rem",
+          fontSize: "14px",
+          lineHeight: "20.3px",
         }}
       >
-        funds are transferred in two steps through our canto bridge. it takes
-        several minutes. for more details{" "}
+        funds are transferred in two steps through our canto bridge. <br></br>{" "}
+        it takes several minutes. for more details{" "}
         <a
           role="button"
           tabIndex={0}
@@ -150,33 +151,16 @@ const BridgeIn = ({
         }}
         right={{
           icon: cantoIcon,
-          name: "Canto (EVM)",
+          name: "EVM",
         }}
       />
-      {/* <div style={{ marginTop: "-1rem", alignItems: "center" }}>
-        <p
-          style={{
-            fontWeight: bridgeStore.transactionType == "Bridge" ? "900" : "100",
-            textAlign: "left",
-          }}
-        >
-          step 1: bridge assets from ethereum to canto (bridge)
-        </p>
-        <p
-          style={{
-            fontWeight:
-              bridgeStore.transactionType == "Convert" ? "900" : "100",
-            textAlign: "left",
-          }}
-        >
-          step 2: bridge assets from canto (bridge) to canto (evm)
-        </p>
-      </div> */}
+
       {bridgeStore.transactionType == "Bridge" && (
         <GeneralTransferBox
           tokenSelector={
             <TokenWallet
               tokens={userEthTokens}
+              balance={"balanceOf"}
               activeToken={selectedETHToken}
               onSelect={(value) => {
                 tokenStore.setSelectedToken(
@@ -245,6 +229,7 @@ const BridgeIn = ({
           tokenSelector={
             <TokenWallet
               tokens={userConvertCoinNativeTokens}
+              balance="nativeBalance"
               activeToken={tokenStore.selectedTokens[SelectedTokens.CONVERTIN]}
               onSelect={(value) => {
                 tokenStore.setSelectedToken(
@@ -280,7 +265,8 @@ const Styled = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  margin: 2rem 0;
+  gap: 12px;
+  padding: 50px 0;
+  min-height: 45rem;
 `;
 export default BridgeIn;
