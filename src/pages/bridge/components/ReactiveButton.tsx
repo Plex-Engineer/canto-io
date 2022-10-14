@@ -7,7 +7,7 @@ import {
 } from "pages/bridge/config/interfaces";
 import { getReactiveButtonText } from "../utils/reactiveButtonText";
 import { convertStringToBigNumber } from "../utils/stringToBigNumber";
-import { OutlinedButton } from "global/packages/src";
+import { OutlinedButton, PrimaryButton } from "global/packages/src";
 
 interface RBProps {
   amount: string;
@@ -40,7 +40,7 @@ export const ReactiveButton = ({ amount, token, onClick }: RBProps) => {
   }, [approveStatus]);
 
   return (
-    <OutlinedButton onClick={onClick} disabled={disabled} height="big">
+    <PrimaryButton onClick={onClick} disabled={disabled} height="big">
       {buttonText}
       {approveStatus == "Mining" || cosmosStatus == "Mining" ? (
         <img
@@ -52,6 +52,6 @@ export const ReactiveButton = ({ amount, token, onClick }: RBProps) => {
           src={loading}
         />
       ) : null}
-    </OutlinedButton>
+    </PrimaryButton>
   );
 };

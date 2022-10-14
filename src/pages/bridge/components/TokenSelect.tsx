@@ -18,50 +18,43 @@ export const TokenWallet = ({
   activeToken,
   balance,
 }: ITokenSelect) => {
-  const [isOpen, setOpen] = useState(false);
-
   return (
-    <Styled
-      onClick={() => {
-        setOpen(true);
-      }}
-    >
-      {activeToken.name != "choose token" && (
-        <img
-          src={activeToken.icon}
-          alt={activeToken.name}
-          height={30}
-          width={30}
-        />
-      )}
-      <span
-        style={{
-          flex: "2",
-        }}
-      >
-        {tokens ? activeToken.name : "loading tokens"}
-      </span>
-      <img src={down} alt="" />
-      {tokens ? (
-        <StyledPopup
-          open={isOpen}
-          onClose={() => {
-            setOpen(false);
-          }}
-        >
-          <TokenModal
-            tokens={tokens}
-            balance={balance}
-            onClose={(value) => {
-              if (onSelect) {
-                onSelect(value);
-              }
-              setOpen(false);
+    <StyledPopup
+      position={"bottom left"}
+      offsetY={-20}
+      offsetX={20}
+      arrow={false}
+      trigger={
+        <Styled>
+          {activeToken.name != "choose token" && (
+            <img
+              src={activeToken.icon}
+              alt={activeToken.name}
+              height={30}
+              width={30}
+            />
+          )}
+          <span
+            style={{
+              flex: "2",
             }}
-          />
-        </StyledPopup>
-      ) : null}
-    </Styled>
+          >
+            {tokens ? activeToken.name : "loading tokens"}
+          </span>
+          <img src={down} alt="" />
+        </Styled>
+      }
+    >
+      <TokenModal
+        tokens={tokens}
+        balance={balance}
+        onClose={(value) => {
+          if (onSelect) {
+            onSelect(value);
+          }
+        }}
+      />
+    </StyledPopup>
   );
 };
 

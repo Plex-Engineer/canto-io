@@ -82,6 +82,7 @@ const Styled = styled.div`
       letter-spacing: -0.02em;
       height: 38px;
       padding: 0 14px;
+      outline: none;
       cursor: pointer;
       img {
         margin: 6px;
