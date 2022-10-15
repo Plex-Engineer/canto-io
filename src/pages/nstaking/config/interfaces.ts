@@ -66,7 +66,7 @@ export interface MyStakingProps {
   totalRewards: BigNumber;
   apr: string;
   userValidationInfo: MasterValidatorProps[];
-  userDelegations: Validator[];
+  undelegationValidators: MasterValidatorProps[];
 }
 export interface AllStakingProps {
   validators: Validator[];
