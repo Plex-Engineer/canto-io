@@ -106,7 +106,7 @@ const WalletModal = () => {
         }}
         onClick={() => {
           deactivate();
-          window.location.reload();
+          //   window.location.reload();
         }}
       >
         disconnect

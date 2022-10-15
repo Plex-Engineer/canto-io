@@ -4,6 +4,7 @@ import ethIMG from "assets/icons/eth.svg";
 import { formatBigNumber } from "../../utils/formatNumbers";
 import Popup from "reactjs-popup";
 import WalletModal from "./WalletModal";
+import { useEthers } from "@usedapp/core";
 
 interface Props {
   isConnected: boolean;
@@ -13,16 +14,11 @@ interface Props {
   chainId: number;
   onClick: () => void;
 }
-const ConnectWallet = ({
-  isConnected,
-  balance,
-  currency,
-  account,
-  onClick,
-}: Props) => {
+const ConnectWallet = ({ isConnected, balance, currency, onClick }: Props) => {
+  const { account } = useEthers();
   return (
     <div className="wallet">
-      {isConnected ? (
+      {account != null ? (
         <Popup
           arrow={false}
           offsetY={8}

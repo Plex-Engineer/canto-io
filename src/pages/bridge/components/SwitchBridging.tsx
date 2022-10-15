@@ -30,7 +30,7 @@ const SwitchBridging = (props: Props) => {
       <div
         className="active-back"
         style={{
-          right: transactionType == "Bridge" ? "13.6rem" : "0px",
+          right: transactionType == "Bridge" ? "39.7%" : "0px",
         }}
       ></div>
       <div className="Switch">
@@ -41,7 +41,9 @@ const SwitchBridging = (props: Props) => {
             height={props.left.height ?? 42}
             onClick={() => SetTransactionType("Bridge")}
           />
-          <Text type="text">{props.left.name}</Text>
+          <Text className="name" type="text">
+            {props.left.name}
+          </Text>
         </div>
         <LoadingBlip active={transactionType == "Bridge"} />
 
@@ -52,7 +54,9 @@ const SwitchBridging = (props: Props) => {
             height={42}
             style={{ marginBottom: "3px" }}
           />
-          <Text type="text">Bridge</Text>
+          <Text className="name" type="text">
+            Bridge
+          </Text>
         </div>
 
         <LoadingBlip active={transactionType == "Convert"} />
@@ -63,7 +67,9 @@ const SwitchBridging = (props: Props) => {
             height={props.right.height ?? 42}
             onClick={() => SetTransactionType("Convert")}
           />
-          <Text type="text">{props.right.name}</Text>
+          <Text className="name" type="text">
+            {props.right.name}
+          </Text>
         </div>
       </div>
 
@@ -84,6 +90,7 @@ const SwitchBridging = (props: Props) => {
 
 const Styled = styled.div`
   width: 34rem;
+  max-width: 34rem;
   margin: 1rem;
   height: 8rem;
 
@@ -152,16 +159,22 @@ const Styled = styled.div`
     background-color: #000000ae;
     border-radius: 4px;
     width: 58%;
-    margin: 1%;
+    margin: 6px;
     height: 92%;
     transition: right 0.3s;
   }
   @media (max-width: 1000px) {
-    width: 100%;
-    margin: 0;
-
+    width: 90vw;
+    /* margin: 0; */
+    .active-back {
+      width: 56%;
+    }
     .Switch {
-      padding: 1rem;
+      /* padding: 1rem; */
+    }
+
+    .name {
+      display: none;
     }
   }
 `;
