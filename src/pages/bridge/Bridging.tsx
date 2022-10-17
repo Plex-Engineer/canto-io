@@ -1,11 +1,13 @@
 import styled from "@emotion/styled";
 import { CantoMainnet } from "cantoui";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import BridgeIn from "./BridgeIn";
 import BridgeOut from "./BridgeOut";
+import walletIcon from "assets/wallet.svg";
+
 import {
   BaseToken,
   UserConvertToken,
@@ -19,11 +21,14 @@ import { convertCoinTokens } from "./config/gravityBridgeTokens";
 import { ETHGravityTokens } from "./config/gravityBridgeTokens";
 import { BigNumber } from "ethers";
 import TransactionsTab from "./TransactionsTab";
+import { useEthers } from "@usedapp/core";
+import NotConnected from "global/packages/src/components/molecules/NotConnected";
+import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 
 const BridgingPage = () => {
   const tokenStore = useTokenStore();
   const networkInfo = useNetworkInfo();
-  const [selectedTab, setSelectedTab] = useState(0);
+  const { account, activateBrowserWallet } = useEthers();
 
   //set the convert erc20 tokens
   const { userTokens: userConvertERC20Tokens } = useCantoERC20Balances(
@@ -98,47 +103,80 @@ const BridgingPage = () => {
           <Tab
             className="tab"
             // resetting the selected token when a new tab is selected
-            onClick={() => {
-              setSelectedTab(0);
-            }}
           >
             bridge In
           </Tab>
           <Tab
             className="tab"
             // resetting the selected token when a new tab is selected
-            onClick={() => {
-              setSelectedTab(1);
-            }}
           >
             bridge Out
           </Tab>
-          <Tab
-            className="tab"
-            // resetting the selected token when a new tab is selected
-            onClick={() => {
-              setSelectedTab(2);
-            }}
-          >
-            transactions
-          </Tab>
+          <Tab className="tab">transactions</Tab>
         </TabList>
-        <TabPanel>
-          <BridgeIn
-            userEthTokens={userEthGTokens}
-            gravityAddress={gravityAddress}
-            userConvertCoinNativeTokens={userConvertTokens}
-          />
-        </TabPanel>
-        <TabPanel>
-          <BridgeOut
-            userCantoNativeGTokens={userBridgeOutTokens}
-            userConvertERC20Tokens={userConvertTokens}
-          />
-        </TabPanel>
-        <TabPanel>
-          <TransactionsTab />
-        </TabPanel>
+        {!account && (
+          <>
+            <TabPanel>
+              <NotConnected
+                title="Wallet is not connected"
+                subtext="to use bridge you need to connect a wallet through the service metamask"
+                buttonText="connnect wallet"
+                bgFilled
+                onClick={() => {
+                  activateBrowserWallet();
+                  addNetwork();
+                }}
+                icon={walletIcon}
+              />
+            </TabPanel>
+            <TabPanel>
+              <NotConnected
+                title="Wallet is not connected"
+                subtext="to use bridge you need to connect a wallet through the service metamask"
+                buttonText="connnect wallet"
+                bgFilled
+                onClick={() => {
+                  activateBrowserWallet();
+                  addNetwork();
+                }}
+                icon={walletIcon}
+              />
+            </TabPanel>
+            <TabPanel>
+              <NotConnected
+                title="Wallet is not connected"
+                subtext="to use bridge you need to connect a wallet through the service metamask"
+                buttonText="connnect wallet"
+                bgFilled
+                onClick={() => {
+                  activateBrowserWallet();
+                  addNetwork();
+                }}
+                icon={walletIcon}
+              />
+            </TabPanel>
+          </>
+        )}
+        {account && (
+          <>
+            <TabPanel>
+              <BridgeIn
+                userEthTokens={userEthGTokens}
+                gravityAddress={gravityAddress}
+                userConvertCoinNativeTokens={userConvertTokens}
+              />
+            </TabPanel>
+            <TabPanel>
+              <BridgeOut
+                userCantoNativeGTokens={userBridgeOutTokens}
+                userConvertERC20Tokens={userConvertTokens}
+              />
+            </TabPanel>
+            <TabPanel>
+              <TransactionsTab />
+            </TabPanel>
+          </>
+        )}
       </Tabs>
     </Styled>
   );

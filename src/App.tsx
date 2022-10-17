@@ -31,9 +31,9 @@ function App() {
     <React.Fragment>
       <ToastContainer />
       {/* <StaticNoiseOverlay /> */}
-      <ScanlinesOverlay />
+      {/* <ScanlinesOverlay /> */}
       {/* <ScanLine /> */}
-      <Overlay />
+      {/* <Overlay /> */}
       <GlobalStyle />
 
       <Router>

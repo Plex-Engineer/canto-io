@@ -2,79 +2,7 @@ import styled from "@emotion/styled";
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
-import backBtn from "../../../assets/back-btn.svg";
-import { BaseToken, EmptySelectedETHToken } from "../config/interfaces";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  background-color: black;
-  height: 75vh;
-  width: 600px;
-  padding: 2rem;
-
-  header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 2rem;
-    h1 {
-      font-weight: 300;
-      font-size: 26px;
-      line-height: 130%;
-      text-align: center;
-      letter-spacing: -0.1em;
-      color: #efefef;
-    }
-    img {
-      width: 28px;
-      &:hover {
-        cursor: pointer;
-      }
-    }
-  }
-
-  input[type="search"] {
-    background-color: #191919;
-    color: white;
-    font-size: 18px;
-    padding: 1rem;
-    border: 2px solid #191919;
-    appearance: none;
-    -webkit-appearance: none;
-    &:focus {
-      border: 2px solid var(--primary-color);
-      outline: none;
-    }
-  }
-  .token-list {
-    overflow-y: scroll;
-    scrollbar-color: var(--primary-color);
-    scroll-behavior: smooth;
-    /* width */
-
-    .token-item {
-      display: flex;
-      font-weight: 400;
-      font-size: 18px;
-      letter-spacing: -0.02em;
-      /* text-transform: lowercase; */
-      color: var(--off-white-color);
-      padding: 2rem 0;
-      border: 1px solid black;
-
-      img {
-        margin: 0 1rem;
-        width: 28px;
-        height: 28px;
-      }
-
-      &:hover {
-        background-color: #001a0e;
-        border: 1px solid var(--primary-color);
-      }
-    }
-  }
-`;
+import { BaseToken } from "../config/interfaces";
 
 interface Props {
   onClose: (value?: BaseToken) => void;
@@ -84,31 +12,7 @@ interface Props {
 
 const TokenModal = (props: Props) => {
   return (
-    <Container>
-      <header>
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => {
-            props.onClose(EmptySelectedETHToken);
-          }}
-        >
-          <img src={backBtn} />
-        </div>
-        <h1>select a token</h1>
-        <span
-          style={{
-            width: "28px",
-          }}
-        ></span>
-      </header>
-      {/* <input
-        type="search"
-        name="search"
-        id="tokenSearch"
-        autoComplete="new-off"
-        placeholder="type name or paste address..."
-      /> */}
+    <Styled>
       <div className="token-list">
         {props.tokens?.map((token) => (
           <div
@@ -120,10 +24,11 @@ const TokenModal = (props: Props) => {
               props.onClose(token);
             }}
           >
-            <img src={token.icon} alt="" />
-            <p>{token.name}</p>
-            <a style={{ textAlign: "right" }}>
-              balance{" "}
+            <span>
+              <img src={token.icon} alt="" />
+              <p>{token.name}</p>
+            </span>
+            <p className="balance">
               {props.balance
                 ? truncateNumber(
                     formatUnits(
@@ -132,12 +37,65 @@ const TokenModal = (props: Props) => {
                     )
                   )
                 : ""}
-            </a>
+            </p>
           </div>
         ))}
       </div>
-    </Container>
+    </Styled>
   );
 };
+
+const Styled = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 310px;
+  p {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 21px;
+    letter-spacing: -0.03em;
+    color: var(--primary-color);
+  }
+  span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .balance {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 21px;
+    letter-spacing: -0.03em;
+    text-align: right;
+  }
+  .token-list {
+    scrollbar-color: var(--primary-color);
+    scroll-behavior: smooth;
+    /* width */
+    padding: 8px;
+    .token-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 400;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      height: 38px;
+      padding: 0 14px;
+      outline: none;
+      cursor: pointer;
+      img {
+        margin: 6px;
+        height: 18px;
+        width: 18px;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+      }
+    }
+  }
+`;
 
 export default TokenModal;

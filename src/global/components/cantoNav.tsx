@@ -11,7 +11,7 @@ import { showAlerts } from "global/utils/alerts";
 import { pageList } from "global/config/pageList";
 
 export const CantoNav = () => {
-  const netWorkInfo = useNetworkInfo();
+  const networkInfo = useNetworkInfo();
   const alert = useAlert();
   const { activateBrowserWallet, account, chainId, active } = useEthers();
   const balance = useEtherBalance(account);
@@ -29,10 +29,13 @@ export const CantoNav = () => {
   }
 
   useEffect(() => {
-    netWorkInfo.setChainId(chainId?.toString());
+    networkInfo.setChainId(chainId?.toString());
     if (account) {
-      netWorkInfo.setAccount(account);
-      netWorkInfo.setBalance(balance ?? BigNumber.from(0));
+      networkInfo.setAccount(account);
+      networkInfo.setBalance(balance ?? BigNumber.from(0));
+    }
+    if (account == null) {
+      networkInfo.setAccount("");
     }
   }, [account, chainId, balance, active]);
 
@@ -48,18 +51,18 @@ export const CantoNav = () => {
     showAlerts(
       alert.show,
       alert.close,
-      Number(netWorkInfo.chainId),
-      netWorkInfo.hasPubKey,
+      Number(networkInfo.chainId),
+      networkInfo.hasPubKey,
       account,
-      netWorkInfo.balance,
+      networkInfo.balance,
       location.pathname,
       pageList
     );
   }, [
-    netWorkInfo.account,
-    netWorkInfo.chainId,
-    netWorkInfo.hasPubKey,
-    netWorkInfo.balance,
+    networkInfo.account,
+    networkInfo.chainId,
+    networkInfo.hasPubKey,
+    networkInfo.balance,
     location,
   ]);
   return (
@@ -67,10 +70,10 @@ export const CantoNav = () => {
       onClick={() => {
         activateBrowserWallet();
       }}
-      chainId={Number(netWorkInfo.chainId)}
-      account={netWorkInfo.account ?? ""}
-      isConnected={!!netWorkInfo.account}
-      balance={formatEther(netWorkInfo.balance)}
+      chainId={Number(networkInfo.chainId)}
+      account={networkInfo.account ?? ""}
+      isConnected={networkInfo.account != ""}
+      balance={formatEther(networkInfo.balance)}
       currency={tokenName}
       logo={logo}
       pageList={pageList}

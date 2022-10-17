@@ -2,15 +2,35 @@ import styled from "@emotion/styled";
 import { Event } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { Text } from "global/packages/src";
+import NotConnected from "global/packages/src/components/molecules/NotConnected";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { useEffect, useState } from "react";
 import TransactionBox from "./components/TransactionBox";
+import warningIcon from "assets/warning.svg";
+
 import {
   EventWithTime,
   findGravityToken,
   getAllBridgeTransactionsWithStatus,
   getBridgeOutTransactions,
 } from "./utils/utils";
+
+interface EventOut {
+  token:
+    | {
+        symbol: string;
+        name: string;
+        decimals: number;
+        address: string;
+        isERC20: boolean;
+        isLP: boolean;
+        icon: string;
+        cTokenAddress: string;
+      }
+    | undefined;
+  amount: any;
+  tx: any;
+}
 
 const TransactionsTab = () => {
   const networkInfo = useNetworkInfo();
@@ -86,6 +106,22 @@ const TransactionsTab = () => {
   });
   return (
     <Styled>
+      {completedBridgeTransactions.length +
+        bridgeOutTransactions.length +
+        pendingBridgeTransactions.length ==
+        0 && (
+        <NotConnected
+          title="No Trasacntions"
+          subtext="You haven't made any transactions using bridging yet."
+          buttonText="Get Started"
+          bgFilled
+          onClick={() => {
+            // activateBrowserWallet();
+            // addNetwork();
+          }}
+          icon={warningIcon}
+        />
+      )}
       <Text
         type="title"
         color="primary"
@@ -114,7 +150,9 @@ const TransactionsTab = () => {
             />
           );
         })
-        .sort((a: any, b: any) => (a.props.id > b.props.id ? -1 : 1))}
+        .sort((a: JSX.Element, b: JSX.Element) =>
+          a.props.id > b.props.id ? -1 : 1
+        )}
       <Text
         type="title"
         color="primary"
@@ -130,8 +168,9 @@ const TransactionsTab = () => {
           ? "complete"
           : ""}
       </Text>
-      {[...completedBridgeIn, ...completedBridgeOut].sort((a: any, b: any) =>
-        new Date(a.props.id) > new Date(b.props.id) ? -1 : 1
+      {[...completedBridgeIn, ...completedBridgeOut].sort(
+        (a: JSX.Element, b: JSX.Element) =>
+          new Date(a.props.id) > new Date(b.props.id) ? -1 : 1
       )}
     </Styled>
   );

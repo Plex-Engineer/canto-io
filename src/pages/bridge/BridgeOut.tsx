@@ -26,6 +26,7 @@ import { convertStringToBigNumber } from "./utils/stringToBigNumber";
 import { getBridgeOutButtonText } from "./utils/reactiveButtonText";
 import FadeIn from "react-fade-in";
 import { OutlinedButton } from "global/packages/src";
+import { Text2 } from "global/packages/src/components/atoms/Text2";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -95,13 +96,7 @@ const BridgeOut = ({
         send funds from canto
       </Text>
 
-      <Text
-        type="text"
-        color="primary"
-        style={{
-          lineHeight: "1.8rem",
-        }}
-      >
+      <Text2 type="text" size={"text3"} color="primary">
         you must bridge your assets from the canto EVM to the canto (bridge) to
         bridge out{" "}
         <a
@@ -122,7 +117,7 @@ const BridgeOut = ({
           read here
         </a>{" "}
         for more information.
-      </Text>
+      </Text2>
 
       <SwitchBridging
         left={{

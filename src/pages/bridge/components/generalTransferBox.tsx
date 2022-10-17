@@ -234,16 +234,12 @@ interface StyeldProps {
 export const TransferBoxStyled = styled.div<StyeldProps>`
   background-color: black;
   border-radius: 18px;
-  width: 40rem;
+  width: 34rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  padding: 2rem 3rem;
-  /* border: ${(props) =>
-    props.disabled ? " 2px solid #333" : "2px solid #333"}; */
+  padding: 1rem 0rem;
 
-  /* border: ${(props) =>
-    props.disabled ? " 1px solid #333" : "1px solid var(--primary-color)"}; */
   position: relative;
 
   .row {
@@ -370,8 +366,8 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
   }
 
   @media (max-width: 1000px) {
-    width: 100vw;
-    padding: 1rem;
+    width: 90vw;
+    max-width: 34rem;
 
     .overlay {
     }
@@ -392,7 +388,8 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
       }
     }
     .switchd {
-      width: 80vw !important;
+      width: 90vw !important;
+      max-width: 34rem;
     }
   }
 `;

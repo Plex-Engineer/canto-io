@@ -45,6 +45,8 @@ const Styled = styled.div`
     list-style: none;
     border-bottom: 1px solid var(--primary-color);
     margin: 0 1rem;
+    display: flex;
+    justify-content: space-between;
   }
 `;
 

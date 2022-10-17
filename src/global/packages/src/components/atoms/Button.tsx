@@ -47,8 +47,8 @@ const PrimaryButton = styled.button<Props>`
   }
 
   &:disabled {
-    background-color: var(--dark-grey-color);
-    color: var(--holy-grey-color);
+    background-color: #005732;
+    color: black;
   }
 `;
 
