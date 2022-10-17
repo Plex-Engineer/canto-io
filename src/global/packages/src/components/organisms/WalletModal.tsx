@@ -8,7 +8,7 @@ import { Text } from "../atoms/Text";
 import { toast } from "react-toastify";
 import { formatBigNumber } from "../../utils/formatNumbers";
 import cantoIMG from "assets/logo.svg";
-import ethIMG from "assets/icons/eth.svg";
+import ethIMG from "assets/icons/ETH.svg";
 import { formatEther } from "ethers/lib/utils";
 import { CantoMainnet } from "global/providers";
 import { ETHMainnet } from "pages/bridge/config/networks";
