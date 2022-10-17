@@ -2,18 +2,17 @@ import "App.scss";
 import styled from "@emotion/styled";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
-import { GlobalStyle, Overlay, ScanlinesOverlay } from "./global/packages/src";
+import { GlobalStyle } from "./global/packages/src";
 import { CantoNav } from "global/components/cantoNav";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Governance from "pages/governance/governance";
 import Dex from "pages/dexLP/Dex";
 import LendingMarket from "pages/lending/LendingMarket";
-import Staking from "pages/staking/Staking";
 import { BalanceSheet } from "pages/lending/balanceSheet/BalanceSheet";
 import { useCoingeckoTokenPrice } from "@usedapp/coingecko";
 import Footer from "global/components/nFooter";
-import NStaking from "pages/nstaking/Staking";
+import Staking from "pages/staking/Staking";
 import LandingPage from "pages/landing_page/LandingPage";
 import BridgingPage from "pages/bridge/Bridging";
 
@@ -55,7 +54,6 @@ function App() {
               element={<BalanceSheet />}
             />
             <Route path="/staking" key={"staking"} element={<Staking />} />
-            <Route path="/nstaking" key={"staking"} element={<NStaking />} />
           </Routes>
           <Footer />
         </Container>
