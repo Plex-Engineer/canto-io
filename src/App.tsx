@@ -15,6 +15,7 @@ import Footer from "global/components/nFooter";
 import Staking from "pages/staking/Staking";
 import LandingPage from "pages/landing_page/LandingPage";
 import BridgingPage from "pages/bridge/Bridging";
+import { PAGES } from "global/config/pageList";
 
 //Styling
 const Container = styled.div`
@@ -40,20 +41,32 @@ function App() {
           <CantoNav />
           <Routes>
             <Route path="/" key={"home"} element={<LandingPage />} />
-            <Route path="/bridge" key={"bridge"} element={<BridgingPage />} />
             <Route
-              path="/governance"
+              path={PAGES.bridge.link}
+              key={"bridge"}
+              element={<BridgingPage />}
+            />
+            <Route
+              path={PAGES.governance.link}
               key="governance"
               element={<Governance />}
             />
-            <Route path="/lp" key="lp interface" element={<Dex />} />
-            <Route path="/lending" key="lending" element={<LendingMarket />} />
+            <Route path={PAGES.lp.link} key="lp interface" element={<Dex />} />
+            <Route
+              path={PAGES.lending.link}
+              key="lending"
+              element={<LendingMarket />}
+            />
+            <Route
+              path={PAGES.staking.link}
+              key={"staking"}
+              element={<Staking />}
+            />
             <Route
               path="/lending/balanceSheet"
               key={"balanceSheet"}
               element={<BalanceSheet />}
             />
-            <Route path="/staking" key={"staking"} element={<Staking />} />
           </Routes>
           <Footer />
         </Container>
