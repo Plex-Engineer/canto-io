@@ -30,10 +30,16 @@ const MyStaking = (props: MyStakingProps) => {
             sortBy="userTotal"
           />
 
-          <Text type="text" color="primary" align="left">
+          <Text
+            type="text"
+            color="primary"
+            align="left"
+            hidden={props.undelegationValidators.length == 0}
+          >
             currently undelegating
           </Text>
           <UndelegatingTable validators={props.undelegationValidators} />
+          <br />
         </div>
       )}
     </Styled>

@@ -41,12 +41,6 @@ export const PAGES = {
       },
     ],
   },
-  nstaking: {
-    name: "new staking",
-    link: "/nstaking",
-    pageTitle: "new staking",
-    networks: [CantoMainnet.chainId, CantoTestnet.chainId],
-  },
 };
 export interface PageObject {
   name: string;
@@ -91,11 +85,5 @@ export const pageList: PageObject[] = [
     pageTitle: PAGES.staking.pageTitle,
     networks: PAGES.staking.networks,
     balanceLimits: PAGES.staking.balanceLimits,
-  },
-  {
-    name: PAGES.nstaking.name,
-    link: PAGES.nstaking.link,
-    pageTitle: PAGES.nstaking.pageTitle,
-    networks: PAGES.nstaking.networks,
   },
 ];
