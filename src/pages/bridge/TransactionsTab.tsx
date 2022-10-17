@@ -54,7 +54,7 @@ const TransactionsTab = () => {
         id={new Date(tx.timestamp).toLocaleDateString()}
         status={"complete"}
         symbol={token?.symbol ?? "unknown"}
-        txnValue={tx.transactionHash}
+        blockExplorerUrl={"https://etherscan.io/tx/" + tx.transactionHash}
         type={"in"}
         key={tx.blockNumber}
       />
@@ -67,7 +67,7 @@ const TransactionsTab = () => {
         id={new Date(tx.tx.timestamp).toLocaleDateString()}
         status={"complete"}
         symbol={tx.token.symbol}
-        txnValue={tx.tx.transactionHash}
+        blockExplorerUrl={"https://ping.pub/canto/tx/" + tx.tx.txhash}
         type={"out"}
         key={tx.tx.transactionHash}
       />
@@ -113,7 +113,7 @@ const TransactionsTab = () => {
               id={tx.blockNumber}
               status={"loading"}
               symbol={token?.symbol ?? "unknown"}
-              txnValue={tx.transactionHash}
+              blockExplorerUrl={"https://etherscan.io/tx/" + tx.transactionHash}
               type={"in"}
               key={tx.blockNumber}
             />

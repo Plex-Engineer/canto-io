@@ -6,7 +6,7 @@ interface Props {
   type: "in" | "out";
   balance: string;
   id: number | string;
-  txnValue: string;
+  blockExplorerUrl: string;
   symbol: string;
   status: "loading" | "complete";
 }
@@ -25,7 +25,7 @@ const TransactionBox = (props: Props) => {
       </p>
       <h1 className="balance">{props.balance + " " + props.symbol}</h1>
       <a
-        href={"https://etherscan.io/tx/" + props.txnValue}
+        href={props.blockExplorerUrl}
         target="_blank"
         rel="noreferrer"
         className="link"
