@@ -73,6 +73,19 @@ export const GeneralTransferBox = (props: Props) => {
               : "connected to " + props.networkName}
           </PrimaryButton>
         </div>
+        {props.needAddressBox && (
+          <input
+            placeholder="gravity address (gravity...)"
+            type="text"
+            name="address"
+            id="address"
+            onChange={(e) => {
+              if (props.onAddressChange) {
+                props.onAddressChange(e.target.value);
+              }
+            }}
+          />
+        )}
         <div className="amount">
           {props.tokenSelector}
 
@@ -209,20 +222,6 @@ export const GeneralTransferBox = (props: Props) => {
             </CopyToClipboard>
           </div>
         )}
-
-        {props.needAddressBox && (
-          <input
-            placeholder="gravity address (gravity...)"
-            type="text"
-            name="address"
-            id="address"
-            onChange={(e) => {
-              if (props.onAddressChange) {
-                props.onAddressChange(e.target.value);
-              }
-            }}
-          />
-        )}
       </TransferBoxStyled>
     </FadeIn>
   );
@@ -353,12 +352,19 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     }
   }
   #address {
-    background-color: transparent;
+    background: #222222;
+    border-radius: 4px;
+    height: 56px;
     color: var(--primary-color);
     border: none;
     border-bottom: 1px solid var(--just-grey-color);
-    text-align: center;
+    text-align: left;
     font-size: 18px;
+    padding-left: 16px;
+    ::placeholder {
+      color: var(--primary-color);
+      opacity: 0.4;
+    }
     &:focus {
       outline: none;
       border-bottom: 1px solid var(--primary-color);

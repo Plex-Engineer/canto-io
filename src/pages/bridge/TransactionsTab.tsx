@@ -80,7 +80,7 @@ const TransactionsTab = () => {
         pendingBridgeTransactions.length ==
         0 && (
         <NotConnected
-          title="No Trasacntions"
+          title="No Transactions"
           subtext="You haven't made any transactions using bridging yet."
           buttonText="Get Started"
           bgFilled

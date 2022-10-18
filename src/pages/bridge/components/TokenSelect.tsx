@@ -1,10 +1,9 @@
 import styled from "@emotion/styled";
 import down from "assets/down.svg";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import TokenModal from "./tokenModal";
 import { BaseToken } from "../config/interfaces";
 import Popup from "reactjs-popup";
-import { PopupActions, PopupProps } from "reactjs-popup/dist/types";
 
 interface ITokenSelect {
   tokens: BaseToken[] | undefined;
