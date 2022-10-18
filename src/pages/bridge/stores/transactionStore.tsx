@@ -28,7 +28,7 @@ export const useBridgeTransactionStore = create<TransactionStore>()(
         account: "",
         //checking to make sure account is the same as persisted so we don't show wrong transactions for new account
         checkAccount: (account) => {
-          if (account != get().account) {
+          if (account != get().account && account) {
             set({
               newTransactions: 0,
               transactions: {

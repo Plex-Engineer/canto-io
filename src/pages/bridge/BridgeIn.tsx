@@ -18,7 +18,7 @@ import {
   EmptySelectedNativeToken,
   UserConvertToken,
 } from "./config/interfaces";
-import { SelectedTokens, useTokenStore } from "./stores/cosmosTokens";
+import { SelectedTokens, useTokenStore } from "./stores/tokenStore";
 import { formatUnits } from "ethers/lib/utils";
 import { convertStringToBigNumber } from "./utils/stringToBigNumber";
 import { GeneralTransferBox } from "./components/generalTransferBox";

@@ -1,20 +1,15 @@
 import styled from "@emotion/styled";
 import { CantoMainnet } from "cantoui";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import BridgeIn from "./BridgeIn";
 import BridgeOut from "./BridgeOut";
 import walletIcon from "assets/wallet.svg";
-
-import {
-  BaseToken,
-  UserConvertToken,
-  UserNativeTokens,
-} from "./config/interfaces";
+import { UserConvertToken, UserNativeTokens } from "./config/interfaces";
 import { useEthGravityTokens } from "./hooks/useEthGravityTokens";
-import { SelectedTokens, useTokenStore } from "./stores/cosmosTokens";
+import { SelectedTokens, useTokenStore } from "./stores/tokenStore";
 import { getNativeCantoBalance } from "./utils/nativeBalances";
 import { useCantoERC20Balances } from "./hooks/useERC20Balances";
 import { convertCoinTokens } from "./config/gravityBridgeTokens";
@@ -38,27 +33,30 @@ const BridgingPage = () => {
 
   //setting the bridging transactions into local storage
   async function setBridgingTransactions() {
-    const [completedBridgeIn, pendingBridgeIn] =
-      await getAllBridgeTransactionsWithStatus(
-        networkInfo.account,
+    if (networkInfo.account && networkInfo.cantoAddress) {
+      const [completedBridgeIn, pendingBridgeIn] =
+        await getAllBridgeTransactionsWithStatus(
+          networkInfo.account,
+          networkInfo.cantoAddress
+        );
+      const bridgeOutTransactions = await getBridgeOutTransactions(
         networkInfo.cantoAddress
       );
-    const bridgeOutTransactions = await getBridgeOutTransactions(
-      networkInfo.cantoAddress
-    );
-    transactionStore.setTransactions(
-      networkInfo.account,
-      pendingBridgeIn,
-      completedBridgeIn,
-      bridgeOutTransactions
-    );
+      transactionStore.setTransactions(
+        networkInfo.account,
+        pendingBridgeIn,
+        completedBridgeIn,
+        bridgeOutTransactions
+      );
+    }
   }
   //set the convert erc20 tokens
-  const { userTokens: userConvertERC20Tokens } = useCantoERC20Balances(
-    networkInfo.account,
-    convertCoinTokens,
-    CantoMainnet.chainId
-  );
+  const { userTokens: userConvertERC20Tokens, fail: cantoERC20Fail } =
+    useCantoERC20Balances(
+      networkInfo.account,
+      convertCoinTokens,
+      CantoMainnet.chainId
+    );
   const [userConvertTokens, setUserConvertTokens] = useState<
     UserConvertToken[]
   >([]);
@@ -77,49 +75,54 @@ const BridgingPage = () => {
       networkInfo.cantoAddress,
       convertCoinTokens
     );
-    setUserConvertTokens(
-      userConvertERC20Tokens.map((token) => {
-        return {
-          ...token,
-          nativeBalance:
-            convertNativeWithBalance.find(
-              (nativeToken) => nativeToken.nativeName === token.nativeName
-            )?.nativeBalance ?? BigNumber.from(0),
-        };
-      })
-    );
+    if (!cantoERC20Fail) {
+      setUserConvertTokens(
+        userConvertERC20Tokens.map((token) => {
+          return {
+            ...token,
+            nativeBalance:
+              convertNativeWithBalance.find(
+                (nativeToken) => nativeToken.nativeName === token.nativeName
+              )?.nativeBalance ?? BigNumber.from(0),
+          };
+        })
+      );
+    }
     setUserBridgeOutTokens(convertNativeWithBalance);
   }
 
   useEffect(() => {
-    getAllBalances();
-    setBridgingTransactions();
-  }, []);
+    if (networkInfo.account && networkInfo.cantoAddress) {
+      getAllBalances();
+      setBridgingTransactions();
+      transactionStore.checkAccount(networkInfo.account);
+      tokenStore.checkTimeAndResetTokens();
+    }
+  }, [networkInfo.account, networkInfo.cantoAddress]);
 
-  function reSelectTokens(
-    selectedToken: SelectedTokens,
-    tokenList?: BaseToken[]
-  ) {
-    tokenStore.setSelectedToken(
-      tokenList?.find(
-        (token) =>
-          token.address === tokenStore.selectedTokens[selectedToken].address
-      ) ?? tokenStore.selectedTokens[selectedToken],
-      selectedToken
-    );
-  }
   //Useffect for calling data per block
   useEffect(() => {
-    const interval = setInterval(async () => {
-      await setBridgingTransactions();
-      await getAllBalances();
-      //reselecting the tokens so it is the most updated version
-      reSelectTokens(SelectedTokens.ETHTOKEN, userEthGTokens);
-      reSelectTokens(SelectedTokens.CONVERTIN, userConvertTokens);
-      reSelectTokens(SelectedTokens.CONVERTOUT, userConvertTokens);
-      reSelectTokens(SelectedTokens.BRIDGEOUT, userBridgeOutTokens);
-    }, 6000);
-    return () => clearInterval(interval);
+    if (networkInfo.account && networkInfo.cantoAddress) {
+      const interval = setInterval(async () => {
+        await setBridgingTransactions();
+        await getAllBalances();
+        //reselecting the tokens so it is the most updated version
+        tokenStore.resetSelectedToken(SelectedTokens.ETHTOKEN, userEthGTokens);
+        tokenStore.resetSelectedToken(
+          SelectedTokens.CONVERTIN,
+          userConvertTokens
+        );
+        tokenStore.resetSelectedToken(
+          SelectedTokens.CONVERTOUT,
+          userConvertTokens
+        );
+        tokenStore.resetSelectedToken(
+          SelectedTokens.BRIDGEOUT,
+          userBridgeOutTokens
+        );
+      }, 6000);
+      return () => clearInterval(interval);
+    }
   }, [userEthGTokens, userBridgeOutTokens, userConvertTokens]);
 
   const notConnectedTabs = () => {

@@ -5,14 +5,11 @@ import NotConnected from "global/packages/src/components/molecules/NotConnected"
 import { useEffect } from "react";
 import TransactionBox from "./components/TransactionBox";
 import warningIcon from "assets/warning.svg";
-
 import { findGravityToken } from "./utils/utils";
 import { useBridgeTransactionStore } from "./stores/transactionStore";
-import { useNetworkInfo } from "global/stores/networkInfo";
 
 const TransactionsTab = () => {
   const transactionStore = useBridgeTransactionStore();
-  const networkInfo = useNetworkInfo();
   const pendingBridgeTransactions =
     transactionStore.transactions.pendingBridgeTransactions;
   const completedBridgeTransactions =
@@ -21,7 +18,6 @@ const TransactionsTab = () => {
     transactionStore.transactions.bridgeOutTransactions;
 
   useEffect(() => {
-    transactionStore.checkAccount(networkInfo.account);
     if (transactionStore.newTransactions) {
       transactionStore.setNewTransactions(0);
     }
