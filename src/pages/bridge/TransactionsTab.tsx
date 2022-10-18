@@ -1,62 +1,31 @@
 import styled from "@emotion/styled";
-import { Event } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { Text } from "global/packages/src";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
-import { useNetworkInfo } from "global/stores/networkInfo";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import TransactionBox from "./components/TransactionBox";
 import warningIcon from "assets/warning.svg";
 
-import {
-  EventWithTime,
-  findGravityToken,
-  getAllBridgeTransactionsWithStatus,
-  getBridgeOutTransactions,
-} from "./utils/utils";
-
-interface EventOut {
-  token:
-    | {
-        symbol: string;
-        name: string;
-        decimals: number;
-        address: string;
-        isERC20: boolean;
-        isLP: boolean;
-        icon: string;
-        cTokenAddress: string;
-      }
-    | undefined;
-  amount: any;
-  tx: any;
-}
+import { findGravityToken } from "./utils/utils";
+import { useBridgeTransactionStore } from "./stores/transactionStore";
+import { useNetworkInfo } from "global/stores/networkInfo";
 
 const TransactionsTab = () => {
+  const transactionStore = useBridgeTransactionStore();
   const networkInfo = useNetworkInfo();
-  const [pendingBridgeTransactions, setPendingBridgeTransactions] = useState<
-    Event[]
-  >([]);
-  const [completedBridgeTransactions, setCompletedBridgeTransactions] =
-    useState<EventWithTime[]>([]);
-  const [bridgeOutTransactions, setBridgeOutTransactions] = useState<any[]>([]);
+  const pendingBridgeTransactions =
+    transactionStore.transactions.pendingBridgeTransactions;
+  const completedBridgeTransactions =
+    transactionStore.transactions.completedBridgeTransactions;
+  const bridgeOutTransactions =
+    transactionStore.transactions.bridgeOutTransactions;
 
-  async function getData() {
-    const [completedBridgeIn, pendingBridgeIn] =
-      await getAllBridgeTransactionsWithStatus(
-        networkInfo.account,
-        networkInfo.cantoAddress
-      );
-    setCompletedBridgeTransactions(completedBridgeIn);
-    setPendingBridgeTransactions(pendingBridgeIn);
-
-    setBridgeOutTransactions(
-      await getBridgeOutTransactions(networkInfo.cantoAddress)
-    );
-  }
   useEffect(() => {
-    getData();
-  }, [networkInfo.account, networkInfo.cantoAddress]);
+    transactionStore.checkAccount(networkInfo.account);
+    if (transactionStore.newTransactions) {
+      transactionStore.setNewTransactions(0);
+    }
+  }, []);
 
   // useEffect(() => {
   //   filterTransactionSuccess(completedBridgeTransactions);
@@ -78,14 +47,14 @@ const TransactionsTab = () => {
   // }
 
   const completedBridgeIn = completedBridgeTransactions.map((tx) => {
-    const token = findGravityToken(tx.args?._tokenContract);
+    const token = findGravityToken(tx.args?.[0]);
     return (
       <TransactionBox
-        balance={formatUnits(tx.args?._amount, token?.decimals)}
+        balance={formatUnits(tx.args?.[3], token?.decimals)}
         id={new Date(tx.timestamp).toLocaleDateString()}
         status={"complete"}
         symbol={token?.symbol ?? "unknown"}
-        txnValue={tx.transactionHash}
+        blockExplorerUrl={"https://etherscan.io/tx/" + tx.transactionHash}
         type={"in"}
         key={tx.blockNumber}
       />
@@ -98,7 +67,7 @@ const TransactionsTab = () => {
         id={new Date(tx.tx.timestamp).toLocaleDateString()}
         status={"complete"}
         symbol={tx.token.symbol}
-        txnValue={tx.tx.transactionHash}
+        blockExplorerUrl={"https://ping.pub/canto/tx/" + tx.tx.txhash}
         type={"out"}
         key={tx.tx.transactionHash}
       />
@@ -137,14 +106,14 @@ const TransactionsTab = () => {
       </Text>
       {pendingBridgeTransactions
         .map((tx) => {
-          const token = findGravityToken(tx.args?._tokenContract);
+          const token = findGravityToken(tx.args?.[0]);
           return (
             <TransactionBox
-              balance={formatUnits(tx.args?._amount, token?.decimals)}
+              balance={formatUnits(tx.args?.[3], token?.decimals)}
               id={tx.blockNumber}
               status={"loading"}
               symbol={token?.symbol ?? "unknown"}
-              txnValue={tx.transactionHash}
+              blockExplorerUrl={"https://etherscan.io/tx/" + tx.transactionHash}
               type={"in"}
               key={tx.blockNumber}
             />

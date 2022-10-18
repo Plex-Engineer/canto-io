@@ -1,9 +1,10 @@
 import styled from "@emotion/styled";
 import down from "assets/down.svg";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import TokenModal from "./tokenModal";
 import { BaseToken } from "../config/interfaces";
 import Popup from "reactjs-popup";
+import { PopupActions, PopupProps } from "reactjs-popup/dist/types";
 
 interface ITokenSelect {
   tokens: BaseToken[] | undefined;
@@ -18,8 +19,10 @@ export const TokenWallet = ({
   activeToken,
   balance,
 }: ITokenSelect) => {
+  const ref = useRef(null);
   return (
     <StyledPopup
+      ref={ref}
       position={"bottom left"}
       offsetY={-20}
       offsetX={20}
@@ -49,6 +52,10 @@ export const TokenWallet = ({
         tokens={tokens}
         balance={balance}
         onClose={(value) => {
+          if (ref != null) {
+            //@ts-ignore
+            ref.current?.close();
+          }
           if (onSelect) {
             onSelect(value);
           }

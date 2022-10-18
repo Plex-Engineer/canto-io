@@ -24,12 +24,35 @@ import TransactionsTab from "./TransactionsTab";
 import { useEthers } from "@usedapp/core";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
+import {
+  getAllBridgeTransactionsWithStatus,
+  getBridgeOutTransactions,
+} from "./utils/utils";
+import { useBridgeTransactionStore } from "./stores/transactionStore";
 
 const BridgingPage = () => {
   const tokenStore = useTokenStore();
+  const transactionStore = useBridgeTransactionStore();
   const networkInfo = useNetworkInfo();
   const { account, activateBrowserWallet } = useEthers();
 
+  //setting the bridging transactions into local storage
+  async function setBridgingTransactions() {
+    const [completedBridgeIn, pendingBridgeIn] =
+      await getAllBridgeTransactionsWithStatus(
+        networkInfo.account,
+        networkInfo.cantoAddress
+      );
+    const bridgeOutTransactions = await getBridgeOutTransactions(
+      networkInfo.cantoAddress
+    );
+    transactionStore.setTransactions(
+      networkInfo.account,
+      pendingBridgeIn,
+      completedBridgeIn,
+      bridgeOutTransactions
+    );
+  }
   //set the convert erc20 tokens
   const { userTokens: userConvertERC20Tokens } = useCantoERC20Balances(
     networkInfo.account,
@@ -47,6 +70,7 @@ const BridgingPage = () => {
   const [userBridgeOutTokens, setUserBridgeOutTokens] = useState<
     UserNativeTokens[]
   >([]);
+
   async function getAllBalances() {
     const convertNativeWithBalance = await getNativeCantoBalance(
       CantoMainnet.cosmosAPIEndpoint,
@@ -69,6 +93,7 @@ const BridgingPage = () => {
 
   useEffect(() => {
     getAllBalances();
+    setBridgingTransactions();
   }, []);
 
   function reSelectTokens(
@@ -86,6 +111,7 @@ const BridgingPage = () => {
   //Useffect for calling data per block
   useEffect(() => {
     const interval = setInterval(async () => {
+      await setBridgingTransactions();
       await getAllBalances();
       //reselecting the tokens so it is the most updated version
       reSelectTokens(SelectedTokens.ETHTOKEN, userEthGTokens);
@@ -95,6 +121,28 @@ const BridgingPage = () => {
     }, 6000);
     return () => clearInterval(interval);
   }, [userEthGTokens, userBridgeOutTokens, userConvertTokens]);
+
+  const notConnectedTabs = () => {
+    const tabs = [];
+    for (let i = 0; i < 3; i++) {
+      tabs.push(
+        <TabPanel>
+          <NotConnected
+            title="Wallet is not connected"
+            subtext="to use bridge you need to connect a wallet through the service metamask"
+            buttonText="connnect wallet"
+            bgFilled
+            onClick={() => {
+              activateBrowserWallet();
+              addNetwork();
+            }}
+            icon={walletIcon}
+          />
+        </TabPanel>
+      );
+    }
+    return tabs;
+  };
 
   return (
     <Styled>
@@ -112,51 +160,16 @@ const BridgingPage = () => {
           >
             bridge Out
           </Tab>
-          <Tab className="tab">transactions</Tab>
+          <Tab className="tab">
+            transactions{" "}
+            <StyledNotification
+              notifications={transactionStore.newTransactions}
+            >
+              <div className="text">{transactionStore.newTransactions}</div>
+            </StyledNotification>
+          </Tab>
         </TabList>
-        {!account && (
-          <>
-            <TabPanel>
-              <NotConnected
-                title="Wallet is not connected"
-                subtext="to use bridge you need to connect a wallet through the service metamask"
-                buttonText="connnect wallet"
-                bgFilled
-                onClick={() => {
-                  activateBrowserWallet();
-                  addNetwork();
-                }}
-                icon={walletIcon}
-              />
-            </TabPanel>
-            <TabPanel>
-              <NotConnected
-                title="Wallet is not connected"
-                subtext="to use bridge you need to connect a wallet through the service metamask"
-                buttonText="connnect wallet"
-                bgFilled
-                onClick={() => {
-                  activateBrowserWallet();
-                  addNetwork();
-                }}
-                icon={walletIcon}
-              />
-            </TabPanel>
-            <TabPanel>
-              <NotConnected
-                title="Wallet is not connected"
-                subtext="to use bridge you need to connect a wallet through the service metamask"
-                buttonText="connnect wallet"
-                bgFilled
-                onClick={() => {
-                  activateBrowserWallet();
-                  addNetwork();
-                }}
-                icon={walletIcon}
-              />
-            </TabPanel>
-          </>
-        )}
+        {!account && <>{notConnectedTabs().map((tab) => tab)}</>}
         {account && (
           <>
             <TabPanel>
@@ -182,6 +195,50 @@ const BridgingPage = () => {
   );
 };
 
+interface Props {
+  notifications: number;
+}
+const StyledNotification = styled.div<Props>`
+  display: ${(props) => (props.notifications > 0 ? "flex" : "none")};
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px 4px;
+  gap: 9px;
+  margin-bottom: 12px;
+  /* position: absolute; */
+  width: 15px;
+  height: 14px;
+  left: 143px;
+  top: 20px;
+
+  /* matrix green */
+
+  background: #06fc99;
+  border-radius: 39px;
+  .text {
+    width: 7px;
+    height: 14px;
+
+    font-family: "IBM Plex Mono";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 10.8889px;
+    line-height: 130%;
+    /* or 14px */
+
+    letter-spacing: -0.01em;
+
+    /* black */
+
+    color: #000000;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+  }
+`;
 const Styled = styled.div`
   min-height: 80vh;
   max-width: 1205px;
