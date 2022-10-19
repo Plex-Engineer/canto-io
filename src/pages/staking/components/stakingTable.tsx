@@ -1,8 +1,6 @@
 import { BigNumber } from "ethers";
 import { commify, formatEther } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
-import HistoryToggleOffSharpIcon from "@mui/icons-material/HistoryToggleOffSharp";
-import Popover from "@mui/material/Popover";
 import cantoIcon from "assets/logo.svg";
 import {
   MasterValidatorProps,
@@ -11,12 +9,10 @@ import {
 import useValidatorModalStore, {
   ValidatorModalType,
 } from "../stores/validatorModalStore";
-import React from "react";
 // import Row from "./row";
 import Table from "./table";
 
 import FadeIn from "react-fade-in";
-import HoverTable from "./HoverTable";
 
 interface TableProps {
   validators: MasterValidatorProps[];
@@ -104,15 +100,6 @@ interface RowProps {
   onClick?: () => void;
 }
 const Row = (props: RowProps) => {
-  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-  const open = Boolean(anchorEl);
-  const handlePopoverOpen = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handlePopoverClose = () => {
-    setAnchorEl(null);
-  };
   return (
     <tr onClick={props.onClick}>
       <td>{props.rank}</td>
@@ -125,38 +112,7 @@ const Row = (props: RowProps) => {
         {commify(truncateNumber(formatEther(props.userStake)))}
         <img src={cantoIcon} alt="canto" height={14} />
       </td>
-      {props.undelegationOnly ? (
-        <td>
-          <HistoryToggleOffSharpIcon
-            style={{ verticalAlign: "middle" }}
-            aria-owns={open ? "mouse-over-popover" : undefined}
-            onMouseEnter={handlePopoverOpen}
-            onMouseLeave={handlePopoverClose}
-          />
-          {props.undelegationInfo?.lockouts ? (
-            <Popover
-              id="mouse-over-popover"
-              sx={{
-                pointerEvents: "none",
-              }}
-              open={open}
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              onClose={handlePopoverClose}
-              disableRestoreFocus
-            >
-              {<HoverTable {...props.undelegationInfo} />}
-            </Popover>
-          ) : null}
-        </td>
-      ) : null}
+
       <td>{props.commission * 100 + "%"}</td>
     </tr>
   );

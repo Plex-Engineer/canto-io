@@ -8,7 +8,6 @@ import { ModalManager } from "./modals/ModalManager";
 import { ethers } from "ethers";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { noteSymbol, truncateNumber } from "global/utils/utils";
-import style from "./Dex.module.scss";
 import useLPTokenData from "./hooks/useLPTokenData";
 import useUserLPTokenInfo from "./hooks/useUserLPTokenData";
 import { LPPairInfo, UserLPPairInfo } from "./config/interfaces";
@@ -112,7 +111,7 @@ const Dex = () => {
   }, [notifications]);
 
   return (
-    <DexContainer as={FadeIn} style={style}>
+    <DexContainer as={FadeIn}>
       <div style={{ marginBottom: "75px" }}>
         <ModalManager
           chainId={Number(networkInfo.chainId)}
