@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { BurgerMenu } from "./BurgerMenu";
 import Glitch from "../../components/molecules/Glitch";
 import { Text } from "../atoms/Text";
 import Alert from "../atoms/Alert";
