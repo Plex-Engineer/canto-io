@@ -5,6 +5,7 @@ import { Text } from "../atoms/Text";
 import Alert from "../atoms/Alert";
 import styled from "@emotion/styled";
 import ConnectWallet from "./ConnectWallet";
+import MenuBar from "./MenuBar";
 
 export interface Page {
   name: string;
@@ -43,7 +44,7 @@ export const NavBar = (props: Props) => {
       <Alert />
       <nav className={onScroll ? "scroll" : ""}>
         <div className="menu">
-          <BurgerMenu
+          <MenuBar
             chainId={chainId}
             currentPage={currentPage}
             pageList={pageList}
