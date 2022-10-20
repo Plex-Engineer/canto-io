@@ -1,4 +1,4 @@
-import { CantoMainnet } from "cantoui";
+import { CantoMainnet } from "global/config/networks";
 import { BigNumber } from "ethers";
 import {
   DelegationResponse,

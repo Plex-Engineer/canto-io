@@ -1,5 +1,4 @@
-import { CantoMainnet, PrimaryButton } from "cantoui";
-import cantoIcon from "assets/logo.svg";
+import { CantoMainnet } from "global/config/networks";
 import { chain, fee, memo } from "../config/networks";
 import { BigNumber } from "ethers";
 import { useState } from "react";
@@ -8,7 +7,6 @@ import {
   txConvertERC20,
 } from "../utils/convertCoin/convertTransactions";
 import { toastBridge } from "../utils/bridgeConfirmations";
-import bridgeIcon from "assets/bridge.svg";
 import {
   EmptySelectedConvertToken,
   EmptySelectedNativeToken,

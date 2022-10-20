@@ -1,8 +1,8 @@
+import { ADDRESSES } from "global/config/addresses";
 import {
   gravityTokenBase,
   mainnetGravityTokensBase,
 } from "./gravityBridgeTokens";
-import { ADDRESSES } from "cantoui";
 
 //Gravity Bridge Chains
 export const ETHMainnet = {

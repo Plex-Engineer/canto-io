@@ -5,14 +5,7 @@ import { RowCell } from "./removeModal";
 import LoadingModal from "./loadingModal";
 import { useEffect, useState } from "react";
 import useModals, { ModalType } from "../hooks/useModals";
-
-import {
-  TOKENS,
-  ADDRESSES,
-  CantoMainnet,
-  CantoTestnet,
-  PrimaryButton,
-} from "cantoui";
+import { CantoMainnet, CantoTestnet } from "global/config/networks";
 import {
   useAddLiquidity,
   useAddLiquidityCANTO,
@@ -27,6 +20,8 @@ import {
 import { routerAbi } from "global/config/abi";
 import { UserLPPairInfo } from "../config/interfaces";
 import { DexModalContainer, DexLoadingOverlay } from "../components/Styled";
+import { PrimaryButton } from "cantoui";
+import { ADDRESSES } from "global/config/addresses";
 
 interface AddConfirmationProps {
   pair: UserLPPairInfo;

@@ -1,4 +1,4 @@
-import { ADDRESSES, Text } from "cantoui";
+import { Text } from "cantoui";
 import { useEffect, useState } from "react";
 import { useBridgeStore } from "./stores/gravityStore";
 import styled from "@emotion/styled";
@@ -24,6 +24,7 @@ import { convertStringToBigNumber } from "./utils/stringToBigNumber";
 import { GeneralTransferBox } from "./components/generalTransferBox";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import FadeIn from "react-fade-in";
+import { ADDRESSES } from "global/config/addresses";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];

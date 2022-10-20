@@ -1,17 +1,14 @@
 import { useCalls, useEtherBalance } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { PAIR, TESTPAIRS, MAINPAIRS } from "../config/pairs";
-import {
-  TOKENS as ALLTOKENS,
-  ADDRESSES,
-  CantoTestnet,
-  CantoMainnet,
-} from "cantoui";
+import { CantoTestnet, CantoMainnet } from "global/config/networks";
 import { cERC20Abi, ERC20Abi, routerAbi } from "global/config/abi";
 import { LPPairInfo, UserLPPairInfo } from "../config/interfaces";
 import { getSupplyBalanceFromCTokens } from "pages/lending/utils/utils";
 import { formatUnits } from "ethers/lib/utils";
 import { checkForCantoInPair } from "../utils/utils";
+import { ADDRESSES } from "global/config/addresses";
+import { TOKENS as ALLTOKENS } from "global/config/tokenInfo";
 
 const useUserLPTokenInfo = (
   LPTokens: LPPairInfo[],

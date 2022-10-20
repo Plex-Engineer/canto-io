@@ -1,4 +1,4 @@
-import { CantoMainnet, PrimaryButton, Text } from "cantoui";
+import { CantoMainnet } from "global/config/networks";
 import { useEffect, useState } from "react";
 import { useBridgeStore } from "./stores/gravityStore";
 import styled from "@emotion/styled";
@@ -27,6 +27,7 @@ import { getBridgeOutButtonText } from "./utils/reactiveButtonText";
 import FadeIn from "react-fade-in";
 import { OutlinedButton } from "global/packages/src";
 import { Text2 } from "global/packages/src/components/atoms/Text2";
+import { Text } from "cantoui";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];

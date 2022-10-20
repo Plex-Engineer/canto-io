@@ -1,4 +1,4 @@
-import { CantoMainnet, CantoTestnet } from "cantoui";
+import { CantoMainnet, CantoTestnet } from "global/config/networks";
 import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 

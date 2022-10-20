@@ -1,5 +1,5 @@
-import { Token, TOKENS } from "cantoui";
 import { ethers } from "ethers";
+import { Token, TOKENS } from "global/config/tokenInfo";
 
 function createPostOptions(from: string, to: string, amount: string) {
   return {

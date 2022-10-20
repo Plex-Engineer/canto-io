@@ -1,7 +1,9 @@
-import { ADDRESSES, CantoMainnet, TOKENS } from "cantoui";
+import { CantoMainnet } from "global/config/networks";
 import { BigNumber, Contract, ethers, Event } from "ethers";
 import { ETHMainnet } from "pages/bridge/config/networks";
 import { gravityabi } from "../config/gravityBridgeAbi";
+import { ADDRESSES } from "global/config/addresses";
+import { TOKENS } from "global/config/tokenInfo";
 
 const globalFetchOptions = {
   method: "GET",

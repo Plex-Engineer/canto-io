@@ -2,16 +2,12 @@ import { formatEther } from "@ethersproject/units";
 import { CallResult, useCalls } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { ethers } from "ethers";
-import {
-  CTOKENS,
-  CTOKEN,
-  CantoTestnet,
-  ADDRESSES,
-  CantoMainnet,
-} from "cantoui";
+import { CantoTestnet, CantoMainnet } from "global/config/networks";
 import { cTokensBase, mainnetBasecTokens } from "../config/lendingMarketTokens";
 import { LMTokenDetails } from "../config/interfaces";
 import { cERC20Abi, comptrollerAbi, routerAbi } from "global/config/abi";
+import { CTOKEN, CTOKENS } from "global/config/tokenInfo";
+import { ADDRESSES } from "global/config/addresses";
 
 const formatUnits = ethers.utils.formatUnits;
 const parseUnits = ethers.utils.parseUnits;

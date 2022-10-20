@@ -1,4 +1,4 @@
-import { CantoMainnet, NodeAddresses } from "cantoui";
+import { CantoMainnet, NodeAddresses } from "global/config/networks";
 import { BigNumber, ethers } from "ethers";
 
 export async function addNetwork() {

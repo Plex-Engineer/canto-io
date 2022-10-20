@@ -1,5 +1,5 @@
-import { CantoMainnet, CantoTestnet } from "../config/networks";
-import { TOKENS, CTOKENS } from "../config/tokenInfo";
+import { CantoMainnet, CantoTestnet } from "global/config/networks";
+import { CTOKENS, TOKENS } from "global/config/tokenInfo";
 
 export async function addCantoToKeplr() {
   // Keplr extension injects the offline signer that is compatible with cosmJS.

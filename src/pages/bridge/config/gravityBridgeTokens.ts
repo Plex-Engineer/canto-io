@@ -1,4 +1,4 @@
-import { TOKENS } from "cantoui";
+import { TOKENS } from "global/config/tokenInfo";
 import { NativeERC20Tokens } from "./interfaces";
 
 export const gravityTokenBase = [

@@ -1,7 +1,7 @@
 import { useCalls } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { CantoGravityTokens } from "../config/gravityBridgeTokens";
-import { CantoMainnet } from "cantoui";
+import { CantoMainnet } from "global/config/networks";
 import { ERC20Abi } from "global/config/abi";
 import { UserERC20Tokens } from "../config/interfaces";
 
