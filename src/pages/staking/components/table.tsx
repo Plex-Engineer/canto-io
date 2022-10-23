@@ -33,9 +33,9 @@ const Container = styled.table`
     align-items: center;
     gap: 0.4rem;
 
-    /* &:nth-child(1),
-    :nth-child(5),
-    :nth-child(6) {
+    /* &:nth-of-type(1),
+    :nth-of-type(5),
+    :nth-of-type(6) {
       flex: 2;
     } */
   }

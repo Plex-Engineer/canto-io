@@ -208,13 +208,10 @@ const StyledNotification = styled.div<Props>`
   padding: 0px 4px;
   gap: 9px;
   margin-bottom: 12px;
-  /* position: absolute; */
   width: 15px;
   height: 14px;
   left: 143px;
   top: 20px;
-
-  /* matrix green */
 
   background: #06fc99;
   border-radius: 39px;
@@ -243,7 +240,7 @@ const StyledNotification = styled.div<Props>`
   }
 `;
 const Styled = styled.div`
-  min-height: 80vh;
+  min-height: calc(100vh - 10.65rem);
   max-width: 1205px;
   margin: 0 auto;
   display: flex;
@@ -291,6 +288,7 @@ const Styled = styled.div`
   .react-tabs__tab-panel {
     max-width: 1205px;
     width: 100vw;
+    min-height: 46rem;
   }
 
   .react-tabs__tab-panel--selected {
@@ -316,9 +314,6 @@ const Styled = styled.div`
 
     .react-tabs__tab-panel--selected {
       width: 100%;
-      /* & > * {
-        width: 600px;
-      } */
     }
   }
 `;

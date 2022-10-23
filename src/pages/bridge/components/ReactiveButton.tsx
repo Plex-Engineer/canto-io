@@ -7,7 +7,7 @@ import {
 } from "pages/bridge/config/interfaces";
 import { getReactiveButtonText } from "../utils/reactiveButtonText";
 import { convertStringToBigNumber } from "../utils/stringToBigNumber";
-import { OutlinedButton, PrimaryButton } from "global/packages/src";
+import { PrimaryButton } from "global/packages/src";
 
 interface RBProps {
   amount: string;

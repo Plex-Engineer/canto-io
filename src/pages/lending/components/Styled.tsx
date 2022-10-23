@@ -345,7 +345,7 @@ export const ModalWallet = styled.div`
   margin: 2rem 0 1.3rem 0;
   border-top: 1px solid #222;
   padding-top: 1rem;
-  p:first-child {
+  p:first-of-type {
     font-weight: 300;
     font-size: 16px;
     color: #dfdfdf;

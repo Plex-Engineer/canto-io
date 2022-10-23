@@ -91,8 +91,8 @@ const SwitchBridging = (props: Props) => {
 const Styled = styled.div`
   width: 34rem;
   max-width: 34rem;
-  margin: 1rem;
   height: 8rem;
+  margin-top: 26px;
 
   position: relative;
   background-color: #222222;

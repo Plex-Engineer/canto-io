@@ -83,7 +83,7 @@ const Styled = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
-  width: 15rem;
+  width: 100%;
   height: 100%;
   cursor: pointer;
   /* border: 1px solid black; */

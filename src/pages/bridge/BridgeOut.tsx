@@ -1,4 +1,4 @@
-import { CantoMainnet, PrimaryButton, Text } from "cantoui";
+import { CantoMainnet } from "cantoui";
 import { useEffect, useState } from "react";
 import { useBridgeStore } from "./stores/gravityStore";
 import styled from "@emotion/styled";
@@ -25,8 +25,8 @@ import { formatUnits } from "ethers/lib/utils";
 import { convertStringToBigNumber } from "./utils/stringToBigNumber";
 import { getBridgeOutButtonText } from "./utils/reactiveButtonText";
 import FadeIn from "react-fade-in";
-import { OutlinedButton } from "global/packages/src";
-import { Text2 } from "global/packages/src/components/atoms/Text2";
+import { PrimaryButton } from "global/packages/src";
+import { Text } from "global/packages/src/components/atoms/Text";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -85,39 +85,41 @@ const BridgeOut = ({
 
   return (
     <Styled as={FadeIn}>
-      <Text
-        type="title"
-        color="primary"
-        style={{
-          fontFamily: "Silkscreen",
-          lineHeight: "3rem",
-        }}
-      >
-        send funds from canto
-      </Text>
-
-      <Text2 type="text" size={"text3"} color="primary">
-        you must bridge your assets from the canto EVM to the canto (bridge) to
-        bridge out{" "}
-        <a
-          role="button"
-          tabIndex={0}
-          onClick={() =>
-            window.open(
-              "https://docs.canto.io/user-guides/converting-assets",
-              "_blank"
-            )
-          }
+      <div className="title">
+        <Text
+          size="title2"
+          type="title"
+          color="primary"
           style={{
-            color: "var(--primary-color)",
-            cursor: "pointer",
-            textDecoration: "underline",
+            fontFamily: "Silkscreen",
+            lineHeight: "3rem",
           }}
         >
-          read here
-        </a>{" "}
-        for more information.
-      </Text2>
+          send funds from canto
+        </Text>
+
+        <Text type="text" size={"text3"} color="primary">
+          you must bridge your assets from the canto EVM to <br /> the canto
+          (bridge) to bridge out{" "}
+          <a
+            role="button"
+            tabIndex={0}
+            onClick={() =>
+              window.open(
+                "https://docs.canto.io/user-guides/converting-assets",
+                "_blank"
+              )
+            }
+            style={{
+              color: "var(--primary-color)",
+              cursor: "pointer",
+              textDecoration: "underline",
+            }}
+          >
+            read more here
+          </a>
+        </Text>
+      </div>
 
       <SwitchBridging
         left={{
@@ -130,25 +132,6 @@ const BridgeOut = ({
           height: 48,
         }}
       />
-      {/* <div style={{ marginTop: "-1rem", alignContent: "center" }}>
-        <p
-          style={{
-            fontWeight: bridgeStore.transactionType == "Bridge" ? "900" : "100",
-            textAlign: "left",
-          }}
-        >
-          step 1: bridge assets from canto (evm) to canto (bridge)
-        </p>
-        <p
-          style={{
-            fontWeight:
-              bridgeStore.transactionType == "Convert" ? "900" : "100",
-            textAlign: "left",
-          }}
-        >
-          step 2: bridge assets from canto (bridge) to gravity bridge
-        </p>
-      </div> */}
 
       {bridgeStore.transactionType == "Bridge" && (
         <ConvertTransferBox
@@ -181,21 +164,6 @@ const BridgeOut = ({
         />
       )}
 
-      {/* <Text type="text" color="white" style={{ width: "70%" }}>
-        it could take several minutes for your bridged assets to arrive on the
-        gravity bridge network. for more detail, read{" "}
-        <a
-          href="https://docs.canto.io/user-guides/bridging-assets"
-          style={{
-            color: "white",
-            cursor: "pointer",
-            textDecoration: "underline",
-          }}
-        >
-          here
-        </a>
-        .
-      </Text> */}
       {bridgeStore.transactionType == "Convert" && (
         <GeneralTransferBox
           tokenSelector={
@@ -241,7 +209,9 @@ const BridgeOut = ({
           )}
           amount={amount}
           button={
-            <OutlinedButton
+            <PrimaryButton
+              height="big"
+              weight="bold"
               disabled={disabled}
               onClick={async () => {
                 setInBridgeTransaction(true);
@@ -269,7 +239,7 @@ const BridgeOut = ({
               }}
             >
               {inBridgeTransaction ? bridgeConfirmation : buttonText}
-            </OutlinedButton>
+            </PrimaryButton>
           }
         />
       )}
@@ -281,8 +251,6 @@ const Styled = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 60px 0;
-  min-height: 48rem;
+  padding: 50px 0;
 `;
 export default BridgeOut;

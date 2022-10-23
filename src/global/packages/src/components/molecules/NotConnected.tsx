@@ -51,7 +51,7 @@ const Styled = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: calc(100vh - 12rem);
+  height: 100%;
 
   .container {
     display: flex;
