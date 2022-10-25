@@ -1,4 +1,3 @@
-import { ADDRESSES, Text } from "cantoui";
 import { useEffect, useState } from "react";
 import { useBridgeStore } from "./stores/gravityStore";
 import styled from "@emotion/styled";
