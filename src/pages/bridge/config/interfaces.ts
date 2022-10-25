@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 import emptyToken from "assets/empty.svg";
-import { Token } from "cantoui";
+import { Token } from "global/config/tokenInfo";
 
 export interface BaseToken extends Token {
   [x: string | number | symbol]: unknown;

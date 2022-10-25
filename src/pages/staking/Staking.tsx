@@ -17,7 +17,7 @@ import {
   getValidators,
   txClaimRewards,
 } from "pages/staking/utils/transactions";
-import { CantoMainnet } from "cantoui";
+import { CantoMainnet } from "global/config/networks";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { BigNumber } from "ethers";
 import {

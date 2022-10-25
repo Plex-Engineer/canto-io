@@ -1,7 +1,7 @@
 import { CallResult, useCalls, useEtherBalance } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { ethers } from "ethers";
-import { CantoTestnet, ADDRESSES, CantoMainnet } from "cantoui";
+import { CantoTestnet, CantoMainnet } from "global/config/networks";
 import {
   UserLMTokenDetails,
   LMTokenDetails,
@@ -15,6 +15,7 @@ import { cERC20Abi, comptrollerAbi, ERC20Abi } from "global/config/abi";
 import { parseUnits } from "ethers/lib/utils";
 import { getSupplyBalanceFromCTokens } from "../utils/utils";
 import { valueInNote } from "pages/dexLP/utils/utils";
+import { ADDRESSES } from "global/config/addresses";
 
 export function useUserLMTokenData(
   LMTokens: LMTokenDetails[],

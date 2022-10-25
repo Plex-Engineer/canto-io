@@ -1,4 +1,4 @@
-import { CantoMainnet } from "cantoui";
+import { CantoMainnet } from "global/config/networks";
 import { useEffect, useState } from "react";
 import { useBridgeStore } from "./stores/gravityStore";
 import styled from "@emotion/styled";

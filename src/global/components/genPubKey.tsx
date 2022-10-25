@@ -1,8 +1,8 @@
-import { CantoMainnet } from "cantoui";
 import { useState } from "react";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
+import { CantoMainnet } from "global/config/networks";
 
 export const GenPubKey = () => {
   const [pubKeySuccess, setPubKeySuccess] = useState("");

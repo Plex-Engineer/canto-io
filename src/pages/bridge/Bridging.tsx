@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { CantoMainnet } from "cantoui";
+import { CantoMainnet } from "global/config/networks";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { useEffect, useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
