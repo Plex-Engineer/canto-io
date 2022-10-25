@@ -8,7 +8,7 @@ import warningIcon from "assets/warning.svg";
 import { findGravityToken } from "./utils/utils";
 import { useBridgeTransactionStore } from "./stores/transactionStore";
 
-const TransactionsTab = () => {
+const Transactions = () => {
   const transactionStore = useBridgeTransactionStore();
   const pendingBridgeTransactions =
     transactionStore.transactions.pendingBridgeTransactions;
@@ -106,7 +106,7 @@ const TransactionsTab = () => {
           return (
             <TransactionBox
               balance={formatUnits(tx.args?.[3], token?.decimals)}
-              id={tx.blockNumber}
+              id={tx.blockNumber.toString()}
               status={"loading"}
               symbol={token?.symbol ?? "unknown"}
               blockExplorerUrl={"https://etherscan.io/tx/" + tx.transactionHash}
@@ -147,6 +147,13 @@ const Styled = styled.div`
   align-items: center;
   gap: 1rem;
   padding: 3rem 0;
+  max-width: 600px;
+  flex-grow: 1;
+
+  @media (max-width: 1000px) {
+    max-width: 100%;
+    margin: 0 1rem;
+  }
 `;
 
-export default TransactionsTab;
+export default Transactions;

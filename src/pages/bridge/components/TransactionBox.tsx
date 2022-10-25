@@ -5,7 +5,7 @@ import completeIcon from "assets/complete.svg";
 interface Props {
   type: "in" | "out";
   balance: string;
-  id: number | string;
+  id: string;
   blockExplorerUrl: string;
   symbol: string;
   status: "loading" | "complete";
@@ -15,13 +15,13 @@ const TransactionBox = (props: Props) => {
     <Styled>
       <img
         src={props.status == "loading" ? loadingIcon : completeIcon}
-        height={80}
         alt="loading"
         className="status-icon"
       />
 
       <p className="status">
-        #{props.id} {" bridge"} {props.type}
+        bridge {props.type}
+        {" - "} #{Date.parse(props.id)}
       </p>
       <h1 className="balance">{props.balance + " " + props.symbol}</h1>
       <a
@@ -32,6 +32,7 @@ const TransactionBox = (props: Props) => {
       >
         view on explorer
       </a>
+      <div className="date">{new Date(props.id).toLocaleString()}</div>
     </Styled>
   );
 };
@@ -42,15 +43,14 @@ const Styled = styled.div`
   border-radius: 4px;
   border: 1px solid #222;
   color: var(--primary-color);
-  padding: 1rem;
+  padding: 1rem 1rem 1rem 0.2rem;
   display: grid;
+
   .status-icon {
     grid-area: icon;
-    justify-self: start;
-    align-self: center;
-    width: 5.8rem;
-    height: 5.8rem;
-    margin: -1rem;
+    justify-self: center;
+    align-self: stretch;
+    width: 4rem;
   }
   .status {
     grid-area: status;
@@ -65,13 +65,30 @@ const Styled = styled.div`
     letter-spacing: -0.07em;
   }
 
+  .date {
+    grid-area: date;
+    font-size: 14px;
+    letter-spacing: -0.07em;
+    text-align: right;
+  }
+
   .link {
     text-decoration: underline;
     font-size: 14px;
     font-weight: 400;
     letter-spacing: -0.03em;
     grid-area: link;
+    text-align: right;
   }
-  grid-template-areas: "icon status status . . . link" "icon balance balance . . . . ";
+  grid-template-areas: "icon status status . . . link" "icon balance balance . . . date ";
+
+  @media (max-width: 1000px) {
+    .balance {
+      font-size: 15px;
+    }
+    .date {
+      display: none;
+    }
+  }
 `;
 export default TransactionBox;

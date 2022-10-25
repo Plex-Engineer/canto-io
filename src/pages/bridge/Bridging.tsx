@@ -15,7 +15,7 @@ import { useCantoERC20Balances } from "./hooks/useERC20Balances";
 import { convertCoinTokens } from "./config/gravityBridgeTokens";
 import { ETHGravityTokens } from "./config/gravityBridgeTokens";
 import { BigNumber } from "ethers";
-import TransactionsTab from "./TransactionsTab";
+import Transactions from "./Transactions";
 import { useEthers } from "@usedapp/core";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
@@ -189,7 +189,7 @@ const BridgingPage = () => {
               />
             </TabPanel>
             <TabPanel>
-              <TransactionsTab />
+              <Transactions />
             </TabPanel>
           </>
         )}
