@@ -27,6 +27,7 @@ import { getBridgeOutButtonText } from "./utils/reactiveButtonText";
 import FadeIn from "react-fade-in";
 import { PrimaryButton } from "global/packages/src";
 import { Text } from "global/packages/src/components/atoms/Text";
+import { BridgeStyled } from "./BridgeIn";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -84,11 +85,11 @@ const BridgeOut = ({
   }, [userCantoNativeGTokens]);
 
   return (
-    <Styled as={FadeIn}>
+    <FadeIn wrapperTag={BridgeStyled}>
       <div className="title">
         <Text
-          size="title2"
           type="title"
+          size="title2"
           color="primary"
           style={{
             fontFamily: "Silkscreen",
@@ -98,7 +99,15 @@ const BridgeOut = ({
           send funds from canto
         </Text>
 
-        <Text type="text" size={"text3"} color="primary">
+        <Text
+          type="text"
+          color="primary"
+          style={{
+            margin: "0 1rem",
+            fontSize: "14px",
+            lineHeight: "20.3px",
+          }}
+        >
           you must bridge your assets from the canto EVM to <br /> the canto
           (bridge) to bridge out{" "}
           <a
@@ -116,8 +125,9 @@ const BridgeOut = ({
               textDecoration: "underline",
             }}
           >
-            read more here
+            read here
           </a>
+          .
         </Text>
       </div>
 
@@ -243,14 +253,8 @@ const BridgeOut = ({
           }
         />
       )}
-    </Styled>
+    </FadeIn>
   );
 };
 
-const Styled = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 50px 0;
-`;
 export default BridgeOut;

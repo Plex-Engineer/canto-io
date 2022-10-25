@@ -395,6 +395,9 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
         width: 100%;
       }
     }
+    .token-selector {
+      width: 10rem;
+    }
     .switched {
       width: 90vw !important;
       max-width: 34rem;

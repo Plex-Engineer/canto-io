@@ -103,7 +103,7 @@ const BridgeIn = ({
   };
 
   return (
-    <FadeIn wrapperTag={Styled}>
+    <FadeIn wrapperTag={BridgeStyled}>
       <div className="title">
         <Text
           type="title"
@@ -126,8 +126,8 @@ const BridgeIn = ({
             lineHeight: "20.3px",
           }}
         >
-          funds are transferred in two steps through our canto bridge. <br></br>{" "}
-          it takes several minutes. for more details{" "}
+          funds are transferred in two steps through our canto bridge. <br /> it
+          takes several minutes. for more details{" "}
           <a
             role="button"
             tabIndex={0}
@@ -249,11 +249,18 @@ const BridgeIn = ({
   );
 };
 
-const Styled = styled.div`
+export const BridgeStyled = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: start;
   padding: 50px 0;
-  height: 100%;
+  flex-grow: 1;
+
+  @media (max-width: 1000px) {
+    br {
+      display: none;
+    }
+  }
 `;
 export default BridgeIn;

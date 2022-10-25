@@ -240,13 +240,15 @@ const StyledNotification = styled.div<Props>`
   }
 `;
 const Styled = styled.div`
-  min-height: calc(100vh - 10.65rem);
-  max-width: 1205px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  min-height: calc(100vh - 10.65rem);
+  max-width: 1200px;
+  margin: 0 auto;
+
   .tabs {
     width: 100%;
     display: flex;
@@ -255,19 +257,20 @@ const Styled = styled.div`
     justify-content: start;
   }
   .tab {
-    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
+    height: 80px;
     color: var(--primary-color);
     outline: none;
     width: 174px;
     border-radius: 0%;
     border: 1px solid transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     padding: 1.8rem 0;
     cursor: pointer;
     font-size: 16px;
+
     &:hover {
       border: none;
       background-color: #06fc9a4c;
@@ -286,9 +289,10 @@ const Styled = styled.div`
   .react-tabs__tab--disabled {
   }
   .react-tabs__tab-panel {
-    max-width: 1205px;
+    max-width: 1200px;
     width: 100vw;
-    min-height: 46rem;
+
+    flex-grow: 1;
   }
 
   .react-tabs__tab-panel--selected {
@@ -296,10 +300,7 @@ const Styled = styled.div`
     display: flex;
     justify-content: center;
     background-color: black;
-
-    & > * {
-      width: 600px;
-    }
+    min-height: 47rem;
   }
 
   @media (max-width: 1000px) {
