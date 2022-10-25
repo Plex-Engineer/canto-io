@@ -22,7 +22,7 @@ const MyStaking = (props: MyStakingProps) => {
             rewards={truncateNumber(formatEther(props.totalRewards))}
             apr={props.apr}
           />
-          <Text type="text" color="primary" align="left">
+          <Text type="title" size="title3" color="primary" align="left">
             current staking position
           </Text>
           <ValidatorTable
@@ -31,7 +31,8 @@ const MyStaking = (props: MyStakingProps) => {
           />
 
           <Text
-            type="text"
+            type="title"
+            size="title3"
             color="primary"
             align="left"
             hidden={props.undelegationValidators.length == 0}
@@ -47,9 +48,6 @@ const MyStaking = (props: MyStakingProps) => {
 };
 
 const Styled = styled.div`
-  height: 100%;
-  width: 70%;
-  margin: 0 auto;
   justify-content: center;
 `;
 

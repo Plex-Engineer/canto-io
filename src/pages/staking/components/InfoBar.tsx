@@ -8,19 +8,9 @@ interface Props {
   rewards: string;
   apr: string;
 }
-const InfoBar = ({
-  balance,
-  totalStaked,
-  totalUnbonding,
-  rewards,
-  apr,
-}: Props) => {
+const InfoBar = ({ totalStaked, totalUnbonding, rewards, apr }: Props) => {
   return (
     <Styled>
-      <div className="dual-item">
-        <div className="top">balance</div>
-        <div className="bottom">{balance}</div>
-      </div>
       <div className="dual-item">
         <div className="top">total staked</div>
         <div className="bottom">{totalStaked}</div>

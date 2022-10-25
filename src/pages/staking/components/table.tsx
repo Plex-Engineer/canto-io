@@ -100,10 +100,10 @@ type Props = {
 const Table: React.FC<Props> = (props: Props) => {
   return (
     <div
-      style={{
-        overflowY: "hidden",
-        overflowX: "auto",
-      }}
+    //   style={{
+    //     overflowY: "hidden",
+    //     overflowX: "auto",
+    //   }}
     >
       <Container>
         <thead>
