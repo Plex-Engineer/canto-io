@@ -5,6 +5,7 @@ import Alert from "../atoms/Alert";
 import styled from "@emotion/styled";
 import ConnectWallet from "./ConnectWallet";
 import MenuBar from "./MenuBar";
+import ModalManager from "../molecules/ModalManager";
 
 export interface Page {
   name: string;
@@ -57,6 +58,7 @@ export const NavBar = (props: Props) => {
           {currentPage}
         </Text>
         <ConnectWallet {...props} />
+        <ModalManager chainId={chainId} />
       </nav>
     </Container>
   );
