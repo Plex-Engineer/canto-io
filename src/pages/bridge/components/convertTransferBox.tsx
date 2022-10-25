@@ -16,7 +16,7 @@ import { getConvertButtonText } from "../utils/reactiveButtonText";
 import { convertStringToBigNumber } from "../utils/stringToBigNumber";
 import { formatUnits } from "ethers/lib/utils";
 import { GeneralTransferBox } from "./generalTransferBox";
-import { OutlinedButton } from "global/packages/src";
+import { PrimaryButton } from "global/packages/src";
 
 interface ConvertTransferBoxProps {
   cantoToEVM: boolean;
@@ -96,8 +96,10 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
       max={formatUnits(maxAmount, props.activeToken.decimals)}
       amount={props.amount}
       button={
-        <OutlinedButton
+        <PrimaryButton
           disabled={disabled}
+          height="big"
+          weight="bold"
           onClick={async () => {
             setInConvertTransaction(true);
             setConvertConfirmation(
@@ -138,7 +140,7 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
           }}
         >
           {inConvertTransaction ? convertConfirmation : buttonText}
-        </OutlinedButton>
+        </PrimaryButton>
       }
     />
   );

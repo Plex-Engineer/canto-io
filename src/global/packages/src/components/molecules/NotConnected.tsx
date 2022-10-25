@@ -20,12 +20,11 @@ const NotConnected = ({
 }: Props) => {
   return (
     <Styled
-      as={FadeIn}
       style={{
         backgroundColor: bgFilled ? "black" : "none",
       }}
     >
-      <div className="container">
+      <FadeIn className="container">
         <img src={icon} alt="wallet" />
         <Text2 type="title" size="title2">
           {title}
@@ -42,16 +41,17 @@ const NotConnected = ({
         <PrimaryButton onClick={onClick} weight="bold" height="big">
           {buttonText}
         </PrimaryButton>
-      </div>
+      </FadeIn>
     </Styled>
   );
 };
 
 const Styled = styled.div`
   display: flex;
-  align-items: center;
+  width: 100%;
+  padding: 25px;
   justify-content: center;
-  height: calc(100vh - 12rem);
+  flex-grow: 1;
 
   .container {
     display: flex;
@@ -59,7 +59,7 @@ const Styled = styled.div`
     justify-content: center;
     align-items: center;
     gap: 2rem;
-    width: 420px;
+    max-width: 420px;
     button {
       width: 100%;
     }

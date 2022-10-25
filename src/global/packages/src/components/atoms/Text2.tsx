@@ -4,7 +4,7 @@ interface Props {
   type: "title" | "text";
   color?: "white" | "primary";
   align?: "left" | "center" | "right";
-  size: "text1" | "text2" | "text3" | "text4" | "title1" | "title2" | "title1";
+  size?: "text1" | "text2" | "text3" | "text4" | "title1" | "title2" | "title1";
 }
 
 const Mapper = {
@@ -27,6 +27,6 @@ export const Text2 = styled.p<Props>`
   font-family: ${({ type }) =>
     type == "title" ? "Silkscreen" : "IBM Plex Mono"};
   line-height: 140%;
-  font-size: ${({ size }) => Mapper.size[size] + "px"};
+  font-size: ${({ size }) => Mapper.size[size ?? "text1"] + "px"};
   text-align: ${({ align }) => align ?? "center"};
 `;
