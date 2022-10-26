@@ -9,7 +9,7 @@ import { ModalType } from "../hooks/useModals";
 import { useEffect } from "react";
 import { useState } from "react";
 import useModals from "../hooks/useModals";
-import { PrimaryButton } from "cantoui";
+import { PrimaryButton } from "global/packages/src";
 import { truncateNumber } from "global/utils/utils";
 import {
   checkForCantoInPair,

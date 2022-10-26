@@ -1,8 +1,8 @@
 import styled from "@emotion/styled";
-import { Text } from "cantoui";
 import discord from "assets/discord.svg";
 import github from "assets/github.svg";
 import twitter from "assets/twitter.svg";
+import { Text } from "global/packages/src";
 import ImageButton from "./ImageButton";
 
 const Footer = () => {

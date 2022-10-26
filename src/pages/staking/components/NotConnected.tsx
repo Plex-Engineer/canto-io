@@ -1,4 +1,4 @@
-import { OutlinedButton } from "cantoui";
+import { OutlinedButton } from "global/packages/src";
 import walletIcon from "assets/wallet.svg";
 import styled from "@emotion/styled";
 import { useEthers } from "@usedapp/core";

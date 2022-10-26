@@ -21,7 +21,7 @@ import {
 } from "./components/LMTables";
 import { useToast } from "./hooks/useToasts";
 import { SpecialTabs } from "./components/SpecialTabs";
-import { OutlinedButton } from "cantoui";
+import { OutlinedButton } from "global/packages/src";
 import FadeIn from "react-fade-in";
 const LendingMarket = () => {
   //intialize network store

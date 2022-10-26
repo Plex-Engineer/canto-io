@@ -1,9 +1,10 @@
 import styled from "@emotion/styled";
 import React, { useState } from "react";
-import { OutlinedButton, Text } from "cantoui";
 import { CantoMainnet, CantoTestnet } from "global/config/networks";
 import CheckBox from "global/components/checkBox";
 import { CTOKENS, TOKENS } from "global/config/tokenInfo";
+import { OutlinedButton } from "../atoms/Button";
+import { Text } from "../atoms/Text";
 const Styled = styled.div`
   background-color: #040404;
   height: 36rem;

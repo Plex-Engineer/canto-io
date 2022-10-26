@@ -16,7 +16,7 @@ import { Mixpanel } from "mixpanel";
 import { UserLMTokenDetails } from "../config/interfaces";
 import { parseUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
-import { PrimaryButton } from "cantoui";
+import { PrimaryButton } from "global/packages/src";
 import { getReactiveButtonText, showText } from "../utils/modalButtonParams";
 //ENUM
 enum InputState {

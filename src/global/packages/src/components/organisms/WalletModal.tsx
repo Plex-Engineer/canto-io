@@ -71,9 +71,9 @@ const WalletModal = () => {
       </div>
 
       <div className="row">
-        <Text type="subtext">canto balance</Text>
+        <Text type="text">canto balance</Text>
         <div className="balance">
-          <Text type="subtext">
+          <Text type="text">
             <span className="center">
               {networkInfo.chainId == ETHMainnet.chainId.toString() && (
                 <img src={ethIMG} height={14} />
@@ -93,7 +93,7 @@ const WalletModal = () => {
         }}
       ></div>
       <div className="row">
-        <Text type="subtext">support</Text>
+        <Text type="text">support</Text>
         <div className="balance">
           <a href="">help center</a>
         </div>
