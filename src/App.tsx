@@ -39,35 +39,41 @@ function App() {
       <Router>
         <Container className="App">
           <CantoNav />
-          <Routes>
-            <Route path="/" key={"home"} element={<LandingPage />} />
-            <Route
-              path={PAGES.bridge.link}
-              key={"bridge"}
-              element={<BridgingPage />}
-            />
-            <Route
-              path={PAGES.governance.link}
-              key="governance"
-              element={<Governance />}
-            />
-            <Route path={PAGES.lp.link} key="lp interface" element={<Dex />} />
-            <Route
-              path={PAGES.lending.link}
-              key="lending"
-              element={<LendingMarket />}
-            />
-            <Route
-              path={PAGES.staking.link}
-              key={"staking"}
-              element={<Staking />}
-            />
-            <Route
-              path="/lending/balanceSheet"
-              key={"balanceSheet"}
-              element={<BalanceSheet />}
-            />
-          </Routes>
+          <div className="main-body">
+            <Routes>
+              <Route path="/" key={"home"} element={<LandingPage />} />
+              <Route
+                path={PAGES.bridge.link}
+                key={"bridge"}
+                element={<BridgingPage />}
+              />
+              <Route
+                path={PAGES.governance.link}
+                key="governance"
+                element={<Governance />}
+              />
+              <Route
+                path={PAGES.lp.link}
+                key="lp interface"
+                element={<Dex />}
+              />
+              <Route
+                path={PAGES.lending.link}
+                key="lending"
+                element={<LendingMarket />}
+              />
+              <Route
+                path={PAGES.staking.link}
+                key={"staking"}
+                element={<Staking />}
+              />
+              <Route
+                path="/lending/balanceSheet"
+                key={"balanceSheet"}
+                element={<BalanceSheet />}
+              />
+            </Routes>
+          </div>
           <Footer />
         </Container>
       </Router>

@@ -23,7 +23,8 @@ const MyStaking = (props: MyStakingProps) => {
             apr={props.apr}
           />
           <Text
-            type="text"
+            type="title"
+            size="title3"
             color="primary"
             align="left"
             hidden={props.userValidationInfo.length == 0}
@@ -36,7 +37,8 @@ const MyStaking = (props: MyStakingProps) => {
           />
 
           <Text
-            type="text"
+            type="title"
+            size="title3"
             color="primary"
             align="left"
             hidden={props.undelegationValidators.length == 0}
@@ -52,9 +54,6 @@ const MyStaking = (props: MyStakingProps) => {
 };
 
 const Styled = styled.div`
-  height: 100%;
-  width: 70%;
-  margin: 0 auto;
   justify-content: center;
 `;
 

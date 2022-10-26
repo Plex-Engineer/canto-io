@@ -86,5 +86,11 @@ input[type="number"] {
   background-repeat: repeat-y;
   //   text-shadow: 0 0 4px #2cffab, 0 0 20px var(--primary-color);
   display: flex;
+  height: 100%;
   flex-direction: column;
+  .main-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
 }
