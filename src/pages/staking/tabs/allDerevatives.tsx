@@ -1,4 +1,4 @@
-import styled from "@emotion/styled";
+import { CInput } from "global/packages/src/components/atoms/Input";
 import { useState } from "react";
 import { ValidatorTable } from "../components/stakingTable";
 import { MasterValidatorProps } from "../config/interfaces";
@@ -28,13 +28,11 @@ const AllDerevatives = (props: AllDerevativesProps) => {
 
   return (
     <div>
-      <InputStyle>
-        <input
-          className="input"
-          value={userSearch}
-          onChange={(e) => setUserSearch(e.target.value)}
-        ></input>
-      </InputStyle>
+      <CInput
+        value={userSearch}
+        onChange={(e) => setUserSearch(e.target.value)}
+        placeholder="search validators..."
+      />
       {searchedValidators().length == 0 ? (
         "no validators match this search"
       ) : (
@@ -46,21 +44,5 @@ const AllDerevatives = (props: AllDerevativesProps) => {
     </div>
   );
 };
-const InputStyle = styled.div`
-  .input {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #333;
-    padding: 1rem;
-    gap: 1rem;
-    background-color: black;
-    border-radius: 18px;
-    width: 40rem;
-    display: flex;
-    flex-direction: column;
-    color: white;
-  }
-`;
 
 export default AllDerevatives;
