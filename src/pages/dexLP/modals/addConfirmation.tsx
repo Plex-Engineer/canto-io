@@ -20,8 +20,8 @@ import {
 import { routerAbi } from "global/config/abi";
 import { UserLPPairInfo } from "../config/interfaces";
 import { DexModalContainer, DexLoadingOverlay } from "../components/Styled";
-import { PrimaryButton } from "cantoui";
 import { ADDRESSES } from "global/config/addresses";
+import { PrimaryButton } from "global/packages/src";
 
 interface AddConfirmationProps {
   pair: UserLPPairInfo;

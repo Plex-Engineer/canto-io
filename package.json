@@ -25,7 +25,6 @@
     "@usedapp/coingecko": "^1.1.5",
     "@usedapp/core": "^1.1.5",
     "bignumber.js": "^9.0.2",
-    "cantoui": "^1.0.34",
     "ethers": "^5.6.9",
     "mixpanel": "^0.16.0",
     "mixpanel-browser": "^2.45.0",

@@ -14,7 +14,7 @@ import {
 } from "pages/lending/config/interfaces";
 import { willWithdrawalGoOverLimit } from "pages/lending/utils/supplyWithdrawLimits";
 import { enableCollateralButtonAndModalText } from "../utils/modalButtonParams";
-import { PrimaryButton } from "cantoui";
+import { PrimaryButton } from "global/packages/src";
 import { EnableCollateralContainer } from "../components/Styled";
 
 const APY = styled.div`

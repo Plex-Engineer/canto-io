@@ -8,7 +8,7 @@ import { truncateNumber } from "global/utils/utils";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { useState } from "react";
-import { OutlinedButton, PrimaryButton, Text } from "cantoui";
+import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { CantoMainnet } from "global/config/networks";
 import Select from "react-select";
 import useTransactionStore from "../stores/transactionStore";
@@ -22,7 +22,6 @@ import {
 import { delegateFee, unbondingFee } from "../config/fees";
 import { chain, memo } from "global/config/cosmosConstants";
 import { getActiveTransactionMessage } from "../utils/utils";
-import FadeIn from "react-fade-in";
 
 interface StakingModalProps {
   validator: MasterValidatorProps;

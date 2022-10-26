@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import loading from "assets/loading.svg";
-import { OutlinedButton } from "cantoui";
+import { OutlinedButton } from "global/packages/src";
 import {
   getTransactionStatusString,
   transactionStatusActions,

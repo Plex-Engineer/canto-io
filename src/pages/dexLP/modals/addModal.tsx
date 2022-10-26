@@ -19,12 +19,12 @@ import { UserLPPairInfo } from "../config/interfaces";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { getAddButtonTextAndOnClick } from "../utils/modalButtonParams";
-import { PrimaryButton } from "cantoui";
 import {
   DexModalContainer,
   SettingsPopIn,
   DexLoadingOverlay,
 } from "../components/Styled";
+import { PrimaryButton } from "global/packages/src";
 interface AddAllowanceProps {
   pair: UserLPPairInfo;
   value1: string;

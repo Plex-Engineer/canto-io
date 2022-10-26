@@ -4,8 +4,8 @@ import useModals, { ModalType } from "../hooks/useModals";
 import { UserLPPairInfo } from "../config/interfaces";
 import { valueInNote } from "../utils/utils";
 import { formatUnits } from "ethers/lib/utils";
-import { OutlinedButton, PrimaryButton } from "cantoui";
 import { AddRemoveContainer } from "../components/Styled";
+import { OutlinedButton, PrimaryButton } from "global/packages/src";
 interface Props {
   activePair: UserLPPairInfo;
   onClose: () => void;
