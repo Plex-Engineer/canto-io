@@ -16,9 +16,9 @@ const AllDerevatives = (props: AllDerevativesProps) => {
     return props.validators.filter((validator) => {
       return (
         levenshteinDistance(
-          validator.validator.description.moniker.toLowerCase(),
-          userSearch
-        ) < 4 ||
+          userSearch,
+          validator.validator.description.moniker.toLowerCase()
+        ) < 6 ||
         validator.validator.description.moniker
           .toLowerCase()
           .includes(userSearch)
@@ -39,6 +39,7 @@ const AllDerevatives = (props: AllDerevativesProps) => {
         <ValidatorTable
           validators={searchedValidators()}
           sortBy="validatorTotal"
+          searched={userSearch}
         />
       )}
     </div>

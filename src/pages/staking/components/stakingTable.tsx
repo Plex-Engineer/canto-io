@@ -2,26 +2,30 @@ import { BigNumber } from "ethers";
 import { commify, formatEther } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
 import cantoIcon from "assets/logo.svg";
-import {
-  MasterValidatorProps,
-  UndelegatingValidator,
-} from "../config/interfaces";
+import { MasterValidatorProps } from "../config/interfaces";
 import useValidatorModalStore, {
   ValidatorModalType,
 } from "../stores/validatorModalStore";
-// import Row from "./row";
 import Table from "./table";
-
 import FadeIn from "react-fade-in";
+import { levenshteinDistance } from "../utils/utils";
 
 interface TableProps {
   validators: MasterValidatorProps[];
   sortBy: "validatorTotal" | "userTotal";
-  undelegationOnly?: boolean;
+  searched?: string;
 }
 export const ValidatorTable = (props: TableProps) => {
   const validatorModalStore = useValidatorModalStore();
   const sortedValidators = props.validators.sort((a, b) => {
+    if (props.searched) {
+      return levenshteinDistance(
+        props.searched,
+        a.validator.description.moniker
+      ) > levenshteinDistance(props.searched, b.validator.description.moniker)
+        ? 1
+        : -1;
+    }
     const value1 =
       props.sortBy === "userTotal"
         ? a.userDelegations?.balance.amount
@@ -37,28 +41,13 @@ export const ValidatorTable = (props: TableProps) => {
   if (props.validators.length) {
     return (
       <Table
-        columns={
-          props.undelegationOnly
-            ? [
-                "rank",
-                "name",
-                `validator total ${
-                  props.sortBy === "validatorTotal" ? "^" : ""
-                }`,
-                `my stake ${props.sortBy === "userTotal" ? "^" : ""}`,
-                "undelegations",
-                "commission",
-              ]
-            : [
-                "rank",
-                "name",
-                `validator total ${
-                  props.sortBy === "validatorTotal" ? "^" : ""
-                }`,
-                `my stake ${props.sortBy === "userTotal" ? "^" : ""}`,
-                "commission",
-              ]
-        }
+        columns={[
+          "rank",
+          "name",
+          `validator total ${props.sortBy === "validatorTotal" ? "^" : ""}`,
+          `my stake ${props.sortBy === "userTotal" ? "^" : ""}`,
+          "commission",
+        ]}
       >
         <FadeIn>
           {sortedValidators.map((validator, idx) => {
@@ -69,8 +58,6 @@ export const ValidatorTable = (props: TableProps) => {
                 name={validator.validator.description.moniker}
                 totalStake={validator.validator.tokens}
                 userStake={validator.userDelegations?.balance.amount ?? "0"}
-                undelegationInfo={validator.undelagatingInfo}
-                undelegationOnly={props.undelegationOnly ?? false}
                 commission={Number(
                   validator.validator.commission.commission_rates.rate
                 )}
@@ -94,8 +81,6 @@ interface RowProps {
   name: string;
   totalStake: string;
   userStake: string;
-  undelegationInfo?: UndelegatingValidator;
-  undelegationOnly: boolean;
   commission: number;
   onClick?: () => void;
 }

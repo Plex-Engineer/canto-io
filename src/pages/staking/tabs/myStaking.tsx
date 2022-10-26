@@ -22,7 +22,12 @@ const MyStaking = (props: MyStakingProps) => {
             rewards={truncateNumber(formatEther(props.totalRewards))}
             apr={props.apr}
           />
-          <Text type="text" color="primary" align="left">
+          <Text
+            type="text"
+            color="primary"
+            align="left"
+            hidden={props.userValidationInfo.length == 0}
+          >
             current staking position
           </Text>
           <ValidatorTable

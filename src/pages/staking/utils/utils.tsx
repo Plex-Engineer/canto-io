@@ -106,6 +106,10 @@ function getTransactionName(transactionType: StakingTransactionType) {
   }
 }
 export function levenshteinDistance(str1: string, str2: string) {
+  //modification if str1 is in str2 with, just incomplete
+  if (str2.toLowerCase().includes(str1)) {
+    return 0;
+  }
   const track = Array(str2.length + 1)
     .fill(null)
     .map(() => Array(str1.length + 1).fill(null));
