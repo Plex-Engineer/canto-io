@@ -10,10 +10,11 @@ interface Props {
 const HelmetSEO = (props: Props) => {
   return (
     <>
-      <Helmet>
-        <title>Canto</title>
+      <Helmet prioritizeSeoTags>
+        <title>{props.title}</title>
         <meta name="title" content={props.title} />
         <meta name="description" content={props.description} />
+        <link rel="canonical" href={"/" + props.link} />
 
         <meta property="og:type" content="website" />
         <meta property="og:url" content={"https://canto.io/" + props.link} />
