@@ -16,7 +16,6 @@ import Staking from "pages/staking/Staking";
 import LandingPage from "pages/landing_page/LandingPage";
 import BridgingPage from "pages/bridge/Bridging";
 import { PAGES } from "global/config/pageList";
-
 //Styling
 const Container = styled.div`
   display: flex;

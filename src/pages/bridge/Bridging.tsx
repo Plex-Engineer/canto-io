@@ -24,6 +24,8 @@ import {
   getBridgeOutTransactions,
 } from "./utils/utils";
 import { useBridgeTransactionStore } from "./stores/transactionStore";
+import { Helmet } from "react-helmet-async";
+import HelmetSEO from "global/components/seo";
 
 const BridgingPage = () => {
   const tokenStore = useTokenStore();
@@ -148,53 +150,60 @@ const BridgingPage = () => {
   };
 
   return (
-    <Styled>
-      <Tabs className="tabs">
-        <TabList className="tablist">
-          <Tab
-            className="tab"
-            // resetting the selected token when a new tab is selected
-          >
-            bridge In
-          </Tab>
-          <Tab
-            className="tab"
-            // resetting the selected token when a new tab is selected
-          >
-            bridge Out
-          </Tab>
-          <Tab className="tab">
-            transactions{" "}
-            <StyledNotification
-              notifications={transactionStore.newTransactions}
+    <>
+      <HelmetSEO
+        title="Canto - Bridging"
+        description="A test message written for Bridging in and out"
+        link="bridge"
+      />
+      <Styled>
+        <Tabs className="tabs">
+          <TabList className="tablist">
+            <Tab
+              className="tab"
+              // resetting the selected token when a new tab is selected
             >
-              <div className="text">{transactionStore.newTransactions}</div>
-            </StyledNotification>
-          </Tab>
-        </TabList>
-        {!account && <>{notConnectedTabs().map((tab) => tab)}</>}
-        {account && (
-          <>
-            <TabPanel>
-              <BridgeIn
-                userEthTokens={userEthGTokens}
-                gravityAddress={gravityAddress}
-                userConvertCoinNativeTokens={userConvertTokens}
-              />
-            </TabPanel>
-            <TabPanel>
-              <BridgeOut
-                userCantoNativeGTokens={userBridgeOutTokens}
-                userConvertERC20Tokens={userConvertTokens}
-              />
-            </TabPanel>
-            <TabPanel>
-              <Transactions />
-            </TabPanel>
-          </>
-        )}
-      </Tabs>
-    </Styled>
+              bridge In
+            </Tab>
+            <Tab
+              className="tab"
+              // resetting the selected token when a new tab is selected
+            >
+              bridge Out
+            </Tab>
+            <Tab className="tab">
+              transactions{" "}
+              <StyledNotification
+                notifications={transactionStore.newTransactions}
+              >
+                <div className="text">{transactionStore.newTransactions}</div>
+              </StyledNotification>
+            </Tab>
+          </TabList>
+          {!account && <>{notConnectedTabs().map((tab) => tab)}</>}
+          {account && (
+            <>
+              <TabPanel>
+                <BridgeIn
+                  userEthTokens={userEthGTokens}
+                  gravityAddress={gravityAddress}
+                  userConvertCoinNativeTokens={userConvertTokens}
+                />
+              </TabPanel>
+              <TabPanel>
+                <BridgeOut
+                  userCantoNativeGTokens={userBridgeOutTokens}
+                  userConvertERC20Tokens={userConvertTokens}
+                />
+              </TabPanel>
+              <TabPanel>
+                <Transactions />
+              </TabPanel>
+            </>
+          )}
+        </Tabs>
+      </Styled>
+    </>
   );
 };
 

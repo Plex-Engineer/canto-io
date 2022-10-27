@@ -32,6 +32,7 @@ import { userTxMessages } from "./config/messages";
 import { getActiveTransactionMessage } from "./utils/utils";
 import { chain, memo } from "global/config/cosmosConstants";
 import { claimRewardFee } from "./config/fees";
+import HelmetSEO from "global/components/seo";
 
 const Staking = () => {
   const networkInfo = useNetworkInfo();
@@ -122,53 +123,60 @@ const Staking = () => {
     (validator) => !!validator.userDelegations
   );
   return (
-    <Styled>
-      <ModalManager allValidators={validators} />
-      <Tabs className={"tabs"}>
-        <TabList>
-          <Tab>my staking</Tab>
-          <Tab>all validators</Tab>
-          <div
-            style={{
-              flex: "5",
-              display: "flex",
-              justifyContent: "right",
-            }}
-          >
-            <OutlinedButton
-              onClick={() => {
-                handleClaimRewards();
+    <>
+      <HelmetSEO
+        title="Canto - Staking"
+        description="A test message written for staking using validators"
+        link="staking"
+      />
+      <Styled>
+        <ModalManager allValidators={validators} />
+        <Tabs className={"tabs"}>
+          <TabList>
+            <Tab>my staking</Tab>
+            <Tab>all validators</Tab>
+            <div
+              style={{
+                flex: "5",
+                display: "flex",
+                justifyContent: "right",
               }}
             >
-              claim rewards
-            </OutlinedButton>
-          </div>
-        </TabList>
-        {transactionStore.transactionMessage}
-        <TabPanel>
-          <MyStaking
-            connected={Number(networkInfo.chainId) == CantoMainnet.chainId}
-            account={networkInfo.account ?? ""}
-            balance={networkInfo.balance}
-            totalStaked={calculateTotalStaked(delegations)}
-            totalUnbonding={undelegations.total_unbonding}
-            totalRewards={rewards}
-            apr={stakingApr}
-            userValidationInfo={userValidators}
-            undelegationValidators={undelagatingValidators}
-          />
-        </TabPanel>
-        <TabPanel>
-          <AllDerevatives
-            validators={getAllValidatorData(
-              validators,
-              delegations,
-              undelegations
-            )}
-          />
-        </TabPanel>
-      </Tabs>
-    </Styled>
+              <OutlinedButton
+                onClick={() => {
+                  handleClaimRewards();
+                }}
+              >
+                claim rewards
+              </OutlinedButton>
+            </div>
+          </TabList>
+          {transactionStore.transactionMessage}
+          <TabPanel>
+            <MyStaking
+              connected={Number(networkInfo.chainId) == CantoMainnet.chainId}
+              account={networkInfo.account ?? ""}
+              balance={networkInfo.balance}
+              totalStaked={calculateTotalStaked(delegations)}
+              totalUnbonding={undelegations.total_unbonding}
+              totalRewards={rewards}
+              apr={stakingApr}
+              userValidationInfo={userValidators}
+              undelegationValidators={undelagatingValidators}
+            />
+          </TabPanel>
+          <TabPanel>
+            <AllDerevatives
+              validators={getAllValidatorData(
+                validators,
+                delegations,
+                undelegations
+              )}
+            />
+          </TabPanel>
+        </Tabs>
+      </Styled>
+    </>
   );
 };
 
