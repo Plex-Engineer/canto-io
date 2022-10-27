@@ -17,7 +17,10 @@ const HelmetSEO = (props: Props) => {
         <link rel="canonical" href={"/" + props.link} />
 
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={"https://canto.io/" + props.link} />
+        <meta
+          property="og:url"
+          content={"https://cantomaster.pages.dev/" + props.link}
+        />
         <meta property="og:title" content={props.title} />
         <meta property="og:description" content={props.description} />
         <meta property="og:image" content={props.image ?? SocialBG} />
@@ -25,7 +28,7 @@ const HelmetSEO = (props: Props) => {
         <meta property="twitter:card" content={props.image ?? SocialBG} />
         <meta
           property="twitter:url"
-          content={"https://canto.io/" + props.link}
+          content={"https://cantomaster.pages.dev/" + props.link}
         />
         <meta property="twitter:title" content={props.title} />
         <meta property="twitter:description" content={props.description} />
