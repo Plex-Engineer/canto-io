@@ -107,9 +107,9 @@ export async function addCantoToKeplr() {
           // Currently, Keplr doesn't support dynamic calculation of the gas prices based on on-chain data.
           // Make sure that the gas prices are higher than the minimum gas prices accepted by chain validators and RPC/REST endpoint.
           gasPriceStep: {
-            low: 0.01,
-            average: 0.025,
-            high: 0.04,
+            low: 1250000000000,
+            average: 2500000000000,
+            high: 3750000000000,
           },
         });
       } catch {
@@ -137,6 +137,7 @@ export async function addCantoToKeplr() {
   // But, currently, Keplr extension manages only one address/public key pair.
   // XXX: This line is needed to set the sender address for SigningCcantosClient.
   const accounts = await offlineSigner.getAccounts();
+  console.log(accounts)
 
   // Initialize the gaia api with the offline signer that is injected by Keplr extension.
   // const cosmJS = new SigningCosmosClient(
