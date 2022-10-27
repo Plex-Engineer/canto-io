@@ -11,7 +11,6 @@ const Table = styled.table`
   text-align: center;
   border-collapse: collapse;
   border-spacing: 0;
-  text-shadow: none;
 
   thead {
     text-transform: lowercase;
@@ -47,8 +46,8 @@ const Table = styled.table`
       }
     }
   }
-  td:first-child,
-  th:first-child {
+  td:first-of-type,
+  th:first-of-type {
     padding-left: 2rem;
     text-align: left;
     display: flex;
@@ -56,7 +55,7 @@ const Table = styled.table`
     gap: 1rem;
     text-transform: uppercase;
   }
-  th:first-child {
+  th:first-of-type {
     text-transform: lowercase;
   }
   img {

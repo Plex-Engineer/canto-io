@@ -8,6 +8,7 @@ import { convertDateToString } from "./utils/formattingStrings";
 import { emptyProposal, ProposalData } from "./config/interfaces";
 import { GovernanceContainer } from "./components/Styled";
 import { StyledPopup } from "global/components/Styled";
+import HelmetSEO from "global/components/seo";
 
 const Governance = () => {
   //network info store
@@ -28,7 +29,12 @@ const Governance = () => {
 
   function AllGovBars() {
     return (
-      <React.Fragment>
+      <>
+        <HelmetSEO
+          title="Canto - Governance"
+          description="A test message written for Governance only"
+          link="governance"
+        />
         {!proposals.proposals
           ? ""
           : proposals.proposals
@@ -67,7 +73,7 @@ const Governance = () => {
               .sort((a: any, b: any) => {
                 return b?.props.proposalID - a?.props.proposalID;
               })}
-      </React.Fragment>
+      </>
     );
   }
 

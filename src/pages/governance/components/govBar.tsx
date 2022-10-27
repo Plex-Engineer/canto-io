@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 
 const Container = styled.div`
   background-color: black;
-  text-shadow: none;
   padding: 1rem;
   border: 1px solid transparent;
   display: flex;

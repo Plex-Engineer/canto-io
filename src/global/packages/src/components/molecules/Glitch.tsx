@@ -17,7 +17,7 @@ const GlitchWrapper = styled.p`
     top: 0;
     left: 0;
   }
-  & span:first-child {
+  & span:first-of-type {
     animation: glitch 500ms infinite;
     clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
     transform: translate(-0.04em, -0.03em);

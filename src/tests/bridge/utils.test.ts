@@ -1,7 +1,4 @@
-import {
-  checkBridgeAmountConfirmation,
-  checkGravityAddress,
-} from "pages/bridge/utils/bridgeConfirmations";
+import { checkGravityAddress } from "pages/bridge/utils/bridgeConfirmations";
 
 test("checking gravity address is valid", () => {
   const testCases = [
@@ -17,30 +14,5 @@ test("checking gravity address is valid", () => {
   );
   for (let i = 0; i < testCases.length; i++) {
     expect(testReturns[i]).toBe(expected[i]);
-  }
-});
-
-test("checking bridge amount is valid", () => {
-  const expectedReturns = ["bridge out", "enter amount", "insufficient funds"];
-  const testCases = [
-    { amount: 1, max: 1, expected: expectedReturns[0] },
-    { amount: 0.01, max: 1, expected: expectedReturns[0] },
-    { amount: 100, max: 100.1, expected: expectedReturns[0] },
-
-    { amount: -1, max: 1, expected: expectedReturns[1] },
-    { amount: 0, max: 1, expected: expectedReturns[1] },
-    { amount: 0, max: 0, expected: expectedReturns[1] },
-    { amount: -0, max: 1, expected: expectedReturns[1] },
-    { amount: -0.01, max: -9, expected: expectedReturns[1] },
-
-    { amount: 100, max: 1, expected: expectedReturns[2] },
-    { amount: 1.000001, max: 1, expected: expectedReturns[2] },
-    { amount: 2, max: 1.9, expected: expectedReturns[2] },
-  ];
-  const testReturns = testCases.map((testCase) =>
-    checkBridgeAmountConfirmation(testCase.amount, testCase.max)
-  );
-  for (let i = 0; i < testCases.length; i++) {
-    expect(testReturns[i]).toBe(testCases[i].expected);
   }
 });

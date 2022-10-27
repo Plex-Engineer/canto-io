@@ -3,7 +3,12 @@ import React from "react";
 import TransactionStatusProvider from "../../providers/transactionContext";
 import { Chain } from "@usedapp/core";
 import { ETHMainnet } from "pages/bridge/config/networks";
-import { CantoMainnet as CantoMain, CantoTestnet as CantoTest } from "cantoui";
+import { Helmet, HelmetProvider } from "react-helmet-async";
+
+import {
+  CantoMainnet as CantoMain,
+  CantoTestnet as CantoTest,
+} from "global/config/networks";
 
 interface IProviderProps {
   children: React.ReactNode;
@@ -65,9 +70,11 @@ const config: Config = {
 //All the providers are wrapped in this provider function
 const Provider = ({ children }: IProviderProps) => {
   return (
-    <DAppProvider config={config}>
-      <TransactionStatusProvider>{children}</TransactionStatusProvider>
-    </DAppProvider>
+    <HelmetProvider>
+      <DAppProvider config={config}>
+        <TransactionStatusProvider>{children}</TransactionStatusProvider>
+      </DAppProvider>
+    </HelmetProvider>
   );
 };
 

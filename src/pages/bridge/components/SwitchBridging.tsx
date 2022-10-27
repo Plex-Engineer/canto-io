@@ -1,9 +1,10 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable sonarjs/no-duplicate-string */
 import styled from "@emotion/styled";
-import bridgeIcon from "assets/bridge.svg";
+import bridgeIcon from "assets/icons/canto-bridge.svg";
 
 import ImageButton from "global/components/ImageButton";
+import { Text } from "global/packages/src";
 import { useBridgeStore } from "../stores/gravityStore";
 import LoadingBlip from "./LoadingBlip";
 
@@ -26,81 +27,97 @@ const SwitchBridging = (props: Props) => {
   ]);
   return (
     <Styled>
+      <div
+        className="active-back"
+        style={{
+          right: transactionType == "Bridge" ? "39.7%" : "0px",
+        }}
+      ></div>
       <div className="Switch">
-        <div className="backdrop">
-          <div
-            className={`left ${transactionType == "Bridge" ? "active" : ""}`}
-            onClick={() => SetTransactionType("Bridge")}
-          ></div>
-          <div className="mid"></div>
-          <div
-            className={`right ${transactionType == "Convert" ? "active" : ""}`}
-            onClick={() => SetTransactionType("Convert")}
-          ></div>
-        </div>
-        <div
-          className="center"
-          style={{
-            filter: transactionType != "Bridge" ? "grayscale(100%)" : "",
-          }}
-        >
+        <div className="center">
           <ImageButton
             src={props.left.icon}
             alt={props.left.name}
-            height={props.left.height ?? 24}
+            height={props.left.height ?? 42}
             onClick={() => SetTransactionType("Bridge")}
           />
-          {/* <Text>Ethereum</Text> */}
+          <Text className="name" type="text">
+            {props.left.name}
+          </Text>
         </div>
         <LoadingBlip active={transactionType == "Bridge"} />
+
         <div className="center">
           <img
             src={bridgeIcon}
             alt={"canto (Bridge)"}
-            height={40}
-            style={{
-              filter: "grayscale(100%)",
-            }}
+            height={42}
+            style={{ marginBottom: "3px" }}
           />
+          <Text className="name" type="text">
+            Bridge
+          </Text>
         </div>
+
         <LoadingBlip active={transactionType == "Convert"} />
-        <div
-          className="center"
-          style={{
-            filter: transactionType != "Convert" ? "grayscale(100%)" : "",
-          }}
-        >
+        <div className="center">
           <ImageButton
             src={props.right.icon}
             alt={props.right.name}
-            height={props.right.height ?? 20}
+            height={props.right.height ?? 42}
             onClick={() => SetTransactionType("Convert")}
           />
-          {/* <Text type>Canto (EVM)</Text> */}
+          <Text className="name" type="text">
+            {props.right.name}
+          </Text>
         </div>
+      </div>
+
+      <div className="backdrop">
+        <div
+          className={`left ${transactionType == "Bridge" ? "active" : ""}`}
+          onClick={() => SetTransactionType("Bridge")}
+        />
+        <div className="mid" />
+        <div
+          className={`right ${transactionType == "Convert" ? "active" : ""}`}
+          onClick={() => SetTransactionType("Convert")}
+        />
       </div>
     </Styled>
   );
 };
 
 const Styled = styled.div`
-  width: 40rem;
-  margin: 1rem;
+  width: 34rem;
+  max-width: 34rem;
+  height: 8rem;
+  margin-top: 26px;
+
   position: relative;
+  background-color: #222222;
+  border-radius: 4px;
   .Switch {
+    position: absolute;
     display: grid;
-    grid-template-columns: 1fr 1fr 2fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     width: 100%;
+    height: 100%;
     justify-content: center;
     align-items: center;
-    padding: 1rem 3rem;
-
-    /* border: 2px solid var(--primary-color); */
+    padding: 1rem;
   }
   .center {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
     pointer-events: none;
+    gap: 0.3rem;
+    height: 100%;
+    * {
+      font-family: "Silkscreen";
+    }
   }
   .backdrop {
     position: absolute;
@@ -109,13 +126,9 @@ const Styled = styled.div`
     width: 100%;
     height: 100%;
     display: flex;
+    z-index: 0;
   }
-  .mid {
-    width: 40%;
-    border: 2px solid #4b4b4b;
-    border-left: none;
-    border-right: none;
-  }
+
   .left,
   .right {
     pointer-events: fill;
@@ -123,27 +136,46 @@ const Styled = styled.div`
     width: 100%;
     height: 100%;
     border-radius: 36px;
-    border: 2px solid #4b4b4b;
-    background-color: #4b4b4b3c;
+    /* border: 2px solid #4b4b4b; */
+    /* background-color: #4b4b4b3c; */
     cursor: pointer;
     transition: all 0.2s;
-    &:hover {
+    /* &:hover {
       border: 2px solid var(--primary-color);
       background-color: #06fc9a37;
-    }
+    } */
   }
 
   .right {
-    border-radius: 0 36px 36px 0;
+    border-radius: 0 4px 4px 0;
   }
 
   .left {
-    border-radius: 36px 0 0 36px;
+    border-radius: 4px 0 0 4px;
   }
 
-  .active {
-    /* border: 2px solid var(--primary-color);
-    background-color: #06fc9a37; */
+  .active-back {
+    position: absolute;
+    background-color: #000000ae;
+    border-radius: 4px;
+    width: 58%;
+    margin: 6px;
+    height: 92%;
+    transition: right 0.3s;
+  }
+  @media (max-width: 1000px) {
+    width: 90vw;
+    /* margin: 0; */
+    .active-back {
+      width: 56%;
+    }
+    .Switch {
+      /* padding: 1rem; */
+    }
+
+    .name {
+      display: none;
+    }
   }
 `;
 

@@ -28,7 +28,10 @@ export async function getNativeCantoBalance(
       ...token,
       wallet: cantoAddress,
       nativeBalance: BigNumber.from(
-        result.find((data: any) => data.denom == token.nativeName)?.amount ?? 0
+        result
+          ? result.find((data: any) => data.denom == token.nativeName)
+              ?.amount ?? 0
+          : 0
       ),
     };
   });

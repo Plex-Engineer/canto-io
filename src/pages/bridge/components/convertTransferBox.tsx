@@ -1,5 +1,4 @@
-import { CantoMainnet, PrimaryButton } from "cantoui";
-import cantoIcon from "assets/logo.svg";
+import { CantoMainnet } from "global/config/networks";
 import { chain, fee, memo } from "../config/networks";
 import { BigNumber } from "ethers";
 import { useState } from "react";
@@ -8,7 +7,6 @@ import {
   txConvertERC20,
 } from "../utils/convertCoin/convertTransactions";
 import { toastBridge } from "../utils/bridgeConfirmations";
-import bridgeIcon from "assets/bridge.svg";
 import {
   EmptySelectedConvertToken,
   EmptySelectedNativeToken,
@@ -18,6 +16,7 @@ import { getConvertButtonText } from "../utils/reactiveButtonText";
 import { convertStringToBigNumber } from "../utils/stringToBigNumber";
 import { formatUnits } from "ethers/lib/utils";
 import { GeneralTransferBox } from "./generalTransferBox";
+import { PrimaryButton } from "global/packages/src";
 
 interface ConvertTransferBoxProps {
   cantoToEVM: boolean;
@@ -80,12 +79,12 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
       from={{
         address: props.cantoToEVM ? props.cantoAddress : props.ETHAddress,
         name: props.cantoToEVM ? "canto (bridge)" : "canto (EVM)",
-        icon: props.cantoToEVM ? bridgeIcon : cantoIcon,
+        // icon: props.cantoToEVM ? bridgeIcon : cantoIcon,
       }}
       to={{
         address: !props.cantoToEVM ? props.cantoAddress : props.ETHAddress,
         name: !props.cantoToEVM ? "canto (bridge)" : "canto (EVM)",
-        icon: !props.cantoToEVM ? bridgeIcon : cantoIcon,
+        // icon: !props.cantoToEVM ? bridgeIcon : cantoIcon,
       }}
       networkName="canto"
       onSwitch={props.onSwitch}
@@ -99,6 +98,8 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
       button={
         <PrimaryButton
           disabled={disabled}
+          height="big"
+          weight="bold"
           onClick={async () => {
             setInConvertTransaction(true);
             setConvertConfirmation(

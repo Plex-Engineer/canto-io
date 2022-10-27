@@ -1,0 +1,6 @@
+cantomaster.pages.dev/
+cantomaster.pages.dev/bridge
+cantomaster.pages.dev/lp
+cantomaster.pages.dev/governance
+cantomaster.pages.dev/lending
+cantomaster.pages.dev/staking

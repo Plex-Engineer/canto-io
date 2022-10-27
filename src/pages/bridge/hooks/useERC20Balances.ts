@@ -9,6 +9,7 @@ export function useCantoERC20Balances(
   chainId: number
 ): {
   userTokens: UserERC20Tokens[];
+  fail: boolean;
 } {
   const calls =
     tokens?.map((token) => {
@@ -27,7 +28,7 @@ export function useCantoERC20Balances(
     }) ?? {};
 
   if (tokens == undefined) {
-    return { userTokens: [] };
+    return { userTokens: [], fail: true };
   }
   const chuckSize = results.length / tokens.length;
   let processedTokens: Array<any>;
@@ -50,9 +51,8 @@ export function useCantoERC20Balances(
         erc20Balance: balanceOf,
       };
     });
-    return { userTokens: val };
+    return { userTokens: val, fail: false };
   }
-
   return {
     userTokens: tokens.map((token) => {
       return {
@@ -61,5 +61,6 @@ export function useCantoERC20Balances(
         erc20Balance: BigNumber.from(0),
       };
     }),
+    fail: true,
   };
 }

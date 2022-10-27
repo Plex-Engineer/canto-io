@@ -10,7 +10,7 @@ import { UserLPPairInfo } from "../config/interfaces";
 import { BigNumber } from "ethers";
 import { getLPOut, getReserveRatioAtoB, valueInNote } from "../utils/utils";
 import { formatUnits } from "ethers/lib/utils";
-import { PrimaryButton } from "cantoui";
+import { PrimaryButton } from "global/packages/src";
 import { getRemoveButtonTextAndOnClick } from "../utils/modalButtonParams";
 import {
   DexModalContainer,

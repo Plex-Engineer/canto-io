@@ -4,7 +4,7 @@ import IconPair from "../components/iconPair";
 import useModals, { ModalType } from "../hooks/useModals";
 import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
 import { UserLPPairInfo } from "../config/interfaces";
-import { PrimaryButton } from "cantoui";
+import { PrimaryButton } from "global/packages/src";
 import { getEnableButtonTextAndOnClick } from "../utils/modalButtonParams";
 import { DexLoadingOverlay, DexModalContainer } from "../components/Styled";
 

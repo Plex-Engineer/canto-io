@@ -85,7 +85,7 @@ export const DexModalContainer = styled.div`
   }
 
   .rowCell {
-    p:first-child {
+    p:first-of-type {
       text-transform: lowercase;
       color: #888;
     }

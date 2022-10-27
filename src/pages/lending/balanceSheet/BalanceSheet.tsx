@@ -156,8 +156,8 @@ interface LPRowProps {
   token: LPTokenData;
 }
 const LPTableStyle = styled.tr`
-  td:first-child,
-  td:nth-child(3) {
+  td:first-of-type,
+  td:nth-of-type(3) {
     padding-left: 2rem;
     text-align: center;
     display: flex;
