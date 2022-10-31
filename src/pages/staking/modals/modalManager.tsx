@@ -8,6 +8,9 @@ import useValidatorModalStore, {
 import { StakingModal } from "./stakingModal";
 import close from "assets/close.svg";
 import FadeIn from "react-fade-in";
+import DelegationModal from "./delegationModal";
+import RedelgationModal from "./redelgationModal";
+import ChoiceModal from "./choiceModal";
 
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
@@ -84,13 +87,23 @@ export const ModalManager = (props: ModalManagerProps) => {
           alt="close"
         />
       </div>
+      {validatorModals.currentModal == ValidatorModalType.DELEGATE && (
+        <DelegationModal />
+      )}
+      {validatorModals.currentModal == ValidatorModalType.UNDELEGATE && (
+        <DelegationModal />
+      )}
+      {validatorModals.currentModal == ValidatorModalType.REDELEGATE && (
+        <RedelgationModal />
+      )}
       {validatorModals.currentModal === ValidatorModalType.STAKE && (
-        <StakingModal
-          validator={validatorModals.activeValidator}
-          allValidators={props.allValidators}
-          balance={networkInfo.balance}
-          account={networkInfo.account}
-        />
+        // <StakingModal
+        //   validator={validatorModals.activeValidator}
+        //   allValidators={props.allValidators}
+        //   balance={networkInfo.balance}
+        //   account={networkInfo.account}
+        // />
+        <ChoiceModal />
       )}
     </StyledPopup>
   );
