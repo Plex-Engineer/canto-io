@@ -91,7 +91,7 @@ export const ModalManager = (props: ModalManagerProps) => {
         <DelegationModal />
       )}
       {validatorModals.currentModal == ValidatorModalType.UNDELEGATE && (
-        <DelegationModal />
+        <DelegationModal undelegation />
       )}
       {validatorModals.currentModal == ValidatorModalType.REDELEGATE && (
         <RedelgationModal />

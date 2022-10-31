@@ -1,26 +1,33 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
+import useValidatorModalStore, {
+  ValidatorModalType,
+} from "../stores/validatorModalStore";
 
 const ChoiceModal = () => {
+  const validatorModalStore = useValidatorModalStore();
+
   return (
     <BaseModalStyled>
       <Text size="title2" type="title" className="title">
         Kaisen
       </Text>
       <div className="content">
-        <Text size="title3" type="title" className="desc-title" align="left">
-          Description :
-        </Text>
-        <Text
-          size="title3"
-          type="text"
-          className="desc-content"
-          color="white"
-          align="left"
-        >
-          bare metal validation, powered by weebs. ~a portion of all profits
-          will be utilized to support anime artists around the world~
-        </Text>
+        <div className="desc">
+          <Text size="title3" type="title" className="desc-title" align="left">
+            Description :
+          </Text>
+          <Text
+            size="text2"
+            type="text"
+            className="desc-content"
+            color="white"
+            align="left"
+          >
+            bare metal validation, powered by weebs. ~a portion of all profits
+            will be utilized to support anime artists around the world~
+          </Text>
+        </div>
         <div className="info-bars">
           <div>
             <header>delegated</header>
@@ -36,10 +43,22 @@ const ChoiceModal = () => {
           </div>
         </div>
         <div className="btns">
-          <OutlinedButton weight="bold" disabled height="big">
+          <OutlinedButton
+            weight="bold"
+            height="big"
+            onClick={() => {
+              validatorModalStore.open(ValidatorModalType.UNDELEGATE);
+            }}
+          >
             undelegate
           </OutlinedButton>
-          <PrimaryButton weight="bold" height="big">
+          <PrimaryButton
+            weight="bold"
+            height="big"
+            onClick={() => {
+              validatorModalStore.open(ValidatorModalType.DELEGATE);
+            }}
+          >
             delegate
           </PrimaryButton>
         </div>
@@ -50,9 +69,9 @@ const ChoiceModal = () => {
 
 export default ChoiceModal;
 
-const BaseModalStyled = styled.div`
+export const BaseModalStyled = styled.div`
   width: 520px;
-  height: 496px;
+  transition: all 0.3s;
   display: flex;
   flex-direction: column;
   .title {
@@ -65,10 +84,11 @@ const BaseModalStyled = styled.div`
     align-self: center;
   }
   .content {
-    padding: 35px;
+    padding: 2rem 35px;
     display: flex;
     flex-direction: column;
     height: 100%;
+    gap: 1.5rem;
   }
   .desc-content {
     flex-grow: 2;
@@ -79,7 +99,6 @@ const BaseModalStyled = styled.div`
     border-radius: 4px;
     justify-content: stretch;
     height: 82px;
-    margin: 2rem 0;
     & > div {
       display: flex;
       flex-direction: column;
@@ -117,6 +136,44 @@ const BaseModalStyled = styled.div`
     }
   }
 
+  .error-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+    background: rgba(255, 116, 116, 0.16);
+    border: 1px solid #632121;
+    border-radius: 4px;
+  }
+
+  .amount {
+    input {
+      width: 100%;
+      margin: 6px 0;
+    }
+    position: relative;
+    .max {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 140%;
+      letter-spacing: -0.03em;
+      text-transform: lowercase;
+      color: #efefef;
+      border: 1px solid #efefef;
+      opacity: 0.5;
+      position: absolute;
+      right: 12px;
+      border-radius: 4px;
+      padding: 4px 8px;
+      top: 18px;
+      cursor: pointer;
+      &:hover {
+        opacity: 1;
+      }
+    }
+    width: 100%;
+  }
   .btns {
     display: flex;
     gap: 2rem;
