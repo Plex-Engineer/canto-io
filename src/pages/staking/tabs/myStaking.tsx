@@ -55,6 +55,8 @@ const MyStaking = (props: MyStakingProps) => {
 
 const Styled = styled.div`
   justify-content: center;
+  width: 100vmax;
+  max-width: 1200px;
 `;
 
 export default MyStaking;

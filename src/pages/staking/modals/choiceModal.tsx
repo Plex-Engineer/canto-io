@@ -210,6 +210,7 @@ export const BaseModalStyled = styled.div`
       padding: 4px 8px;
       top: 18px;
       transition: all 0.1s;
+      background-color: transparent;
       cursor: pointer;
       &:hover {
         opacity: 1;

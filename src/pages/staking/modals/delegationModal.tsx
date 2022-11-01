@@ -38,7 +38,7 @@ const DelegationModal = ({
   undelegation,
 }: StakingModalProps) => {
   const validatorModalStore = useValidatorModalStore();
-  const [delegateAmount, setDelegateAmount] = useState("");
+  const [amount, setAmount] = useState("");
   const transactionStore = useTransactionStore();
   const [newValidator, setNewValidator] = useState<Validator | undefined>();
 
@@ -50,7 +50,7 @@ const DelegationModal = ({
   }
 
   const handleDelegate = async () => {
-    const parsedAmount = formatValue(delegateAmount);
+    const parsedAmount = formatValue(amount);
     if (!parsedAmount.isZero() && parsedAmount.lte(balance)) {
       transactionStore.setTransactionMessage(userTxMessages.waitSign);
       validatorModalStore.close();
@@ -141,19 +141,25 @@ const DelegationModal = ({
           <div className="amount">
             <CInput
               placeholder="enter amount..."
-              value={delegateAmount}
+              value={amount}
               onChange={(x) => {
-                setDelegateAmount(x.target.value);
+                setAmount(x.target.value);
               }}
             />
-            <div
+            <button
               className="max"
               onClick={() => {
-                setDelegateAmount(formatEther(balance));
+                undelegation
+                  ? setAmount(
+                      formatEther(
+                        validator.userDelegations?.balance.amount ?? "0"
+                      )
+                    )
+                  : setAmount(formatEther(balance));
               }}
             >
               max
-            </div>
+            </button>
           </div>
           <Text
             size="text3"
@@ -180,11 +186,23 @@ const DelegationModal = ({
           <PrimaryButton
             weight="bold"
             height="big"
+            disabled={
+              Number(amount) == 0 ||
+              isNaN(Number(amount)) ||
+              (undelegation
+                ? Number(amount) >
+                  Number(
+                    formatEther(
+                      validator.userDelegations?.balance.amount ?? "0"
+                    )
+                  )
+                : Number(amount) > Number(formatEther(balance)))
+            }
             onClick={() => {
               validatorModalStore.open(ValidatorModalType.DELEGATE);
             }}
           >
-            delegate
+            {undelegation ? "undelegate" : "delegate"}
           </PrimaryButton>
         </div>
       </div>
