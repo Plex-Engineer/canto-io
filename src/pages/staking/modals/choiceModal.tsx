@@ -89,6 +89,20 @@ const ChoiceModal = ({ validator, balance }: Props) => {
           >
             delegate
           </PrimaryButton>
+          <PrimaryButton
+            weight="bold"
+            height="big"
+            disabled={
+              Number(
+                formatEther(validator.userDelegations?.balance.amount ?? "0")
+              ) <= 0
+            }
+            onClick={() => {
+              validatorModalStore.open(ValidatorModalType.REDELEGATE);
+            }}
+          >
+            redelegate
+          </PrimaryButton>
         </div>
       </div>
     </BaseModalStyled>
