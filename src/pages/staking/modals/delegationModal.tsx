@@ -4,13 +4,77 @@ import useValidatorModalStore, {
   ValidatorModalType,
 } from "../stores/validatorModalStore";
 import { CInput } from "global/packages/src/components/atoms/Input";
+import cantoImg from "assets/logo.svg";
+import { useState } from "react";
+import useTransactionStore from "../stores/transactionStore";
+import {
+  MasterValidatorProps,
+  StakingTransactionType,
+  Validator,
+} from "../config/interfaces";
+import { BigNumber } from "ethers";
+import { txStake } from "../utils/transactions";
+import { userTxMessages } from "../config/messages";
+import { getActiveTransactionMessage } from "../utils/utils";
+import { delegateFee } from "../config/fees";
+import { chain, memo } from "global/config/cosmosConstants";
+import { formatEther, parseEther } from "ethers/lib/utils";
+import { CantoMainnet } from "global/config/networks";
+import { formatBalance } from "global/utils/utils";
 
-interface Props {
+interface StakingModalProps {
   undelegation?: boolean;
+  validator: MasterValidatorProps;
+  allValidators: Validator[];
+  balance: BigNumber;
+  account?: string;
 }
 
-const DelegationModal = ({ undelegation }: Props) => {
+const DelegationModal = ({
+  validator,
+  //   allValidators,
+  balance,
+  account,
+  undelegation,
+}: StakingModalProps) => {
   const validatorModalStore = useValidatorModalStore();
+  const [delegateAmount, setDelegateAmount] = useState("");
+  const transactionStore = useTransactionStore();
+  const [newValidator, setNewValidator] = useState<Validator | undefined>();
+
+  function formatValue(value: string) {
+    if (value === "" || isNaN(Number(value))) {
+      return BigNumber.from(0);
+    }
+    return parseEther(value);
+  }
+
+  const handleDelegate = async () => {
+    const parsedAmount = formatValue(delegateAmount);
+    if (!parsedAmount.isZero() && parsedAmount.lte(balance)) {
+      transactionStore.setTransactionMessage(userTxMessages.waitSign);
+      validatorModalStore.close();
+      await txStake(
+        account,
+        validator.validator.operator_address,
+        parsedAmount.toString(),
+        CantoMainnet.cosmosAPIEndpoint,
+        delegateFee,
+        chain,
+        memo
+      );
+      transactionStore.setTransactionMessage(userTxMessages.waitVerify);
+      transactionStore.setTransactionMessage(
+        await getActiveTransactionMessage(
+          account ?? "",
+          validator.validator.description.moniker,
+          parsedAmount,
+          balance,
+          StakingTransactionType.DELEGATE
+        )
+      );
+    }
+  };
 
   return (
     <BaseModalStyled>
@@ -44,15 +108,29 @@ const DelegationModal = ({ undelegation }: Props) => {
         <div className="info-bars">
           <div>
             <header>delegated</header>
-            <footer>00.00c</footer>
+            <footer className="coin-bal">
+              {formatBalance(
+                formatEther(validator.userDelegations?.balance.amount ?? "0")
+              )}
+              <img src={cantoImg} height={16} alt="canto" />
+            </footer>
           </div>
           <div>
             <header>balance</header>
-            <footer>00.00c</footer>
+            <footer className="coin-bal">
+              {formatBalance(formatEther(balance))}{" "}
+              <img src={cantoImg} height={16} alt="canto" />
+            </footer>
           </div>
           <div>
             <header>commission</header>
-            <footer>5%</footer>
+            <footer>
+              {(
+                Number(validator.validator.commission.commission_rates.rate) *
+                100
+              ).toFixed(2)}{" "}
+              %
+            </footer>
           </div>
         </div>
         <div className="amount-bar">
@@ -61,8 +139,21 @@ const DelegationModal = ({ undelegation }: Props) => {
           </Text>
 
           <div className="amount">
-            <CInput placeholder="enter amount..." />
-            <div className="max">max</div>
+            <CInput
+              placeholder="enter amount..."
+              value={delegateAmount}
+              onChange={(x) => {
+                setDelegateAmount(x.target.value);
+              }}
+            />
+            <div
+              className="max"
+              onClick={() => {
+                setDelegateAmount(formatEther(balance));
+              }}
+            >
+              max
+            </div>
           </div>
           <Text
             size="text3"

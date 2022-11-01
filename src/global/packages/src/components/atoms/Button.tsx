@@ -60,13 +60,14 @@ const OutlinedButton = styled(PrimaryButton)<Props>`
 
   &:hover {
     background-color: #172b23;
+    /* background: rgba(6, 252, 153, 0.1); */
     cursor: pointer;
   }
 
   &:disabled {
-    color: var(--holy-grey-color);
+    color: #006739;
     background-color: var(--pitch-black-color);
-    border: 1px solid var(--holy-grey-color);
+    border: 1px solid #006739;
   }
 `;
 

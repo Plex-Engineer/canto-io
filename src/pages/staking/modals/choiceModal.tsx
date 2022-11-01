@@ -3,14 +3,23 @@ import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import useValidatorModalStore, {
   ValidatorModalType,
 } from "../stores/validatorModalStore";
+import cantoImg from "assets/logo.svg";
+import { MasterValidatorProps } from "../config/interfaces";
+import { formatEther } from "ethers/lib/utils";
+import { formatBalance, truncateNumber } from "global/utils/utils";
+import { BigNumber } from "ethers";
 
-const ChoiceModal = () => {
+interface Props {
+  validator: MasterValidatorProps;
+  balance: BigNumber;
+}
+const ChoiceModal = ({ validator, balance }: Props) => {
   const validatorModalStore = useValidatorModalStore();
 
   return (
     <BaseModalStyled>
       <Text size="title2" type="title" className="title">
-        Kaisen
+        {validator.validator.description.moniker}
       </Text>
       <div className="content">
         <div className="desc">
@@ -24,28 +33,46 @@ const ChoiceModal = () => {
             color="white"
             align="left"
           >
-            bare metal validation, powered by weebs. ~a portion of all profits
-            will be utilized to support anime artists around the world~
+            {validator.validator.description.details.toLowerCase()}{" "}
           </Text>
         </div>
         <div className="info-bars">
           <div>
             <header>delegated</header>
-            <footer>00.00c</footer>
+            <footer className="coin-bal">
+              {formatBalance(
+                formatEther(validator.userDelegations?.balance.amount ?? "0")
+              )}
+              <img src={cantoImg} height={16} alt="canto" />
+            </footer>
           </div>
           <div>
             <header>balance</header>
-            <footer>00.00c</footer>
+            <footer className="coin-bal">
+              {formatBalance(formatEther(balance))}{" "}
+              <img src={cantoImg} height={16} alt="canto" />
+            </footer>
           </div>
           <div>
             <header>commission</header>
-            <footer>5%</footer>
+            <footer>
+              {(
+                Number(validator.validator.commission.commission_rates.rate) *
+                100
+              ).toFixed(2)}{" "}
+              %
+            </footer>
           </div>
         </div>
         <div className="btns">
           <OutlinedButton
             weight="bold"
             height="big"
+            disabled={
+              Number(
+                formatEther(validator.userDelegations?.balance.amount ?? "0")
+              ) <= 0
+            }
             onClick={() => {
               validatorModalStore.open(ValidatorModalType.UNDELEGATE);
             }}
@@ -55,6 +82,7 @@ const ChoiceModal = () => {
           <PrimaryButton
             weight="bold"
             height="big"
+            disabled={Number(formatBalance(formatEther(balance))) === 0}
             onClick={() => {
               validatorModalStore.open(ValidatorModalType.DELEGATE);
             }}
@@ -93,6 +121,20 @@ export const BaseModalStyled = styled.div`
   .desc-content {
     flex-grow: 2;
   }
+  .coin-bal {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  /* .coin-bal::after {
+    content: "";
+    position: absolute;
+    height: 14px;
+    width: 14px;
+    background-image: url(${cantoImg});
+    background-size: contain;
+    background-repeat: no-repeat;
+  } */
   .info-bars {
     display: flex;
     border: 1px solid #373737;
@@ -167,9 +209,12 @@ export const BaseModalStyled = styled.div`
       border-radius: 4px;
       padding: 4px 8px;
       top: 18px;
+      transition: all 0.1s;
       cursor: pointer;
       &:hover {
         opacity: 1;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
       }
     }
     width: 100%;

@@ -36,7 +36,8 @@ const StyledPopup = styled(Popup)`
     overflow-y: hidden;
     overflow-x: hidden;
     background-color: black;
-    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    /* border: 1px solid var(--primary-color); */
     scroll-behavior: smooth;
     animation: fadein 0.5s 1;
     @keyframes fadein {
@@ -88,10 +89,21 @@ export const ModalManager = (props: ModalManagerProps) => {
         />
       </div>
       {validatorModals.currentModal == ValidatorModalType.DELEGATE && (
-        <DelegationModal />
+        <DelegationModal
+          validator={validatorModals.activeValidator}
+          allValidators={props.allValidators}
+          balance={networkInfo.balance}
+          account={networkInfo.account}
+        />
       )}
       {validatorModals.currentModal == ValidatorModalType.UNDELEGATE && (
-        <DelegationModal undelegation />
+        <DelegationModal
+          undelegation
+          validator={validatorModals.activeValidator}
+          allValidators={props.allValidators}
+          balance={networkInfo.balance}
+          account={networkInfo.account}
+        />
       )}
       {validatorModals.currentModal == ValidatorModalType.REDELEGATE && (
         <RedelgationModal />
@@ -103,7 +115,10 @@ export const ModalManager = (props: ModalManagerProps) => {
         //   balance={networkInfo.balance}
         //   account={networkInfo.account}
         // />
-        <ChoiceModal />
+        <ChoiceModal
+          validator={validatorModals.activeValidator}
+          balance={networkInfo.balance}
+        />
       )}
     </StyledPopup>
   );
