@@ -22,6 +22,7 @@ import { chain, memo } from "global/config/cosmosConstants";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { CantoMainnet } from "global/config/networks";
 import { formatBalance } from "global/utils/utils";
+import styled from "@emotion/styled";
 
 interface StakingModalProps {
   validator: MasterValidatorProps;
@@ -146,35 +147,31 @@ const RedelegationModal = ({
           <Text size="text3" type="title" className="desc-title" align="left">
             redelegate to :
           </Text>
-
+          <div
+            style={{
+              height: "4px",
+            }}
+          ></div>
           <div className="amount">
             <div className="btn-grp">
-              <Select
-                className="react-select-container"
-                classNamePrefix="react-select"
-                options={allValidators.map((validator) => {
-                  return {
-                    value: validator,
-                    label: validator.description.moniker,
-                  };
-                })}
-                onChange={(val) => {
-                  setNewValidator(val?.value);
-                }}
-              />
+              <Selected>
+                <Select
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                  placeholder="choose a validator..."
+                  options={allValidators.map((validator) => {
+                    return {
+                      value: validator,
+                      label: validator.description.moniker,
+                    };
+                  })}
+                  onChange={(val) => {
+                    setNewValidator(val?.value);
+                  }}
+                />
+              </Selected>
             </div>
           </div>
-          <Text
-            size="text3"
-            type="text"
-            className="subtext"
-            align="left"
-            style={{
-              color: "#505050",
-            }}
-          >
-            0.01 Canto is reserved for transaction fee.{" "}
-          </Text>
         </div>
         <div className="amount-bar">
           <Text size="text3" type="title" className="desc-title" align="left">
@@ -231,7 +228,8 @@ const RedelegationModal = ({
               Number(amount) >
                 Number(
                   formatEther(validator.userDelegations?.balance.amount ?? "0")
-                )
+                ) ||
+              newValidator == undefined
             }
             onClick={() => handleRedelegate()}
           >
@@ -243,4 +241,65 @@ const RedelegationModal = ({
   );
 };
 
+const Selected = styled.div`
+  .react-select-container {
+  }
+  .react-select__input-container {
+    color: var(--primary-color) !important;
+  }
+  .react-select__placeholder {
+    opacity: 0.4;
+  }
+  .react-select__control {
+    background-color: #222222 !important;
+    color: var(--primary-color) !important;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    letter-spacing: -0.03em;
+    height: 56px;
+
+    &:focus,
+    &:hover {
+      outline: none;
+    }
+  }
+
+  .react-select__menu {
+    backdrop-filter: blur(35px);
+    background: #d9d9d933;
+    border-radius: 4px;
+    overflow: visible;
+    color: var(--primary-color) !important;
+  }
+  .react-select__indicator-separator {
+    display: none;
+  }
+  .react-select__value-container {
+    * {
+      color: var(--primary-color) !important;
+    }
+  }
+  .react-select__menu-list {
+    outline: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 0.6rem 0;
+    align-items: center;
+    color: var(--primary-color) !important;
+  }
+
+  .react-select__option {
+    width: 94%;
+    background-color: transparent !important;
+    margin: 0.2rem 1rem;
+    padding: 0.8rem 0.6rem;
+
+    &:hover {
+      border-radius: 4px;
+      background-color: #ffffff1a !important;
+    }
+  }
+`;
 export default RedelegationModal;

@@ -48,7 +48,36 @@ const DelegationModal = ({
     }
     return parseEther(value);
   }
-
+  const handleUndelegate = async () => {
+    const parsedAmount = formatValue(delegateAmount);
+    const delegatedTo = parseEther(
+      validator.userDelegations?.balance.amount ?? "0"
+    );
+    if (!parsedAmount.isZero() && parsedAmount.lte(delegatedTo)) {
+      transactionStore.setTransactionMessage(userTxMessages.waitSign);
+      validatorModalStore.close();
+      await txUnstake(
+        account,
+        validator.validator.operator_address,
+        parsedAmount.toString(),
+        CantoMainnet.cosmosAPIEndpoint,
+        delegateFee,
+        chain,
+        memo
+      );
+      transactionStore.setTransactionMessage(userTxMessages.waitVerify);
+      transactionStore.setTransactionMessage(
+        await getActiveTransactionMessage(
+          account ?? "",
+          validator.validator.description.moniker,
+          parsedAmount,
+          delegatedTo,
+          StakingTransactionType.UNDELEGATE,
+          validator.validator.operator_address
+        )
+      );
+    }
+  };
   const handleDelegate = async () => {
     const parsedAmount = formatValue(amount);
     if (!parsedAmount.isZero() && parsedAmount.lte(balance)) {
@@ -199,7 +228,9 @@ const DelegationModal = ({
                 : Number(amount) > Number(formatEther(balance)))
             }
             onClick={() => {
-              validatorModalStore.open(ValidatorModalType.DELEGATE);
+              {
+                undelegation ? handleUndelegate() : handleDelegate();
+              }
             }}
           >
             {undelegation ? "undelegate" : "delegate"}
