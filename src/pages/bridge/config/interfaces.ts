@@ -53,8 +53,8 @@ export const EmptySelectedConvertToken = {
 };
 export const EmptySelectedETHToken = {
   ...emptyTokenData,
-  allowance: BigNumber.from(-1),
-  balanceOf: BigNumber.from(-1),
+  allowance: BigNumber.from("-1"),
+  balanceOf: BigNumber.from("-1"),
 };
 export const EmptySelectedNativeToken = {
   ...emptyTokenData,

@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import create from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import {
@@ -34,44 +35,76 @@ interface TokenStore {
 }
 export const useTokenStore = create<TokenStore>()(
   devtools(
-    persist((set, get) => ({
-      selectedTokens: {
-        [SelectedTokens.ETHTOKEN]: EmptySelectedETHToken,
-        [SelectedTokens.CONVERTIN]: EmptySelectedConvertToken,
-        [SelectedTokens.CONVERTOUT]: EmptySelectedConvertToken,
-        [SelectedTokens.BRIDGEOUT]: EmptySelectedNativeToken,
-      },
-      setSelectedToken: (token: BaseToken, selectedFrom: SelectedTokens) => {
-        set({
-          lastTokenSelect: new Date().getTime(),
-          selectedTokens: {
-            ...get().selectedTokens,
-            [selectedFrom]: token,
-          },
-        });
-      },
-      resetSelectedToken: (tokenType, tokenList) => {
-        get().setSelectedToken(
-          tokenList.find(
-            (t) => t.address === get().selectedTokens[tokenType].address
-          ) ?? get().selectedTokens[tokenType],
-          tokenType
-        );
-      },
-      lastTokenSelect: 0,
-      checkTimeAndResetTokens: () => {
-        //if it has been less than 1 minute, we can keep the selected tokens, since the user is just refreshing
-        if (get().lastTokenSelect + 60000 < new Date().getTime()) {
+    persist(
+      (set, get) => ({
+        selectedTokens: {
+          [SelectedTokens.ETHTOKEN]: EmptySelectedETHToken,
+          [SelectedTokens.CONVERTIN]: EmptySelectedConvertToken,
+          [SelectedTokens.CONVERTOUT]: EmptySelectedConvertToken,
+          [SelectedTokens.BRIDGEOUT]: EmptySelectedNativeToken,
+        },
+        setSelectedToken: (token: BaseToken, selectedFrom: SelectedTokens) => {
           set({
+            lastTokenSelect: new Date().getTime(),
             selectedTokens: {
-              [SelectedTokens.ETHTOKEN]: EmptySelectedETHToken,
-              [SelectedTokens.CONVERTIN]: EmptySelectedConvertToken,
-              [SelectedTokens.CONVERTOUT]: EmptySelectedConvertToken,
-              [SelectedTokens.BRIDGEOUT]: EmptySelectedNativeToken,
+              ...get().selectedTokens,
+              [selectedFrom]: token,
             },
           });
-        }
-      },
-    }))
+        },
+        resetSelectedToken: (tokenType, tokenList) => {
+          get().setSelectedToken(
+            tokenList.find(
+              (t) => t.address === get().selectedTokens[tokenType].address
+            ) ?? get().selectedTokens[tokenType],
+            tokenType
+          );
+        },
+        lastTokenSelect: 0,
+        checkTimeAndResetTokens: () => {
+          //if it has been less than 1 minute, we can keep the selected tokens, since the user is just refreshing
+          if (get().lastTokenSelect + 60000 < new Date().getTime()) {
+            set({
+              selectedTokens: {
+                [SelectedTokens.ETHTOKEN]: EmptySelectedETHToken,
+                [SelectedTokens.CONVERTIN]: EmptySelectedConvertToken,
+                [SelectedTokens.CONVERTOUT]: EmptySelectedConvertToken,
+                [SelectedTokens.BRIDGEOUT]: EmptySelectedNativeToken,
+              },
+            });
+          }
+        },
+      }),
+      {
+        name: "bridge-token-store",
+        // getStorage: () => localStorage,
+        serialize: (state) => JSON.stringify(state),
+        //need to deserialize to get BigNumbers back
+        deserialize: (state) => {
+          const parsedState = JSON.parse(state);
+          const selectedTokens = parsedState?.state?.selectedTokens;
+          if (selectedTokens) {
+            selectedTokens[0].allowance = BigNumber.from(
+              selectedTokens[0].allowance?.hex ?? 0
+            );
+            selectedTokens[0].balanceOf = BigNumber.from(
+              selectedTokens[0].balanceOf?.hex ?? 0
+            );
+            for (let i = 1; i < 4; i++) {
+              selectedTokens[i].nativeBalance = BigNumber.from(
+                selectedTokens[i]?.nativeBalance ?? 0
+              );
+              selectedTokens[i].erc20Balance = BigNumber.from(
+                selectedTokens[i]?.erc20Balance ?? 0
+              );
+            }
+          }
+          return {
+            ...parsedState,
+            selectedTokens: selectedTokens,
+          };
+        },
+      }
+    )
   )
 );

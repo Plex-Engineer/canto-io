@@ -134,7 +134,7 @@ const BridgingPage = () => {
         <TabPanel>
           <NotConnected
             title="Wallet is not connected"
-            subtext="to use bridge you need to connect a wallet through the service metamask"
+            subtext="to use bridge you need to connect a wallet through metamask"
             buttonText="connnect wallet"
             bgFilled
             onClick={() => {
