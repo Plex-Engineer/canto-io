@@ -1,14 +1,16 @@
 import styled from "@emotion/styled";
 import loadingIcon from "assets/loading.gif";
 import completeIcon from "assets/complete.svg";
+import { convertSecondsToString } from "../utils/utils";
 
 interface Props {
   type: "in" | "out";
   balance: string;
-  id: string;
   blockExplorerUrl: string;
   symbol: string;
   status: "loading" | "complete";
+  timestamp: number | string;
+  secondsUntilConfirmed?: string;
 }
 const TransactionBox = (props: Props) => {
   return (
@@ -21,7 +23,10 @@ const TransactionBox = (props: Props) => {
 
       <p className="status">
         bridge {props.type}
-        {" - "} #{Date.parse(props.id)}
+        {props.secondsUntilConfirmed
+          ? " - confimred in: " +
+            convertSecondsToString(props.secondsUntilConfirmed)
+          : ""}
       </p>
       <h1 className="balance">{props.balance + " " + props.symbol}</h1>
       <a
@@ -32,7 +37,7 @@ const TransactionBox = (props: Props) => {
       >
         view on explorer
       </a>
-      <div className="date">{new Date(props.id).toLocaleString()}</div>
+      <div className="date">{new Date(props.timestamp).toLocaleString()}</div>
     </Styled>
   );
 };

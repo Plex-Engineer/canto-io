@@ -1,9 +1,8 @@
-import { Event } from "ethers";
 import create from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { EventWithTime } from "../utils/utils";
+import { EventWithTime, PendingEvent } from "../utils/utils";
 interface AllTransactions {
-  pendingBridgeTransactions: Event[];
+  pendingBridgeTransactions: PendingEvent[];
   completedBridgeTransactions: EventWithTime[];
   bridgeOutTransactions: any[];
 }
@@ -12,10 +11,11 @@ interface TransactionStore {
   checkAccount: (account: string | undefined) => void;
   newTransactions: number;
   setNewTransactions: (value: number) => void;
+  oldTransactionLength: number;
   transactions: AllTransactions;
   setTransactions: (
     account: string | undefined,
-    pendingBridgeTransactions: Event[],
+    pendingBridgeTransactions: PendingEvent[],
     completedBridgeTransactions: EventWithTime[],
     bridgeOutTransactions: any[]
   ) => void;
@@ -31,6 +31,7 @@ export const useBridgeTransactionStore = create<TransactionStore>()(
           if (account != get().account && account) {
             set({
               newTransactions: 0,
+              oldTransactionLength: 0,
               transactions: {
                 pendingBridgeTransactions: [],
                 completedBridgeTransactions: [],
@@ -46,34 +47,27 @@ export const useBridgeTransactionStore = create<TransactionStore>()(
           completedBridgeTransactions: [],
           bridgeOutTransactions: [],
         },
+        oldTransactionLength: 0,
         setTransactions: (
           account: string | undefined,
-          pendingBridgeTransactions: Event[],
+          pendingBridgeTransactions: PendingEvent[],
           completedBridgeTransactions: EventWithTime[],
           bridgeOutTransactions: any[]
         ) => {
           //checking for new transactions
           //if there is a new account, then new transactions cannot happen
-          if (account === get().account) {
-            const prevLength =
-              get().transactions.completedBridgeTransactions.length +
-              get().transactions.bridgeOutTransactions.length +
-              get().transactions.pendingBridgeTransactions.length;
+          if (account === get().account && get().oldTransactionLength != 0) {
             //if previous length is not 0, then there are previous transactions
-            if (prevLength != 0) {
-              const newLength =
-                pendingBridgeTransactions.length +
-                completedBridgeTransactions.length +
-                bridgeOutTransactions.length;
-              const newTxLength = newLength - prevLength;
-              //must check if there are already new transactions, so we do not delete them
-              if (
-                get().newTransactions === 0 ||
-                newTxLength > get().newTransactions
-              ) {
-                set({ newTransactions: newLength - prevLength });
-              }
-            }
+            const newLength =
+              pendingBridgeTransactions.length +
+              completedBridgeTransactions.length +
+              bridgeOutTransactions.length;
+            const newTxLength = newLength - get().oldTransactionLength;
+            //must check if there are already new transactions, so we do not delete them
+            set({
+              newTransactions: newTxLength + get().newTransactions,
+              oldTransactionLength: newLength,
+            });
           }
           //setting relevant info
           set({
@@ -89,6 +83,13 @@ export const useBridgeTransactionStore = create<TransactionStore>()(
       {
         name: "transaction-store",
         getStorage: () => localStorage,
+        //we can't save all of the transactions to local storage (not enough space for this)
+        //only save information on lengths and last account we used
+        partialize: (state) => ({
+          account: state.account,
+          newTransactions: state.newTransactions,
+          oldTransactionLength: state.oldTransactionLength,
+        }),
       }
     )
   )

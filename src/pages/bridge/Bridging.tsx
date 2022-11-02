@@ -20,7 +20,7 @@ import { useEthers } from "@usedapp/core";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import {
-  getAllBridgeTransactionsWithStatus,
+  getBridgeInEventsWithStatus,
   getBridgeOutTransactions,
 } from "./utils/utils";
 import { useBridgeTransactionStore } from "./stores/transactionStore";
@@ -37,10 +37,7 @@ const BridgingPage = () => {
   async function setBridgingTransactions() {
     if (networkInfo.account && networkInfo.cantoAddress) {
       const [completedBridgeIn, pendingBridgeIn] =
-        await getAllBridgeTransactionsWithStatus(
-          networkInfo.account,
-          networkInfo.cantoAddress
-        );
+        await getBridgeInEventsWithStatus(networkInfo.account);
       const bridgeOutTransactions = await getBridgeOutTransactions(
         networkInfo.cantoAddress
       );
@@ -131,7 +128,7 @@ const BridgingPage = () => {
     const tabs = [];
     for (let i = 0; i < 3; i++) {
       tabs.push(
-        <TabPanel>
+        <TabPanel key={i}>
           <NotConnected
             title="Wallet is not connected"
             subtext="to use bridge you need to connect a wallet through metamask"
