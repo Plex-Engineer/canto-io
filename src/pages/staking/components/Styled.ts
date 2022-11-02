@@ -22,10 +22,8 @@ export const StakingModalContainer = styled.div`
 
   /* padding: 1rem; */
   .react-select-container {
-    background-color: red;
   }
   .react-select__input-container {
-    background-color: red;
     color: var(--primary-color) !important;
   }
   .react-select__control {
@@ -53,17 +51,14 @@ export const StakingModalContainer = styled.div`
 } */
   .react-select__menu {
     background-color: #040404 !important;
-    background-color: red;
     color: var(--primary-color) !important;
   }
   .react-select__value-container {
     * {
       color: var(--primary-color) !important;
-      background-color: red;
     }
   }
   .react-select__menu-list {
-    background-color: red;
     outline: none;
     color: var(--primary-color) !important;
   }
@@ -74,10 +69,47 @@ export const StakingModalContainer = styled.div`
       background-color: #1b2b24 !important;
     }
   }
+  .tabPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .amount {
+    input {
+      width: 100%;
+      margin: 6px 0;
+      text-align: start;
+    }
+    position: relative;
+    .max {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 140%;
+      letter-spacing: -0.03em;
+      text-transform: lowercase;
+      color: #efefef;
+      border: 1px solid #efefef;
+      opacity: 0.5;
+      position: absolute;
+      right: 12px;
+      border-radius: 4px;
+      padding: 4px 8px;
+      top: 18px;
+      transition: all 0.1s;
+      background-color: transparent;
+      cursor: pointer;
+      &:hover {
+        opacity: 1;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+      }
+    }
+    width: 100%;
+  }
 
   .redelegate {
     width: 100%;
-    margin: 2rem 0;
     .btn-grp {
       width: 100%;
       align-items: center;
@@ -115,17 +147,21 @@ export const StakingModalContainer = styled.div`
       margin-top: 2rem !important;
     }
   }
-  .title {
-    font-weight: 300;
-    font-size: 22px;
-    text-align: center;
-    letter-spacing: -0.1em;
-    text-transform: lowercase;
-    color: var(--primary-color);
+  .group {
     width: 100%;
-    background-color: #06fc991a;
-    padding: 1rem;
-    border-bottom: 1px solid var(--primary-color);
+  }
+  .title {
+    font-family: Silkscreen;
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 34px;
+    letter-spacing: -0.08em;
+    text-align: left;
+
+    color: var(--primary-color);
+    width: 90%;
+    padding: 1rem 0;
+    border-bottom: 1px solid #222;
     margin-bottom: 1rem;
   }
 
@@ -138,28 +174,57 @@ export const StakingModalContainer = styled.div`
   }
 
   .type {
-    color: #8b8b8b;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 147%;
+    letter-spacing: -0.03em;
+    text-transform: lowercase;
+    color: #06fc99;
+
+    opacity: 0.4;
   }
   .value {
     color: var(--primary-color);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 147%;
+    text-align: right;
+    letter-spacing: -0.03em;
   }
   .line {
     border-bottom: 1px solid #222;
   }
-
-  h2 {
-    color: #777;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 20px;
-    text-align: left;
-    line-height: 120%;
-    margin-bottom: 0.4rem;
+  .tabs {
   }
-
-  h4 {
+  .btn {
     width: 100%;
   }
+  .tablist {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--primary-color);
+    padding: 0;
+    color: #efefef;
+    font-weight: 400;
+    .tab {
+      flex: 1;
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: all 0.2s ease-in-out;
+      display: flex;
+      justify-content: center;
+      &:hover:not(.selected) {
+        background: #a7efd218;
+      }
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
   .secondaryBalance {
     font-weight: 300;
     font-size: 16px;
@@ -171,7 +236,6 @@ export const StakingModalContainer = styled.div`
     display: flex;
     justify-content: space-between;
     width: 100%;
-    margin: 2rem 0;
   }
 
   .desc {
