@@ -13,7 +13,7 @@ import {
   Validator,
 } from "../config/interfaces";
 import { BigNumber } from "ethers";
-import { txStake } from "../utils/transactions";
+import { txStake, txUnstake } from "../utils/transactions";
 import { userTxMessages } from "../config/messages";
 import { getActiveTransactionMessage } from "../utils/utils";
 import { delegateFee } from "../config/fees";
@@ -49,7 +49,7 @@ const DelegationModal = ({
     return parseEther(value);
   }
   const handleUndelegate = async () => {
-    const parsedAmount = formatValue(delegateAmount);
+    const parsedAmount = formatValue(amount);
     const delegatedTo = parseEther(
       validator.userDelegations?.balance.amount ?? "0"
     );
