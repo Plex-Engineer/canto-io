@@ -8,6 +8,9 @@ import useValidatorModalStore, {
 import { StakingModal } from "./stakingModal";
 import close from "assets/close.svg";
 import FadeIn from "react-fade-in";
+import DelegationModal from "./delegationModal";
+import RedelgationModal from "./redelgationModal";
+import ChoiceModal from "./choiceModal";
 
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
@@ -33,7 +36,8 @@ const StyledPopup = styled(Popup)`
     overflow-y: hidden;
     overflow-x: hidden;
     background-color: black;
-    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    /* border: 1px solid var(--primary-color); */
     scroll-behavior: smooth;
     animation: fadein 0.5s 1;
     @keyframes fadein {
@@ -84,12 +88,41 @@ export const ModalManager = (props: ModalManagerProps) => {
           alt="close"
         />
       </div>
-      {validatorModals.currentModal === ValidatorModalType.STAKE && (
-        <StakingModal
+      {validatorModals.currentModal == ValidatorModalType.DELEGATE && (
+        <DelegationModal
           validator={validatorModals.activeValidator}
           allValidators={props.allValidators}
           balance={networkInfo.balance}
           account={networkInfo.account}
+        />
+      )}
+      {validatorModals.currentModal == ValidatorModalType.UNDELEGATE && (
+        <DelegationModal
+          undelegation
+          validator={validatorModals.activeValidator}
+          allValidators={props.allValidators}
+          balance={networkInfo.balance}
+          account={networkInfo.account}
+        />
+      )}
+      {validatorModals.currentModal == ValidatorModalType.REDELEGATE && (
+        <RedelgationModal
+          validator={validatorModals.activeValidator}
+          allValidators={props.allValidators}
+          balance={networkInfo.balance}
+          account={networkInfo.account}
+        />
+      )}
+      {validatorModals.currentModal === ValidatorModalType.STAKE && (
+        // <StakingModal
+        //   validator={validatorModals.activeValidator}
+        //   allValidators={props.allValidators}
+        //   balance={networkInfo.balance}
+        //   account={networkInfo.account}
+        // />
+        <ChoiceModal
+          validator={validatorModals.activeValidator}
+          balance={networkInfo.balance}
         />
       )}
     </StyledPopup>

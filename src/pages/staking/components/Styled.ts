@@ -22,15 +22,18 @@ export const StakingModalContainer = styled.div`
 
   /* padding: 1rem; */
   .react-select-container {
+    background-color: red;
   }
-  .eact-select__input-container {
+  .react-select__input-container {
+    background-color: red;
     color: var(--primary-color) !important;
   }
   .react-select__control {
     background-color: #040404 !important;
     color: var(--primary-color) !important;
-    border: 1px solid var(--primary-color) !important;
+    border: 1px solid transparent !important;
     border-radius: 0%;
+    background-color: red;
 
     &:focus,
     &:hover {
@@ -50,14 +53,17 @@ export const StakingModalContainer = styled.div`
 } */
   .react-select__menu {
     background-color: #040404 !important;
+    background-color: red;
     color: var(--primary-color) !important;
   }
   .react-select__value-container {
     * {
       color: var(--primary-color) !important;
+      background-color: red;
     }
   }
   .react-select__menu-list {
+    background-color: red;
     outline: none;
     color: var(--primary-color) !important;
   }
