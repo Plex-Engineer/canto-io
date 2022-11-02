@@ -5,6 +5,9 @@ import {
 } from "../config/interfaces";
 
 export enum ValidatorModalType {
+  REDELEGATE,
+  DELEGATE,
+  UNDELEGATE,
   STAKE,
   NONE,
 }
