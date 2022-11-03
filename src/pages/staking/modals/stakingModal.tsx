@@ -30,6 +30,7 @@ import "react-tabs/style/react-tabs.css";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import styled from "@emotion/styled";
 import CheckBox from "global/components/checkBox";
+import { ConfirmUndelegationModal } from "./confirmUndelegationModal";
 
 interface StakingModalProps {
   validator: MasterValidatorProps;
@@ -48,6 +49,8 @@ export const StakingModal = ({
   const transactionStore = useTransactionStore();
   const validatorModalStore = useValidatorModalStore();
   const [newValidator, setNewValidator] = useState<Validator | undefined>();
+  const [showUndelegateConfimation, setShowUndelegateConfirmation] =
+    useState(false);
 
   function formatValue(value: string) {
     if (value === "" || isNaN(Number(value))) {
@@ -303,10 +306,16 @@ export const StakingModal = ({
                       )
                     )
                 }
-                onClick={() => handleUndelegate()}
+                onClick={() => setShowUndelegateConfirmation(true)}
               >
                 undelegate
               </OutlinedButton>
+              {showUndelegateConfimation && (
+                <ConfirmUndelegationModal
+                  onUndelegate={() => handleUndelegate()}
+                  onCancel={() => setShowUndelegateConfirmation(false)}
+                />
+              )}
             </TabPanel>
             <TabPanel className="tabPanel">
               <div
