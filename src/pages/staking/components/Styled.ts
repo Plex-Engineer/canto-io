@@ -5,7 +5,7 @@ export const StakingModalContainer = styled.div`
   height: fit-content;
   max-height: 90vh;
   overflow-y: scroll;
-  padding-bottom: 1rem;
+  padding-bottom: 1.4rem;
   width: 33rem;
   display: flex;
   flex-direction: column;
@@ -20,54 +20,9 @@ export const StakingModalContainer = styled.div`
     border-bottom: 1px solid #444444;
   }
 
-  /* padding: 1rem; */
-  .react-select-container {
-  }
-  .react-select__input-container {
-    color: var(--primary-color) !important;
-  }
-  .react-select__control {
-    background-color: #040404 !important;
-    color: var(--primary-color) !important;
-    border: 1px solid transparent !important;
-    border-radius: 0%;
-    background-color: red;
-
-    &:focus,
-    &:hover {
-      outline: none;
-    }
-  }
-  /* .react-select__input {
-  color: var(--primary-color) !important;
-  &::placeholder {
-    color: var(--primary-color) !important;
-  }
-  input[type="text"] {
-    &::placeholder {
-      color: var(--primary-color) !important;
-    }
-  }
-} */
-  .react-select__menu {
-    background-color: #040404 !important;
-    color: var(--primary-color) !important;
-  }
-  .react-select__value-container {
-    * {
-      color: var(--primary-color) !important;
-    }
-  }
-  .react-select__menu-list {
-    outline: none;
-    color: var(--primary-color) !important;
-  }
-
-  .react-select__option {
-    background-color: #040404 !important;
-    &:hover {
-      background-color: #1b2b24 !important;
-    }
+  .agreement {
+    display: flex;
+    gap: 1rem;
   }
   .tabPanel {
     display: flex;
@@ -197,6 +152,7 @@ export const StakingModalContainer = styled.div`
     border-bottom: 1px solid #222;
   }
   .tabs {
+    margin-top: 1rem;
   }
   .btn {
     width: 100%;
@@ -209,13 +165,19 @@ export const StakingModalContainer = styled.div`
     padding: 0;
     color: #efefef;
     font-weight: 400;
+    .selected {
+      background: rgba(6, 252, 153, 0.1);
+      border-bottom: 4px solid var(--primary-color);
+    }
     .tab {
+      height: 50px;
       flex: 1;
       cursor: pointer;
       padding: 0.5rem;
       transition: all 0.2s ease-in-out;
       display: flex;
       justify-content: center;
+      align-items: center;
       &:hover:not(.selected) {
         background: #a7efd218;
       }
