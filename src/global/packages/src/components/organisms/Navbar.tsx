@@ -49,7 +49,7 @@ export const NavBar = (props: Props) => {
             currentPage={currentPage}
             pageList={pageList}
           />
-          <a id="logo" href="https://canto.io">
+          <a id="logo" href="/">
             <img src={logo} />
             <Glitch title={"canto"} />
           </a>
