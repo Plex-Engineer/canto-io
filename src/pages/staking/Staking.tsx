@@ -151,7 +151,6 @@ const Staking = () => {
               </OutlinedButton>
             </div>
           </TabList>
-          {transactionStore.transactionMessage}
           <TabPanel>
             <MyStaking
               connected={Number(networkInfo.chainId) == CantoMainnet.chainId}

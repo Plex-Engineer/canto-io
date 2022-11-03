@@ -156,6 +156,8 @@ export const StakingModal = ({
 
   return (
     <StakingModalContainer>
+      {transactionStore.transactionMessage}
+
       <div className="title">{validator.validator.description.moniker}</div>
       <div className="desc">
         <div
