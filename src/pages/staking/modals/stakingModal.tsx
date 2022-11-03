@@ -26,6 +26,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import styled from "@emotion/styled";
+import CheckBox from "global/components/checkBox";
 
 interface StakingModalProps {
   validator: MasterValidatorProps;
@@ -40,6 +41,7 @@ export const StakingModal = ({
   account,
 }: StakingModalProps) => {
   const [amount, setAmount] = useState("");
+  const [agreed, setAgreed] = useState(false);
   const transactionStore = useTransactionStore();
   const validatorModalStore = useValidatorModalStore();
   const [newValidator, setNewValidator] = useState<Validator | undefined>();
@@ -150,9 +152,15 @@ export const StakingModal = ({
     <StakingModalContainer>
       <div className="title">{validator.validator.description.moniker}</div>
       <div className="desc">
-        <Text size="text2" type="text" align="left">
-          {validator.validator.description.details.toLowerCase()}{" "}
-        </Text>
+        <div
+          style={{
+            marginBottom: ".5rem",
+          }}
+        >
+          <Text size="text2" type="text" align="left">
+            {validator.validator.description.details.toLowerCase()}{" "}
+          </Text>
+        </div>
         <div className="dual-h-row">
           <p className="type">delegation</p>
           <p className="value">
@@ -198,7 +206,12 @@ export const StakingModal = ({
             </TabList>
 
             <TabPanel className="tabPanel">
-              <div className="amount">
+              <div
+                className="amount"
+                style={{
+                  marginTop: "1rem",
+                }}
+              >
                 <CInput
                   placeholder="enter amount..."
                   value={amount}
@@ -216,18 +229,42 @@ export const StakingModal = ({
                 </button>
               </div>
               <div className="agreement">
+                <div>
+                  <CheckBox
+                    checked={agreed}
+                    onChange={(value) => {
+                      setAgreed(value);
+                    }}
+                  />
+                </div>
                 <Text size="text3" type="text" align="left">
                   staking will lock up your funds for at least 21 days once you
                   undelegate your staked canto, you will need to wait 21 days
                   for your tokens to be liquid
                 </Text>
               </div>
-              <PrimaryButton className="btn" onClick={() => handleDelegate()}>
+              <PrimaryButton
+                weight="bold"
+                height="big"
+                disabled={
+                  !agreed ||
+                  Number(amount) == 0 ||
+                  isNaN(Number(amount)) ||
+                  Number(amount) > Number(formatEther(balance))
+                }
+                className="btn"
+                onClick={() => handleDelegate()}
+              >
                 delegate
               </PrimaryButton>
             </TabPanel>
             <TabPanel className="tabPanel">
-              <div className="amount">
+              <div
+                className="amount"
+                style={{
+                  marginTop: "1rem",
+                }}
+              >
                 <CInput
                   placeholder="enter amount..."
                   value={amount}
@@ -250,14 +287,31 @@ export const StakingModal = ({
               </div>
 
               <OutlinedButton
+                weight="bold"
+                height="big"
                 className="btn"
+                disabled={
+                  Number(amount) == 0 ||
+                  isNaN(Number(amount)) ||
+                  Number(amount) >
+                    Number(
+                      formatEther(
+                        validator.userDelegations?.balance.amount ?? "0"
+                      )
+                    )
+                }
                 onClick={() => handleUndelegate()}
               >
                 undelegate
               </OutlinedButton>
             </TabPanel>
             <TabPanel className="tabPanel">
-              <div className="amount">
+              <div
+                className="amount"
+                style={{
+                  marginTop: "1rem",
+                }}
+              >
                 <div className="btn-grp">
                   <Selected>
                     <Select
@@ -299,18 +353,24 @@ export const StakingModal = ({
                   max
                 </button>
               </div>
-              <Text
-                size="text3"
-                type="text"
-                className="subtext"
-                align="left"
-                style={{
-                  color: "#505050",
-                }}
+
+              <PrimaryButton
+                height="big"
+                weight="bold"
+                className="btn"
+                disabled={
+                  Number(amount) == 0 ||
+                  isNaN(Number(amount)) ||
+                  Number(amount) >
+                    Number(
+                      formatEther(
+                        validator.userDelegations?.balance.amount ?? "0"
+                      )
+                    ) ||
+                  newValidator == undefined
+                }
+                onClick={() => handleRedelegate()}
               >
-                0.01 Canto is reserved for transaction fee.{" "}
-              </Text>
-              <PrimaryButton onClick={() => handleRedelegate()}>
                 re-delegate
               </PrimaryButton>
             </TabPanel>
@@ -324,13 +384,17 @@ export const StakingModal = ({
 };
 
 const Selected = styled.div`
+  width: 100%;
   .react-select-container {
   }
   .react-select__input-container {
-    color: var(--primary-color) !important;
+    color: var(--primary-color);
   }
+
   .react-select__placeholder {
-    opacity: 0.4;
+    filter: grayscale(1);
+    padding-left: 4px;
+    opacity: 0.5;
   }
   .react-select__control {
     background-color: #222222 !important;

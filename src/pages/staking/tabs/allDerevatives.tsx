@@ -28,11 +28,19 @@ const AllDerevatives = (props: AllDerevativesProps) => {
 
   return (
     <div>
-      <CInput
-        value={userSearch}
-        onChange={(e) => setUserSearch(e.target.value)}
-        placeholder="search validators..."
-      />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "end",
+          marginTop: "1.4rem",
+        }}
+      >
+        <CInput
+          value={userSearch}
+          onChange={(e) => setUserSearch(e.target.value)}
+          placeholder="search validators..."
+        />
+      </div>
       {searchedValidators().length == 0 ? (
         "no validators match this search"
       ) : (

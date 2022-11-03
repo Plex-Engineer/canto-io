@@ -11,8 +11,9 @@ export const CInput = styled.input`
   padding-left: 16px;
   letter-spacing: -0.03em;
   ::placeholder {
-    color: var(--primary-color);
+    /* color: var(--primary-color); */
     opacity: 0.4;
+    color: #efefef;
   }
   &:focus {
     outline: 1px solid var(--primary-color);
