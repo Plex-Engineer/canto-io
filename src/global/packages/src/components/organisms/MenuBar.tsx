@@ -67,7 +67,7 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
           </div>
         </header>
         <div className="navlinks">
-          {pageList?.map((page) => {
+          {pageList?.map((page, idx) => {
             return (
               <Navlink
                 id={page.name}
@@ -77,8 +77,8 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
                 to={page.link}
                 key={page.name}
               >
-                <Text2 size="text2" type="text" align="left" id={page.name}>
-                  {page.name}
+                <Text2 size="text3" type="title" align="left" id={page.name}>
+                  {"0" + (idx + 1) + " " + page.name}
                 </Text2>
               </Navlink>
             );
@@ -177,7 +177,7 @@ const Navlink = styled(Link)`
   display: flex;
   text-align: left;
   width: 100%;
-  padding: 1rem;
+  padding: 1rem 1.4rem;
   opacity: 0.5;
   position: relative;
   transition: all 0.1s;

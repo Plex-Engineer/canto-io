@@ -22,6 +22,10 @@ import {
 import { delegateFee, unbondingFee } from "../config/fees";
 import { chain, memo } from "global/config/cosmosConstants";
 import { getActiveTransactionMessage } from "../utils/utils";
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
+import { CInput } from "global/packages/src/components/atoms/Input";
+import styled from "@emotion/styled";
 
 interface StakingModalProps {
   validator: MasterValidatorProps;
@@ -35,8 +39,7 @@ export const StakingModal = ({
   balance,
   account,
 }: StakingModalProps) => {
-  const [delegateAmount, setDelegateAmount] = useState("0");
-  const [redelegateAmount, setRedelegateAmount] = useState("0");
+  const [amount, setAmount] = useState("");
   const transactionStore = useTransactionStore();
   const validatorModalStore = useValidatorModalStore();
   const [newValidator, setNewValidator] = useState<Validator | undefined>();
@@ -49,7 +52,7 @@ export const StakingModal = ({
   }
 
   const handleDelegate = async () => {
-    const parsedAmount = formatValue(delegateAmount);
+    const parsedAmount = formatValue(amount);
     if (!parsedAmount.isZero() && parsedAmount.lte(balance)) {
       transactionStore.setTransactionMessage(userTxMessages.waitSign);
       validatorModalStore.close();
@@ -76,7 +79,7 @@ export const StakingModal = ({
   };
 
   const handleUndelegate = async () => {
-    const parsedAmount = formatValue(delegateAmount);
+    const parsedAmount = formatValue(amount);
     const delegatedTo = parseEther(
       validator.userDelegations?.balance.amount ?? "0"
     );
@@ -107,7 +110,7 @@ export const StakingModal = ({
   };
 
   const handleRedelegate = async () => {
-    const parsedAmount = formatValue(redelegateAmount);
+    const parsedAmount = formatValue(amount);
     const delegatedTo = parseEther(
       validator.userDelegations?.balance.amount ?? "0"
     );
@@ -142,25 +145,14 @@ export const StakingModal = ({
       );
     }
   };
+
   return (
     <StakingModalContainer>
       <div className="title">{validator.validator.description.moniker}</div>
       <div className="desc">
-        <h2
-          style={{
-            textAlign: "center",
-          }}
-        >
-          description
-        </h2>
-        <h4
-          style={{
-            color: "#D3D3D3",
-            wordWrap: "break-word",
-          }}
-        >
+        <Text size="text2" type="text" align="left">
           {validator.validator.description.details.toLowerCase()}{" "}
-        </h4>
+        </Text>
         <div className="dual-h-row">
           <p className="type">delegation</p>
           <p className="value">
@@ -180,75 +172,215 @@ export const StakingModal = ({
             %
           </p>
         </div>
-        <div className="textField">
-          <p>amount:</p>
-          <input
-            type="text"
-            name="amount"
-            id="amount"
-            onChange={(e) => setDelegateAmount(e.target.value)}
-          />
-          <p>canto</p>
+
+        <div className="group">
+          <Tabs
+            disabledTabClassName="disabled"
+            selectedTabClassName="selected"
+            className={"tabs"}
+          >
+            <TabList className={"tablist"}>
+              <Tab className={"tab"} selectedClassName="tab-selected">
+                <Text size="text2" type="text" align="left">
+                  delegate
+                </Text>
+              </Tab>
+              <Tab className={"tab"} selectedClassName="tab-selected">
+                <Text size="text2" type="text" align="left">
+                  undelegate
+                </Text>
+              </Tab>
+              <Tab className={"tab"} selectedClassName="tab-selected">
+                <Text size="text2" type="text" align="left">
+                  redelegate
+                </Text>
+              </Tab>
+            </TabList>
+
+            <TabPanel className="tabPanel">
+              <div className="amount">
+                <CInput
+                  placeholder="enter amount..."
+                  value={amount}
+                  onChange={(x) => {
+                    setAmount(x.target.value);
+                  }}
+                />
+                <button
+                  className="max"
+                  onClick={() => {
+                    setAmount(formatEther(balance));
+                  }}
+                >
+                  max
+                </button>
+              </div>
+              <div className="agreement">
+                <Text size="text3" type="text" align="left">
+                  staking will lock up your funds for at least 21 days once you
+                  undelegate your staked canto, you will need to wait 21 days
+                  for your tokens to be liquid
+                </Text>
+              </div>
+              <PrimaryButton className="btn" onClick={() => handleDelegate()}>
+                delegate
+              </PrimaryButton>
+            </TabPanel>
+            <TabPanel className="tabPanel">
+              <div className="amount">
+                <CInput
+                  placeholder="enter amount..."
+                  value={amount}
+                  onChange={(x) => {
+                    setAmount(x.target.value);
+                  }}
+                />
+                <button
+                  className="max"
+                  onClick={() => {
+                    setAmount(
+                      formatEther(
+                        validator.userDelegations?.balance.amount ?? "0"
+                      )
+                    );
+                  }}
+                >
+                  max
+                </button>
+              </div>
+
+              <OutlinedButton
+                className="btn"
+                onClick={() => handleUndelegate()}
+              >
+                undelegate
+              </OutlinedButton>
+            </TabPanel>
+            <TabPanel className="tabPanel">
+              <div className="amount">
+                <div className="btn-grp">
+                  <Selected>
+                    <Select
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                      placeholder="choose a validator..."
+                      options={allValidators.map((validator) => {
+                        return {
+                          value: validator,
+                          label: validator.description.moniker,
+                        };
+                      })}
+                      onChange={(val) => {
+                        setNewValidator(val?.value);
+                      }}
+                    />
+                  </Selected>
+                </div>
+              </div>
+
+              <div className="amount">
+                <CInput
+                  placeholder="enter amount..."
+                  value={amount}
+                  onChange={(x) => {
+                    setAmount(x.target.value);
+                  }}
+                />
+                <button
+                  className="max"
+                  onClick={() => {
+                    setAmount(
+                      formatEther(
+                        validator.userDelegations?.balance.amount ?? "0"
+                      )
+                    );
+                  }}
+                >
+                  max
+                </button>
+              </div>
+              <Text
+                size="text3"
+                type="text"
+                className="subtext"
+                align="left"
+                style={{
+                  color: "#505050",
+                }}
+              >
+                0.01 Canto is reserved for transaction fee.{" "}
+              </Text>
+              <PrimaryButton onClick={() => handleRedelegate()}>
+                re-delegate
+              </PrimaryButton>
+            </TabPanel>
+          </Tabs>
         </div>
-        <div className="btn-grp">
-          <OutlinedButton onClick={() => handleUndelegate()}>
-            undelegate
-          </OutlinedButton>
-          <PrimaryButton onClick={() => handleDelegate()}>
-            delegate
-          </PrimaryButton>
-        </div>
+
         <hr />
-        <div className="redelegate">
-          <div className="row">
-            <Text type="text">amount :</Text>
-            <input
-              type="text"
-              name="reDelegateAmount"
-              id="reDelegateAmount"
-              onChange={(e) => setRedelegateAmount(e.target.value)}
-            />
-            {/* <Text type="text" color="white" onClick={() => {}}>
-            max
-          </Text> */}
-          </div>
-          <div className="btn-grp">
-            <Select
-              className="react-select-container"
-              classNamePrefix="react-select"
-              options={allValidators.map((validator) => {
-                return {
-                  value: validator,
-                  label: validator.description.moniker,
-                };
-              })}
-              onChange={(val) => {
-                setNewValidator(val?.value);
-              }}
-            />
-            <PrimaryButton onClick={() => handleRedelegate()}>
-              re-delegate
-            </PrimaryButton>
-          </div>
-        </div>
       </div>
-      <footer>
-        <p
-          style={{
-            color: "#EF4444",
-          }}
-        >
-          staking will lock up your funds for at least 21 days
-        </p>
-        <p
-          style={{
-            color: "#8b8b8b",
-          }}
-        >
-          once you undelegate your staked canto, you will need to wait 21 days
-          for your tokens to be liquid
-        </p>
-      </footer>
     </StakingModalContainer>
   );
 };
+
+const Selected = styled.div`
+  .react-select-container {
+  }
+  .react-select__input-container {
+    color: var(--primary-color) !important;
+  }
+  .react-select__placeholder {
+    opacity: 0.4;
+  }
+  .react-select__control {
+    background-color: #222222 !important;
+    color: var(--primary-color) !important;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    letter-spacing: -0.03em;
+    height: 56px;
+
+    &:focus,
+    &:hover {
+      outline: none;
+    }
+  }
+
+  .react-select__menu {
+    backdrop-filter: blur(35px);
+    background: #d9d9d933;
+    border-radius: 4px;
+    overflow: visible;
+    color: var(--primary-color) !important;
+  }
+  .react-select__indicator-separator {
+    display: none;
+  }
+  .react-select__value-container {
+    * {
+      color: var(--primary-color) !important;
+    }
+  }
+  .react-select__menu-list {
+    outline: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 0.6rem 0;
+    align-items: center;
+    color: var(--primary-color) !important;
+  }
+
+  .react-select__option {
+    width: 94%;
+    background-color: transparent !important;
+    margin: 0.2rem 1rem;
+    padding: 0.8rem 0.6rem;
+
+    &:hover {
+      border-radius: 4px;
+      background-color: #ffffff1a !important;
+    }
+  }
+`;

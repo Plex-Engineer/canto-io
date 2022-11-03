@@ -114,16 +114,16 @@ export const ModalManager = (props: ModalManagerProps) => {
         />
       )}
       {validatorModals.currentModal === ValidatorModalType.STAKE && (
-        // <StakingModal
-        //   validator={validatorModals.activeValidator}
-        //   allValidators={props.allValidators}
-        //   balance={networkInfo.balance}
-        //   account={networkInfo.account}
-        // />
-        <ChoiceModal
+        <StakingModal
           validator={validatorModals.activeValidator}
+          allValidators={props.allValidators}
           balance={networkInfo.balance}
+          account={networkInfo.account}
         />
+        // <ChoiceModal
+        //   validator={validatorModals.activeValidator}
+        //   balance={networkInfo.balance}
+        // />
       )}
     </StyledPopup>
   );
