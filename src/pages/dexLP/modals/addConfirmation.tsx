@@ -17,11 +17,13 @@ import {
   getCurrentBlockTimestamp,
   getReserveRatioAtoB,
 } from "../utils/utils";
-import { routerAbi } from "global/config/abi";
+import { ERC20Abi, routerAbi } from "global/config/abi";
 import { UserLPPairInfo } from "../config/interfaces";
 import { DexModalContainer, DexLoadingOverlay } from "../components/Styled";
 import { ADDRESSES } from "global/config/addresses";
 import { PrimaryButton } from "global/packages/src";
+import CheckBox from "global/components/checkBox";
+import { useSupply } from "pages/lending/hooks/useTransaction";
 
 interface AddConfirmationProps {
   pair: UserLPPairInfo;
@@ -35,6 +37,7 @@ interface AddConfirmationProps {
 }
 
 const AddLiquidityButton = (props: AddConfirmationProps) => {
+  const [confirmSupply, setConfirmSupply] = useState(false);
   const { state: addLiquidityState, send: addLiquiditySend } = useAddLiquidity(
     props.chainId,
     {
@@ -65,6 +68,16 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
         "/" +
         props.pair.basePairInfo.token2.symbol,
     });
+  const { state: supplyLP, send: supplyLPSend } = useSupply({
+    name:
+      props.pair.basePairInfo.token1.symbol +
+      "/" +
+      props.pair.basePairInfo.token2.symbol,
+    address: props.pair.basePairInfo.cLPaddress,
+    icon: props.pair.basePairInfo.token1.icon,
+    amount: "-1",
+    type: "supplied",
+  });
 
   const [isToken1Canto, isToken2Canto] = checkForCantoInPair(
     props.pair.basePairInfo,
@@ -87,6 +100,22 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
   async function blockTimeStamp() {
     setCurrentBlockTimeStamp(await getCurrentBlockTimestamp(props.chainId));
   }
+  async function supplyLPInLending() {
+    const providerURL =
+      CantoTestnet.chainId == props.chainId
+        ? CantoTestnet.rpcUrl
+        : CantoMainnet.rpcUrl;
+    const provider = new ethers.providers.JsonRpcProvider(providerURL);
+    const LPToken = new Contract(
+      props.pair.basePairInfo.address,
+      ERC20Abi,
+      provider
+    );
+    const lpToSupply = (await LPToken.balanceOf(props.account)).sub(
+      props.pair.userSupply.totalLP
+    );
+    supplyLPSend(lpToSupply);
+  }
 
   useEffect(() => {
     blockTimeStamp();
@@ -97,21 +126,35 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
       addLiquidityState.status == "Success" ||
       addLiquidityCANTOState.status == "Success"
     ) {
+      if (confirmSupply) {
+        if (supplyLP.status == "None") {
+          supplyLPInLending();
+          return;
+        } else if (supplyLP.status != "Success") {
+          return;
+        }
+      }
       setTimeout(() => {
         setModalType(ModalType.NONE);
       }, 500);
     }
-  }, [addLiquidityState.status, addLiquidityCANTOState.status]);
+  }, [
+    addLiquidityState.status,
+    addLiquidityCANTOState.status,
+    supplyLP.status,
+  ]);
+
   return (
     <DexModalContainer>
       <DexLoadingOverlay
         show={
-          ["Mining", "PendingSignature", "Success"].includes(
+          (["Mining", "PendingSignature", "Success"].includes(
             addLiquidityState.status
           ) ||
-          ["Mining", "PendingSignature", "Success"].includes(
-            addLiquidityCANTOState.status
-          )
+            ["Mining", "PendingSignature", "Success"].includes(
+              addLiquidityCANTOState.status
+            )) &&
+          supplyLP.status == "None"
         }
       >
         <LoadingModal
@@ -131,6 +174,23 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
               ? addLiquidityCANTOState.status
               : addLiquidityState.status
           }
+          account={props.account}
+        />
+      </DexLoadingOverlay>
+      <DexLoadingOverlay show={supplyLP.status != "None"}>
+        <LoadingModal
+          icons={{
+            icon1: props.pair.basePairInfo.token1.icon,
+            icon2: props.pair.basePairInfo.token2.icon,
+          }}
+          name={
+            props.pair.basePairInfo.token1.symbol +
+            " / " +
+            props.pair.basePairInfo.token2.symbol
+          }
+          amount={"0"}
+          type="supply"
+          status={supplyLP.status}
           account={props.account}
         />
       </DexLoadingOverlay>
@@ -274,6 +334,15 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
       >
         confirm
       </PrimaryButton>
+      <div className="row">
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <CheckBox
+            checked={confirmSupply}
+            onChange={() => setConfirmSupply(!confirmSupply)}
+          />
+          <p>get rewards</p>
+        </div>
+      </div>
     </DexModalContainer>
   );
 };
