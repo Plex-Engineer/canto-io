@@ -37,28 +37,28 @@ const Styled = styled.div<Props>`
 
     animation-iteration-count: infinite;
 
-    &:nth-child(1) {
+    &:nth-of-type(1) {
       animation-delay: 0s;
     }
-    &:nth-child(2) {
+    &:nth-of-type(2) {
       animation-delay: 0.3s;
     }
-    &:nth-child(3) {
+    &:nth-of-type(3) {
       animation-delay: 0.6s;
     }
-    &:nth-child(4) {
+    &:nth-of-type(4) {
       animation-delay: 0.9s;
     }
-    &:nth-child(5) {
+    &:nth-of-type(5) {
       animation-delay: 1.2s;
     }
-    &:nth-child(6) {
+    &:nth-of-type(6) {
       animation-delay: 1.5s;
     }
-    &:nth-child(7) {
+    &:nth-of-type(7) {
       animation-delay: 1.8s;
     }
-    &:nth-child(8) {
+    &:nth-of-type(8) {
       animation-delay: 2.1s;
     }
   }

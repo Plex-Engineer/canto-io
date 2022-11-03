@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 export const DexModalContainer = styled.div`
   background-color: #040404;
-  height: 36rem;
+  height: 40rem;
   width: 30rem;
   display: flex;
   flex-direction: column;
@@ -85,7 +85,7 @@ export const DexModalContainer = styled.div`
   }
 
   .rowCell {
-    p:first-child {
+    p:first-of-type {
       text-transform: lowercase;
       color: #888;
     }
@@ -109,6 +109,13 @@ export const DexModalContainer = styled.div`
     .tableName {
       width: 90%;
     }
+  }
+  .row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 100px;
   }
 `;
 export const AddRemoveContainer = styled(DexModalContainer)`

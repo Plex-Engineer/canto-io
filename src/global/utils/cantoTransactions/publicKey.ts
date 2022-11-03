@@ -1,6 +1,6 @@
 import { generateEndpointAccount } from "@tharsis/provider";
 import { createMessageSend } from "@tharsis/transactions";
-import { CantoMainnet } from "cantoui";
+import { CantoMainnet } from "global/config/networks";
 import { chain, pubKeyFee, memo } from "global/config/cosmosConstants";
 import { getCantoAddressFromMetaMask } from "../walletConnect/addCantoToWallet";
 import {

@@ -9,7 +9,6 @@ const SuccessStyle = styled.div`
   justify-content: center;
   align-items: center;
   color: var(--primary-color);
-  text-shadow: none;
   transition: all;
   overflow-x: hidden;
 `;

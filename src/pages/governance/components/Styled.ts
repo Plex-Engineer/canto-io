@@ -84,7 +84,7 @@ export const ProposalContainer = styled.div`
     text-shadow: 0px 12.2818px 12.2818px rgba(6, 252, 153, 0.2);
   }
   .rowCell {
-    p:first-child {
+    p:first-of-type {
       text-transform: lowercase;
       color: #888;
     }

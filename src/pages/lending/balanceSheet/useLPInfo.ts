@@ -1,10 +1,11 @@
 import { CallResult, useCalls } from "@usedapp/core";
-import { ADDRESSES, CantoTestnet } from "cantoui";
+import { CantoTestnet } from "global/config/networks";
 import { PAIR } from "pages/dexLP/config/pairs";
 import { Contract } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { TokenPriceObject } from "./tokenPrices";
 import { ERC20Abi, routerAbi } from "global/config/abi";
+import { ADDRESSES } from "global/config/addresses";
 
 export interface LPTokenInfo {
   LPAddress: string;

@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { formatBigNumber } from "../../utils/formatNumbers";
-import { BurgerMenu } from "./BurgerMenu";
 import Glitch from "../../components/molecules/Glitch";
-import { OutlinedButton } from "../atoms/Button";
 import { Text } from "../atoms/Text";
 import Alert from "../atoms/Alert";
 import styled from "@emotion/styled";
+import ConnectWallet from "./ConnectWallet";
+import MenuBar from "./MenuBar";
 import ModalManager from "../molecules/ModalManager";
 
 export interface Page {
@@ -25,17 +24,7 @@ interface Props {
 }
 
 export const NavBar = (props: Props) => {
-  const {
-    onClick,
-    chainId,
-    account,
-    balance,
-    isConnected,
-    currency,
-    logo,
-    currentPage,
-    pageList,
-  } = props;
+  const { chainId, logo, currentPage, pageList } = props;
 
   const [onScroll, setOnScroll] = useState(false);
 
@@ -55,12 +44,12 @@ export const NavBar = (props: Props) => {
       <Alert />
       <nav className={onScroll ? "scroll" : ""}>
         <div className="menu">
-          <BurgerMenu
+          <MenuBar
             chainId={chainId}
             currentPage={currentPage}
             pageList={pageList}
           />
-          <a id="logo" href="https://canto.io">
+          <a id="logo" href="/">
             <img src={logo} />
             <Glitch title={"canto"} />
           </a>
@@ -68,14 +57,8 @@ export const NavBar = (props: Props) => {
         <Text id="title" type="title">
           {currentPage}
         </Text>
-        {ConnectionButton(
-          isConnected,
-          balance,
-          currency,
-          account,
-          chainId,
-          onClick
-        )}
+        <ConnectWallet {...props} />
+        <ModalManager chainId={chainId} />
       </nav>
     </Container>
   );
@@ -91,6 +74,13 @@ const Container = styled.div`
     background-color: #09221454;
     backdrop-filter: blur(5px);
   }
+
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+  }
   & > nav {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -105,7 +95,11 @@ const Container = styled.div`
       display: flex;
       justify-content: end;
     }
-
+    #title {
+      font-family: Silkscreen;
+      font-size: 44px;
+      letter-spacing: -0.08em;
+    }
     #logo {
       color: var(--primary-color);
       font-weight: bold;
@@ -137,52 +131,3 @@ const Container = styled.div`
     }
   }
 `;
-function ConnectionButton(
-  isConnected: boolean,
-  balance: string,
-  currency: string,
-  account: string,
-  chainId: number,
-  onClick: () => void
-) {
-  return (
-    <div className="wallet">
-      {isConnected ? (
-        <OutlinedButton
-          size="x-sm"
-          onClick={() => {
-            // setIsModalOpen(true)
-          }}
-        >
-          <span className="hide-on-mobile">
-            {formatBigNumber(balance)}&nbsp;
-          </span>
-          <span
-            className="hide-on-mobile"
-            style={{
-              fontWeight: "600",
-              gap: "10px",
-            }}
-          >
-            {currency}
-          </span>
-          <div
-            className="hide-on-mobile"
-            style={{
-              marginLeft: "4px",
-              marginRight: "2px",
-            }}
-          >
-            |
-          </div>
-          {account?.substring(0, 5) + "..."}
-        </OutlinedButton>
-      ) : (
-        <OutlinedButton onClick={onClick}>
-          connect <span className="hide-on-mobile">&nbsp;wallet</span>
-        </OutlinedButton>
-      )}
-      <ModalManager chainId={chainId} />
-    </div>
-  );
-}

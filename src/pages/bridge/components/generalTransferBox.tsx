@@ -1,10 +1,12 @@
 import styled from "@emotion/styled";
-import { HighlightButton, Text } from "cantoui";
 import FadeIn from "react-fade-in";
 import { toast } from "react-toastify";
-import arrow from "../../../assets/right.svg";
+import arrow from "../../../assets/next.svg";
 import CopyIcon from "../../../assets/copy.svg";
 import { truncateNumber } from "global/utils/utils";
+import { PrimaryButton, Text } from "global/packages/src";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { CInput } from "global/packages/src/components/atoms/Input";
 
 interface Props {
   connected: boolean;
@@ -29,115 +31,71 @@ interface Props {
   needAddressBox: boolean;
   onAddressChange?: (s: string) => void;
 }
-function copyAddress(value: string | undefined) {
-  navigator.clipboard.writeText(value ?? "");
-  toast("copied address", {
-    autoClose: 300,
-  });
-}
+
 export const GeneralTransferBox = (props: Props) => {
+  function copyAddress() {
+    toast("copied address", {
+      position: "top-right",
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progressStyle: {
+        color: `
+            var(--primary-color)
+          `,
+      },
+      style: {
+        border: "1px solid var(--primary-color)",
+        borderRadius: "0px",
+        paddingBottom: "3px",
+        background: "black",
+        color: `var(--primary-color)
+        `,
+        height: "100px",
+        fontSize: "20px",
+      },
+      autoClose: 300,
+    });
+  }
   return (
     <FadeIn>
       <TransferBoxStyled disabled={!props.connected}>
         <div className="overlay">
-          <HighlightButton
-            className="switch"
+          <PrimaryButton
+            height="big"
+            weight="bold"
+            className="switched"
             id="network-switch"
             onClick={props.onSwitch}
           >
             {!props.connected
               ? "switch to " + props.networkName
               : "connected to " + props.networkName}
-          </HighlightButton>
+          </PrimaryButton>
         </div>
-        <div className="row">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
+        {props.needAddressBox && (
+          <CInput
+            placeholder="gravity address (gravity...)"
+            type="text"
+            name="address"
+            id="address"
+            autoComplete="off"
+            onChange={(e) => {
+              if (props.onAddressChange) {
+                props.onAddressChange(e.target.value);
+              }
             }}
-          >
-            {props.from.icon && <img src={props.from.icon ?? ""} height={26} />}
-            <Text type="text" color="white" align="left">
-              {props.from.name}
-            </Text>
-          </div>
-          <img
-            style={{
-              flex: "0",
-            }}
-            src={arrow}
-            alt="right arrow"
-            height={40}
           />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              gap: "1rem",
-            }}
-          >
-            <img src={props.to.icon ?? ""} height={26} />
-            <Text type="text" color="white" align="right">
-              {props.to.name}
-            </Text>
-          </div>
-        </div>
-        <div className="row">
-          <Text
-            type="text"
-            color="white"
-            align="left"
-            onClick={() => copyAddress(props.from.address)}
-            style={{ cursor: "pointer" }}
-          >
-            {props.from.address
-              ? props.from.address.slice(0, 4) +
-                "..." +
-                props.from.address.slice(-4)
-              : "retrieving wallet"}
-            <img
-              src={CopyIcon}
-              style={{
-                height: "22px",
-                position: "relative",
-                top: "5px",
-                left: "4px",
-              }}
-            />
-          </Text>
-          <Text
-            type="text"
-            color="white"
-            align="right"
-            onClick={() => copyAddress(props.to.address)}
-            style={{ cursor: "pointer" }}
-          >
-            {props.to.address
-              ? props.to.address.slice(0, 4) +
-                "..." +
-                props.to.address.slice(-4)
-              : "retrieving wallet"}{" "}
-            <img
-              src={CopyIcon}
-              style={{
-                height: "22px",
-                marginLeft: "-6px",
-                position: "relative",
-                top: "5px",
-              }}
-            />
-          </Text>
-        </div>
+        )}
         <div className="amount">
-          {props.tokenSelector}
+          <div className="token-selector">{props.tokenSelector}</div>
 
           <div className="amount-input">
-            <Text type="text" align="left" color="primary">
+            <Text type="text" size="text2" align="left" color="primary">
               amount :
             </Text>
+
             <input
               autoComplete="off"
               type="number"
@@ -147,35 +105,132 @@ export const GeneralTransferBox = (props: Props) => {
               value={props.amount}
               onChange={(e) => props.onChange(e.target.value)}
             />
-            {Number(props.max) < 0 ? (
-              ""
-            ) : (
-              <div
-                role="button"
-                tabIndex={0}
-                className="max"
-                style={{ cursor: "pointer" }}
-                onClick={() => props.onChange(props.max)}
-              >
-                max: {truncateNumber(props.max)}
+            {Number(props.max) < 0 ? null : (
+              <div className="max">
+                balance {truncateNumber(props.max)}{" "}
+                <span
+                  tabIndex={0}
+                  role="button"
+                  style={{ cursor: "pointer", textDecoration: "underline" }}
+                  onClick={() => props.onChange(props.max)}
+                >
+                  max
+                </span>
               </div>
             )}
           </div>
         </div>
-        {props.needAddressBox && (
-          <input
-            placeholder="gravity address (gravity...)"
-            type="text"
-            name="address"
-            id="address"
-            onChange={(e) => {
-              if (props.onAddressChange) {
-                props.onAddressChange(e.target.value);
-              }
-            }}
-          />
-        )}
-        <div className="row">{props.button}</div>
+        {props.connected && <div className="row">{props.button}</div>}
+
+        <div className="address-nodes">
+          {props.connected && (
+            <div className="row">
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
+                }}
+              >
+                {props.from.icon && (
+                  <img src={props.from.icon ?? ""} height={26} />
+                )}
+                <Text type="text" size="text3" color="primary" align="left">
+                  {props.from.name}
+                </Text>
+              </div>
+              <img
+                style={{
+                  flex: "0",
+                }}
+                src={arrow}
+                alt="right arrow"
+                height={12}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  gap: "1rem",
+                }}
+              >
+                <img src={props.to.icon ?? ""} height={26} />
+                <Text type="text" size="text3" color="primary" align="right">
+                  {props.to.name}
+                </Text>
+              </div>
+            </div>
+          )}
+          <hr />
+
+          {props.connected && (
+            <div className="row">
+              <CopyToClipboard
+                text={props.from.address ?? ""}
+                onCopy={copyAddress}
+              >
+                <Text
+                  type="text"
+                  color="primary"
+                  align="left"
+                  size="text3"
+                  style={{ cursor: "pointer" }}
+                >
+                  {props.from.address
+                    ? props.from.address.slice(0, 5) +
+                      "..." +
+                      props.from.address.slice(-4)
+                    : "retrieving wallet"}
+                  <img
+                    src={CopyIcon}
+                    style={{
+                      height: "22px",
+                      position: "relative",
+                      top: "5px",
+                      left: "4px",
+                    }}
+                  />
+                </Text>
+              </CopyToClipboard>
+              <img
+                style={{
+                  flex: "0",
+                }}
+                src={arrow}
+                alt="right arrow"
+                height={12}
+              />
+              <CopyToClipboard
+                text={props.to.address ?? ""}
+                onCopy={copyAddress}
+              >
+                <Text
+                  type="text"
+                  color="primary"
+                  align="right"
+                  size="text3"
+                  style={{ cursor: "pointer" }}
+                >
+                  {props.to.address
+                    ? props.to.address.slice(0, 5) +
+                      "..." +
+                      props.to.address.slice(-4)
+                    : "retrieving wallet"}{" "}
+                  <img
+                    src={CopyIcon}
+                    style={{
+                      height: "22px",
+                      marginLeft: "-6px",
+                      position: "relative",
+                      top: "5px",
+                    }}
+                  />
+                </Text>
+              </CopyToClipboard>
+            </div>
+          )}
+        </div>
       </TransferBoxStyled>
     </FadeIn>
   );
@@ -187,28 +242,29 @@ interface StyeldProps {
 export const TransferBoxStyled = styled.div<StyeldProps>`
   background-color: black;
   border-radius: 18px;
-  width: 40rem;
+  width: 34rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  padding: 2rem 3rem;
-  border: ${(props) => (props.disabled ? " 2px solid #333" : "2px solid #333")};
-
-  /* border: ${(props) =>
-    props.disabled ? " 1px solid #333" : "1px solid var(--primary-color)"}; */
-  margin: 2rem 0;
   position: relative;
+  margin-top: 26px;
+  gap: 24px;
+  hr {
+    border: none;
+    border-top: 1px solid #d9d9d92d;
+  }
 
+  .address-nodes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 1rem;
+  }
   .row {
     display: flex;
-    /* gap: 1rem; */
-
     justify-content: space-between;
     filter: ${(props) => (props.disabled ? "grayscale(100%)" : "none")};
-
     align-items: center;
     & > * {
-      /* flex-grow: 1; */
       flex: 1;
       flex-basis: 0;
     }
@@ -218,9 +274,7 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     border-radius: 4px;
   }
   .overlay {
-    background-color: #222222d2;
     border-radius: 18px;
-
     width: 100%;
     height: 100%;
     top: 0;
@@ -232,15 +286,20 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
   }
   .max {
     position: absolute;
-    right: 2.55rem;
-    bottom: 0px;
+    right: 1rem;
+    bottom: 5px;
     font-size: 13px;
+    color: var(--primary-color);
   }
   .token {
     display: flex;
     gap: 1rem;
   }
+  .switched {
+    margin-top: 7.6rem;
 
+    width: 34rem !important;
+  }
   .switch {
     width: 400px;
 
@@ -255,40 +314,50 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
 
   .amount {
     filter: ${(props) => (props.disabled ? "grayscale(100%)" : "none")};
-
     display: flex;
     align-items: center;
     justify-content: space-between;
     position: relative;
-    padding: 1.4rem;
-    border: 1px solid #333;
-    background-color: #0c0c0c;
-
+    height: 6rem;
+    border-radius: 4px;
+    background-color: #222222;
+    .token-selector {
+      width: 12rem;
+      height: 100%;
+    }
     .amount-input {
+      height: 100%;
+      flex: 7;
+      border-left: 2px solid black;
       display: flex;
-      justify-content: center;
+      justify-content: start;
       align-items: center;
-      border: 1px solid #333;
       padding: 1rem;
       gap: 1rem;
+      p {
+        white-space: nowrap;
+      }
     }
   }
 
   input[type="number"] {
     background-color: transparent;
     border: none;
+    border-radius: 4px;
     outline: none;
     color: var(--primary-color);
-    text-align: right;
-    font-size: 22px;
-    width: 100px;
-    border-bottom: 1px solid transparent;
+    text-align: left;
+    font-size: 18px;
+    padding: 6px;
+    width: 100%;
     &::placeholder {
       color: var(--primary-darker-color);
     }
     &:focus,
     &:hover {
-      border-bottom: 1px solid var(--primary-color);
+      background-color: #111;
+
+      outline: 1px solid var(--primary-color);
     }
 
     /* Chrome, Safari, Edge, Opera */
@@ -303,16 +372,35 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
       -moz-appearance: textfield;
     }
   }
-  #address {
-    background-color: transparent;
-    color: var(--primary-color);
-    border: none;
-    border-bottom: 1px solid var(--just-grey-color);
-    text-align: center;
-    font-size: 18px;
-    &:focus {
-      outline: none;
-      border-bottom: 1px solid var(--primary-color);
+
+  @media (max-width: 1000px) {
+    width: 90vw;
+    max-width: 34rem;
+
+    .overlay {
+    }
+
+    .amount {
+      margin: 0rem !important;
+    }
+
+    .amount-input {
+      p {
+        font-size: 16px;
+        width: 100%;
+      }
+      input {
+        font-size: 16px;
+
+        width: 100%;
+      }
+    }
+    .token-selector {
+      width: 10rem;
+    }
+    .switched {
+      width: 90vw !important;
+      max-width: 34rem;
     }
   }
 `;

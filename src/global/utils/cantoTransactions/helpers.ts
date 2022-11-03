@@ -10,7 +10,7 @@ import {
 import { signatureToPubkey } from "@hanchon/signature-to-pubkey";
 import { ethers } from "ethers";
 import { Buffer } from "buffer";
-import { CantoMainnet, CantoTestnet } from "cantoui";
+import { CantoMainnet, CantoTestnet } from "global/config/networks";
 import { BigNumber } from "ethers";
 
 export const nodeURL = (chain: number | undefined) => {

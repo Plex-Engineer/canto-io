@@ -1,4 +1,4 @@
-export const fee = {
+export const delegateFee = {
   amount: "80000000000000000",
   denom: "acanto",
   gas: "300000",

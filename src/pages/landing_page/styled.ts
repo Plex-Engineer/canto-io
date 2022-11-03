@@ -250,7 +250,7 @@ export const Styled = styled.div`
       top: 0;
       right: 50%;
     }
-    & span:first-child {
+    & span:first-of-type {
       animation: glitch 500ms infinite;
       clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
       transform: translate(50%, -0.02em);
@@ -401,7 +401,7 @@ export const Styled = styled.div`
       // transform: ;
       transform: scale(0.4) translate(0em, -0.02em);
 
-      & span:first-child {
+      & span:first-of-type {
         display: none;
       }
 

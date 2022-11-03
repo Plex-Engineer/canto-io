@@ -8,6 +8,7 @@ import { Hero, TinyTable, ToolTipL } from "./Styled";
 import CypherText from "./CypherText";
 import { BorrowRow, SupplyRow } from "./lendingRow";
 import LendingTable from "./table";
+import FadeIn from "react-fade-in";
 
 function sortColumnsByType(value1: unknown, value2: unknown) {
   if (typeof value1 === "string") {

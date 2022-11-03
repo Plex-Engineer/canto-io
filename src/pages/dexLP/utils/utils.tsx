@@ -1,7 +1,8 @@
-import { CantoMainnet, CantoTestnet, TOKENS } from "cantoui";
+import { CantoMainnet, CantoTestnet } from "global/config/networks";
 import { BigNumber, ethers } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { PAIR } from "../config/pairs";
+import { TOKENS } from "global/config/tokenInfo";
 
 //function returns if pair contains WCANTO, since we must call a different function for supplying or Withdrawing liquidity
 //returns [isToken1Canto, isToken2Canto]
