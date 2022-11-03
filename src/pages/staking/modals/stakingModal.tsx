@@ -21,7 +21,10 @@ import {
 } from "pages/staking/utils/transactions";
 import { delegateFee, unbondingFee } from "../config/fees";
 import { chain, memo } from "global/config/cosmosConstants";
-import { getActiveTransactionMessage } from "../utils/utils";
+import {
+  getActiveTransactionMessage,
+  levenshteinDistance,
+} from "../utils/utils";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import { CInput } from "global/packages/src/components/atoms/Input";
@@ -318,11 +321,18 @@ export const StakingModal = ({
                       className="react-select-container"
                       classNamePrefix="react-select"
                       placeholder="choose a validator..."
-                      options={allValidators.map((validator) => {
-                        return {
-                          value: validator,
-                          label: validator.description.moniker,
-                        };
+                      options={allValidators.map((val) => {
+                        //take out the current validator from the list
+                        if (
+                          val.description.moniker !=
+                          validator.validator.description.moniker
+                        ) {
+                          return {
+                            value: val,
+                            label: val.description.moniker,
+                          };
+                        }
+                        return {};
                       })}
                       onChange={(val) => {
                         setNewValidator(val?.value);
