@@ -55,18 +55,17 @@ export const useBridgeTransactionStore = create<TransactionStore>()(
           bridgeOutTransactions: any[]
         ) => {
           //checking for new transactions
+          //if previous length is not 0, then there are previous transactions
+          const newLength =
+            pendingBridgeTransactions.length +
+            completedBridgeTransactions.length +
+            bridgeOutTransactions.length;
           //if there is a new account, then new transactions cannot happen
           if (account === get().account && get().oldTransactionLength != 0) {
-            //if previous length is not 0, then there are previous transactions
-            const newLength =
-              pendingBridgeTransactions.length +
-              completedBridgeTransactions.length +
-              bridgeOutTransactions.length;
             const newTxLength = newLength - get().oldTransactionLength;
             //must check if there are already new transactions, so we do not delete them
             set({
               newTransactions: newTxLength + get().newTransactions,
-              oldTransactionLength: newLength,
             });
           }
           //setting relevant info
@@ -77,6 +76,7 @@ export const useBridgeTransactionStore = create<TransactionStore>()(
               bridgeOutTransactions: bridgeOutTransactions,
             },
             account: account,
+            oldTransactionLength: newLength,
           });
         },
       }),
