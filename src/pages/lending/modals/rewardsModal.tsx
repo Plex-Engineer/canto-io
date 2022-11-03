@@ -10,7 +10,7 @@ import { useClaim, useDrip } from "pages/lending/hooks/useTransaction";
 import { UserLMRewards } from "pages/lending/config/interfaces";
 import { ethers } from "ethers";
 import { valueInNote } from "pages/dexLP/utils/utils";
-import { PrimaryButton } from "cantoui";
+import { PrimaryButton } from "global/packages/src";
 import { RewardsContainer } from "../components/Styled";
 import { reservoirAdddress } from "../config/lendingMarketTokens";
 

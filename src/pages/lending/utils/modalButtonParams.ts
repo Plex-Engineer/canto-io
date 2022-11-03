@@ -62,7 +62,7 @@ export function enableCollateralButtonAndModalText(
   willGoOver80PercentLimit: boolean,
   userConfirmed: boolean,
   tokenName: string
-) {
+): [string, string, boolean, boolean] {
   if (decollateralize) {
     if (!borrowBalance.isZero()) {
       return [

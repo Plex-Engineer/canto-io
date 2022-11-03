@@ -166,6 +166,12 @@ export const transactionStatusActions = (
         inAction: "removing liquidity",
         postAction: "removed liquidity",
       };
+    case "supply":
+      return {
+        action: `supply ${token}`,
+        inAction: `supplying ${token}`,
+        postAction: `supplied ${token}`,
+      };
     default:
       return {
         action: "confirm",

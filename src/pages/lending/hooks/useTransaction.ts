@@ -4,13 +4,15 @@ import {
   useEthers,
 } from "@usedapp/core";
 import { Contract, utils } from "ethers";
-import { TOKENS, CantoTestnet, ADDRESSES } from "cantoui";
+import { CantoTestnet } from "global/config/networks";
 import {
   cERC20Abi,
   comptrollerAbi,
   ERC20Abi,
   reservoirAbi,
 } from "global/config/abi";
+import { ADDRESSES } from "global/config/addresses";
+import { TOKENS } from "global/config/tokenInfo";
 
 //Ex : DAI 50
 //On enter market : Collateralizing DAI : DAI is being collateralized: DAI has been collateralized

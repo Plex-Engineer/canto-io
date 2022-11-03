@@ -1,10 +1,11 @@
 import { useCalls } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { PAIR, TESTPAIRS, MAINPAIRS } from "../config/pairs";
-import { ADDRESSES, CantoMainnet, CantoTestnet } from "cantoui";
+import { CantoMainnet, CantoTestnet } from "global/config/networks";
 import { ERC20Abi, routerAbi } from "global/config/abi";
 import { LPPairInfo } from "../config/interfaces";
 import { getLPPairRatio } from "../utils/utils";
+import { ADDRESSES } from "global/config/addresses";
 
 const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
   const onCanto =

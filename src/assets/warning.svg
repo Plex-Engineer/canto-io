@@ -1,0 +1,39 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1862_36059)">
+<rect x="51" y="5" width="13" height="5" transform="rotate(-180 51 5)" fill="#06FC99"/>
+<rect y="51" width="13" height="5" transform="rotate(-90 0 51)" fill="#06FC99"/>
+<rect x="28" y="15" width="8" height="5" transform="rotate(-180 28 15)" fill="#06FC99"/>
+<rect x="10" y="28" width="8" height="5" transform="rotate(-90 10 28)" fill="#06FC99"/>
+<rect x="20" y="20" width="5" height="5" transform="rotate(-180 20 20)" fill="#06FC99"/>
+<rect x="38" y="10" width="10" height="5" transform="rotate(-180 38 10)" fill="#06FC99"/>
+<rect x="10" y="38" width="5" height="10" transform="rotate(-180 10 38)" fill="#06FC99"/>
+<rect x="95" y="51" width="13" height="5" transform="rotate(-90 95 51)" fill="#06FC99"/>
+<rect x="49" width="13" height="5" fill="#06FC99"/>
+<rect x="85" y="28" width="8" height="5" transform="rotate(-90 85 28)" fill="#06FC99"/>
+<rect x="72" y="10" width="8" height="5" fill="#06FC99"/>
+<rect x="80" y="20" width="5" height="5" transform="rotate(-90 80 20)" fill="#06FC99"/>
+<rect x="90" y="38" width="10" height="5" transform="rotate(-90 90 38)" fill="#06FC99"/>
+<rect x="62" y="10" width="5" height="10" transform="rotate(-90 62 10)" fill="#06FC99"/>
+<rect x="5" y="49" width="13" height="5" transform="rotate(90 5 49)" fill="#06FC99"/>
+<rect x="51" y="100" width="13" height="5" transform="rotate(180 51 100)" fill="#06FC99"/>
+<rect x="15" y="72" width="8" height="5" transform="rotate(90 15 72)" fill="#06FC99"/>
+<rect x="28" y="90" width="8" height="5" transform="rotate(180 28 90)" fill="#06FC99"/>
+<rect x="20" y="80" width="5" height="5" transform="rotate(90 20 80)" fill="#06FC99"/>
+<rect x="10" y="62" width="10" height="5" transform="rotate(90 10 62)" fill="#06FC99"/>
+<rect x="38" y="90" width="5" height="10" transform="rotate(90 38 90)" fill="#06FC99"/>
+<rect x="49" y="95" width="13" height="5" fill="#06FC99"/>
+<rect x="100" y="49" width="13" height="5" transform="rotate(90 100 49)" fill="#06FC99"/>
+<rect x="72" y="85" width="8" height="5" fill="#06FC99"/>
+<rect x="90" y="72" width="8" height="5" transform="rotate(90 90 72)" fill="#06FC99"/>
+<rect x="45" y="58" width="36" height="10" transform="rotate(-90 45 58)" fill="#06FC99"/>
+<rect x="55" y="65" width="8" height="10" transform="rotate(90 55 65)" fill="#06FC99"/>
+<rect x="80" y="80" width="5" height="5" fill="#06FC99"/>
+<rect x="62" y="90" width="10" height="5" fill="#06FC99"/>
+<rect x="90" y="62" width="5" height="10" fill="#06FC99"/>
+</g>
+<defs>
+<clipPath id="clip0_1862_36059">
+<rect width="100" height="100" fill="white"/>
+</clipPath>
+</defs>
+</svg>

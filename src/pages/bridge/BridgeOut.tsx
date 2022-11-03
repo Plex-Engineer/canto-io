@@ -1,9 +1,8 @@
-import { CantoMainnet, PrimaryButton, Text } from "cantoui";
+import { CantoMainnet } from "global/config/networks";
 import { useEffect, useState } from "react";
 import { useBridgeStore } from "./stores/gravityStore";
 import styled from "@emotion/styled";
 import { TokenWallet } from "./components/TokenSelect";
-import bridgeIcon from "assets/bridge.svg";
 import { useEthers } from "@usedapp/core";
 import { BigNumber } from "ethers";
 import { chain, fee, memo } from "./config/networks";
@@ -12,7 +11,7 @@ import { toastBridge } from "./utils/bridgeConfirmations";
 import { ConvertTransferBox } from "./components/convertTransferBox";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
-import cantoIcon from "assets/logo.svg";
+import cantoIcon from "assets/icons/canto-evm.svg";
 import SwitchBridging from "./components/SwitchBridging";
 import {
   EmptySelectedConvertToken,
@@ -20,12 +19,15 @@ import {
   UserConvertToken,
   UserNativeTokens,
 } from "./config/interfaces";
-import { SelectedTokens, useTokenStore } from "./stores/cosmosTokens";
+import { SelectedTokens, useTokenStore } from "./stores/tokenStore";
 import { GeneralTransferBox } from "./components/generalTransferBox";
 import { formatUnits } from "ethers/lib/utils";
 import { convertStringToBigNumber } from "./utils/stringToBigNumber";
 import { getBridgeOutButtonText } from "./utils/reactiveButtonText";
 import FadeIn from "react-fade-in";
+import { PrimaryButton } from "global/packages/src";
+import { Text } from "global/packages/src/components/atoms/Text";
+import { BridgeStyled } from "./BridgeIn";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -83,77 +85,70 @@ const BridgeOut = ({
   }, [userCantoNativeGTokens]);
 
   return (
-    <Styled as={FadeIn}>
-      <Text type="title" color="primary">
-        send funds from canto
-      </Text>
-
-      <Text
-        type="text"
-        color="primary"
-        style={{
-          margin: "0 8rem",
-          lineHeight: "1.8rem",
-        }}
-      >
-        you must bridge your assets from the canto EVM to the canto (bridge) to
-        bridge out{" "}
-        <a
-          role="button"
-          tabIndex={0}
-          onClick={() =>
-            window.open(
-              "https://docs.canto.io/user-guides/converting-assets",
-              "_blank"
-            )
-          }
+    <FadeIn wrapperTag={BridgeStyled}>
+      <div className="title">
+        <Text
+          type="title"
+          size="title2"
+          color="primary"
           style={{
-            color: "var(--primary-color)",
-            cursor: "pointer",
-            textDecoration: "underline",
+            fontFamily: "Silkscreen",
+            lineHeight: "3rem",
           }}
         >
-          read here
-        </a>{" "}
-        for more information.
-      </Text>
+          send funds from canto
+        </Text>
+
+        <Text
+          type="text"
+          color="primary"
+          style={{
+            margin: "0 1rem",
+            fontSize: "14px",
+            lineHeight: "20.3px",
+          }}
+        >
+          you must bridge your assets from the canto EVM to <br /> the canto
+          (bridge) to bridge out{" "}
+          <a
+            role="button"
+            tabIndex={0}
+            onClick={() =>
+              window.open(
+                "https://docs.canto.io/user-guides/converting-assets",
+                "_blank"
+              )
+            }
+            style={{
+              color: "var(--primary-color)",
+              cursor: "pointer",
+              textDecoration: "underline",
+            }}
+          >
+            read here
+          </a>
+          .
+        </Text>
+      </div>
 
       <SwitchBridging
         left={{
           icon: cantoIcon,
-          name: "canto (EVM)",
+          name: "EVM",
         }}
         right={{
           icon: "https://raw.githubusercontent.com/Gravity-Bridge/Gravity-Docs/main/assets/Graviton-Grey.svg",
           name: "gravity Bridge",
-          height: 30,
+          height: 48,
         }}
       />
-      <div style={{ marginTop: "-1rem", alignContent: "center" }}>
-        <p
-          style={{
-            fontWeight: bridgeStore.transactionType == "Bridge" ? "900" : "100",
-            textAlign: "left",
-          }}
-        >
-          step 1: bridge assets from canto (evm) to canto (bridge)
-        </p>
-        <p
-          style={{
-            fontWeight:
-              bridgeStore.transactionType == "Convert" ? "900" : "100",
-            textAlign: "left",
-          }}
-        >
-          step 2: bridge assets from canto (bridge) to gravity bridge
-        </p>
-      </div>
 
       {bridgeStore.transactionType == "Bridge" && (
         <ConvertTransferBox
           tokenSelector={
             <TokenWallet
               tokens={userConvertERC20Tokens}
+              balance="erc20Balance"
               activeToken={selectedConvertToken}
               onSelect={(value) => {
                 tokenStore.setSelectedToken(
@@ -179,26 +174,12 @@ const BridgeOut = ({
         />
       )}
 
-      {/* <Text type="text" color="white" style={{ width: "70%" }}>
-        it could take several minutes for your bridged assets to arrive on the
-        gravity bridge network. for more detail, read{" "}
-        <a
-          href="https://docs.canto.io/user-guides/bridging-assets"
-          style={{
-            color: "white",
-            cursor: "pointer",
-            textDecoration: "underline",
-          }}
-        >
-          here
-        </a>
-        .
-      </Text> */}
       {bridgeStore.transactionType == "Convert" && (
         <GeneralTransferBox
           tokenSelector={
             <TokenWallet
               tokens={userCantoNativeGTokens}
+              balance="nativeBalance"
               activeToken={selectedNativeToken}
               onSelect={(value) => {
                 tokenStore.setSelectedToken(
@@ -216,12 +197,12 @@ const BridgeOut = ({
           from={{
             address: networkInfo.cantoAddress,
             name: "canto (bridge)",
-            icon: bridgeIcon,
+            // icon: bridgeIcon,
           }}
           to={{
             address: userGravityAddress,
             name: "gravity bridge",
-            icon: "https://raw.githubusercontent.com/Gravity-Bridge/Gravity-Docs/main/assets/Graviton-Grey.svg",
+            // icon: "https://raw.githubusercontent.com/Gravity-Bridge/Gravity-Docs/main/assets/Graviton-Grey.svg",
           }}
           networkName="canto"
           onSwitch={() => {
@@ -239,6 +220,8 @@ const BridgeOut = ({
           amount={amount}
           button={
             <PrimaryButton
+              height="big"
+              weight="bold"
               disabled={disabled}
               onClick={async () => {
                 setInBridgeTransaction(true);
@@ -270,16 +253,8 @@ const BridgeOut = ({
           }
         />
       )}
-    </Styled>
+    </FadeIn>
   );
 };
 
-const Styled = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
-  gap: 1rem;
-  margin: 2rem 0;
-`;
 export default BridgeOut;

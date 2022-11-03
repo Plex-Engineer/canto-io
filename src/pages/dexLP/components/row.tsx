@@ -47,15 +47,7 @@ const Row = (props: RowProps) => {
             alignItems: "center",
           }}
         >
-          <img
-            src={props.iconLeft}
-            height={30}
-            style={
-              {
-                // zIndex : "1"
-              }
-            }
-          />
+          <img src={props.iconLeft} height={30} />
           <img
             src={props.iconRight}
             height={28}

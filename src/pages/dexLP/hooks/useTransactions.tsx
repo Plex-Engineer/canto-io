@@ -1,7 +1,8 @@
 import { utils, Contract } from "ethers";
 import { useContractFunction } from "@usedapp/core";
-import { ADDRESSES, CantoTestnet } from "cantoui";
+import { CantoTestnet } from "global/config/networks";
 import { ERC20Abi, routerAbi } from "global/config/abi";
+import { ADDRESSES } from "global/config/addresses";
 
 interface Details {
   address: string;

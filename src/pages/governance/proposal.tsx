@@ -11,7 +11,7 @@ import {
 } from "./utils/formattingStrings";
 import { getAccountVote, voteOnProposal } from "./utils/voting";
 import { ProposalData } from "./config/interfaces";
-import { PrimaryButton } from "cantoui";
+import { PrimaryButton } from "global/packages/src";
 import { ProposalContainer } from "./components/Styled";
 
 interface ProposalWithChain {
