@@ -12,7 +12,7 @@ interface TransactionState {
   setTransactionStatus: (status: TransactionStatus | undefined) => void;
 }
 
-interface TransactionStatus {
+export interface TransactionStatus {
   type: StakingTransactionType;
   status: "signing" | "verifying" | "success" | "failure";
   message: React.ReactNode;

@@ -4,6 +4,65 @@ import { formatEther } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
 import React from "react";
 import { StakingTransactionType } from "../config/interfaces";
+import { TransactionStatus } from "../stores/transactionStore";
+import { userTxMessages } from "../config/messages";
+
+export async function performTxAndSetStatus(
+  tx: () => Promise<any>,
+  txType: StakingTransactionType,
+  setStatus: (status: TransactionStatus | undefined) => void,
+  close: () => void,
+  valName: string,
+  amount: BigNumber,
+  newValName?: string
+) {
+  //metamask pops up waiting for signature
+  setStatus({
+    status: "signing",
+    type: StakingTransactionType.DELEGATE,
+    message: userTxMessages.waitSign,
+  });
+  let transaction;
+  try {
+    transaction = await tx();
+  } catch (err: any) {
+    if (err.code == 4001) {
+      setStatus({
+        status: "failure",
+        type: txType,
+        message: userTxMessages.deniedTx,
+      });
+    }
+    await closeModalAndResetStatus(close, setStatus);
+    return;
+  }
+  setStatus({
+    status: "verifying",
+    type: txType,
+    message: userTxMessages.waitVerify,
+  });
+  setStatus({
+    status: "success",
+    type: txType,
+    message: await getActiveTransactionMessage(
+      transaction.tx_response.txhash,
+      valName,
+      amount,
+      txType,
+      newValName
+    ),
+  });
+  await closeModalAndResetStatus(close, setStatus);
+}
+
+async function closeModalAndResetStatus(
+  close: () => void,
+  setStatus: (status: undefined) => void
+) {
+  await sleep(2000);
+  close();
+  setStatus(undefined);
+}
 
 export async function getActiveTransactionMessage(
   txHash: string,

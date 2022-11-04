@@ -28,15 +28,17 @@ import {
 import { ModalManager } from "./modals/modalManager";
 import useTransactionStore from "./stores/transactionStore";
 import { OutlinedButton } from "global/packages/src/components/atoms/Button";
-import { userTxMessages } from "./config/messages";
-import { getActiveTransactionMessage, sleep } from "./utils/utils";
 import { chain, memo } from "global/config/cosmosConstants";
 import { claimRewardFee } from "./config/fees";
 import HelmetSEO from "global/components/seo";
+import useValidatorModalStore from "./stores/validatorModalStore";
+import { performTxAndSetStatus } from "./utils/utils";
 
 const Staking = () => {
   const networkInfo = useNetworkInfo();
   const transactionStore = useTransactionStore();
+  const validatorModalStore = useValidatorModalStore();
+
   // get all of the validators
   const [validators, setValidators] = useState<Validator[]>([]);
   const [stakingApr, setStakingApr] = useState("");
@@ -50,40 +52,22 @@ const Staking = () => {
   const [rewards, setRewards] = useState<BigNumber>(BigNumber.from("0"));
 
   async function handleClaimRewards() {
-    transactionStore.setTransactionMessage(userTxMessages.waitSign);
-    let tx: any;
-    try {
-      tx = await txClaimRewards(
-        networkInfo.account ?? "",
-        CantoMainnet.cosmosAPIEndpoint,
-        claimRewardFee,
-        chain,
-        memo,
-        userValidators
-      );
-    } catch (err: any) {
-      if (err.code == 4001) {
-        transactionStore.setTransactionStatus({
-          status: "failure",
-          type: StakingTransactionType.CLAIM_REWARDS,
-          message: userTxMessages.deniedTx,
-        });
-      }
-      sleep(2000);
-      transactionStore.setTransactionStatus(undefined);
-      return;
-    }
-    transactionStore.setTransactionMessage(userTxMessages.waitVerify);
-    transactionStore.setTransactionMessage(
-      await getActiveTransactionMessage(
-        tx.tx_response.txhash,
-        "",
-        rewards,
-        StakingTransactionType.CLAIM_REWARDS
-      )
+    performTxAndSetStatus(
+      async () =>
+        await txClaimRewards(
+          networkInfo.account ?? "",
+          CantoMainnet.cosmosAPIEndpoint,
+          claimRewardFee,
+          chain,
+          memo,
+          userValidators
+        ),
+      StakingTransactionType.CLAIM_REWARDS,
+      transactionStore.setTransactionStatus,
+      validatorModalStore.close,
+      "",
+      rewards
     );
-    sleep(2000);
-    transactionStore.setTransactionStatus(undefined);
   }
 
   async function getAllData() {
