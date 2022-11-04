@@ -1,11 +1,7 @@
 import { mainnetTokens } from "../config/lendingMarketTokens";
 import { MAINPAIRS } from "pages/dexLP/config/pairs";
 import { getTokenPrice, TokenPriceObject } from "./tokenPrices";
-import {
-  BalanceSheetToken,
-  LPTokenData,
-  useBalanceSheetData,
-} from "./useBalanceSheetData";
+import { BalanceSheetToken, useBalanceSheetData } from "./useBalanceSheetData";
 import { useLPInfo } from "./useLPInfo";
 import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
@@ -16,7 +12,8 @@ import { noteSymbol } from "global/utils/utils";
 import { useLMTokenData } from "../hooks/useLMTokenData";
 import { useUserLMTokenData } from "../hooks/useUserLMTokenData";
 import { LMTokenDetails } from "../config/interfaces";
-import { getUserLPTokenData } from "./getLPTokenData";
+import { formatUnits } from "ethers/lib/utils";
+import { UserLPTokenInfo, useUserLPInfo } from "./useLPUserData";
 
 export const BalanceSheet = () => {
   //get network info and token list
@@ -27,20 +24,17 @@ export const BalanceSheet = () => {
     networkInfo.account,
     networkInfo.chainId
   );
-  useEffect(() => {
-    getUserLPTokenData(7700, userLMTokens, undefined);
-  }, [userLMTokens]);
-
   //get base token prices used for pricing LP tokens
   const [tokenPrices, setTokenPrices] = useState<TokenPriceObject[]>([]);
   async function setAllTokenPrices() {
-    mainnetTokens.forEach(async (token) => {
-      if (!tokenPrices.find((tokenObj) => tokenObj.address == token.address)) {
-        const priceObject: TokenPriceObject = await getTokenPrice(token);
-        setTokenPrices((tokens) => [...tokens, priceObject]);
-      }
-    });
+    const priceObj = await Promise.all(
+      mainnetTokens.map(async (token) => {
+        return await getTokenPrice(token);
+      })
+    );
+    setTokenPrices(priceObj);
   }
+
   //set the prices on load
   useEffect(() => {
     setAllTokenPrices();
@@ -48,7 +42,7 @@ export const BalanceSheet = () => {
 
   //get LP token information, price + tokens per LP
   const LPInfo = useLPInfo(networkInfo.chainId, tokenPrices, MAINPAIRS);
-
+  const userLPInfo = useUserLPInfo(userLMTokens, LPInfo);
   const columns = ["ticker", "balance (supply + wallet)", "value"];
 
   const { assetTokens, debtTokens, LPTokens, totals } = useBalanceSheetData(
@@ -76,7 +70,7 @@ export const BalanceSheet = () => {
         tokens={[]}
         total={totals.totalAssets - totals.totalDebt}
       />
-      <LPTable LPTokens={LPTokens} />
+      <LPTable LPTokens={userLPInfo} />
     </div>
   );
 };
@@ -132,9 +126,12 @@ const BalanceSheetTable = (props: BalanceTableProps) => {
 };
 
 interface LPProps {
-  LPTokens: LPTokenData[];
+  LPTokens: UserLPTokenInfo[] | undefined;
 }
 const LPTable = (props: LPProps) => {
+  if (!props.LPTokens) {
+    return null;
+  }
   return (
     <div style={{ color: "white" }}>
       LP Tokens
@@ -145,7 +142,11 @@ const LPTable = (props: LPProps) => {
         {props.LPTokens.map((token) => {
           return (
             <LPRow
-              key={token.token1.symbol + token.token2.symbol + "LP"}
+              key={
+                token.data.token1.data.symbol +
+                token.data.token2.data.symbol +
+                "LP"
+              }
               token={token}
             />
           );
@@ -156,7 +157,7 @@ const LPTable = (props: LPProps) => {
 };
 
 interface LPRowProps {
-  token: LPTokenData;
+  token: UserLPTokenInfo;
 }
 const LPTableStyle = styled.tr`
   td:first-of-type,
@@ -171,27 +172,45 @@ const LPTableStyle = styled.tr`
 `;
 
 const LPRow = (props: LPRowProps) => {
-  return (
+  return props.token.hasBalance ? (
     <LPTableStyle>
       <td>
-        <img src={props.token.token1.icon} alt="" />{" "}
-        <p>{props.token.token1.symbol}</p>
+        <img src={props.token.data.token1.data.icon} alt="" />{" "}
+        <p>{props.token.data.token1.data.symbol}</p>
       </td>
       <td>
-        {truncateNumber(props.token.token1.amount.toString()) +
+        {truncateNumber(
+          formatUnits(
+            props.token.token1Balance,
+            props.token.data.token1.data.decimals
+          )
+        ) +
           " " +
-          props.token.token1.symbol}
+          props.token.data.token1.data.symbol}
       </td>
       <td>
-        <img src={props.token.token2.icon} alt="" />{" "}
-        <p>{props.token.token2.symbol}</p>
+        <img src={props.token.data.token2.data.icon} alt="" />{" "}
+        <p>{props.token.data.token2.data.symbol}</p>
       </td>
       <td>
-        {truncateNumber(props.token.token2.amount.toString()) +
+        {truncateNumber(
+          formatUnits(
+            props.token.token2Balance,
+            props.token.data.token2.data.decimals
+          )
+        ) +
           " " +
-          props.token.token2.symbol}
+          props.token.data.token2.data.symbol}
       </td>
-      <td>{noteSymbol + truncateNumber(props.token.value.toString())}</td>
+      <td>
+        {noteSymbol +
+          truncateNumber(
+            (
+              Number(formatUnits(props.token.userLP)) *
+              Number(props.token.data.priceInNote)
+            ).toString()
+          )}
+      </td>
     </LPTableStyle>
-  );
+  ) : null;
 };

@@ -1,24 +1,29 @@
 import { CallResult, useCalls } from "@usedapp/core";
 import { CantoTestnet } from "global/config/networks";
 import { PAIR } from "pages/dexLP/config/pairs";
-import { Contract } from "ethers";
+import { BigNumber, Contract } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { TokenPriceObject } from "./tokenPrices";
 import { ERC20Abi, routerAbi } from "global/config/abi";
 import { ADDRESSES } from "global/config/addresses";
+import { Token } from "global/config/tokenInfo";
 
 export interface LPTokenInfo {
   LPAddress: string;
+  cLPAddress: string;
   priceInNote: number;
+  stable: boolean;
   token1: {
-    tokenSymbol: string;
-    tokenAddress: string;
-    tokensPerLP: number;
+    data: Token;
+    price: string;
+    //scaled by 1e18
+    tokensPerLP: BigNumber;
   };
   token2: {
-    tokenSymbol: string;
-    tokenAddress: string;
-    tokensPerLP: number;
+    data: Token;
+    price: string;
+    //scaled by 1e18
+    tokensPerLP: BigNumber;
   };
 }
 export function useLPInfo(
@@ -69,40 +74,42 @@ export function useLPInfo(
   if (chuckSize > 0 && results?.[0] != undefined && !results?.[0].error) {
     processedTokens = array_chunks(results, chuckSize);
     return processedTokens.map((tokenData, idx) => {
-      const token1Reserves = formatUnits(
-        tokenData[0].reserveA,
-        LPTokens[idx].token1.decimals
-      );
-      const token2Reserves = formatUnits(
-        tokenData[0].reserveB,
-        LPTokens[idx].token2.decimals
-      );
-      const totalLP = formatUnits(tokenData[1][0], LPTokens[idx].decimals);
+      const token1Reserves = tokenData[0].reserveA;
+      const token2Reserves = tokenData[0].reserveB;
+      const totalLP = tokenData[1][0];
       const token1Price =
         tokenPrices.find(
           (priceObj) => priceObj.address == LPTokens[idx].token1.address
-        )?.priceInNote ?? 0;
+        )?.priceInNote ?? "0";
       const token2Price =
         tokenPrices.find(
           (priceObj) => priceObj.address == LPTokens[idx].token2.address
-        )?.priceInNote ?? 0;
+        )?.priceInNote ?? "0";
       const LPPrice =
-        (Number(token1Reserves) * Number(token1Price) +
-          Number(token2Reserves) * Number(token2Price)) /
-        Number(totalLP);
+        (Number(formatUnits(token1Reserves, LPTokens[idx].token1.decimals)) *
+          Number(token1Price) +
+          Number(formatUnits(token2Reserves, LPTokens[idx].token2.decimals)) *
+            Number(token2Price)) /
+        Number(formatUnits(totalLP, LPTokens[idx].decimals));
 
       return {
         LPAddress: LPTokens[idx].address,
+        cLPAddress: LPTokens[idx].cLPaddress,
         priceInNote: LPPrice,
+        stable: LPTokens[idx].stable,
         token1: {
-          tokenSymbol: LPTokens[idx].token1.symbol,
-          tokenAddress: LPTokens[idx].token1.address,
-          tokensPerLP: Number(token1Reserves) / Number(totalLP),
+          price: token1Price,
+          data: LPTokens[idx].token1,
+          tokensPerLP: token1Reserves
+            .mul(BigNumber.from(10).pow(18))
+            .div(totalLP),
         },
         token2: {
-          tokenSymbol: LPTokens[idx].token2.symbol,
-          tokenAddress: LPTokens[idx].token2.address,
-          tokensPerLP: Number(token2Reserves) / Number(totalLP),
+          price: token2Price,
+          data: LPTokens[idx].token2,
+          tokensPerLP: token2Reserves
+            .mul(BigNumber.from(10).pow(18))
+            .div(totalLP),
         },
       };
     });

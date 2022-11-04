@@ -23,7 +23,7 @@ export interface TokenPriceObject {
   priceInNote: string;
 }
 
-export async function getTokenPrice(token: Token) {
+export async function getTokenPrice(token: Token): Promise<TokenPriceObject> {
   if (token.address == TOKENS.cantoMainnet.NOTE.address) {
     return {
       name: token.name,
