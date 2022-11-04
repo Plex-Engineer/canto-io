@@ -15,7 +15,7 @@ interface TransactionState {
 interface TransactionStatus {
   type: StakingTransactionType;
   status: "signing" | "verifying" | "success" | "failure";
-  message: string;
+  message: React.ReactNode;
 }
 const useTransactionStore = create<TransactionState>((set) => ({
   inTransaction: false,

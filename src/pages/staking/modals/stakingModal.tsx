@@ -31,6 +31,7 @@ import { CInput } from "global/packages/src/components/atoms/Input";
 import styled from "@emotion/styled";
 import CheckBox from "global/components/checkBox";
 import { ConfirmUndelegationModal } from "./confirmUndelegationModal";
+import LoadingModal from "./loadingModal";
 
 interface StakingModalProps {
   validator: MasterValidatorProps;
@@ -62,8 +63,15 @@ export const StakingModal = ({
   const handleDelegate = async () => {
     const parsedAmount = formatValue(amount);
     if (!parsedAmount.isZero() && parsedAmount.lte(balance)) {
-      transactionStore.setTransactionMessage(userTxMessages.waitSign);
-      validatorModalStore.close();
+      //metamask pops up waiting for signature
+      transactionStore.setTransactionStatus({
+        status: "signing",
+        type: StakingTransactionType.DELEGATE,
+        message: userTxMessages.waitSign,
+      });
+      //close modal
+      //   validatorModalStore.close();
+      //staking has been called
       await txStake(
         account,
         validator.validator.operator_address,
@@ -73,16 +81,24 @@ export const StakingModal = ({
         chain,
         memo
       );
-      transactionStore.setTransactionMessage(userTxMessages.waitVerify);
-      transactionStore.setTransactionMessage(
-        await getActiveTransactionMessage(
+      //verification going on
+      transactionStore.setTransactionStatus({
+        status: "verifying",
+        type: StakingTransactionType.DELEGATE,
+        message: userTxMessages.waitVerify,
+      });
+
+      transactionStore.setTransactionStatus({
+        status: "success",
+        type: StakingTransactionType.DELEGATE,
+        message: await getActiveTransactionMessage(
           account ?? "",
           validator.validator.description.moniker,
           parsedAmount,
           balance,
           StakingTransactionType.DELEGATE
-        )
-      );
+        ),
+      });
     }
   };
 
@@ -92,8 +108,12 @@ export const StakingModal = ({
       validator.userDelegations?.balance.amount ?? "0"
     );
     if (!parsedAmount.isZero() && parsedAmount.lte(delegatedTo)) {
-      transactionStore.setTransactionMessage(userTxMessages.waitSign);
-      validatorModalStore.close();
+      transactionStore.setTransactionStatus({
+        status: "signing",
+        type: StakingTransactionType.UNDELEGATE,
+        message: userTxMessages.waitSign,
+      });
+      //   validatorModalStore.close();
       await txUnstake(
         account,
         validator.validator.operator_address,
@@ -103,17 +123,23 @@ export const StakingModal = ({
         chain,
         memo
       );
-      transactionStore.setTransactionMessage(userTxMessages.waitVerify);
-      transactionStore.setTransactionMessage(
-        await getActiveTransactionMessage(
+      transactionStore.setTransactionStatus({
+        status: "verifying",
+        type: StakingTransactionType.UNDELEGATE,
+        message: userTxMessages.waitVerify,
+      });
+      transactionStore.setTransactionStatus({
+        status: "success",
+        type: StakingTransactionType.DELEGATE,
+        message: await getActiveTransactionMessage(
           account ?? "",
           validator.validator.description.moniker,
           parsedAmount,
           delegatedTo,
           StakingTransactionType.UNDELEGATE,
           validator.validator.operator_address
-        )
-      );
+        ),
+      });
     }
   };
 
@@ -127,7 +153,11 @@ export const StakingModal = ({
       parsedAmount.lte(delegatedTo) &&
       newValidator
     ) {
-      transactionStore.setTransactionMessage(userTxMessages.waitSign);
+      transactionStore.setTransactionStatus({
+        status: "signing",
+        type: StakingTransactionType.REDELEGATE,
+        message: userTxMessages.waitSign,
+      });
       validatorModalStore.close();
       await txRedelegate(
         account,
@@ -139,9 +169,16 @@ export const StakingModal = ({
         validator.validator.operator_address,
         newValidator.operator_address
       );
-      transactionStore.setTransactionMessage(userTxMessages.waitVerify);
-      transactionStore.setTransactionMessage(
-        await getActiveTransactionMessage(
+      transactionStore.setTransactionStatus({
+        status: "verifying",
+        type: StakingTransactionType.UNDELEGATE,
+        message: userTxMessages.waitVerify,
+      });
+
+      transactionStore.setTransactionStatus({
+        status: "success",
+        type: StakingTransactionType.DELEGATE,
+        message: await getActiveTransactionMessage(
           account ?? "",
           validator.validator.description.moniker,
           parsedAmount,
@@ -149,15 +186,14 @@ export const StakingModal = ({
           StakingTransactionType.REDELEGATE,
           validator.validator.operator_address,
           newValidator.description.moniker
-        )
-      );
+        ),
+      });
     }
   };
 
   return (
     <StakingModalContainer>
-      {transactionStore.transactionMessage}
-
+      {transactionStore.transactionStatus && <LoadingModal />}
       <div className="title">{validator.validator.description.moniker}</div>
       <div className="desc">
         <div
