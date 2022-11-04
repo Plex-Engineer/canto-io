@@ -29,7 +29,7 @@ import { ModalManager } from "./modals/modalManager";
 import useTransactionStore from "./stores/transactionStore";
 import { OutlinedButton } from "global/packages/src/components/atoms/Button";
 import { userTxMessages } from "./config/messages";
-import { getActiveTransactionMessage } from "./utils/utils";
+import { getActiveTransactionMessage, sleep } from "./utils/utils";
 import { chain, memo } from "global/config/cosmosConstants";
 import { claimRewardFee } from "./config/fees";
 import HelmetSEO from "global/components/seo";
@@ -51,24 +51,39 @@ const Staking = () => {
 
   async function handleClaimRewards() {
     transactionStore.setTransactionMessage(userTxMessages.waitSign);
-    await txClaimRewards(
-      networkInfo.account ?? "",
-      CantoMainnet.cosmosAPIEndpoint,
-      claimRewardFee,
-      chain,
-      memo,
-      userValidators
-    );
+    let tx: any;
+    try {
+      tx = await txClaimRewards(
+        networkInfo.account ?? "",
+        CantoMainnet.cosmosAPIEndpoint,
+        claimRewardFee,
+        chain,
+        memo,
+        userValidators
+      );
+    } catch (err: any) {
+      if (err.code == 4001) {
+        transactionStore.setTransactionStatus({
+          status: "failure",
+          type: StakingTransactionType.CLAIM_REWARDS,
+          message: userTxMessages.deniedTx,
+        });
+      }
+      sleep(2000);
+      transactionStore.setTransactionStatus(undefined);
+      return;
+    }
     transactionStore.setTransactionMessage(userTxMessages.waitVerify);
     transactionStore.setTransactionMessage(
       await getActiveTransactionMessage(
-        networkInfo.account ?? "",
+        tx.tx_response.txhash,
         "",
         rewards,
-        networkInfo.balance,
         StakingTransactionType.CLAIM_REWARDS
       )
     );
+    sleep(2000);
+    transactionStore.setTransactionStatus(undefined);
   }
 
   async function getAllData() {

@@ -9,7 +9,7 @@ interface TransactionState {
   transactionMessage: React.ReactNode;
   setTransactionMessage: (message: React.ReactNode) => void;
   transactionStatus: TransactionStatus | undefined;
-  setTransactionStatus: (status: TransactionStatus) => void;
+  setTransactionStatus: (status: TransactionStatus | undefined) => void;
 }
 
 interface TransactionStatus {
@@ -26,7 +26,7 @@ const useTransactionStore = create<TransactionState>((set) => ({
     set({ transactionMessage: message });
   },
   transactionStatus: undefined,
-  setTransactionStatus: (status: TransactionStatus) =>
+  setTransactionStatus: (status: TransactionStatus | undefined) =>
     set({
       transactionStatus: status,
     }),

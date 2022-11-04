@@ -21,10 +21,7 @@ import {
 } from "pages/staking/utils/transactions";
 import { delegateFee, unbondingFee } from "../config/fees";
 import { chain, memo } from "global/config/cosmosConstants";
-import {
-  getActiveTransactionMessage,
-  levenshteinDistance,
-} from "../utils/utils";
+import { getActiveTransactionMessage, sleep } from "../utils/utils";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import { CInput } from "global/packages/src/components/atoms/Input";
@@ -72,15 +69,28 @@ export const StakingModal = ({
       //close modal
       //   validatorModalStore.close();
       //staking has been called
-      await txStake(
-        account,
-        validator.validator.operator_address,
-        parsedAmount.toString(),
-        CantoMainnet.cosmosAPIEndpoint,
-        delegateFee,
-        chain,
-        memo
-      );
+      let tx;
+      try {
+        tx = await txStake(
+          account,
+          validator.validator.operator_address,
+          parsedAmount.toString(),
+          CantoMainnet.cosmosAPIEndpoint,
+          delegateFee,
+          chain,
+          memo
+        );
+      } catch (err: any) {
+        if (err.code == 4001) {
+          transactionStore.setTransactionStatus({
+            status: "failure",
+            type: StakingTransactionType.DELEGATE,
+            message: userTxMessages.deniedTx,
+          });
+        }
+        await closeModalAndResetStatus();
+        return;
+      }
       //verification going on
       transactionStore.setTransactionStatus({
         status: "verifying",
@@ -92,13 +102,13 @@ export const StakingModal = ({
         status: "success",
         type: StakingTransactionType.DELEGATE,
         message: await getActiveTransactionMessage(
-          account ?? "",
+          tx.tx_response.txhash,
           validator.validator.description.moniker,
           parsedAmount,
-          balance,
           StakingTransactionType.DELEGATE
         ),
       });
+      await closeModalAndResetStatus();
     }
   };
 
@@ -113,16 +123,28 @@ export const StakingModal = ({
         type: StakingTransactionType.UNDELEGATE,
         message: userTxMessages.waitSign,
       });
-      //   validatorModalStore.close();
-      await txUnstake(
-        account,
-        validator.validator.operator_address,
-        parsedAmount.toString(),
-        CantoMainnet.cosmosAPIEndpoint,
-        delegateFee,
-        chain,
-        memo
-      );
+      let tx;
+      try {
+        tx = await txUnstake(
+          account,
+          validator.validator.operator_address,
+          parsedAmount.toString(),
+          CantoMainnet.cosmosAPIEndpoint,
+          delegateFee,
+          chain,
+          memo
+        );
+      } catch (err: any) {
+        if (err.code == 4001) {
+          transactionStore.setTransactionStatus({
+            status: "failure",
+            type: StakingTransactionType.UNDELEGATE,
+            message: userTxMessages.deniedTx,
+          });
+        }
+        await closeModalAndResetStatus();
+        return;
+      }
       transactionStore.setTransactionStatus({
         status: "verifying",
         type: StakingTransactionType.UNDELEGATE,
@@ -130,16 +152,15 @@ export const StakingModal = ({
       });
       transactionStore.setTransactionStatus({
         status: "success",
-        type: StakingTransactionType.DELEGATE,
+        type: StakingTransactionType.UNDELEGATE,
         message: await getActiveTransactionMessage(
-          account ?? "",
+          tx.tx_response.txhash,
           validator.validator.description.moniker,
           parsedAmount,
-          delegatedTo,
-          StakingTransactionType.UNDELEGATE,
-          validator.validator.operator_address
+          StakingTransactionType.UNDELEGATE
         ),
       });
+      await closeModalAndResetStatus();
     }
   };
 
@@ -158,20 +179,32 @@ export const StakingModal = ({
         type: StakingTransactionType.REDELEGATE,
         message: userTxMessages.waitSign,
       });
-      validatorModalStore.close();
-      await txRedelegate(
-        account,
-        parsedAmount.toString(),
-        CantoMainnet.cosmosAPIEndpoint,
-        unbondingFee,
-        chain,
-        memo,
-        validator.validator.operator_address,
-        newValidator.operator_address
-      );
+      let tx;
+      try {
+        tx = await txRedelegate(
+          account,
+          parsedAmount.toString(),
+          CantoMainnet.cosmosAPIEndpoint,
+          unbondingFee,
+          chain,
+          memo,
+          validator.validator.operator_address,
+          newValidator.operator_address
+        );
+      } catch (err: any) {
+        if (err.code == 4001) {
+          transactionStore.setTransactionStatus({
+            status: "failure",
+            type: StakingTransactionType.REDELEGATE,
+            message: userTxMessages.deniedTx,
+          });
+        }
+        await closeModalAndResetStatus();
+        return;
+      }
       transactionStore.setTransactionStatus({
         status: "verifying",
-        type: StakingTransactionType.UNDELEGATE,
+        type: StakingTransactionType.REDELEGATE,
         message: userTxMessages.waitVerify,
       });
 
@@ -179,17 +212,21 @@ export const StakingModal = ({
         status: "success",
         type: StakingTransactionType.DELEGATE,
         message: await getActiveTransactionMessage(
-          account ?? "",
+          tx.tx_response.txhash,
           validator.validator.description.moniker,
           parsedAmount,
-          delegatedTo,
           StakingTransactionType.REDELEGATE,
-          validator.validator.operator_address,
           newValidator.description.moniker
         ),
       });
+      await closeModalAndResetStatus();
     }
   };
+  async function closeModalAndResetStatus() {
+    await sleep(2000);
+    validatorModalStore.close();
+    transactionStore.setTransactionStatus(undefined);
+  }
 
   return (
     <StakingModalContainer>
