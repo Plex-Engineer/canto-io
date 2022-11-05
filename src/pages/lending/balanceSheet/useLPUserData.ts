@@ -4,6 +4,14 @@ import { UserLMTokenDetails } from "../config/interfaces";
 
 export interface UserLPTokenInfo {
   hasBalance: boolean;
+  supply: {
+    balance: BigNumber;
+    collateral: boolean;
+    collateralFactor: BigNumber;
+  };
+  borrow: {
+    balance: BigNumber;
+  };
   userLP: BigNumber;
   data: LPTokenInfo;
   token1Balance: BigNumber;
@@ -22,6 +30,14 @@ export function useUserLPInfo(
         lmToken?.balanceOf.add(lmToken?.supplyBalance) ?? BigNumber.from(0);
       return {
         hasBalance: !lpTokenBalance?.isZero(),
+        supply: {
+          balance: lmToken?.supplyBalance ?? BigNumber.from(0),
+          collateral: lmToken?.collateral ?? false,
+          collateralFactor: lmToken?.collateralFactor ?? BigNumber.from(0),
+        },
+        borrow: {
+          balance: lmToken?.borrowBalance ?? BigNumber.from(0),
+        },
         userLP: lpTokenBalance,
         data: lpToken,
         token1Balance: lpTokenBalance

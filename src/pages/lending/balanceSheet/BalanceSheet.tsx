@@ -1,5 +1,5 @@
 import { mainnetTokens } from "../config/lendingMarketTokens";
-import { MAINPAIRS } from "pages/dexLP/config/pairs";
+import { MAINPAIRS, TESTPAIRS } from "pages/dexLP/config/pairs";
 import { getTokenPrice, TokenPriceObject } from "./tokenPrices";
 import { BalanceSheetToken, useBalanceSheetData } from "./useBalanceSheetData";
 import { useLPInfo } from "./useLPInfo";
@@ -14,6 +14,8 @@ import { useUserLMTokenData } from "../hooks/useUserLMTokenData";
 import { LMTokenDetails } from "../config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
 import { UserLPTokenInfo, useUserLPInfo } from "./useLPUserData";
+import { getHypotheticalLiquidityCantoPrice } from "./utils";
+import { CantoTestnet } from "global/providers";
 
 export const BalanceSheet = () => {
   //get network info and token list
@@ -34,18 +36,26 @@ export const BalanceSheet = () => {
     );
     setTokenPrices(priceObj);
   }
-
   //set the prices on load
   useEffect(() => {
     setAllTokenPrices();
   }, []);
 
-  //get LP token information, price + tokens per LP
-  const LPInfo = useLPInfo(networkInfo.chainId, tokenPrices, MAINPAIRS);
+  const pairs =
+    Number(networkInfo.chainId) == CantoTestnet.chainId ? TESTPAIRS : MAINPAIRS;
+
+  // //get LP token information, price + tokens per LP
+  const LPInfo = useLPInfo(networkInfo.chainId, tokenPrices, pairs);
   const userLPInfo = useUserLPInfo(userLMTokens, LPInfo);
   const columns = ["ticker", "balance (supply + wallet)", "value"];
-
-  const { assetTokens, debtTokens, LPTokens, totals } = useBalanceSheetData(
+  const cantoLiqPrice = getHypotheticalLiquidityCantoPrice(
+    "",
+    740,
+    userLMTokens,
+    userLPInfo,
+    tokenPrices.find((priceObj) => priceObj.symbol == "CANTO")?.priceInNote
+  );
+  const { assetTokens, debtTokens, totals } = useBalanceSheetData(
     userLMTokens,
     tokenPrices,
     LPInfo

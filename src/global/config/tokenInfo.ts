@@ -72,7 +72,7 @@ export const TOKENS = {
       symbol: "CANTO",
       name: "Canto",
       decimals: decimals.CANTO,
-      address: ADDRESSES.testnet.ETH,
+      address: ADDRESSES.testnet.WCANTO,
       isERC20: false,
       isLP: false,
       icon: icons.CANTO,

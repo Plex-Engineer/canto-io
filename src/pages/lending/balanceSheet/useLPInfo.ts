@@ -13,8 +13,10 @@ export interface LPTokenInfo {
   cLPAddress: string;
   priceInNote: number;
   stable: boolean;
+  totalSupply: BigNumber;
   token1: {
     data: Token;
+    reserves: BigNumber;
     price: string;
     //scaled by 1e18
     tokensPerLP: BigNumber;
@@ -22,6 +24,7 @@ export interface LPTokenInfo {
   token2: {
     data: Token;
     price: string;
+    reserves: BigNumber;
     //scaled by 1e18
     tokensPerLP: BigNumber;
   };
@@ -97,9 +100,11 @@ export function useLPInfo(
         cLPAddress: LPTokens[idx].cLPaddress,
         priceInNote: LPPrice,
         stable: LPTokens[idx].stable,
+        totalSupply: totalLP,
         token1: {
           price: token1Price,
           data: LPTokens[idx].token1,
+          reserves: token1Reserves,
           tokensPerLP: token1Reserves
             .mul(BigNumber.from(10).pow(18))
             .div(totalLP),
@@ -107,6 +112,7 @@ export function useLPInfo(
         token2: {
           price: token2Price,
           data: LPTokens[idx].token2,
+          reserves: token2Reserves,
           tokensPerLP: token2Reserves
             .mul(BigNumber.from(10).pow(18))
             .div(totalLP),

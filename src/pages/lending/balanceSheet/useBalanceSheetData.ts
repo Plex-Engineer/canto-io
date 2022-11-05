@@ -36,14 +36,12 @@ export function useBalanceSheetData(
 ): {
   assetTokens: BalanceSheetToken[];
   debtTokens: BalanceSheetToken[];
-  LPTokens: LPTokenData[];
   totals: Totals;
 } {
   if (!tokens || !priceObject || !LPInfo) {
     return {
       assetTokens: [],
       debtTokens: [],
-      LPTokens: [],
       totals: { totalAssets: 0, totalDebt: 0 },
     };
   }
@@ -51,7 +49,6 @@ export function useBalanceSheetData(
   let totalDebt = 0;
   const assetTokens: BalanceSheetToken[] = [];
   const debtTokens: BalanceSheetToken[] = [];
-  const LPTokens: LPTokenData[] = [];
 
   tokens?.map((token) => {
     const price = token.data.underlying.isLP
@@ -62,7 +59,7 @@ export function useBalanceSheetData(
           return priceToken.address == token.data.underlying.address;
         })?.priceInNote ?? 0;
 
-    if (!token.balanceOf.isZero() || !token.balanceOfC.isZero()) {
+    if (!(token.balanceOf.isZero() && token.balanceOfC.isZero())) {
       const balanceOf = Number(
         formatUnits(
           token.supplyBalance.add(token.balanceOf),
@@ -94,38 +91,6 @@ export function useBalanceSheetData(
         balanceOfNote,
       });
     }
-    if (
-      token.data.underlying.isLP &&
-      (!token.balanceOf.isZero() || !token.balanceOfC.isZero())
-    ) {
-      const pair = MAINPAIRS.find(
-        (pair) => pair.address == token.data.underlying.address
-      );
-      if (pair) {
-        const LPAmount = Number(
-          formatUnits(
-            token.supplyBalance.add(token.balanceOf),
-            token.data.underlying.decimals
-          )
-        );
-        const LPTokenData = LPInfo?.find((lpToken) => {
-          return lpToken.LPAddress == token.data.underlying.address;
-        });
-        LPTokens.push({
-          token1: {
-            symbol: pair?.token1.symbol,
-            icon: pair.token1.icon,
-            amount: LPAmount * Number(LPTokenData?.token1.tokensPerLP),
-          },
-          token2: {
-            symbol: pair?.token2.symbol,
-            icon: pair.token2.icon,
-            amount: LPAmount * Number(LPTokenData?.token2.tokensPerLP),
-          },
-          value: Number(price) * LPAmount,
-        });
-      }
-    }
   });
   const totals = {
     totalAssets,
@@ -134,7 +99,6 @@ export function useBalanceSheetData(
   return {
     assetTokens: assetTokens,
     debtTokens: debtTokens,
-    LPTokens,
     totals: totals,
   };
 }
