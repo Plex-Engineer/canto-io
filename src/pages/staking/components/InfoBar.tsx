@@ -27,6 +27,7 @@ const InfoBar = ({ totalStaked, rewards, apr, onRewards }: Props) => {
       </div>
       <OutlinedButton
         height="big"
+        disabled={Number(rewards) == 0}
         onClick={() => {
           onRewards();
         }}
