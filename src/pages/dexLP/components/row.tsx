@@ -16,7 +16,6 @@ interface RowProps {
 const RowStyle = styled.tr<RowProps>`
   opacity: 0;
   animation: fadein 0.6s ${(props) => props.delay}s, fader 0.5s;
-  animation-fill-mode: forwards;
   @keyframes fadein {
     from {
       opacity: 0;

@@ -130,28 +130,14 @@ const Staking = () => {
       />
       <Styled>
         <ModalManager allValidators={validators} />
-        <Tabs className={"tabs"}>
-          <TabList>
-            <Tab>my staking</Tab>
-            <Tab>all validators</Tab>
-            <div
-              style={{
-                flex: "5",
-                display: "flex",
-                justifyContent: "right",
-              }}
-            >
-              <OutlinedButton
-                onClick={() => {
-                  handleClaimRewards();
-                }}
-              >
-                claim rewards
-              </OutlinedButton>
-            </div>
+        <Tabs className="tabs">
+          <TabList className="tablist">
+            <Tab className="tab">my staking</Tab>
+            <Tab className="tab">all validators</Tab>
           </TabList>
           <TabPanel>
             <MyStaking
+              onRewards={handleClaimRewards}
               connected={Number(networkInfo.chainId) == CantoMainnet.chainId}
               account={networkInfo.account ?? ""}
               balance={networkInfo.balance}

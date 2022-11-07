@@ -19,6 +19,7 @@ const MyStaking = (props: MyStakingProps) => {
             balance={truncateNumber(formatEther(props.balance))}
             totalStaked={truncateNumber(formatEther(props.totalStaked))}
             totalUnbonding={truncateNumber(formatEther(props.totalUnbonding))}
+            onRewards={props.onRewards}
             rewards={truncateNumber(formatEther(props.totalRewards))}
             apr={props.apr}
           />
@@ -42,6 +43,7 @@ const MyStaking = (props: MyStakingProps) => {
             color="primary"
             align="left"
             hidden={props.undelegationValidators.length == 0}
+            style={{ marginTop: "2rem" }}
           >
             currently undelegating
           </Text>
