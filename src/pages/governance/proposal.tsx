@@ -13,6 +13,8 @@ import { getAccountVote, voteOnProposal } from "./utils/voting";
 import { ProposalData } from "./config/interfaces";
 import { PrimaryButton } from "global/packages/src";
 import { ProposalContainer } from "./components/Styled";
+import { formatUnits } from "ethers/lib/utils";
+import { truncateNumber } from "global/utils/utils";
 
 interface ProposalWithChain {
   proposal: ProposalData;
@@ -49,6 +51,7 @@ const Proposal = (props: ProposalWithChain) => {
 
   const [voteOption, setVoteOption] = useState("none");
   const voteEnded = props.proposal.status != "PROPOSAL_STATUS_VOTING_PERIOD";
+  console.log(props.proposal);
   return (
     <ProposalContainer>
       <button
@@ -92,29 +95,36 @@ const Proposal = (props: ProposalWithChain) => {
       <RowCell
         color="#06fc99"
         type="Yes:"
-        value={props.proposal.final_tally_result.yes.toString()}
+        value={truncateNumber(
+          formatUnits(props.proposal.final_tally_result.yes)
+        )}
       />
       <RowCell
         color="#ff4646"
         type="No:"
-        value={props.proposal.final_tally_result.no.toString()}
+        value={truncateNumber(
+          formatUnits(props.proposal.final_tally_result.no)
+        )}
       />
       <RowCell
         color="#710808"
         type="No With Veto:"
-        value={props.proposal.final_tally_result.no_with_veto.toString()}
+        value={truncateNumber(
+          formatUnits(props.proposal.final_tally_result.no_with_veto)
+        )}
       />
       <RowCell
         color="#fbea51"
         type="Abstain:"
-        value={props.proposal.final_tally_result.abstain.toString()}
+        value={truncateNumber(
+          formatUnits(props.proposal.final_tally_result.abstain)
+        )}
       />
       <RowCell
         type="TOTAL DEPOSIT:"
         value={
-          props.proposal.total_deposit[0].amount +
-          " " +
-          props.proposal.total_deposit[0].denom
+          truncateNumber(formatUnits(props.proposal.total_deposit[0].amount)) +
+          " canto"
         }
       />
       <RowCell
