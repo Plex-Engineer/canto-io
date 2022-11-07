@@ -14,8 +14,7 @@ import {
 } from "../config/interfaces";
 import { BigNumber } from "ethers";
 import { txStake, txUnstake } from "../utils/transactions";
-import { userTxMessages } from "../config/messages";
-import { getActiveTransactionMessage } from "../utils/utils";
+import { performTxAndSetStatus } from "../utils/utils";
 import { delegateFee } from "../config/fees";
 import { chain, memo } from "global/config/cosmosConstants";
 import { formatEther, parseEther } from "ethers/lib/utils";
@@ -40,7 +39,6 @@ const DelegationModal = ({
   const validatorModalStore = useValidatorModalStore();
   const [amount, setAmount] = useState("");
   const transactionStore = useTransactionStore();
-  const [newValidator, setNewValidator] = useState<Validator | undefined>();
 
   function formatValue(value: string) {
     if (value === "" || isNaN(Number(value))) {
@@ -54,53 +52,44 @@ const DelegationModal = ({
       validator.userDelegations?.balance.amount ?? "0"
     );
     if (!parsedAmount.isZero() && parsedAmount.lte(delegatedTo)) {
-      transactionStore.setTransactionMessage(userTxMessages.waitSign);
-      validatorModalStore.close();
-      await txUnstake(
-        account,
-        validator.validator.operator_address,
-        parsedAmount.toString(),
-        CantoMainnet.cosmosAPIEndpoint,
-        delegateFee,
-        chain,
-        memo
-      );
-      transactionStore.setTransactionMessage(userTxMessages.waitVerify);
-      transactionStore.setTransactionMessage(
-        await getActiveTransactionMessage(
-          account ?? "",
-          validator.validator.description.moniker,
-          parsedAmount,
-          delegatedTo,
-          StakingTransactionType.UNDELEGATE,
-          validator.validator.operator_address
-        )
+      await performTxAndSetStatus(
+        async () =>
+          await txUnstake(
+            account,
+            validator.validator.operator_address,
+            parsedAmount.toString(),
+            CantoMainnet.cosmosAPIEndpoint,
+            delegateFee,
+            chain,
+            memo
+          ),
+        StakingTransactionType.UNDELEGATE,
+        transactionStore.setTransactionStatus,
+        validatorModalStore.close,
+        validator.validator.description.moniker,
+        parsedAmount
       );
     }
   };
   const handleDelegate = async () => {
     const parsedAmount = formatValue(amount);
     if (!parsedAmount.isZero() && parsedAmount.lte(balance)) {
-      transactionStore.setTransactionMessage(userTxMessages.waitSign);
-      validatorModalStore.close();
-      await txStake(
-        account,
-        validator.validator.operator_address,
-        parsedAmount.toString(),
-        CantoMainnet.cosmosAPIEndpoint,
-        delegateFee,
-        chain,
-        memo
-      );
-      transactionStore.setTransactionMessage(userTxMessages.waitVerify);
-      transactionStore.setTransactionMessage(
-        await getActiveTransactionMessage(
-          account ?? "",
-          validator.validator.description.moniker,
-          parsedAmount,
-          balance,
-          StakingTransactionType.DELEGATE
-        )
+      await performTxAndSetStatus(
+        async () =>
+          await txStake(
+            account,
+            validator.validator.operator_address,
+            parsedAmount.toString(),
+            CantoMainnet.cosmosAPIEndpoint,
+            delegateFee,
+            chain,
+            memo
+          ),
+        StakingTransactionType.DELEGATE,
+        transactionStore.setTransactionStatus,
+        validatorModalStore.close,
+        validator.validator.description.moniker,
+        parsedAmount
       );
     }
   };

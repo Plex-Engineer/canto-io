@@ -127,24 +127,6 @@ export async function getActiveTransactionMessage(
   return "";
 }
 
-export async function handleClaimRewards() {
-  performTxAndSetStatus(
-    async () =>
-      await txClaimRewards(
-        networkInfo.account ?? "",
-        CantoMainnet.cosmosAPIEndpoint,
-        claimRewardFee,
-        chain,
-        memo,
-        userValidators
-      ),
-    StakingTransactionType.CLAIM_REWARDS,
-    transactionStore.setTransactionStatus,
-    validatorModalStore.close,
-    "",
-    rewards
-  );
-}
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }

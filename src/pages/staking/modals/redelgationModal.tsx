@@ -14,10 +14,9 @@ import {
 } from "../config/interfaces";
 import Select from "react-select";
 import { BigNumber } from "ethers";
-import { txRedelegate, txStake } from "../utils/transactions";
-import { userTxMessages } from "../config/messages";
-import { getActiveTransactionMessage } from "../utils/utils";
-import { delegateFee, unbondingFee } from "../config/fees";
+import { txRedelegate } from "../utils/transactions";
+import { performTxAndSetStatus } from "../utils/utils";
+import { unbondingFee } from "../config/fees";
 import { chain, memo } from "global/config/cosmosConstants";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { CantoMainnet } from "global/config/networks";
@@ -59,29 +58,24 @@ const RedelegationModal = ({
       parsedAmount.lte(delegatedTo) &&
       newValidator
     ) {
-      transactionStore.setTransactionMessage(userTxMessages.waitSign);
-      validatorModalStore.close();
-      await txRedelegate(
-        account,
-        parsedAmount.toString(),
-        CantoMainnet.cosmosAPIEndpoint,
-        unbondingFee,
-        chain,
-        memo,
-        validator.validator.operator_address,
-        newValidator.operator_address
-      );
-      transactionStore.setTransactionMessage(userTxMessages.waitVerify);
-      transactionStore.setTransactionMessage(
-        await getActiveTransactionMessage(
-          account ?? "",
-          validator.validator.description.moniker,
-          parsedAmount,
-          delegatedTo,
-          StakingTransactionType.REDELEGATE,
-          validator.validator.operator_address,
-          newValidator.description.moniker
-        )
+      await performTxAndSetStatus(
+        async () =>
+          await txRedelegate(
+            account,
+            parsedAmount.toString(),
+            CantoMainnet.cosmosAPIEndpoint,
+            unbondingFee,
+            chain,
+            memo,
+            validator.validator.operator_address,
+            newValidator.operator_address
+          ),
+        StakingTransactionType.REDELEGATE,
+        transactionStore.setTransactionStatus,
+        validatorModalStore.close,
+        validator.validator.description.moniker,
+        parsedAmount,
+        newValidator.description.moniker
       );
     }
   };
