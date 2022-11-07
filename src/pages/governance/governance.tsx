@@ -9,6 +9,12 @@ import { emptyProposal, ProposalData } from "./config/interfaces";
 import { GovernanceContainer } from "./components/Styled";
 import { StyledPopup } from "global/components/Styled";
 import HelmetSEO from "global/components/seo";
+import { useAlert } from "global/packages/src";
+import { DelegationResponse } from "pages/staking/config/interfaces";
+import { calculateTotalStaked } from "pages/staking/utils/allUserValidatorInfo";
+import { getDelegationsForAddress } from "pages/staking/utils/transactions";
+import { CantoMainnet } from "global/config/networks";
+import { BigNumber } from "ethers";
 
 const Governance = () => {
   //network info store
@@ -21,12 +27,26 @@ const Governance = () => {
   //Let the user know they are on the wrong network
   useEffect(() => {
     proposals.initProposals(Number(networkInfo.chainId));
-  }, [networkInfo.chainId]);
+    getTotalStake();
+  }, [networkInfo.chainId, networkInfo.account]);
 
   useEffect(() => {
     Mixpanel.events.pageOpened("governance", networkInfo.account);
   });
 
+  //voting power is equal to toal stake
+  const [delegations, setDelegations] = useState<DelegationResponse[]>([]);
+  const totalUserStake = calculateTotalStaked(delegations);
+  async function getTotalStake() {
+    if (networkInfo.account) {
+      setDelegations(
+        await getDelegationsForAddress(
+          CantoMainnet.cosmosAPIEndpoint,
+          networkInfo.account
+        )
+      );
+    }
+  }
   function AllGovBars() {
     return (
       <>
