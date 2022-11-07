@@ -12,7 +12,6 @@ import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { CantoMainnet } from "global/config/networks";
 import Select from "react-select";
 import useTransactionStore from "../stores/transactionStore";
-import { userTxMessages } from "../config/messages";
 import useValidatorModalStore from "../stores/validatorModalStore";
 import {
   txRedelegate,
@@ -21,15 +20,14 @@ import {
 } from "pages/staking/utils/transactions";
 import { delegateFee, unbondingFee } from "../config/fees";
 import { chain, memo } from "global/config/cosmosConstants";
-import {
-  getActiveTransactionMessage,
-  levenshteinDistance,
-} from "../utils/utils";
+import { performTxAndSetStatus } from "../utils/utils";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import styled from "@emotion/styled";
 import CheckBox from "global/components/checkBox";
+import { ConfirmUndelegationModal } from "./confirmUndelegationModal";
+import LoadingModal from "./loadingModal";
 
 interface StakingModalProps {
   validator: MasterValidatorProps;
@@ -48,6 +46,8 @@ export const StakingModal = ({
   const transactionStore = useTransactionStore();
   const validatorModalStore = useValidatorModalStore();
   const [newValidator, setNewValidator] = useState<Validator | undefined>();
+  const [showUndelegateConfimation, setShowUndelegateConfirmation] =
+    useState(false);
 
   function formatValue(value: string) {
     if (value === "" || isNaN(Number(value))) {
@@ -59,26 +59,22 @@ export const StakingModal = ({
   const handleDelegate = async () => {
     const parsedAmount = formatValue(amount);
     if (!parsedAmount.isZero() && parsedAmount.lte(balance)) {
-      transactionStore.setTransactionMessage(userTxMessages.waitSign);
-      validatorModalStore.close();
-      await txStake(
-        account,
-        validator.validator.operator_address,
-        parsedAmount.toString(),
-        CantoMainnet.cosmosAPIEndpoint,
-        delegateFee,
-        chain,
-        memo
-      );
-      transactionStore.setTransactionMessage(userTxMessages.waitVerify);
-      transactionStore.setTransactionMessage(
-        await getActiveTransactionMessage(
-          account ?? "",
-          validator.validator.description.moniker,
-          parsedAmount,
-          balance,
-          StakingTransactionType.DELEGATE
-        )
+      await performTxAndSetStatus(
+        async () =>
+          await txStake(
+            account,
+            validator.validator.operator_address,
+            parsedAmount.toString(),
+            CantoMainnet.cosmosAPIEndpoint,
+            delegateFee,
+            chain,
+            memo
+          ),
+        StakingTransactionType.DELEGATE,
+        transactionStore.setTransactionStatus,
+        validatorModalStore.close,
+        validator.validator.description.moniker,
+        parsedAmount
       );
     }
   };
@@ -89,27 +85,22 @@ export const StakingModal = ({
       validator.userDelegations?.balance.amount ?? "0"
     );
     if (!parsedAmount.isZero() && parsedAmount.lte(delegatedTo)) {
-      transactionStore.setTransactionMessage(userTxMessages.waitSign);
-      validatorModalStore.close();
-      await txUnstake(
-        account,
-        validator.validator.operator_address,
-        parsedAmount.toString(),
-        CantoMainnet.cosmosAPIEndpoint,
-        delegateFee,
-        chain,
-        memo
-      );
-      transactionStore.setTransactionMessage(userTxMessages.waitVerify);
-      transactionStore.setTransactionMessage(
-        await getActiveTransactionMessage(
-          account ?? "",
-          validator.validator.description.moniker,
-          parsedAmount,
-          delegatedTo,
-          StakingTransactionType.UNDELEGATE,
-          validator.validator.operator_address
-        )
+      await performTxAndSetStatus(
+        async () =>
+          await txUnstake(
+            account,
+            validator.validator.operator_address,
+            parsedAmount.toString(),
+            CantoMainnet.cosmosAPIEndpoint,
+            delegateFee,
+            chain,
+            memo
+          ),
+        StakingTransactionType.UNDELEGATE,
+        transactionStore.setTransactionStatus,
+        validatorModalStore.close,
+        validator.validator.description.moniker,
+        parsedAmount
       );
     }
   };
@@ -124,35 +115,31 @@ export const StakingModal = ({
       parsedAmount.lte(delegatedTo) &&
       newValidator
     ) {
-      transactionStore.setTransactionMessage(userTxMessages.waitSign);
-      validatorModalStore.close();
-      await txRedelegate(
-        account,
-        parsedAmount.toString(),
-        CantoMainnet.cosmosAPIEndpoint,
-        unbondingFee,
-        chain,
-        memo,
-        validator.validator.operator_address,
-        newValidator.operator_address
-      );
-      transactionStore.setTransactionMessage(userTxMessages.waitVerify);
-      transactionStore.setTransactionMessage(
-        await getActiveTransactionMessage(
-          account ?? "",
-          validator.validator.description.moniker,
-          parsedAmount,
-          delegatedTo,
-          StakingTransactionType.REDELEGATE,
-          validator.validator.operator_address,
-          newValidator.description.moniker
-        )
+      await performTxAndSetStatus(
+        async () =>
+          await txRedelegate(
+            account,
+            parsedAmount.toString(),
+            CantoMainnet.cosmosAPIEndpoint,
+            unbondingFee,
+            chain,
+            memo,
+            validator.validator.operator_address,
+            newValidator.operator_address
+          ),
+        StakingTransactionType.REDELEGATE,
+        transactionStore.setTransactionStatus,
+        validatorModalStore.close,
+        validator.validator.description.moniker,
+        parsedAmount,
+        newValidator.description.moniker
       );
     }
   };
 
   return (
     <StakingModalContainer>
+      {transactionStore.transactionStatus && <LoadingModal />}
       <div className="title">{validator.validator.description.moniker}</div>
       <div className="desc">
         <div
@@ -303,10 +290,16 @@ export const StakingModal = ({
                       )
                     )
                 }
-                onClick={() => handleUndelegate()}
+                onClick={() => setShowUndelegateConfirmation(true)}
               >
                 undelegate
               </OutlinedButton>
+              {showUndelegateConfimation && (
+                <ConfirmUndelegationModal
+                  onUndelegate={() => handleUndelegate()}
+                  onCancel={() => setShowUndelegateConfirmation(false)}
+                />
+              )}
             </TabPanel>
             <TabPanel className="tabPanel">
               <div

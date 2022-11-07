@@ -67,6 +67,7 @@ export interface MyStakingProps {
   apr: string;
   userValidationInfo: MasterValidatorProps[];
   undelegationValidators: MasterValidatorProps[];
+  onRewards: () => Promise<void>;
 }
 export interface AllStakingProps {
   validators: Validator[];

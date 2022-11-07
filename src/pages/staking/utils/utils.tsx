@@ -2,76 +2,114 @@ import { CantoMainnet } from "global/config/networks";
 import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
-import {
-  getCantoBalance,
-  getDelegationsForAddress,
-} from "pages/staking/utils/transactions";
 import React from "react";
-import {
-  DelegationResponse,
-  StakingTransactionType,
-} from "../config/interfaces";
+import { StakingTransactionType } from "../config/interfaces";
+import { TransactionStatus } from "../stores/transactionStore";
+import { userTxMessages } from "../config/messages";
+
+export async function performTxAndSetStatus(
+  tx: () => Promise<any>,
+  txType: StakingTransactionType,
+  setStatus: (status: TransactionStatus | undefined) => void,
+  close: () => void,
+  valName: string,
+  amount: BigNumber,
+  newValName?: string
+) {
+  //metamask pops up waiting for signature
+  setStatus({
+    status: "signing",
+    type: StakingTransactionType.DELEGATE,
+    message: userTxMessages.waitSign,
+  });
+  let transaction;
+  try {
+    transaction = await tx();
+  } catch (err: any) {
+    if (err.code == 4001) {
+      setStatus({
+        status: "failure",
+        type: txType,
+        message: userTxMessages.deniedTx,
+      });
+    }
+    await closeModalAndResetStatus(close, setStatus);
+    return;
+  }
+  setStatus({
+    status: "verifying",
+    type: txType,
+    message: userTxMessages.waitVerify,
+  });
+  setStatus({
+    status: "success",
+    type: txType,
+    message: await getActiveTransactionMessage(
+      transaction.tx_response.txhash,
+      valName,
+      amount,
+      txType,
+      newValName
+    ),
+  });
+  await closeModalAndResetStatus(close, setStatus);
+}
+
+async function closeModalAndResetStatus(
+  close: () => void,
+  setStatus: (status: undefined) => void
+) {
+  await sleep(2000);
+  close();
+  setStatus(undefined);
+}
 
 export async function getActiveTransactionMessage(
-  account: string,
+  txHash: string,
   validatorName: string,
   amount: BigNumber,
-  prevBalance: BigNumber,
   transactionType: StakingTransactionType,
-  currentValidator?: string,
   newValidatorName?: string
 ): Promise<React.ReactNode> {
   if (transactionType != StakingTransactionType.NONE) {
+    const fetchOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
     let numberOfBlocksChecked = 0;
     while (numberOfBlocksChecked < 5) {
-      await sleep(6000);
-      const currentBalance = await getCantoBalance(
-        CantoMainnet.cosmosAPIEndpoint,
-        account
-      );
-      const delegations: DelegationResponse[] = await getDelegationsForAddress(
-        CantoMainnet.cosmosAPIEndpoint,
-        account
-      );
-      let delegatedTo = BigNumber.from("0");
-      if (currentValidator != null) {
-        delegations.forEach((delegation) => {
-          if (
-            delegation.delegation.validator_address.includes(currentValidator)
-          ) {
-            delegatedTo = BigNumber.from(delegation.balance.amount);
-          }
-        });
+      const tx = await (
+        await fetch(
+          CantoMainnet.cosmosAPIEndpoint + "/cosmos/tx/v1beta1/txs/" + txHash,
+          fetchOptions
+        )
+      ).json();
+      if (tx.tx_response) {
+        if (
+          transactionType === StakingTransactionType.DELEGATE ||
+          transactionType === StakingTransactionType.CLAIM_REWARDS
+        ) {
+          return `you have successfully ${
+            transactionType == StakingTransactionType.DELEGATE
+              ? "delegated"
+              : "claimed"
+          } ${truncateNumber(formatEther(amount))} CANTO ${
+            validatorName ? `to ${validatorName}` : "in rewards"
+          }`;
+        } else if (transactionType === StakingTransactionType.UNDELEGATE) {
+          return `you have successfully undelegated ${truncateNumber(
+            formatEther(amount)
+          )} CANTO from ${validatorName}`;
+        } else if (transactionType === StakingTransactionType.REDELEGATE) {
+          return `you have successfully redelegated ${truncateNumber(
+            formatEther(amount)
+          )} CANTO from ${validatorName} to ${newValidatorName}`;
+        }
       }
       numberOfBlocksChecked++;
-
-      if (
-        (transactionType === StakingTransactionType.DELEGATE ||
-          transactionType === StakingTransactionType.CLAIM_REWARDS) &&
-        !prevBalance.eq(currentBalance)
-      ) {
-        return `you have successfully ${
-          transactionType == StakingTransactionType.DELEGATE
-            ? "delegated"
-            : "claimed"
-        } ${truncateNumber(formatEther(amount))} CANTO ${
-          validatorName ? `to ${validatorName}` : "in rewards"
-        }`;
-      } else if (
-        transactionType === StakingTransactionType.UNDELEGATE &&
-        !delegatedTo.eq(prevBalance)
-      ) {
-        return `you have successfully undelegated ${truncateNumber(
-          formatEther(amount)
-        )} CANTO from ${validatorName}`;
-      } else if (
-        transactionType === StakingTransactionType.REDELEGATE &&
-        !delegatedTo.eq(amount)
-      ) {
-        return `you have successfully redelegated ${truncateNumber(
-          formatEther(amount)
-        )} CANTO from ${validatorName} to ${newValidatorName}`;
-      }
+      await sleep(4000);
     }
     //since we have checked multiple blocks, the transaction must have failed
     const transactionName = getTransactionName(transactionType);
@@ -88,7 +126,8 @@ export async function getActiveTransactionMessage(
   }
   return "";
 }
-async function sleep(ms: number) {
+
+export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 function getTransactionName(transactionType: StakingTransactionType) {

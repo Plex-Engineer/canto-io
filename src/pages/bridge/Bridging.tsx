@@ -281,6 +281,7 @@ const Styled = styled.div`
       border: none;
       background-color: #06fc9a4c;
       border-bottom: 4px solid var(--primary-color);
+      border-top: 4px solid transparent;
     }
   }
   .tablist {
@@ -290,6 +291,8 @@ const Styled = styled.div`
   .react-tabs__tab--selected {
     border: none;
     border-bottom: 4px solid var(--primary-color);
+    border-top: 4px solid transparent;
+
     background-color: #06fc991a;
   }
   .react-tabs__tab--disabled {
