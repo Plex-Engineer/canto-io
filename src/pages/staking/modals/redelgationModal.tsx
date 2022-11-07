@@ -235,7 +235,7 @@ const RedelegationModal = ({
   );
 };
 
-const Selected = styled.div`
+export const Selected = styled.div`
   .react-select-container {
   }
   .react-select__input-container {
