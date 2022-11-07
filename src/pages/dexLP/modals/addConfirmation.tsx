@@ -343,6 +343,10 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
           <p>get rewards</p>
         </div>
       </div>
+      <a style={{ textAlign: "center" }}>
+        ** by checking this box, LP tokens will be supplied in the lending
+        market **
+      </a>
     </DexModalContainer>
   );
 };
