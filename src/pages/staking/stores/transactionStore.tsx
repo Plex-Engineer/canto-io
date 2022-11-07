@@ -1,12 +1,21 @@
 import React from "react";
 import { toast } from "react-toastify";
 import create from "zustand";
+import { StakingTransactionType } from "../config/interfaces";
 
 interface TransactionState {
   inTransaction: boolean;
   setInTransaction: (inTransaction: boolean) => void;
   transactionMessage: React.ReactNode;
   setTransactionMessage: (message: React.ReactNode) => void;
+  transactionStatus: TransactionStatus | undefined;
+  setTransactionStatus: (status: TransactionStatus | undefined) => void;
+}
+
+export interface TransactionStatus {
+  type: StakingTransactionType;
+  status: "signing" | "verifying" | "success" | "failure";
+  message: React.ReactNode;
 }
 const useTransactionStore = create<TransactionState>((set) => ({
   inTransaction: false,
@@ -16,6 +25,11 @@ const useTransactionStore = create<TransactionState>((set) => ({
     // showToast(message);
     set({ transactionMessage: message });
   },
+  transactionStatus: undefined,
+  setTransactionStatus: (status: TransactionStatus | undefined) =>
+    set({
+      transactionStatus: status,
+    }),
 }));
 
 function showToast(msg: string) {

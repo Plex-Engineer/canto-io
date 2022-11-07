@@ -17,6 +17,7 @@ export const CantoNav = () => {
   const balance = useEtherBalance(account);
   const location = useLocation();
   const [tokenName, setTokenName] = useState("");
+
   async function grabTokenName() {
     setTokenName(await getBaseTokenName(chainId?.toString() ?? ""));
   }
