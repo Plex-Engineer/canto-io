@@ -11,6 +11,8 @@ import FadeIn from "react-fade-in";
 import { levenshteinDistance } from "../utils/utils";
 import jailedSymbol from "assets/jailed.svg";
 import { ToolTip } from "pages/lending/components/Tooltip";
+import { ToolTipL } from "pages/lending/components/Styled";
+import Popup from "reactjs-popup";
 
 interface TableProps {
   validators: MasterValidatorProps[];
@@ -95,9 +97,14 @@ const Row = (props: RowProps) => {
       <td>
         {props.name}
         {props.jailed ? (
-          <ToolTip style={{width: "150px"}} data-tooltip="this validator is currently jailed">
-            <img style={{ height: "20px" }} src={jailedSymbol} />
-          </ToolTip>
+          <Popup
+            trigger={<img style={{ height: "20px" }} src={jailedSymbol} />}
+            on={["hover", "focus"]}
+          >
+            <ToolTipL style={{ width: "175px" }}>
+              This validator is currently jailed
+            </ToolTipL>
+          </Popup>
         ) : null}
       </td>
       <td>

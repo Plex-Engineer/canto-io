@@ -12,10 +12,10 @@ const Footer = () => {
         <a href="https://canto.io/bugsPlaceholder">
           <Text type="text">report bug</Text>
         </a>
-        <a href="https://canto.io/documentsPlaceholder">
+        <a href="https://docs.canto.io/">
           <Text type="text">document</Text>
         </a>
-        <a href="https://canto.io/aboutPlaceholder">
+        <a href="https://docs.canto.io/">
           <Text type="text">about canto</Text>
         </a>
       </div>

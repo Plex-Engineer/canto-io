@@ -108,6 +108,10 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
           >
             add to keplr
           </OutlinedButton>
+          <div className="links">
+            <a>report a bug</a>
+            <a href="https://docs.canto.io/">docs</a>
+          </div>
         </footer>
       </div>
     </Styled>
@@ -124,6 +128,10 @@ const Styled = styled.div<MenuState>`
   }
   .navlinks {
     flex: 2;
+    /* margin-top: 40%; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .overlay {
     position: absolute;
@@ -150,6 +158,13 @@ const Styled = styled.div<MenuState>`
     transition: all 0.4s;
     display: flex;
     flex-direction: column;
+  }
+
+  .links {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
   }
 
   header {
