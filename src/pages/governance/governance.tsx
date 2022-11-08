@@ -15,7 +15,7 @@ import { calculateTotalStaked } from "pages/staking/utils/allUserValidatorInfo";
 import { getDelegationsForAddress } from "pages/staking/utils/transactions";
 import { CantoMainnet } from "global/config/networks";
 import { BigNumber } from "ethers";
-
+import { useNavigate } from "react-router-dom";
 const Governance = () => {
   //network info store
   const networkInfo = useNetworkInfo();
@@ -23,7 +23,7 @@ const Governance = () => {
   const proposals = useProposals();
   //track modal click
   const [isOpen, setIsOpened] = useState(false);
-
+  const navigate = useNavigate();
   //Let the user know they are on the wrong network
   useEffect(() => {
     proposals.initProposals(Number(networkInfo.chainId));
@@ -84,6 +84,7 @@ const Governance = () => {
                     status={proposal.status}
                     onClick={() => {
                       proposals.setCurrentProposal(proposal);
+                      navigate("proposal");
                       // setCurrentProposal(proposal);
                       setIsOpened(true);
                     }}
@@ -107,18 +108,14 @@ const Governance = () => {
         <AllGovBars />
       </div>
 
-      <StyledPopup
+      {/* <StyledPopup
         open={isOpen}
         onClose={() => {
           setIsOpened(false);
         }}
       >
-        <Proposal
-          proposal={proposals.currentProposal ?? emptyProposal}
-          chainId={Number(networkInfo.chainId)}
-          account={networkInfo.account}
-        />
-      </StyledPopup>
+        <Proposal />
+      </StyledPopup> */}
     </GovernanceContainer>
   );
 };

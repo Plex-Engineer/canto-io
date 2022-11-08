@@ -16,6 +16,7 @@ import Staking from "pages/staking/Staking";
 import LandingPage from "pages/landing_page/LandingPage";
 import BridgingPage from "pages/bridge/Bridging";
 import { PAGES } from "global/config/pageList";
+import Proposal from "pages/governance/proposal";
 //Styling
 const Container = styled.div`
   display: flex;
@@ -50,6 +51,11 @@ function App() {
                 path={PAGES.governance.link}
                 key="governance"
                 element={<Governance />}
+              />
+              <Route
+                path={PAGES.governance.link + "/proposal"}
+                key="governance"
+                element={<Proposal />}
               />
               <Route
                 path={PAGES.lp.link}

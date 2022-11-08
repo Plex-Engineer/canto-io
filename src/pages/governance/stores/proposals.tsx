@@ -10,7 +10,7 @@ import { ProposalData, Tally } from "../config/interfaces";
 interface ProposalProps {
   proposals: ProposalData[];
   initProposals: (chainId: number) => void;
-  currentProposal: ProposalData | undefined;
+  currentProposal: ProposalData;
   setCurrentProposal: (proposal: ProposalData) => void;
 }
 
@@ -39,7 +39,32 @@ export const useProposals = create<ProposalProps>()(
         }
       });
     },
-    currentProposal: undefined,
+    currentProposal: {
+      content: {
+        "@type": "none",
+        description: "none",
+        erc20address: "none",
+        title: "none",
+      },
+      deposit_end_time: "000000",
+      final_tally_result: {
+        abstain: "0",
+        no: "0",
+        no_with_veto: "0",
+        yes: "0",
+      },
+      proposal_id: "0000",
+      status: "none",
+      submit_time: "000000",
+      total_deposit: [
+        {
+          amount: "0",
+          denom: "aCanto",
+        },
+      ],
+      voting_end_time: "000000",
+      voting_start_time: "0000000",
+    },
     setCurrentProposal: (proposal: ProposalData) =>
       set({ currentProposal: proposal }),
   }))

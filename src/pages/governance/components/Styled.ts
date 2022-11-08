@@ -58,22 +58,26 @@ export const GovernanceContainer = styled.div`
     row-gap: 1rem;
     column-gap: 0.8rem;
   }
+
+  @media (max-width: 1000px) {
+    width: 100%;
+    .grid {
+      grid-template-columns: 1fr;
+      row-gap: 1rem;
+      column-gap: 0.8rem;
+    }
+  }
 `;
 export const ProposalContainer = styled.div`
   overflow-wrap: break-word;
-  padding: 2rem;
+  padding: 4rem;
   display: flex;
-  height: 90vh;
-  max-height: 45.6rem;
-  width: 500px;
+  width: 1200px;
   flex-direction: column;
   align-items: stretch;
   gap: 1rem;
-  overflow-y: scroll;
-  scrollbar-color: var(--primary-color);
-  scroll-behavior: smooth;
-  /* width */
-
+  background-color: black;
+  margin: 0 auto; /* width */
   .title {
     font-weight: 300;
     font-size: 184px;
@@ -114,5 +118,10 @@ export const ProposalContainer = styled.div`
     /* almost white */
 
     color: #efefef;
+  }
+
+  @media (max-width: 1000px) {
+    padding: 2rem;
+    width: 100%;
   }
 `;

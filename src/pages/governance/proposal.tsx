@@ -15,6 +15,8 @@ import { PrimaryButton } from "global/packages/src";
 import { ProposalContainer } from "./components/Styled";
 import { formatUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
+import { useProposals } from "./stores/proposals";
+import { useNetworkInfo } from "global/stores/networkInfo";
 
 interface ProposalWithChain {
   proposal: ProposalData;
@@ -22,21 +24,20 @@ interface ProposalWithChain {
   account: string | undefined;
 }
 
-const Proposal = (props: ProposalWithChain) => {
-  const yes = Number(props.proposal.final_tally_result.yes);
-  const no = Number(props.proposal.final_tally_result.no);
-  const abstain = Number(props.proposal.final_tally_result.abstain);
-  const veto = Number(props.proposal.final_tally_result.no_with_veto);
-  const totalVotes = yes + no + abstain + veto;
+const Proposal = () => {
+  const proposal = useProposals().currentProposal;
+  const chainId = Number(useNetworkInfo().chainId);
 
+  const yes = Number(proposal.final_tally_result.yes);
+  const no = Number(proposal.final_tally_result.no);
+  const abstain = Number(proposal.final_tally_result.abstain);
+  const veto = Number(proposal.final_tally_result.no_with_veto);
+  const totalVotes = yes + no + abstain + veto;
   const [accountVote, setAccountVote] = useState("NONE");
   const [voteSuccess, setVoteSuccess] = useState<number | undefined>(undefined);
   async function showAccountVote() {
-    if (props.proposal.status == "PROPOSAL_STATUS_VOTING_PERIOD") {
-      const vote = await getAccountVote(
-        props.proposal.proposal_id,
-        nodeURL(props.chainId)
-      );
+    if (proposal.status == "PROPOSAL_STATUS_VOTING_PERIOD") {
+      const vote = await getAccountVote(proposal.proposal_id, nodeURL(chainId));
       setAccountVote(vote);
     }
   }
@@ -45,13 +46,12 @@ const Proposal = (props: ProposalWithChain) => {
   }, []);
 
   const chain = {
-    chainId: props.chainId ?? 0,
-    cosmosChainId: `canto_${props.chainId}-1`,
+    chainId: chainId ?? 0,
+    cosmosChainId: `canto_${chainId}-1`,
   };
 
   const [voteOption, setVoteOption] = useState("none");
-  const voteEnded = props.proposal.status != "PROPOSAL_STATUS_VOTING_PERIOD";
-  console.log(props.proposal);
+  const voteEnded = proposal.status != "PROPOSAL_STATUS_VOTING_PERIOD";
   return (
     <ProposalContainer>
       <button
@@ -63,20 +63,20 @@ const Proposal = (props: ProposalWithChain) => {
       </button>
       <div className="tiny">
         {" "}
-        <p>governance / {props.proposal.proposal_id}</p>
+        <p>governance / {proposal.proposal_id}</p>
         <p>
           {!voteEnded
             ? "Voting"
-            : props.proposal.status == "PROPOSAL_STATUS_PASSED"
+            : proposal.status == "PROPOSAL_STATUS_PASSED"
             ? "Passed"
             : "Rejected"}
         </p>
       </div>
-      <h1>{props.proposal.content.title}</h1>
+      <h1>{proposal.content.title}</h1>
       <RowCell
         type="Type:"
-        value={props.proposal.content["@type"].slice(
-          props.proposal.content["@type"].lastIndexOf(".") + 1
+        value={proposal.content["@type"].slice(
+          proposal.content["@type"].lastIndexOf(".") + 1
         )}
       />
       <div
@@ -89,55 +89,49 @@ const Proposal = (props: ProposalWithChain) => {
         }}
       >
         <p>Description</p>
-        <p>{props.proposal.content.description}</p>
+        <p>{proposal.content.description}</p>
       </div>
 
       <RowCell
         color="#06fc99"
         type="Yes:"
-        value={truncateNumber(
-          formatUnits(props.proposal.final_tally_result.yes)
-        )}
+        value={truncateNumber(formatUnits(proposal.final_tally_result.yes))}
       />
       <RowCell
         color="#ff4646"
         type="No:"
-        value={truncateNumber(
-          formatUnits(props.proposal.final_tally_result.no)
-        )}
+        value={truncateNumber(formatUnits(proposal.final_tally_result.no))}
       />
       <RowCell
         color="#710808"
         type="No With Veto:"
         value={truncateNumber(
-          formatUnits(props.proposal.final_tally_result.no_with_veto)
+          formatUnits(proposal.final_tally_result.no_with_veto)
         )}
       />
       <RowCell
         color="#fbea51"
         type="Abstain:"
-        value={truncateNumber(
-          formatUnits(props.proposal.final_tally_result.abstain)
-        )}
+        value={truncateNumber(formatUnits(proposal.final_tally_result.abstain))}
       />
       <RowCell
         type="TOTAL DEPOSIT:"
         value={
-          truncateNumber(formatUnits(props.proposal.total_deposit[0].amount)) +
+          truncateNumber(formatUnits(proposal.total_deposit[0].amount)) +
           " canto"
         }
       />
       <RowCell
         type="SUBMIT TIME:"
-        value={convertDateToString(props.proposal.submit_time)}
+        value={convertDateToString(proposal.submit_time)}
       />
       <RowCell
         type="VOTING END TIME:"
-        value={convertDateToString(props.proposal.voting_end_time)}
+        value={convertDateToString(proposal.voting_end_time)}
       />
       <RowCell
         type="DEPOSIT END TIME:"
-        value={convertDateToString(props.proposal.deposit_end_time)}
+        value={convertDateToString(proposal.deposit_end_time)}
       />
       <RowCell type="QUORUM:" value={votingThresholds.quorum} />
       <RowCell type="THRESHOLD:" value={votingThresholds.threshold} />
@@ -178,9 +172,9 @@ const Proposal = (props: ProposalWithChain) => {
         disabled={voteEnded}
         onClick={async () => {
           const voteSuccess = await voteOnProposal(
-            Number(props.proposal.proposal_id),
+            Number(proposal.proposal_id),
             convertToVoteNumber(voteOption),
-            nodeURL(props.chainId),
+            nodeURL(chainId),
             votingFee,
             chain,
             memo
