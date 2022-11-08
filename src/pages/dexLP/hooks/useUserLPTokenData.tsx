@@ -1,6 +1,5 @@
 import { useCalls, useEtherBalance } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
-import { PAIR, TESTPAIRS, MAINPAIRS } from "../config/pairs";
 import { CantoTestnet, CantoMainnet } from "global/config/networks";
 import { cERC20Abi, ERC20Abi, routerAbi } from "global/config/abi";
 import { LPPairInfo, UserLPPairInfo } from "../config/interfaces";
@@ -8,7 +7,6 @@ import { getSupplyBalanceFromCTokens } from "pages/lending/utils/utils";
 import { formatUnits } from "ethers/lib/utils";
 import { checkForCantoInPair } from "../utils/utils";
 import { ADDRESSES } from "global/config/addresses";
-import { TOKENS as ALLTOKENS } from "global/config/tokenInfo";
 
 const useUserLPTokenInfo = (
   LPTokens: LPPairInfo[],
@@ -24,7 +22,6 @@ const useUserLPTokenInfo = (
       : ADDRESSES.cantoMainnet.PriceFeed;
   const RouterContract = new Contract(routerAddress, routerAbi);
   const CANTOBalance = useEtherBalance(account) ?? BigNumber.from(0);
-  console.log(LPTokens)
 
   const calls = LPTokens.map((pair) => {
     const ERC20Contract = new Contract(pair.basePairInfo.address, ERC20Abi);
@@ -105,7 +102,6 @@ const useUserLPTokenInfo = (
     }
     return chunks;
   };
-  console.log(results)
 
   if (chuckSize > 0 && results?.[1] != undefined && !results?.[1].error) {
     processedTokens = array_chunks(results, chuckSize);
