@@ -17,10 +17,7 @@ const Governance = () => {
   const networkInfo = useNetworkInfo();
   //proposal store
   const proposals = useProposals();
-  //track modal click
-  const [isOpen, setIsOpened] = useState(false);
   const navigate = useNavigate();
-  //Let the user know they are on the wrong network
   useEffect(() => {
     proposals.initProposals(Number(networkInfo.chainId));
     getTotalStake();
@@ -81,8 +78,6 @@ const Governance = () => {
                     onClick={() => {
                       proposals.setCurrentProposal(proposal);
                       navigate("proposal/" + proposal.proposal_id);
-                      // setCurrentProposal(proposal);
-                      setIsOpened(true);
                     }}
                   />
                 );
