@@ -1,3 +1,4 @@
+import { Details } from "./../../lending/hooks/useTransaction";
 import styled from "@emotion/styled";
 
 export const GovernanceContainer = styled.div`
@@ -73,11 +74,24 @@ export const ProposalContainer = styled.div`
   padding: 4rem;
   display: flex;
   width: 1200px;
-  flex-direction: column;
   align-items: stretch;
-  gap: 1rem;
+  gap: 4rem;
   background-color: black;
   margin: 0 auto; /* width */
+
+  .details {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .pie {
+    height: 200px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
   .title {
     font-weight: 300;
     font-size: 184px;

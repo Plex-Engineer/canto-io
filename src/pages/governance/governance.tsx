@@ -36,7 +36,7 @@ const Governance = () => {
 
   //voting power is equal to toal stake
   const [delegations, setDelegations] = useState<DelegationResponse[]>([]);
-  const totalUserStake = calculateTotalStaked(delegations);
+  //   const totalUserStake = calculateTotalStaked(delegations);
   async function getTotalStake() {
     if (networkInfo.account) {
       setDelegations(
