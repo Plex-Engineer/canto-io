@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Proposal from "./proposal";
 import { Mixpanel } from "mixpanel";
 import { useProposals } from "./stores/proposals";
 import { useNetworkInfo } from "global/stores/networkInfo";
@@ -7,24 +6,18 @@ import GovBar from "./components/govBar";
 import { convertDateToString } from "./utils/formattingStrings";
 import { emptyProposal, ProposalData } from "./config/interfaces";
 import { GovernanceContainer } from "./components/Styled";
-import { StyledPopup } from "global/components/Styled";
 import HelmetSEO from "global/components/seo";
-import { useAlert } from "global/packages/src";
 import { DelegationResponse } from "pages/staking/config/interfaces";
 import { calculateTotalStaked } from "pages/staking/utils/allUserValidatorInfo";
 import { getDelegationsForAddress } from "pages/staking/utils/transactions";
 import { CantoMainnet } from "global/config/networks";
-import { BigNumber } from "ethers";
 import { useNavigate } from "react-router-dom";
 const Governance = () => {
   //network info store
   const networkInfo = useNetworkInfo();
   //proposal store
   const proposals = useProposals();
-  //track modal click
-  const [isOpen, setIsOpened] = useState(false);
   const navigate = useNavigate();
-  //Let the user know they are on the wrong network
   useEffect(() => {
     proposals.initProposals(Number(networkInfo.chainId));
     getTotalStake();
@@ -84,9 +77,7 @@ const Governance = () => {
                     status={proposal.status}
                     onClick={() => {
                       proposals.setCurrentProposal(proposal);
-                      navigate("proposal");
-                      // setCurrentProposal(proposal);
-                      setIsOpened(true);
+                      navigate("proposal/" + proposal.proposal_id);
                     }}
                   />
                 );
