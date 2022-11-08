@@ -5,7 +5,12 @@ import {
   generateEndpointProposals,
   generateEndpointProposalTally,
 } from "@tharsis/provider";
-import { ProposalData, Tally } from "../config/interfaces";
+import {
+  emptyProposal,
+  emptyTally,
+  ProposalData,
+  Tally,
+} from "../config/interfaces";
 
 interface ProposalProps {
   proposals: ProposalData[];
@@ -39,43 +44,25 @@ export const useProposals = create<ProposalProps>()(
         }
       });
     },
-    currentProposal: {
-      content: {
-        "@type": "none",
-        description: "none",
-        erc20address: "none",
-        title: "none",
-      },
-      deposit_end_time: "000000",
-      final_tally_result: {
-        abstain: "0",
-        no: "0",
-        no_with_veto: "0",
-        yes: "0",
-      },
-      proposal_id: "0000",
-      status: "none",
-      submit_time: "000000",
-      total_deposit: [
-        {
-          amount: "0",
-          denom: "aCanto",
-        },
-      ],
-      voting_end_time: "000000",
-      voting_start_time: "0000000",
-    },
+    currentProposal: emptyProposal,
     setCurrentProposal: (proposal: ProposalData) =>
       set({ currentProposal: proposal }),
   }))
 );
 
-async function queryTally(proposalID: string, chainId: number): Promise<Tally> {
+export async function queryTally(
+  proposalID: string,
+  chainId: number
+): Promise<Tally> {
   const tally = await fetch(
     nodeURL(Number(chainId)) + generateEndpointProposalTally(proposalID),
     fetchOptions
   );
-  return await tally.json();
+  const tallyVotes = await tally.json();
+  if (tallyVotes.tally) {
+    return tallyVotes;
+  }
+  return emptyTally;
 }
 
 const fetchOptions = {

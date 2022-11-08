@@ -53,8 +53,8 @@ function App() {
                 element={<Governance />}
               />
               <Route
-                path={PAGES.governance.link + "/proposal"}
-                key="governance"
+                path={PAGES.governance.subpages.proposal.link}
+                key="governance-proposal"
                 element={<Proposal />}
               />
               <Route

@@ -10,13 +10,20 @@ import {
   convertToVoteNumber,
 } from "./utils/formattingStrings";
 import { getAccountVote, voteOnProposal } from "./utils/voting";
-import { ProposalData } from "./config/interfaces";
+import {
+  emptyProposal,
+  emptyTally,
+  ProposalData,
+  Tally,
+} from "./config/interfaces";
 import { PrimaryButton } from "global/packages/src";
 import { ProposalContainer } from "./components/Styled";
 import { formatUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
-import { useProposals } from "./stores/proposals";
+import { queryTally, useProposals } from "./stores/proposals";
 import { useNetworkInfo } from "global/stores/networkInfo";
+import { useParams } from "react-router-dom";
+import { getSingleProposalData } from "./utils/proposalUtils";
 
 interface ProposalWithChain {
   proposal: ProposalData;
@@ -25,13 +32,20 @@ interface ProposalWithChain {
 }
 
 const Proposal = () => {
-  const proposal = useProposals().currentProposal;
   const chainId = Number(useNetworkInfo().chainId);
+  //this will contain the proposal id
+  const { id } = useParams();
+  const [currentVotes, setCurrentVotes] = useState<Tally>(emptyTally);
+  const [proposal, setProposal] = useState<ProposalData>(emptyProposal);
+  async function getProposalData() {
+    setProposal(await getSingleProposalData(id ?? "0", chainId));
+    setCurrentVotes(await queryTally(id ?? "0", chainId));
+  }
 
-  const yes = Number(proposal.final_tally_result.yes);
-  const no = Number(proposal.final_tally_result.no);
-  const abstain = Number(proposal.final_tally_result.abstain);
-  const veto = Number(proposal.final_tally_result.no_with_veto);
+  const yes = Number(formatUnits(currentVotes.tally.yes));
+  const no = Number(formatUnits(currentVotes.tally.no));
+  const abstain = Number(formatUnits(currentVotes.tally.abstain));
+  const veto = Number(formatUnits(currentVotes.tally.no_with_veto));
   const totalVotes = yes + no + abstain + veto;
   const [accountVote, setAccountVote] = useState("NONE");
   const [voteSuccess, setVoteSuccess] = useState<number | undefined>(undefined);
@@ -43,6 +57,7 @@ const Proposal = () => {
   }
   useEffect(() => {
     showAccountVote();
+    getProposalData();
   }, []);
 
   const chain = {
@@ -95,24 +110,22 @@ const Proposal = () => {
       <RowCell
         color="#06fc99"
         type="Yes:"
-        value={truncateNumber(formatUnits(proposal.final_tally_result.yes))}
+        value={truncateNumber(yes.toString())}
       />
       <RowCell
         color="#ff4646"
         type="No:"
-        value={truncateNumber(formatUnits(proposal.final_tally_result.no))}
+        value={truncateNumber(no.toString())}
       />
       <RowCell
         color="#710808"
         type="No With Veto:"
-        value={truncateNumber(
-          formatUnits(proposal.final_tally_result.no_with_veto)
-        )}
+        value={truncateNumber(veto.toString())}
       />
       <RowCell
         color="#fbea51"
         type="Abstain:"
-        value={truncateNumber(formatUnits(proposal.final_tally_result.abstain))}
+        value={truncateNumber(abstain.toString())}
       />
       <RowCell
         type="TOTAL DEPOSIT:"
