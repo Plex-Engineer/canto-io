@@ -109,7 +109,7 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
             add to keplr
           </OutlinedButton>
           <div className="links">
-            <a>report a bug</a>
+            <a href="https://forms.gle/gkr5pDZYX8ZRWYWJ8">report a bug</a>
             <a href="https://docs.canto.io/">docs</a>
           </div>
         </footer>

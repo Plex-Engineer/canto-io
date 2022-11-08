@@ -9,7 +9,7 @@ const Footer = () => {
   return (
     <Styled>
       <div className="links">
-        <a href="https://canto.io/bugsPlaceholder">
+        <a href="https://forms.gle/gkr5pDZYX8ZRWYWJ8">
           <Text type="text">report bug</Text>
         </a>
         <a href="https://docs.canto.io/">
