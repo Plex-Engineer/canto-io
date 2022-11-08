@@ -108,30 +108,10 @@ const Proposal = () => {
           <p>Description</p>
           <p>{proposal.content.description}</p>
         </div>
-        <RowCell
-          color="#06fc99"
-          type="Yes:"
-          value={truncateNumber(formatUnits(proposal.final_tally_result.yes))}
-        />
-        <RowCell
-          color="#ff4646"
-          type="No:"
-          value={truncateNumber(formatUnits(proposal.final_tally_result.no))}
-        />
-        <RowCell
-          color="#710808"
-          type="No With Veto:"
-          value={truncateNumber(
-            formatUnits(proposal.final_tally_result.no_with_veto)
-          )}
-        />
-        <RowCell
-          color="#fbea51"
-          type="Abstain:"
-          value={truncateNumber(
-            formatUnits(proposal.final_tally_result.abstain)
-          )}
-        />
+        <RowCell color="#06fc99" type="Yes:" value={yes.toString()} />
+        <RowCell color="#ff4646" type="No:" value={no.toString()} />
+        <RowCell color="#710808" type="No With Veto:" value={veto.toString()} />
+        <RowCell color="#fbea51" type="Abstain:" value={abstain.toString()} />
         <RowCell
           type="TOTAL DEPOSIT:"
           value={
