@@ -304,13 +304,17 @@ const Proposal = () => {
         ) : (
           ""
         )}
-        {`voting power: ${
-          showPercentVote
-            ? truncateNumber(
-                (100 * (Number(totalUserStake) / totalVotes)).toString()
-              ) + "%"
-            : formatBigNumber(totalUserStake) + " canto"
-        }`}
+        {voteEnded
+          ? ""
+          : `voting power: ${
+              showPercentVote
+                ? totalVotes == 0
+                  ? "100%"
+                  : truncateNumber(
+                      (100 * (Number(totalUserStake) / totalVotes)).toString()
+                    ) + "%"
+                : formatBigNumber(totalUserStake) + " canto"
+            }`}
         {voteSuccess == 0 ? (
           <div style={{ color: "red" }}>vote could not be placed</div>
         ) : voteSuccess == 1 ? (
