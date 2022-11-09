@@ -8,7 +8,7 @@ import { useAlert, NavBar } from "../packages/src";
 import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
 import { showAlerts } from "global/utils/alerts";
-import { pageList } from "global/config/pageList";
+import { pageList, PageObject } from "global/config/pageList";
 
 export const CantoNav = () => {
   const networkInfo = useNetworkInfo();
@@ -25,8 +25,28 @@ export const CantoNav = () => {
     grabTokenName();
   }, [chainId]);
 
-  function getTitle(location: string) {
-    return pageList.find((page) => page.link === location)?.pageTitle ?? "";
+  function recursiveGetTitle(
+    location: string,
+    subpage: number,
+    pageList: PageObject[]
+  ): string {
+    const currentSubPage = location.split("/");
+    const currentPage = pageList.find(
+      (page) => page.link.split("/")[subpage] == currentSubPage[subpage]
+    );
+    if (currentPage) {
+      if (
+        currentSubPage.length > subpage + 1 &&
+        currentPage?.subpages?.length
+      ) {
+        //more pages to check
+        return recursiveGetTitle(location, subpage + 1, currentPage.subpages);
+      }
+      return currentPage.pageTitleFunction
+        ? currentPage.pageTitleFunction(location)
+        : currentPage.pageTitle;
+    }
+    return "";
   }
 
   useEffect(() => {
@@ -78,7 +98,7 @@ export const CantoNav = () => {
       currency={tokenName}
       logo={logo}
       pageList={pageList}
-      currentPage={getTitle(location.pathname)}
+      currentPage={recursiveGetTitle(location.pathname, 1, pageList)}
     />
   );
 };

@@ -5,12 +5,17 @@ import {
   generateEndpointProposals,
   generateEndpointProposalTally,
 } from "@tharsis/provider";
-import { ProposalData, Tally } from "../config/interfaces";
+import {
+  emptyProposal,
+  emptyTally,
+  ProposalData,
+  Tally,
+} from "../config/interfaces";
 
 interface ProposalProps {
   proposals: ProposalData[];
   initProposals: (chainId: number) => void;
-  currentProposal: ProposalData | undefined;
+  currentProposal: ProposalData;
   setCurrentProposal: (proposal: ProposalData) => void;
 }
 
@@ -39,18 +44,25 @@ export const useProposals = create<ProposalProps>()(
         }
       });
     },
-    currentProposal: undefined,
+    currentProposal: emptyProposal,
     setCurrentProposal: (proposal: ProposalData) =>
       set({ currentProposal: proposal }),
   }))
 );
 
-async function queryTally(proposalID: string, chainId: number): Promise<Tally> {
+export async function queryTally(
+  proposalID: string,
+  chainId: number
+): Promise<Tally> {
   const tally = await fetch(
     nodeURL(Number(chainId)) + generateEndpointProposalTally(proposalID),
     fetchOptions
   );
-  return await tally.json();
+  const tallyVotes = await tally.json();
+  if (tallyVotes.tally) {
+    return tallyVotes;
+  }
+  return emptyTally;
 }
 
 const fetchOptions = {
