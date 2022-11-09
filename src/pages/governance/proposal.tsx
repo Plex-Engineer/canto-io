@@ -221,6 +221,8 @@ const Proposal = () => {
 
       <div className="pie">
         <PieChart
+          animationDuration={500}
+          animationEasing="ease-out"
           lineWidth={10}
           totalValue={totalVotes}
           label={({ dataEntry }) => {
@@ -228,6 +230,11 @@ const Proposal = () => {
               return "";
             }
             return `${Math.round(dataEntry.percentage)} %`;
+          }}
+          labelStyle={{
+            accentColor: "#ffffff",
+            color: "#ffffff",
+            colorScheme: "dark",
           }}
           data={[
             {
@@ -251,11 +258,7 @@ const Proposal = () => {
               color: "#fbea51",
             },
           ]}
-        >
-          <Text size="text1" type="text">
-            test
-          </Text>
-        </PieChart>
+        />
         <Popup
           overlayStyle={{
             background: "rgba(32, 32, 32, 0.4)",

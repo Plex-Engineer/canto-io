@@ -73,7 +73,7 @@ export const ProposalContainer = styled.div`
   overflow-wrap: break-word;
   padding: 4rem;
   display: flex;
-  width: 1200px;
+  max-width: 1200px;
   align-items: stretch;
   gap: 4rem;
   background-color: black;
@@ -86,11 +86,11 @@ export const ProposalContainer = styled.div`
     gap: 1rem;
   }
   .pie {
-    height: 200px;
+    height: 300px;
     width: 300px;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
   }
   .title {
     font-weight: 300;
@@ -137,5 +137,10 @@ export const ProposalContainer = styled.div`
   @media (max-width: 1000px) {
     padding: 2rem;
     width: 100%;
+    flex-direction: column;
+    .pie {
+      width: 100%;
+      gap: 1rem;
+    }
   }
 `;
