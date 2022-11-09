@@ -184,11 +184,11 @@ const Dex = () => {
       ).length ? (
         <div>
           <p className="tableName">current position</p>
-          <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-            {userPairs?.map((pair: UserLPPairInfo, idx) => {
-              return !pair.userSupply.totalLP.isZero() ||
-                pair.userSupply.percentOwned > 0 ? (
-                <FadeIn>
+          <FadeIn>
+            <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
+              {userPairs?.map((pair: UserLPPairInfo, idx) => {
+                return !pair.userSupply.totalLP.isZero() ||
+                  pair.userSupply.percentOwned > 0 ? (
                   <Row
                     delay={0.2 * idx}
                     key={pair.basePairInfo.address}
@@ -226,10 +226,10 @@ const Dex = () => {
                       (pair.userSupply.percentOwned * 100).toString()
                     )}
                   />
-                </FadeIn>
-              ) : null;
-            })}
-          </Table>
+                ) : null;
+              })}
+            </Table>
+          </FadeIn>
         </div>
       ) : null}
 
