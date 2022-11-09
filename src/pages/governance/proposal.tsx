@@ -26,6 +26,7 @@ import { useParams } from "react-router-dom";
 import { getSingleProposalData } from "./utils/proposalUtils";
 import { PieChart } from "react-minimal-pie-chart";
 import Popup from "reactjs-popup";
+import GovModal from "./components/govModal";
 interface ProposalWithChain {
   proposal: ProposalData;
   chainId: number | undefined;
@@ -60,7 +61,6 @@ const Proposal = () => {
     showAccountVote();
     getProposalData();
   }, []);
-
   const chain = {
     chainId: chainId ?? 0,
     cosmosChainId: `canto_${chainId}-1`,
@@ -108,10 +108,26 @@ const Proposal = () => {
           <p>Description</p>
           <p>{proposal.content.description}</p>
         </div>
-        <RowCell color="#06fc99" type="Yes:" value={yes.toString()} />
-        <RowCell color="#ff4646" type="No:" value={no.toString()} />
-        <RowCell color="#710808" type="No With Veto:" value={veto.toString()} />
-        <RowCell color="#fbea51" type="Abstain:" value={abstain.toString()} />
+        <RowCell
+          color="#06fc99"
+          type="Yes:"
+          value={truncateNumber(yes.toString())}
+        />
+        <RowCell
+          color="#ff4646"
+          type="No:"
+          value={truncateNumber(no.toString())}
+        />
+        <RowCell
+          color="#710808"
+          type="No With Veto:"
+          value={truncateNumber(veto.toString())}
+        />
+        <RowCell
+          color="#fbea51"
+          type="Abstain:"
+          value={truncateNumber(abstain.toString())}
+        />
         <RowCell
           type="TOTAL DEPOSIT:"
           value={
@@ -197,28 +213,38 @@ const Proposal = () => {
             test
           </Text>
         </PieChart>
-        <PrimaryButton autoFocus={false}>test</PrimaryButton>
-        <PrimaryButton
-          disabled={voteEnded}
-          onClick={async () => {
-            const voteSuccess = await voteOnProposal(
-              Number(proposal.proposal_id),
-              convertToVoteNumber(voteOption),
-              nodeURL(chainId),
-              votingFee,
-              chain,
-              memo
-            );
-            setVoteSuccess(voteSuccess);
+        <Popup
+          overlayStyle={{
+            background: "rgba(32, 32, 32, 0.4)",
+            backdropFilter: "blur(35px)",
           }}
-          autoFocus={false}
+          trigger={
+            <PrimaryButton disabled={voteEnded} autoFocus={false}>
+              {voteEnded
+                ? "voting has ended"
+                : voteOption == "none"
+                ? "select an option"
+                : "vote"}
+            </PrimaryButton>
+          }
+          modal
         >
-          {voteEnded
-            ? "voting has ended"
-            : voteOption == "none"
-            ? "select an option"
-            : "vote"}
-        </PrimaryButton>
+          <GovModal
+            onVote={async () => {
+              const voteSuccess = await voteOnProposal(
+                Number(proposal.proposal_id),
+                convertToVoteNumber(voteOption),
+                nodeURL(chainId),
+                votingFee,
+                chain,
+                memo
+              );
+              setVoteSuccess(voteSuccess);
+            }}
+            proposal={proposal}
+            currentVote={accountVote}
+          />
+        </Popup>
       </div>
     </ProposalContainer>
   );
