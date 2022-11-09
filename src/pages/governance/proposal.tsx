@@ -6,6 +6,7 @@ import { votingThresholds } from "./config/votingThresholds";
 import {
   convertDateToString,
   convertToVoteNumber,
+  convertVoteNumberToString,
 } from "./utils/formattingStrings";
 import { getAccountVote, voteOnProposal } from "./utils/voting";
 import {
@@ -13,8 +14,10 @@ import {
   emptyTally,
   ProposalData,
   Tally,
+  VoteStatus,
+  VotingOption,
 } from "./config/interfaces";
-import { PrimaryButton, Text } from "global/packages/src";
+import { PrimaryButton } from "global/packages/src";
 import { ProposalContainer } from "./components/Styled";
 import { formatUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
@@ -25,8 +28,31 @@ import { getSingleProposalData } from "./utils/proposalUtils";
 import { PieChart } from "react-minimal-pie-chart";
 import Popup from "reactjs-popup";
 import GovModal from "./components/govModal";
+import { DelegationResponse } from "pages/staking/config/interfaces";
+import { getDelegationsForAddress } from "pages/staking/utils/transactions";
+import { CantoMainnet } from "global/config/networks";
+import { calculateTotalStaked } from "pages/staking/utils/allUserValidatorInfo";
+import { formatBigNumber } from "global/packages/src/utils/formatNumbers";
 const Proposal = () => {
-  const chainId = Number(useNetworkInfo().chainId);
+  const [chainId, account] = useNetworkInfo((state) => [
+    Number(state.chainId),
+    state.account,
+  ]);
+
+  //voting power is equal to toal stake
+  const [delegations, setDelegations] = useState<DelegationResponse[]>([]);
+  const totalUserStake = formatUnits(calculateTotalStaked(delegations));
+  async function getTotalStake() {
+    if (account) {
+      setDelegations(
+        await getDelegationsForAddress(CantoMainnet.cosmosAPIEndpoint, account)
+      );
+    }
+  }
+  useEffect(() => {
+    getTotalStake();
+  }, [account]);
+
   //will show the votes in percent or total votes format
   const [showPercentVote, setShowPercentVote] = useState(true);
   //this will contain the proposal id
@@ -43,10 +69,10 @@ const Proposal = () => {
   const abstain = Number(formatUnits(currentVotes.tally.abstain));
   const veto = Number(formatUnits(currentVotes.tally.no_with_veto));
   const totalVotes = yes + no + abstain + veto;
-  const [accountVote, setAccountVote] = useState("NONE");
+  const [accountVote, setAccountVote] = useState(VotingOption.NONE);
   const [voteSuccess, setVoteSuccess] = useState<number | undefined>(undefined);
   async function showAccountVote() {
-    if (proposal.status == "PROPOSAL_STATUS_VOTING_PERIOD") {
+    if (proposal.status == VoteStatus.votingOngoing) {
       const vote = await getAccountVote(proposal.proposal_id, nodeURL(chainId));
       setAccountVote(vote);
     }
@@ -60,12 +86,12 @@ const Proposal = () => {
     cosmosChainId: `canto_${chainId}-1`,
   };
 
-  const voteEnded = proposal.status != "PROPOSAL_STATUS_VOTING_PERIOD";
+  const voteEnded = proposal.status != VoteStatus.votingOngoing;
 
   const votingModal: any = (close: () => void) => {
     return (
       <GovModal
-        onVote={async (vote: string) => {
+        onVote={async (vote: VotingOption) => {
           const voteSuccess = await voteOnProposal(
             Number(proposal.proposal_id),
             convertToVoteNumber(vote),
@@ -98,7 +124,7 @@ const Proposal = () => {
           <p>
             {!voteEnded
               ? "Voting"
-              : proposal.status == "PROPOSAL_STATUS_PASSED"
+              : proposal.status == VoteStatus.passed
               ? "Passed"
               : "Rejected"}
           </p>
@@ -197,30 +223,11 @@ const Proposal = () => {
         <RowCell type="QUORUM:" value={votingThresholds.quorum} />
         <RowCell type="THRESHOLD:" value={votingThresholds.threshold} />
         <RowCell type="VETO THRESHOLD:" value={votingThresholds.veto} />
-        {accountVote != "NONE" ? (
-          <p style={{ color: "white" }}>
-            YOUR VOTE:{" "}
-            <a
-              style={
-                accountVote == "YES"
-                  ? { color: "#06fc99" }
-                  : accountVote == "NO"
-                  ? { color: "#ff4646" }
-                  : accountVote == "VETO"
-                  ? { color: "#710808" }
-                  : { color: "#fbea51" }
-              }
-            >
-              {accountVote}
-            </a>
-          </p>
-        ) : (
-          ""
-        )}
       </div>
 
-      <div className="pie">
+      <div className="voting">
         <PieChart
+          className="pie"
           animationDuration={500}
           animationEasing="ease-out"
           lineWidth={10}
@@ -268,7 +275,7 @@ const Proposal = () => {
             <PrimaryButton disabled={voteEnded} autoFocus={false}>
               {voteEnded
                 ? "voting has ended"
-                : accountVote == "none"
+                : accountVote == VotingOption.NONE
                 ? "select an option"
                 : "vote"}
             </PrimaryButton>
@@ -277,6 +284,33 @@ const Proposal = () => {
         >
           {votingModal}
         </Popup>
+        {accountVote != VotingOption.NONE ? (
+          <p style={{ color: "white" }}>
+            YOUR VOTE:{" "}
+            <a
+              style={
+                accountVote == VotingOption.YES
+                  ? { color: "#06fc99" }
+                  : accountVote == VotingOption.NO
+                  ? { color: "#ff4646" }
+                  : accountVote == VotingOption.VETO
+                  ? { color: "#710808" }
+                  : { color: "#fbea51" }
+              }
+            >
+              {convertVoteNumberToString(accountVote).toUpperCase()}
+            </a>
+          </p>
+        ) : (
+          ""
+        )}
+        {`voting power: ${
+          showPercentVote
+            ? truncateNumber(
+                (100 * (Number(totalUserStake) / totalVotes)).toString()
+              ) + "%"
+            : formatBigNumber(totalUserStake) + " canto"
+        }`}
         {voteSuccess == 0 ? (
           <div style={{ color: "red" }}>vote could not be placed</div>
         ) : voteSuccess == 1 ? (

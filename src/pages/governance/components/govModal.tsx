@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
-import { ProposalData, Tally } from "../config/interfaces";
+import { ProposalData, VotingOption } from "../config/interfaces";
 
 const Container = styled.div`
   background-color: #040404;
@@ -61,12 +61,12 @@ const Button = styled.button`
 
 interface Props {
   proposal: ProposalData;
-  currentVote: string;
-  onVote: (voteOption: string) => void;
+  currentVote: VotingOption;
+  onVote: (voteOption: VotingOption) => void;
 }
 const GovModal = ({ proposal, currentVote, onVote }: Props) => {
-  const [option, setOption] = useState(currentVote ?? "NONE");
-  const handleChange = (value: string) => {
+  const [option, setOption] = useState(currentVote ?? VotingOption.NONE);
+  const handleChange = (value: VotingOption) => {
     setOption(value);
   };
 
@@ -89,22 +89,26 @@ const GovModal = ({ proposal, currentVote, onVote }: Props) => {
       </h2>
 
       <GovRadioButton
-        selected={option === "yes"}
+        selected={option === VotingOption.YES}
+        voteOption={VotingOption.YES}
         name="yes"
         onChange={handleChange}
       />
       <GovRadioButton
-        selected={option === "no"}
+        selected={option === VotingOption.NO}
+        voteOption={VotingOption.NO}
         name="no"
         onChange={handleChange}
       />
       <GovRadioButton
-        selected={option === "veto"}
+        selected={option === VotingOption.VETO}
+        voteOption={VotingOption.VETO}
         name="veto"
         onChange={handleChange}
       />
       <GovRadioButton
-        selected={option === "abstain"}
+        selected={option === VotingOption.ABSTAIN}
+        voteOption={VotingOption.ABSTAIN}
         name="abstain"
         onChange={handleChange}
       />
@@ -115,8 +119,9 @@ const GovModal = ({ proposal, currentVote, onVote }: Props) => {
 };
 interface radioProps {
   name: string;
+  voteOption: VotingOption;
   selected: boolean;
-  onChange: (value: string) => void;
+  onChange: (value: VotingOption) => void;
 }
 
 const GovRadioStyle = styled.div`
@@ -161,7 +166,7 @@ const GovRadioButton = (props: radioProps) => {
     <GovRadioStyle
       className={props.selected ? "active" : ""}
       onClick={() => {
-        props.onChange(props.name);
+        props.onChange(props.voteOption);
       }}
     >
       {
