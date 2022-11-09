@@ -35,7 +35,6 @@ function App() {
       {/* <ScanLine /> */}
       {/* <Overlay /> */}
       <GlobalStyle />
-
       <Router>
         <Container className="App">
           <CantoNav />
