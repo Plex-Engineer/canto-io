@@ -273,11 +273,7 @@ const Proposal = () => {
           }}
           trigger={
             <PrimaryButton disabled={voteEnded} autoFocus={false}>
-              {voteEnded
-                ? "voting has ended"
-                : accountVote == VotingOption.NONE
-                ? "select an option"
-                : "vote"}
+              {voteEnded ? "voting has ended" : "vote"}
             </PrimaryButton>
           }
           modal={true}

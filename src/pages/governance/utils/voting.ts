@@ -87,7 +87,6 @@ export async function getAccountVote(
     getOptions
   );
   const voteResponse = await vote.json();
-
   if (voteResponse.vote) {
     if (voteResponse.vote.option == "VOTE_OPTION_YES") {
       return VotingOption.YES;
