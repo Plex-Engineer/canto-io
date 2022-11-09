@@ -2,8 +2,6 @@ import { memo, votingFee } from "global/config/cosmosConstants";
 import { nodeURL } from "global/utils/cantoTransactions/helpers";
 import { useEffect } from "react";
 import { useState } from "react";
-import CheckBox from "./components/checkBox";
-import { GraphBar } from "./components/govBar";
 import { votingThresholds } from "./config/votingThresholds";
 import {
   convertDateToString,
@@ -20,21 +18,17 @@ import { PrimaryButton, Text } from "global/packages/src";
 import { ProposalContainer } from "./components/Styled";
 import { formatUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
-import { queryTally, useProposals } from "./stores/proposals";
+import { queryTally } from "./stores/proposals";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { useParams } from "react-router-dom";
 import { getSingleProposalData } from "./utils/proposalUtils";
 import { PieChart } from "react-minimal-pie-chart";
 import Popup from "reactjs-popup";
 import GovModal from "./components/govModal";
-interface ProposalWithChain {
-  proposal: ProposalData;
-  chainId: number | undefined;
-  account: string | undefined;
-}
-
 const Proposal = () => {
   const chainId = Number(useNetworkInfo().chainId);
+  //will show the votes in percent or total votes format
+  const [showPercentVote, setShowPercentVote] = useState(true);
   //this will contain the proposal id
   const { id } = useParams();
   const [currentVotes, setCurrentVotes] = useState<Tally>(emptyTally);
@@ -66,8 +60,28 @@ const Proposal = () => {
     cosmosChainId: `canto_${chainId}-1`,
   };
 
-  const [voteOption, setVoteOption] = useState("none");
   const voteEnded = proposal.status != "PROPOSAL_STATUS_VOTING_PERIOD";
+
+  const votingModal: any = (close: () => void) => {
+    return (
+      <GovModal
+        onVote={async (vote: string) => {
+          const voteSuccess = await voteOnProposal(
+            Number(proposal.proposal_id),
+            convertToVoteNumber(vote),
+            nodeURL(chainId),
+            votingFee,
+            chain,
+            memo
+          );
+          setVoteSuccess(voteSuccess);
+          close();
+        }}
+        proposal={proposal}
+        currentVote={accountVote}
+      />
+    );
+  };
   return (
     <ProposalContainer>
       <div className="details">
@@ -108,26 +122,59 @@ const Proposal = () => {
           <p>Description</p>
           <p>{proposal.content.description}</p>
         </div>
-        <RowCell
-          color="#06fc99"
-          type="Yes:"
-          value={truncateNumber(yes.toString())}
-        />
-        <RowCell
-          color="#ff4646"
-          type="No:"
-          value={truncateNumber(no.toString())}
-        />
-        <RowCell
-          color="#710808"
-          type="No With Veto:"
-          value={truncateNumber(veto.toString())}
-        />
-        <RowCell
-          color="#fbea51"
-          type="Abstain:"
-          value={truncateNumber(abstain.toString())}
-        />
+        <div
+          role={"button"}
+          tabIndex={0}
+          className="details"
+          onClick={() => setShowPercentVote(!showPercentVote)}
+          style={{ cursor: "pointer" }}
+        >
+          <RowCell
+            color="#06fc99"
+            type="Yes:"
+            value={
+              showPercentVote
+                ? totalVotes
+                  ? truncateNumber(((yes * 100) / totalVotes).toString()) + "%"
+                  : "0%"
+                : truncateNumber(yes.toString()) + " canto"
+            }
+          />
+          <RowCell
+            color="#ff4646"
+            type="No:"
+            value={
+              showPercentVote
+                ? totalVotes
+                  ? truncateNumber(((no * 100) / totalVotes).toString()) + "%"
+                  : "0%"
+                : truncateNumber(no.toString()) + " canto"
+            }
+          />
+          <RowCell
+            color="#710808"
+            type="No With Veto:"
+            value={
+              showPercentVote
+                ? totalVotes
+                  ? truncateNumber(((veto * 100) / totalVotes).toString()) + "%"
+                  : "0%"
+                : truncateNumber(veto.toString()) + " canto"
+            }
+          />
+          <RowCell
+            color="#fbea51"
+            type="Abstain:"
+            value={
+              showPercentVote
+                ? totalVotes
+                  ? truncateNumber(((abstain * 100) / totalVotes).toString()) +
+                    "%"
+                  : "0%"
+                : truncateNumber(abstain.toString()) + " canto"
+            }
+          />
+        </div>
         <RowCell
           type="TOTAL DEPOSIT:"
           value={
@@ -170,41 +217,37 @@ const Proposal = () => {
         ) : (
           ""
         )}
-        {voteSuccess == 0 ? (
-          <div style={{ color: "red" }}>vote could not be placed</div>
-        ) : voteSuccess == 1 ? (
-          <div style={{ color: "green" }}>thank you for your vote!</div>
-        ) : (
-          ""
-        )}
-        <CheckBox
-          values={!voteEnded ? ["yes", "no", "veto", "abstain"] : []}
-          onChange={setVoteOption}
-        />
       </div>
 
       <div className="pie">
         <PieChart
-          lineWidth={6}
+          lineWidth={10}
+          totalValue={totalVotes}
+          label={({ dataEntry }) => {
+            if (Math.round(dataEntry.percentage) == 0) {
+              return "";
+            }
+            return `${Math.round(dataEntry.percentage)} %`;
+          }}
           data={[
             {
               title: "yes",
-              value: totalVotes == 0 ? 0 : (1000 * yes) / totalVotes,
+              value: yes,
               color: "#06fc99",
             },
             {
               title: "no",
-              value: totalVotes == 0 ? 0 : (1000 * no) / totalVotes,
+              value: no,
               color: "#ff4646",
             },
             {
               title: "veto",
-              value: totalVotes == 0 ? 0 : (1000 * veto) / totalVotes,
+              value: veto,
               color: "#710808",
             },
             {
               title: "abstain",
-              value: totalVotes == 0 ? 0 : (1000 * abstain) / totalVotes,
+              value: abstain,
               color: "#fbea51",
             },
           ]}
@@ -219,32 +262,25 @@ const Proposal = () => {
             backdropFilter: "blur(35px)",
           }}
           trigger={
-            <PrimaryButton disabled={voteEnded} autoFocus={false}>
+            <PrimaryButton disabled={false} autoFocus={false}>
               {voteEnded
                 ? "voting has ended"
-                : voteOption == "none"
+                : accountVote == "none"
                 ? "select an option"
                 : "vote"}
             </PrimaryButton>
           }
-          modal
+          modal={true}
         >
-          <GovModal
-            onVote={async () => {
-              const voteSuccess = await voteOnProposal(
-                Number(proposal.proposal_id),
-                convertToVoteNumber(voteOption),
-                nodeURL(chainId),
-                votingFee,
-                chain,
-                memo
-              );
-              setVoteSuccess(voteSuccess);
-            }}
-            proposal={proposal}
-            currentVote={accountVote}
-          />
+          {votingModal}
         </Popup>
+        {voteSuccess == 0 ? (
+          <div style={{ color: "red" }}>vote could not be placed</div>
+        ) : voteSuccess == 1 ? (
+          <div style={{ color: "green" }}>thank you for your vote!</div>
+        ) : (
+          ""
+        )}
       </div>
     </ProposalContainer>
   );

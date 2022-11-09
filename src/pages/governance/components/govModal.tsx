@@ -62,7 +62,7 @@ const Button = styled.button`
 interface Props {
   proposal: ProposalData;
   currentVote: string;
-  onVote: () => void;
+  onVote: (voteOption: string) => void;
 }
 const GovModal = ({ proposal, currentVote, onVote }: Props) => {
   const [option, setOption] = useState(currentVote ?? "NONE");
@@ -89,27 +89,27 @@ const GovModal = ({ proposal, currentVote, onVote }: Props) => {
       </h2>
 
       <GovRadioButton
-        selected={option === "YES"}
+        selected={option === "yes"}
         name="yes"
         onChange={handleChange}
       />
       <GovRadioButton
-        selected={option === "NO"}
+        selected={option === "no"}
         name="no"
         onChange={handleChange}
       />
       <GovRadioButton
-        selected={option === "VETO"}
-        name="no with veto"
+        selected={option === "veto"}
+        name="veto"
         onChange={handleChange}
       />
       <GovRadioButton
-        selected={option === "ABSTAIN"}
+        selected={option === "abstain"}
         name="abstain"
         onChange={handleChange}
       />
 
-      <Button onClick={onVote}>vote</Button>
+      <Button onClick={() => onVote(option)}>vote</Button>
     </Container>
   );
 };

@@ -143,6 +143,8 @@ const CollatModal = (props: Props) => {
       <APY
         style={{
           marginTop: "0rem",
+          display: "flex",
+          justifyContent: "center",
         }}
       >
         <div>

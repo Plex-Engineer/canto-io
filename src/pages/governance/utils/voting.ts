@@ -44,10 +44,6 @@ export async function voteOnProposal(
     await signAndBroadcastTxMsg(msg, senderObj, chain, nodeAddressIP, account);
 
     // console.log("thank you for your vote");
-
-    setTimeout(() => {
-      window.location.reload();
-    }, 4000);
     return 1;
   } catch (err) {
     console.error("vote could not be placed");
@@ -93,16 +89,16 @@ export async function getAccountVote(
 
   if (voteResponse.vote) {
     if (voteResponse.vote.option == "VOTE_OPTION_YES") {
-      return "YES";
+      return "yes";
     }
     if (voteResponse.vote.option == "VOTE_OPTION_NO") {
-      return "NO";
+      return "no";
     }
     if (voteResponse.vote.option == "VOTE_OPTION_NO_WITH_VETO") {
-      return "VETO";
+      return "veto";
     }
     if (voteResponse.vote.option == "VOTE_OPTION_ABSTAIN") {
-      return "ABSTAIN";
+      return "abstain";
     }
   }
   return "NONE";
