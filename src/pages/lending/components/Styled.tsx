@@ -4,7 +4,7 @@ export const Styled = styled.div`
   display: flex;
   flex-direction: column;
   color: #fff;
-  max-width: 1305px;
+  max-width: 1200px;
   width: 100%;
   margin: 2rem auto;
   .typing {
@@ -64,7 +64,8 @@ export const Styled = styled.div`
     }
   }
   @media (max-width: 1000px) {
-    margin: 0 1rem;
+    margin: 0;
+    padding: 1rem;
     .balance {
       font-size: 30px;
     }
