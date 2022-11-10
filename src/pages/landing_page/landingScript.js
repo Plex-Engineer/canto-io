@@ -5,19 +5,19 @@ export function openLink(input) {
       // alert();
       break;
     case "1":
+      window.open("/staking", "_self");
+      // alert();
+      break;
+    case "4":
       window.open("/governance", "_self");
       // alert();
       break;
     case "2":
-      window.open("/lending", "_self");
-      // alert();
-      break;
-    case "3":
       window.open("/lp", "_self");
       // alert();
       break;
-    case "4":
-      window.open("/staking", "_self");
+    case "3":
+      window.open("/lending", "_self");
       // alert();
       break;
     case "6":

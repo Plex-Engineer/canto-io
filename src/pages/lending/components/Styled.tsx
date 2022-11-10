@@ -4,7 +4,7 @@ export const Styled = styled.div`
   display: flex;
   flex-direction: column;
   color: #fff;
-  max-width: 1205px;
+  max-width: 1305px;
   width: 100%;
   margin: 2rem auto;
   .typing {

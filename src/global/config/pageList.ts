@@ -75,6 +75,25 @@ export const pageList: PageObject[] = [
     networks: PAGES.bridge.networks,
   },
   {
+    name: PAGES.staking.name,
+    link: PAGES.staking.link,
+    pageTitle: PAGES.staking.pageTitle,
+    networks: PAGES.staking.networks,
+    balanceLimits: PAGES.staking.balanceLimits,
+  },
+  {
+    name: PAGES.lp.name,
+    link: PAGES.lp.link,
+    pageTitle: PAGES.lp.pageTitle,
+    networks: PAGES.lp.networks,
+  },
+  {
+    name: PAGES.lending.name,
+    link: PAGES.lending.link,
+    pageTitle: PAGES.lending.pageTitle,
+    networks: PAGES.lending.networks,
+  },
+  {
     name: PAGES.governance.name,
     link: PAGES.governance.link,
     pageTitle: PAGES.governance.pageTitle,
@@ -88,24 +107,5 @@ export const pageList: PageObject[] = [
         networks: PAGES.governance.subpages.proposal.networks,
       },
     ],
-  },
-  {
-    name: PAGES.lending.name,
-    link: PAGES.lending.link,
-    pageTitle: PAGES.lending.pageTitle,
-    networks: PAGES.lending.networks,
-  },
-  {
-    name: PAGES.lp.name,
-    link: PAGES.lp.link,
-    pageTitle: PAGES.lp.pageTitle,
-    networks: PAGES.lp.networks,
-  },
-  {
-    name: PAGES.staking.name,
-    link: PAGES.staking.link,
-    pageTitle: PAGES.staking.pageTitle,
-    networks: PAGES.staking.networks,
-    balanceLimits: PAGES.staking.balanceLimits,
   },
 ];
