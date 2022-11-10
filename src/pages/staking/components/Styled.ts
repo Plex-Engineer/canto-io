@@ -122,7 +122,7 @@ export const StakingModalContainer = styled.div`
 
   .dual-h-row {
     font-size: 18px;
-    width: 28rem;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     margin: 0.4rem 0;
@@ -209,7 +209,7 @@ export const StakingModalContainer = styled.div`
   .textField {
     margin: 0.1rem 0;
     padding: 0.4rem 0;
-    width: 28rem;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -235,5 +235,9 @@ export const StakingModalContainer = styled.div`
     p {
       font-size: 14px;
     }
+  }
+
+  @media (max-width: 1000px) {
+    width: 100%;
   }
 `;
