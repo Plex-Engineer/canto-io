@@ -57,6 +57,12 @@ const StyledPopup = styled(Popup)`
   & {
     overflow-y: auto;
   }
+
+  @media (max-width: 1000px) {
+    /* &-overlay {
+      width: 100%;
+    } */
+  }
 `;
 interface ModalManagerProps {
   allValidators: Validator[];

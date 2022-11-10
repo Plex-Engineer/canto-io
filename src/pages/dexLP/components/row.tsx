@@ -14,13 +14,15 @@ interface RowProps {
 }
 
 const RowStyle = styled.tr<RowProps>`
-  opacity: 0;
-  animation: fadein 0.6s ${(props) => props.delay}s, fader 0.5s;
+  /* opacity: 0; */
+  /* animation: fadein 0.6s ${(props) => props.delay}s, fader 0.5s; */
+  /* animation-fill-mode: forwards; */
+
   @keyframes fadein {
-    from {
+    0% {
       opacity: 0;
     }
-    to {
+    100% {
       opacity: 1;
     }
   }

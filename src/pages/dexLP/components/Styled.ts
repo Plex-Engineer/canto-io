@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 export const DexModalContainer = styled.div`
   background-color: #040404;
-  height: 40rem;
+  height: 42rem;
   width: 30rem;
   display: flex;
   flex-direction: column;
@@ -115,7 +115,6 @@ export const DexModalContainer = styled.div`
     gap: 1rem;
     justify-content: center;
     align-items: center;
-    padding-bottom: 100px;
   }
 `;
 export const AddRemoveContainer = styled(DexModalContainer)`

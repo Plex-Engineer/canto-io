@@ -31,10 +31,12 @@ const Container = styled.table`
     line-height: 4rem;
     border-bottom: transparent solid 1px;
 
+    animation: fader 0.5s;
     animation-fill-mode: forwards;
 
+    /*  */
     @keyframes fader {
-      from {
+      0% {
         border-bottom: transparent solid 1px;
       }
       to {

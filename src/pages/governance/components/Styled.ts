@@ -58,22 +58,45 @@ export const GovernanceContainer = styled.div`
     row-gap: 1rem;
     column-gap: 0.8rem;
   }
+
+  @media (max-width: 1000px) {
+    width: 100%;
+    .grid {
+      grid-template-columns: 1fr;
+      row-gap: 1rem;
+      column-gap: 0.8rem;
+    }
+  }
 `;
 export const ProposalContainer = styled.div`
   overflow-wrap: break-word;
-  padding: 2rem;
+  padding: 4rem;
   display: flex;
-  height: 90vh;
-  max-height: 45.6rem;
-  width: 500px;
-  flex-direction: column;
+  max-width: 1200px;
   align-items: stretch;
-  gap: 1rem;
-  overflow-y: scroll;
-  scrollbar-color: var(--primary-color);
-  scroll-behavior: smooth;
-  /* width */
+  gap: 4rem;
+  background-color: black;
+  margin: 0 auto; /* width */
 
+  .details {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    width: 75%;
+  }
+  .pie {
+    height: 300px;
+    margin-top: -40px;
+    /* align-self: flex-start; */
+  }
+  .voting {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
   .title {
     font-weight: 300;
     font-size: 184px;
@@ -114,5 +137,15 @@ export const ProposalContainer = styled.div`
     /* almost white */
 
     color: #efefef;
+  }
+
+  @media (max-width: 1000px) {
+    padding: 2rem;
+    width: 100%;
+    flex-direction: column;
+    .pie {
+      width: 100%;
+      gap: 1rem;
+    }
   }
 `;

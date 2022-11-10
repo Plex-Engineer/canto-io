@@ -1,3 +1,15 @@
+export enum VotingOption {
+  YES,
+  NO,
+  ABSTAIN,
+  VETO,
+  NONE,
+}
+
+export const VoteStatus = {
+  passed: "PROPOSAL_STATUS_PASSED",
+  votingOngoing: "PROPOSAL_STATUS_VOTING_PERIOD",
+};
 export interface ProposalData {
   content: {
     "@type": string;
@@ -34,6 +46,14 @@ export interface Tally {
   };
 }
 
+export const emptyTally: Tally = {
+  tally: {
+    yes: "0",
+    abstain: "0",
+    no: "0",
+    no_with_veto: "0",
+  },
+};
 export const emptyProposal: ProposalData = {
   content: {
     "@type": "none",
@@ -41,22 +61,22 @@ export const emptyProposal: ProposalData = {
     erc20address: "none",
     title: "none",
   },
-  deposit_end_time: "none",
+  deposit_end_time: "000000",
   final_tally_result: {
-    abstain: "5",
-    no: "3",
-    no_with_veto: "8",
-    yes: "10",
+    abstain: "0",
+    no: "0",
+    no_with_veto: "0",
+    yes: "0",
   },
-  proposal_id: "none",
+  proposal_id: "0000",
   status: "none",
-  submit_time: "none",
+  submit_time: "000000",
   total_deposit: [
     {
-      denom: "none",
-      amount: "none",
+      amount: "0",
+      denom: "aCanto",
     },
   ],
-  voting_end_time: "none",
-  voting_start_time: "none",
+  voting_end_time: "000000",
+  voting_start_time: "0000000",
 };

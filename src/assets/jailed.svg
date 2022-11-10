@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="84.388031mm" height="84.388031mm" viewBox="0 0 299.01271 299.01271">
+  <g transform="translate(-297.23361 -13.669083)">
+    <circle cx="446.73996" cy="163.17543" r="149.50635" fill="#d33" color="#000" overflow="visible" style="isolation:auto;mix-blend-mode:normal;solid-color:#000;solid-opacity:1"/>
+    <g fill="#fff">
+      <path stroke="#fff" stroke-linecap="square" stroke-linejoin="round" stroke-width="14.67020988" d="M384.43661 184.96754h148.12057v98.915482H384.43661z" color="#000" overflow="visible" style="isolation:auto;mix-blend-mode:normal;solid-color:#000;solid-opacity:1" transform="translate(5.1900609 -14.738408) scale(.96304)"/>
+      <path fill-rule="evenodd" d="M386.3871628 188.5070021V89.8636859c0-70.98591965 120.70562827-70.95674153 120.70562827 0v102.01184939H490.250154V89.86368589c-.5614222-50.82561608-87.13279843-50.25260853-87.13279843 0v98.6433162z"/>
+    </g>
+  </g>
+</svg>

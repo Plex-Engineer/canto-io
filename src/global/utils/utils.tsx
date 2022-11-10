@@ -45,6 +45,10 @@ export function truncateNumber(value: string, decimals?: number) {
     if (Number(value) > 1) {
       return value.slice(0, decimalLocation + 3);
     }
+    //if the value is really small we can just show zero
+    if (findFirstNonZeroAfter(value, decimalLocation) - decimalLocation > 8) {
+      return "0.00";
+    }
     return value.slice(0, findFirstNonZeroAfter(value, decimalLocation) + 3);
   }
   return value.slice(0, decimalLocation + decimals + 1);

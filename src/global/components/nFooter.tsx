@@ -9,13 +9,13 @@ const Footer = () => {
   return (
     <Styled>
       <div className="links">
-        <a href="https://canto.io/bugsPlaceholder">
+        <a href="https://forms.gle/gkr5pDZYX8ZRWYWJ8">
           <Text type="text">report bug</Text>
         </a>
-        <a href="https://canto.io/documentsPlaceholder">
+        <a href="https://docs.canto.io/">
           <Text type="text">document</Text>
         </a>
-        <a href="https://canto.io/aboutPlaceholder">
+        <a href="https://docs.canto.io/">
           <Text type="text">about canto</Text>
         </a>
       </div>
@@ -35,7 +35,7 @@ const Footer = () => {
             alt="discord"
             height={40}
             onClick={() => {
-              window.open("https://discord.gg/N3BxQhRx");
+              window.open("https://discord.gg/ucRX6XCFbr");
             }}
           />
           <ImageButton

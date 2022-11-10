@@ -9,6 +9,10 @@ import useValidatorModalStore, {
 import Table from "./table";
 import FadeIn from "react-fade-in";
 import { levenshteinDistance } from "../utils/utils";
+import jailedSymbol from "assets/jailed.svg";
+import { ToolTip } from "pages/lending/components/Tooltip";
+import { ToolTipL } from "pages/lending/components/Styled";
+import Popup from "reactjs-popup";
 
 interface TableProps {
   validators: MasterValidatorProps[];
@@ -61,6 +65,7 @@ export const ValidatorTable = (props: TableProps) => {
                 commission={Number(
                   validator.validator.commission.commission_rates.rate
                 )}
+                jailed={validator.validator.jailed}
                 onClick={() => {
                   validatorModalStore.setActiveValidator(validator);
                   validatorModalStore.open(ValidatorModalType.STAKE);
@@ -82,13 +87,26 @@ interface RowProps {
   totalStake: string;
   userStake: string;
   commission: number;
+  jailed: boolean;
   onClick?: () => void;
 }
 const Row = (props: RowProps) => {
   return (
     <tr onClick={props.onClick}>
       <td>{props.rank}</td>
-      <td>{props.name}</td>
+      <td>
+        {props.name}
+        {props.jailed ? (
+          <Popup
+            trigger={<img style={{ height: "20px" }} src={jailedSymbol} />}
+            on={["hover", "focus"]}
+          >
+            <ToolTipL style={{ width: "175px" }}>
+              This validator is currently jailed
+            </ToolTipL>
+          </Popup>
+        ) : null}
+      </td>
       <td>
         {commify(truncateNumber(formatEther(props.totalStake)))}{" "}
         <img src={cantoIcon} alt="canto" height={14} />

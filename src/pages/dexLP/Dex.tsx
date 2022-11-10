@@ -184,50 +184,52 @@ const Dex = () => {
       ).length ? (
         <div>
           <p className="tableName">current position</p>
-          <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-            {userPairs?.map((pair: UserLPPairInfo, idx) => {
-              return !pair.userSupply.totalLP.isZero() ||
-                pair.userSupply.percentOwned > 0 ? (
-                <Row
-                  delay={0.2 * idx}
-                  key={pair.basePairInfo.address}
-                  iconLeft={pair.basePairInfo.token1.icon}
-                  iconRight={pair.basePairInfo.token2.icon}
-                  onClick={() => {
-                    setActivePair(pair);
-                    setModalType(
-                      !pair.userSupply.totalLP.isZero()
-                        ? ModalType.ADD_OR_REMOVE
-                        : ModalType.ADD
-                    );
-                  }}
-                  assetName={
-                    pair.basePairInfo.token1.symbol +
-                    "/" +
-                    pair.basePairInfo.token2.symbol
-                  }
-                  totalValueLocked={
-                    noteSymbol +
-                    ethers.utils.commify(
-                      truncateNumber(formatUnits(pair.totalSupply.tvl))
-                    )
-                  }
-                  apr={"23.2"}
-                  position={
-                    truncateNumber(
-                      formatUnits(
-                        pair.userSupply.totalLP,
-                        pair.basePairInfo.decimals
+          <FadeIn>
+            <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
+              {userPairs?.map((pair: UserLPPairInfo, idx) => {
+                return !pair.userSupply.totalLP.isZero() ||
+                  pair.userSupply.percentOwned > 0 ? (
+                  <Row
+                    delay={0.2 * idx}
+                    key={pair.basePairInfo.address}
+                    iconLeft={pair.basePairInfo.token1.icon}
+                    iconRight={pair.basePairInfo.token2.icon}
+                    onClick={() => {
+                      setActivePair(pair);
+                      setModalType(
+                        !pair.userSupply.totalLP.isZero()
+                          ? ModalType.ADD_OR_REMOVE
+                          : ModalType.ADD
+                      );
+                    }}
+                    assetName={
+                      pair.basePairInfo.token1.symbol +
+                      "/" +
+                      pair.basePairInfo.token2.symbol
+                    }
+                    totalValueLocked={
+                      noteSymbol +
+                      ethers.utils.commify(
+                        truncateNumber(formatUnits(pair.totalSupply.tvl))
                       )
-                    ) + " LP Tokens"
-                  }
-                  share={truncateNumber(
-                    (pair.userSupply.percentOwned * 100).toString()
-                  )}
-                />
-              ) : null;
-            })}
-          </Table>
+                    }
+                    apr={"23.2"}
+                    position={
+                      truncateNumber(
+                        formatUnits(
+                          pair.userSupply.totalLP,
+                          pair.basePairInfo.decimals
+                        )
+                      ) + " LP Tokens"
+                    }
+                    share={truncateNumber(
+                      (pair.userSupply.percentOwned * 100).toString()
+                    )}
+                  />
+                ) : null;
+              })}
+            </Table>
+          </FadeIn>
         </div>
       ) : null}
 

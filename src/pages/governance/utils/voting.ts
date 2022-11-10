@@ -6,6 +6,7 @@ import {
   getSenderObj,
   signAndBroadcastTxMsg,
 } from "global/utils/cantoTransactions/helpers";
+import { VotingOption } from "../config/interfaces";
 
 export async function voteOnProposal(
   proposalID: number,
@@ -44,10 +45,6 @@ export async function voteOnProposal(
     await signAndBroadcastTxMsg(msg, senderObj, chain, nodeAddressIP, account);
 
     // console.log("thank you for your vote");
-
-    setTimeout(() => {
-      window.location.reload();
-    }, 4000);
     return 1;
   } catch (err) {
     console.error("vote could not be placed");
@@ -65,7 +62,7 @@ export async function getAccountVote(
     // console.log("MetaMask is installed!");
   } else {
     console.error("Please install Metamask!");
-    return "NONE";
+    return VotingOption.NONE;
   }
   //@ts-ignore
   const accounts = await window.ethereum.request({
@@ -90,20 +87,19 @@ export async function getAccountVote(
     getOptions
   );
   const voteResponse = await vote.json();
-
   if (voteResponse.vote) {
     if (voteResponse.vote.option == "VOTE_OPTION_YES") {
-      return "YES";
+      return VotingOption.YES;
     }
     if (voteResponse.vote.option == "VOTE_OPTION_NO") {
-      return "NO";
+      return VotingOption.NO;
     }
     if (voteResponse.vote.option == "VOTE_OPTION_NO_WITH_VETO") {
-      return "VETO";
+      return VotingOption.VETO;
     }
     if (voteResponse.vote.option == "VOTE_OPTION_ABSTAIN") {
-      return "ABSTAIN";
+      return VotingOption.ABSTAIN;
     }
   }
-  return "NONE";
+  return VotingOption.NONE;
 }

@@ -27,11 +27,12 @@ import {
 } from "./utils/allUserValidatorInfo";
 import { ModalManager } from "./modals/modalManager";
 import useTransactionStore from "./stores/transactionStore";
-import { OutlinedButton } from "global/packages/src/components/atoms/Button";
 import { chain, memo } from "global/config/cosmosConstants";
 import { claimRewardFee } from "./config/fees";
 import HelmetSEO from "global/components/seo";
-import useValidatorModalStore from "./stores/validatorModalStore";
+import useValidatorModalStore, {
+  ValidatorModalType,
+} from "./stores/validatorModalStore";
 import { performTxAndSetStatus } from "./utils/utils";
 
 const Staking = () => {
@@ -52,6 +53,7 @@ const Staking = () => {
   const [rewards, setRewards] = useState<BigNumber>(BigNumber.from("0"));
 
   async function handleClaimRewards() {
+    validatorModalStore.open(ValidatorModalType.STAKE);
     performTxAndSetStatus(
       async () =>
         await txClaimRewards(
@@ -106,9 +108,6 @@ const Staking = () => {
     getAllData();
   }, [networkInfo.account]);
 
-  //   useEffect(() => {
-  //     toast
-  //   }, [transactionStore.transactionMessage]);
   const allValidatorData = getAllValidatorData(
     validators,
     delegations,
