@@ -27,7 +27,8 @@ import { CInput } from "global/packages/src/components/atoms/Input";
 import styled from "@emotion/styled";
 import CheckBox from "global/components/checkBox";
 import { ConfirmUndelegationModal } from "./confirmUndelegationModal";
-import LoadingModal from "./loadingModal";
+import GlobalLoadingModal from "global/components/modals/loadingModal";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 interface StakingModalProps {
   validator: MasterValidatorProps;
@@ -139,7 +140,14 @@ export const StakingModal = ({
 
   return (
     <StakingModalContainer>
-      {transactionStore.transactionStatus && <LoadingModal />}
+      {transactionStore.transactionStatus && (
+        <GlobalLoadingModal
+          transactionType={CantoTransactionType.STAKE}
+          status={transactionStore.transactionStatus.status}
+          tokenName={"staking"}
+          customMessage={transactionStore.transactionStatus.message}
+        />
+      )}
       <div className="title">{validator.validator.description.moniker}</div>
       <div className="desc">
         <div

@@ -1,7 +1,6 @@
 import Field from "../components/field";
 import Input from "../components/input";
 import { useEffect, useState } from "react";
-import LoadingModal from "./loadingModal";
 import SettingsIcon from "assets/settings.svg";
 import IconPair from "../components/iconPair";
 import {
@@ -25,6 +24,9 @@ import {
   DexLoadingOverlay,
 } from "../components/Styled";
 import { PrimaryButton } from "global/packages/src";
+import GlobalLoadingModal from "global/components/modals/loadingModal";
+import { CantoTransactionType } from "global/config/transactionTypes";
+import { TransactionState } from "@usedapp/core";
 interface AddAllowanceProps {
   pair: UserLPPairInfo;
   value1: string;
@@ -32,8 +34,8 @@ interface AddAllowanceProps {
   slippage: number;
   deadline: number;
   chainId: number | undefined;
-  status1: (val: string) => void;
-  status2: (val: string) => void;
+  status1: (val: TransactionState) => void;
+  status2: (val: TransactionState) => void;
 }
 
 const AddAllowanceButton = (props: AddAllowanceProps) => {
@@ -157,8 +159,10 @@ const AddModal = ({ activePair, chainId, account }: Props) => {
   const [value2, setValue2] = useState("");
   const [slippage, setSlippage] = useState("1");
   const [deadline, setDeadline] = useState("10");
-  const [token1AllowanceStatus, setToken1AllowanceStatus] = useState("None");
-  const [token2AllowanceStatus, setToken2AllowanceStatus] = useState("None");
+  const [token1AllowanceStatus, setToken1AllowanceStatus] =
+    useState<TransactionState>("None");
+  const [token2AllowanceStatus, setToken2AllowanceStatus] =
+    useState<TransactionState>("None");
   const [openSettings, setOpenSettings] = useState(false);
   const displayReserveRatio = getReserveRatioAtoB(
     activePair.totalSupply.ratio.ratio,
@@ -174,20 +178,14 @@ const AddModal = ({ activePair, chainId, account }: Props) => {
           token1AllowanceStatus
         )}
       >
-        <LoadingModal
-          icons={{
-            icon1: activePair.basePairInfo.token1.icon,
-            icon2: activePair.basePairInfo.token2.icon,
-          }}
-          name={
+        <GlobalLoadingModal
+          transactionType={CantoTransactionType.ENABLE}
+          tokenName={
             activePair.basePairInfo.token1.symbol +
             " / " +
             activePair.basePairInfo.token2.symbol
           }
-          amount={"0"}
-          type="add"
           status={token1AllowanceStatus}
-          account={account}
         />
       </DexLoadingOverlay>
       <DexLoadingOverlay
@@ -195,20 +193,14 @@ const AddModal = ({ activePair, chainId, account }: Props) => {
           token2AllowanceStatus
         )}
       >
-        <LoadingModal
-          icons={{
-            icon1: activePair.basePairInfo.token1.icon,
-            icon2: activePair.basePairInfo.token2.icon,
-          }}
-          name={
+        <GlobalLoadingModal
+          transactionType={CantoTransactionType.ENABLE}
+          tokenName={
             activePair.basePairInfo.token1.symbol +
-            "/ " +
+            " / " +
             activePair.basePairInfo.token2.symbol
           }
-          amount={"0"}
-          type="add"
           status={token2AllowanceStatus}
-          account={account}
         />
       </DexLoadingOverlay>
       <div className="title">

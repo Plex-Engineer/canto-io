@@ -3,9 +3,7 @@ import {
   useRemoveLiquidity,
   useRemoveLiquidityCANTO,
 } from "pages/dexLP/hooks/useTransactions";
-import LoadingModal from "./loadingModal";
 import { RowCell } from "./removeModal";
-import { ModalType } from "../hooks/useModals";
 import { useEffect } from "react";
 import { useState } from "react";
 import useModals from "../hooks/useModals";
@@ -18,7 +16,9 @@ import {
 } from "../utils/utils";
 import { UserLPPairInfo } from "../config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
-import { DexModalContainer, DexLoadingOverlay } from "../components/Styled";
+import { DexModalContainer } from "../components/Styled";
+import GlobalLoadingModal from "global/components/modals/loadingModal";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 interface RemoveConfirmationProps {
   pair: UserLPPairInfo;
@@ -92,46 +92,30 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
     blockTimeStamp();
   }, []);
 
-  useEffect(() => {
-    if (
-      removeLiquidityState.status == "Success" ||
-      removeLiquidityCANTOState.status == "Success"
-    ) {
-      setTimeout(() => {
-        setModalType(ModalType.NONE);
-      }, 500);
-    }
-  }, [removeLiquidityState.status, removeLiquidityCANTOState.status]);
   return (
     <DexModalContainer>
-      <DexLoadingOverlay
-        show={["Mining", "PendingSignature", "Success"].includes(
-          removeLiquidityState.status ||
-            ["Mining", "PendingSignature", "Success"].includes(
-              removeLiquidityCANTOState.status
-            )
-        )}
-      >
-        <LoadingModal
-          icons={{
-            icon1: props.pair.basePairInfo.token1.icon,
-            icon2: props.pair.basePairInfo.token2.icon,
-          }}
-          name={
-            props.pair.basePairInfo.token1.symbol +
-            " / " +
-            props.pair.basePairInfo.token2.symbol
-          }
-          amount={"0"}
-          type="remove"
+      {(removeLiquidityState.status != "None" ||
+        removeLiquidityCANTOState.status != "None") && (
+        <GlobalLoadingModal
+          transactionType={CantoTransactionType.REMOVE_LIQUIDITY}
           status={
             isToken1Canto || isToken2Canto
               ? removeLiquidityCANTOState.status
               : removeLiquidityState.status
           }
-          account={props.account}
+          tokenName={
+            props.pair.basePairInfo.token1.symbol +
+            " / " +
+            props.pair.basePairInfo.token2.symbol +
+            " LP"
+          }
+          txHash={
+            isToken1Canto || isToken2Canto
+              ? removeLiquidityCANTOState.transaction?.hash
+              : removeLiquidityState.transaction?.hash
+          }
         />
-      </DexLoadingOverlay>
+      )}
       <div className="title">
         {props.pair.basePairInfo.token1.symbol +
           " / " +

@@ -1,74 +1,34 @@
-import { useEffect, useState } from "react";
-import LoadingModal from "./loadingModal";
 import IconPair from "../components/iconPair";
 import useModals, { ModalType } from "../hooks/useModals";
 import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
 import { UserLPPairInfo } from "../config/interfaces";
 import { PrimaryButton } from "global/packages/src";
 import { getEnableButtonTextAndOnClick } from "../utils/modalButtonParams";
-import { DexLoadingOverlay, DexModalContainer } from "../components/Styled";
+import { DexModalContainer } from "../components/Styled";
+import GlobalLoadingModal from "global/components/modals/loadingModal";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 interface AddAllowanceProps {
   pair: UserLPPairInfo;
   chainId: number | undefined;
-  status1: (val: string) => void;
-  status2: (val: string) => void;
+  addAllowance1: (router: string, amount: string) => void;
+  addAllowance2: (router: string, amount: string) => void;
 }
 
 const AddAllowanceButton = (props: AddAllowanceProps) => {
-  const [setModalType] = useModals((state) => [state.setModalType]);
-
   const routerAddress = getRouterAddress(props.chainId);
-  const { state: addAllowanceA, send: addAllowanceASend } = useSetAllowance({
-    type: "Enable",
-    address: props.pair.basePairInfo.token1.address,
-    amount: "-1",
-    icon: props.pair.basePairInfo.token1.icon,
-    name: props.pair.basePairInfo.token1.symbol,
-  });
-  const { state: addAllowanceB, send: addAllowanceBSend } = useSetAllowance({
-    type: "Enable",
-    address: props.pair.basePairInfo.token2.address,
-    amount: "-1",
-    icon: props.pair.basePairInfo.token2.icon,
-    name: props.pair.basePairInfo.token2.symbol,
-  });
-
-  useEffect(() => {
-    props.status1(addAllowanceA.status);
-    if (
-      addAllowanceA.status == "Success" &&
-      (addAllowanceB.status == "None" || addAllowanceB.status == "Success")
-    ) {
-      setTimeout(() => {
-        setModalType(ModalType.NONE);
-      }, 500);
-    }
-  }, [addAllowanceA.status]);
-
-  useEffect(() => {
-    props.status2(addAllowanceB.status);
-    if (
-      addAllowanceB.status == "Success" &&
-      (addAllowanceA.status == "None" || addAllowanceA.status == "Success")
-    ) {
-      setTimeout(() => {
-        setModalType(ModalType.NONE);
-      }, 500);
-    }
-  }, [addAllowanceB.status]);
   const [buttonText, buttonOnclick] = getEnableButtonTextAndOnClick(
     props.pair.basePairInfo.token1.symbol,
     props.pair.basePairInfo.token2.symbol,
     props.pair.allowance.token1,
     props.pair.allowance.token2,
     () =>
-      addAllowanceASend(
+      props.addAllowance1(
         routerAddress,
         "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
       ),
     () =>
-      addAllowanceBSend(
+      props.addAllowance2(
         routerAddress,
         "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
       )
@@ -78,34 +38,11 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
 };
 
 const RemoveAllowanceButton = (props: AddAllowanceProps) => {
-  const [setModalType] = useModals((state) => [state.setModalType]);
-
   const routerAddress = getRouterAddress(props.chainId);
-  const { state: addLPAllowance, send: addLPAllowanceSend } = useSetAllowance({
-    type: "Enable",
-    address: props.pair.basePairInfo.address,
-    amount: "-1",
-    // TODO? : needs access of iconpair
-    icon: props.pair.basePairInfo.token1.icon,
-    name:
-      props.pair.basePairInfo.token1.symbol +
-      "/" +
-      props.pair.basePairInfo.token2.symbol,
-  });
-
-  useEffect(() => {
-    props.status1(addLPAllowance.status);
-    if (addLPAllowance.status == "Success") {
-      setTimeout(() => {
-        setModalType(ModalType.NONE);
-      }, 500);
-    }
-  }, [addLPAllowance.status]);
-
   return (
     <PrimaryButton
       onClick={() => {
-        addLPAllowanceSend(
+        props.addAllowance1(
           routerAddress,
           "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
         );
@@ -125,54 +62,71 @@ interface Props {
 }
 
 const EnableModal = ({ activePair, chainId, account }: Props) => {
-  const [token1AllowanceStatus, setToken1AllowanceStatus] = useState("None");
-  const [token2AllowanceStatus, setToken2AllowanceStatus] = useState("None");
+  const { state: addAllowanceA, send: addAllowanceASend } = useSetAllowance({
+    type: "Enable",
+    address: activePair.basePairInfo.token1.address,
+    amount: "-1",
+    icon: activePair.basePairInfo.token1.icon,
+    name: activePair.basePairInfo.token1.symbol,
+  });
+  const { state: addAllowanceB, send: addAllowanceBSend } = useSetAllowance({
+    type: "Enable",
+    address: activePair.basePairInfo.token2.address,
+    amount: "-1",
+    icon: activePair.basePairInfo.token2.icon,
+    name: activePair.basePairInfo.token2.symbol,
+  });
+  const { state: addLPAllowance, send: addLPAllowanceSend } = useSetAllowance({
+    type: "Enable",
+    address: activePair.basePairInfo.address,
+    amount: "-1",
+    // TODO? : needs access of iconpair
+    icon: activePair.basePairInfo.token1.icon,
+    name:
+      activePair.basePairInfo.token1.symbol +
+      "/" +
+      activePair.basePairInfo.token2.symbol,
+  });
 
   const prevModalType = useModals((state) => state.prevModalType);
   return (
     <DexModalContainer>
-      <DexLoadingOverlay
-        show={["Mining", "PendingSignature", "Success"].includes(
-          token1AllowanceStatus
-        )}
-      >
-        <LoadingModal
-          icons={{
-            icon1: activePair.basePairInfo.token1.icon,
-            icon2: activePair.basePairInfo.token2.icon,
-          }}
-          name={
+      {addAllowanceA.status != "None" && (
+        <GlobalLoadingModal
+          transactionType={CantoTransactionType.ENABLE}
+          status={addAllowanceA.status}
+          tokenName={
             activePair.basePairInfo.token1.symbol +
             " / " +
             activePair.basePairInfo.token2.symbol
           }
-          amount={"0"}
-          type="enable"
-          status={token1AllowanceStatus}
-          account={account}
+          txHash={addAllowanceA.transaction?.hash}
         />
-      </DexLoadingOverlay>
-      <DexLoadingOverlay
-        show={["Mining", "PendingSignature", "Success"].includes(
-          token2AllowanceStatus
-        )}
-      >
-        <LoadingModal
-          icons={{
-            icon1: activePair.basePairInfo.token1.icon,
-            icon2: activePair.basePairInfo.token2.icon,
-          }}
-          name={
+      )}
+      {addAllowanceB.status != "None" && (
+        <GlobalLoadingModal
+          transactionType={CantoTransactionType.ENABLE}
+          status={addAllowanceB.status}
+          tokenName={
             activePair.basePairInfo.token1.symbol +
             " / " +
             activePair.basePairInfo.token2.symbol
           }
-          amount={"0"}
-          type="enable"
-          status={token2AllowanceStatus}
-          account={account}
+          txHash={addAllowanceB.transaction?.hash}
         />
-      </DexLoadingOverlay>
+      )}
+      {addLPAllowance.status != "None" && (
+        <GlobalLoadingModal
+          transactionType={CantoTransactionType.ENABLE}
+          status={addLPAllowance.status}
+          tokenName={
+            activePair.basePairInfo.token1.symbol +
+            " / " +
+            activePair.basePairInfo.token2.symbol
+          }
+          txHash={addLPAllowance.transaction?.hash}
+        />
+      )}
       <div className="title">{"Enable Token"}</div>
       {/* <div className="logo">
         <img src={logo} height={30} />
@@ -197,17 +151,17 @@ const EnableModal = ({ activePair, chainId, account }: Props) => {
       </p>
       {prevModalType == ModalType.ADD ? (
         <AddAllowanceButton
-          status1={setToken1AllowanceStatus}
-          status2={setToken2AllowanceStatus}
           pair={activePair}
           chainId={chainId}
+          addAllowance1={addAllowanceASend}
+          addAllowance2={addAllowanceBSend}
         />
       ) : (
         <RemoveAllowanceButton
-          status1={setToken1AllowanceStatus}
-          status2={setToken2AllowanceStatus}
           pair={activePair}
           chainId={chainId}
+          addAllowance1={addLPAllowanceSend}
+          addAllowance2={addAllowanceASend}
         />
       )}
     </DexModalContainer>

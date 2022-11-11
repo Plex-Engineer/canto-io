@@ -16,6 +16,7 @@ interface BorrowingProps {
   symbol?: string;
   liquidity: number;
   onClick: () => void;
+  sortableProps?: unknown[];
 }
 interface SupplyProps {
   supplying: boolean;

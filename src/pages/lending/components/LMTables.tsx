@@ -76,13 +76,24 @@ export const SupplyTable = ({
                 collateral={token.collateral}
                 rewards={truncateNumber(formatUnits(token.rewards))}
                 onToggle={() => onToggle(token)}
-                sortableProps={[
-                  token.data.underlying.symbol,
-                  token.distAPY,
-                  Number(formatEther(token.rewards)),
-                  Number(formatEther(token.supplyBalanceinNote)),
-                  token.collateral,
-                ]}
+                sortableProps={
+                  supplying
+                    ? [
+                        token.data.underlying.symbol,
+                        token.distAPY,
+                        Number(formatEther(token.rewards)),
+                        Number(formatEther(token.supplyBalanceinNote)),
+                        token.collateral,
+                      ]
+                    : [
+                        token.data.underlying.symbol,
+                        token.distAPY,
+                        Number(
+                          formatUnits(token.balanceOf, token.data.decimals)
+                        ),
+                        token.collateral,
+                      ]
+                }
               />
             );
           })
@@ -111,8 +122,10 @@ export const BorrowingTable = ({
   position,
   onClick,
 }: BorrowingProps) => {
+  const [columnClicked, setColumnClicked] = useState(0);
   //this should prevent the table from showing up if there are not items to be displayed
   if (userLMTokens.length == 0 || !visible) return null;
+
   const columns = borrowing
     ? ["asset", "apr/accrued", "balance", "% of limit"]
     : ["asset", "apr", "wallet", "liquidity"];
@@ -122,7 +135,7 @@ export const BorrowingTable = ({
       <Text type="title" size="title3" align="right">
         {borrowing ? "borrowing" : "available"}
       </Text>
-      <LendingTable columns={columns} isLending={false}>
+      <LendingTable columns={columns} isLending={false} onColumnClicked={(column) => setColumnClicked(column)} >
         {userLMTokens
           .map((token) => {
             const amount = borrowing ? token.borrowBalance : token.balanceOf;
@@ -148,11 +161,27 @@ export const BorrowingTable = ({
                 )}
                 symbol={token.data.underlying.symbol}
                 liquidity={liquidity}
+                sortableProps={[
+                  token.data.underlying.symbol,
+                  token.borrowAPY,
+                  Number(
+                    borrowing
+                      ? formatEther(token.borrowBalanceinNote)
+                      : formatUnits(
+                          token.balanceOf,
+                          token.data.underlying.decimals
+                        )
+                  ),
+                  liquidity,
+                ]}
               />
             );
           })
           .sort((a, b) => {
-            return String(a?.props.symbol).localeCompare(b?.props.symbol);
+            return sortColumnsByType(
+              a.props.sortableProps?.[columnClicked],
+              b.props.sortableProps?.[columnClicked]
+            );
           })}
       </LendingTable>
     </div>
