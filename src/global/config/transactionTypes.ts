@@ -6,6 +6,7 @@ export enum CantoTransactionType {
   REMOVE_LIQUIDITY,
   CLAIM_REWARDS,
   SUPPLY,
+  STAKE,
 }
 
 //Do not change, same as useTransaction, but need for compatability with cosmos transactions

@@ -11,12 +11,13 @@ import {
   CantoTransactionType,
   TransactionState,
 } from "global/config/transactionTypes";
+import { ReactNode } from "react";
 
 interface GlobalLoadingProps {
   transactionType: CantoTransactionType;
   status: TransactionState;
   tokenName?: string;
-  customMessage?: string;
+  customMessage?: string | ReactNode;
   txHash?: string;
 }
 

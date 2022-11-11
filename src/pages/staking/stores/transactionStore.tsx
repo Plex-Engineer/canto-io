@@ -1,9 +1,10 @@
+import { TransactionState } from "global/config/transactionTypes";
 import React from "react";
 import { toast } from "react-toastify";
 import create from "zustand";
 import { StakingTransactionType } from "../config/interfaces";
 
-interface TransactionState {
+interface StakeTransactionState {
   inTransaction: boolean;
   setInTransaction: (inTransaction: boolean) => void;
   transactionMessage: React.ReactNode;
@@ -14,10 +15,10 @@ interface TransactionState {
 
 export interface TransactionStatus {
   type: StakingTransactionType;
-  status: "signing" | "verifying" | "success" | "failure";
+  status: TransactionState;
   message: React.ReactNode;
 }
-const useTransactionStore = create<TransactionState>((set) => ({
+const useTransactionStore = create<StakeTransactionState>((set) => ({
   inTransaction: false,
   setInTransaction: (inTransaction) => set({ inTransaction }),
   transactionMessage: null,
