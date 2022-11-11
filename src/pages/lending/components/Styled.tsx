@@ -65,6 +65,9 @@ export const Styled = styled.div`
     }
   }
   @media (max-width: 1000px) {
+    #bor-bal {
+      text-align: left !important;
+    }
     margin: 0;
     padding: 1rem;
     .balance {
@@ -76,7 +79,6 @@ export const Styled = styled.div`
         width: 100%;
       }
       table {
-        min-width: 600px;
         width: 100%;
       }
     }

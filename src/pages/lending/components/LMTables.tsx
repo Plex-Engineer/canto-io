@@ -197,7 +197,7 @@ export const LMPositionBar = ({
             textAlign: "right",
           }}
         >
-          <Text type="title" align="right">
+          <Text id="bor-bal" type="title" align="right">
             borrow balance
           </Text>
           {/* <h1 className="balance">{noteSymbol}{stats?.totalBorrow.toFixed(2)??"000.00000"}</h1> */}

@@ -51,10 +51,6 @@ const Table = styled.table`
   }
   img {
     height: 30px;
-    /* width: 30px; */
-    /* border-radius: 50%; */
-    /* border: 1px solid var(--primary-color); */
-    /* background-color: #cecece; */
   }
   tbody {
     tr:hover {
@@ -63,9 +59,20 @@ const Table = styled.table`
     }
   }
   @media (max-width: 1000px) {
-    width: 800px;
+    width: 100%;
 
-    margin: 0 2rem;
+    td,
+    th {
+      display: none;
+    }
+
+    th:last-of-type {
+      display: table-cell;
+    }
+
+    td:last-of-type {
+      display: table-cell;
+    }
   }
 `;
 interface Props {
