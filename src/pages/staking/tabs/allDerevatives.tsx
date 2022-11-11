@@ -1,15 +1,15 @@
 import { Text } from "global/packages/src";
 import { CInput } from "global/packages/src/components/atoms/Input";
-import NotConnected from "global/packages/src/components/molecules/NotConnected";
-import LendingSwitch from "pages/lending/components/lendingSwitch";
+
 import { useState } from "react";
 import Select from "react-select";
 import { ValidatorTable } from "../components/stakingTable";
 import { MasterValidatorProps } from "../config/interfaces";
 import { Selected } from "../modals/redelgationModal";
-import Styled from "../style";
+
 import { levenshteinDistance } from "../utils/utils";
 import warningImg from "assets/warning.svg";
+import styled from "@emotion/styled";
 interface AllDerevativesProps {
   validators: MasterValidatorProps[];
 }
@@ -128,5 +128,11 @@ const AllDerevatives = (props: AllDerevativesProps) => {
     </Styled>
   );
 };
+
+const Styled = styled.div`
+  justify-content: center;
+  width: 100vmax;
+  max-width: 1200px;
+`;
 
 export default AllDerevatives;

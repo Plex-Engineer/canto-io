@@ -13,6 +13,8 @@ import jailedSymbol from "assets/jailed.svg";
 import { ToolTip } from "pages/lending/components/Tooltip";
 import { ToolTipL } from "pages/lending/components/Styled";
 import Popup from "reactjs-popup";
+import { formatLiquidity } from "pages/lending/utils/utils";
+import { formatPercent } from "global/packages/src/utils/formatNumbers";
 
 interface TableProps {
   validators: MasterValidatorProps[];
@@ -108,7 +110,7 @@ const Row = (props: RowProps) => {
         ) : null}
       </td>
       <td>
-        {commify(truncateNumber(formatEther(props.totalStake)))}{" "}
+        {formatLiquidity(Number(truncateNumber(formatEther(props.totalStake))))}{" "}
         <img src={cantoIcon} alt="canto" height={14} />
       </td>
       <td>
@@ -116,7 +118,7 @@ const Row = (props: RowProps) => {
         <img src={cantoIcon} alt="canto" height={14} />
       </td>
 
-      <td>{props.commission * 100 + "%"}</td>
+      <td>{formatPercent(props.commission)}</td>
     </tr>
   );
 };

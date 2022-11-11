@@ -18,7 +18,7 @@ export async function performTxAndSetStatus(
 ) {
   //metamask pops up waiting for signature
   setStatus({
-    status: "signing",
+    status: "PendingSignature",
     type: StakingTransactionType.DELEGATE,
     message: userTxMessages.waitSign,
   });
@@ -28,21 +28,20 @@ export async function performTxAndSetStatus(
   } catch (err: any) {
     if (err.code == 4001) {
       setStatus({
-        status: "failure",
+        status: "Exception",
         type: txType,
         message: userTxMessages.deniedTx,
       });
     }
-    await closeModalAndResetStatus(close, setStatus);
     return;
   }
   setStatus({
-    status: "verifying",
+    status: "Mining",
     type: txType,
     message: userTxMessages.waitVerify,
   });
   setStatus({
-    status: "success",
+    status: "Success",
     type: txType,
     message: await getActiveTransactionMessage(
       transaction.tx_response.txhash,
@@ -52,16 +51,6 @@ export async function performTxAndSetStatus(
       newValName
     ),
   });
-  await closeModalAndResetStatus(close, setStatus);
-}
-
-async function closeModalAndResetStatus(
-  close: () => void,
-  setStatus: (status: undefined) => void
-) {
-  await sleep(2000);
-  close();
-  setStatus(undefined);
 }
 
 export async function getActiveTransactionMessage(

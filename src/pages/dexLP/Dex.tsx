@@ -14,6 +14,7 @@ import { LPPairInfo, UserLPPairInfo } from "./config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
 import { DexContainer } from "./components/Styled";
 import FadeIn from "react-fade-in";
+import { Text } from "global/packages/src";
 const Dex = () => {
   // Mixpanel.events.pageOpened("Dex Market", '');
 
@@ -112,7 +113,7 @@ const Dex = () => {
 
   return (
     <DexContainer as={FadeIn}>
-      <div style={{ marginBottom: "75px" }}>
+      <div>
         <ModalManager
           chainId={Number(networkInfo.chainId)}
           account={networkInfo.account}
@@ -121,15 +122,28 @@ const Dex = () => {
           }}
         />
       </div>
-      <h4 style={{ textAlign: "center" }}>
-        to swap tokens, visit{" "}
-        <a
-          style={{ color: "#a2fca3", textDecoration: "underline" }}
-          href="https://app.slingshot.finance/trade/"
-        >
-          Slingshot
-        </a>
-      </h4>
+      {/* Title widget the margin of 2rem */}
+      <div
+        style={{
+          margin: "2rem 0",
+        }}
+      >
+        <Text type="title" color="white">
+          to swap tokens, visit{" "}
+          <a
+            style={{
+              color: "#a2fca3",
+              textDecoration: "underline",
+              fontFamily: "Silkscreen",
+            }}
+            href="https://app.slingshot.finance/trade/"
+          >
+            Slingshot
+          </a>
+        </Text>
+      </div>
+
+      {/* Transactions table will be shown here */}
       {notifs.filter((filterItem) => filterItem.type == "transactionStarted")
         .length > 0 ? (
         <div>
@@ -183,7 +197,9 @@ const Dex = () => {
           !pair.userSupply.totalLP.isZero() || pair.userSupply.percentOwned > 0
       ).length ? (
         <div>
-          <p className="tableName">current position</p>
+          <Text type="title" align="left" className="tableName">
+            current position
+          </Text>
           <FadeIn>
             <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
               {userPairs?.map((pair: UserLPPairInfo, idx) => {
@@ -232,7 +248,6 @@ const Dex = () => {
           </FadeIn>
         </div>
       ) : null}
-
       {
         userPairs?.filter(
           (pair: UserLPPairInfo) =>
@@ -240,7 +255,9 @@ const Dex = () => {
             pair.userSupply.percentOwned == 0
         ).length ? (
           <div>
-            <p className="tableName">pools</p>
+            <Text type="title" align="left" className="tableName">
+              pools
+            </Text>
             <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
               {userPairs?.map((pair: UserLPPairInfo, idx) => {
                 return !(

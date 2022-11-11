@@ -70,7 +70,13 @@ const Row = (props: RowProps) => {
         {commify(truncateNumber(formatEther(props.amount)))}{" "}
         <img src={cantoIcon} alt="canto" height={14} />
       </td>
-      <td>{props.completionDate}</td>
+      <td
+        style={{
+          display: "table-cell",
+        }}
+      >
+        {props.completionDate}
+      </td>
     </tr>
   );
 };

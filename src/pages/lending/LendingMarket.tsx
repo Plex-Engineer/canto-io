@@ -24,7 +24,6 @@ import { SpecialTabs } from "./components/SpecialTabs";
 import { OutlinedButton } from "global/packages/src";
 import FadeIn from "react-fade-in";
 const LendingMarket = () => {
-  //intialize network store
   const networkInfo = useNetworkInfo();
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);

@@ -4,7 +4,7 @@ export const Styled = styled.div`
   display: flex;
   flex-direction: column;
   color: #fff;
-  max-width: 1305px;
+  max-width: 1200px;
   width: 100%;
   margin: 2rem auto;
   .typing {
@@ -23,6 +23,7 @@ export const Styled = styled.div`
   }
   .balance {
     font-weight: 300;
+    font-family: "SilkScreen";
     font-size: 56px;
     color: var(--primary-color);
     text-shadow: 0px 14px 14px rgba(6, 252, 153, 0.2);
@@ -64,7 +65,11 @@ export const Styled = styled.div`
     }
   }
   @media (max-width: 1000px) {
-    margin: 0 1rem;
+    #bor-bal {
+      text-align: left !important;
+    }
+    margin: 0;
+    padding: 1rem;
     .balance {
       font-size: 30px;
     }
@@ -74,7 +79,6 @@ export const Styled = styled.div`
         width: 100%;
       }
       table {
-        min-width: 600px;
         width: 100%;
       }
     }
