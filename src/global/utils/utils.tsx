@@ -71,7 +71,9 @@ function findFirstNonZeroAfter(value: string, after: number) {
 export function removeLeadingZeros(value: string) {
   for (let i = 0; i < value.length; i++) {
     if (value[i] != "0") {
-      return value.slice(value[i] == "." ? i - 1 : i);
+      //if first index is a decimal point we will add the zero before it
+      const zeroPad = value[i] == "." && i == 0 ? "0" : "";
+      return zeroPad + value.slice(i);
     }
   }
   return "0";

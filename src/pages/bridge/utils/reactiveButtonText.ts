@@ -1,5 +1,6 @@
 import { TransactionState } from "@usedapp/core";
 import { BigNumber } from "ethers";
+import { CantoTransactionType } from "global/config/transactionTypes";
 import {
   getTransactionStatusString,
   transactionStatusActions,
@@ -13,9 +14,13 @@ import {
 } from "../config/interfaces";
 import { checkGravityAddress } from "./bridgeConfirmations";
 
-const increaseAllowanceActions = transactionStatusActions("increase allowance");
-const enableActions = transactionStatusActions("enable");
-const sendTokenActions = transactionStatusActions("send token");
+const increaseAllowanceActions = transactionStatusActions(
+  CantoTransactionType.INCREASE_ALLOWANCE
+);
+const enableActions = transactionStatusActions(CantoTransactionType.ENABLE);
+const sendTokenActions = transactionStatusActions(
+  CantoTransactionType.SEND_TOKEN
+);
 //returns button text and if it is disabled
 export function getReactiveButtonText(
   amount: BigNumber,
