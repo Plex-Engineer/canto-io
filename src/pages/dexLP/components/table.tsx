@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 const Container = styled.table`
   & {
     border: none;
-    /* border: var(--primary-color) solid 1px; */
     margin: 5px auto;
     width: 1204px;
     color: var(--primary-color);
