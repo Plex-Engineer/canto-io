@@ -7,10 +7,8 @@ import useValidatorModalStore, {
 } from "../stores/validatorModalStore";
 import { StakingModal } from "./stakingModal";
 import close from "assets/close.svg";
-import FadeIn from "react-fade-in";
 import DelegationModal from "./delegationModal";
 import RedelgationModal from "./redelgationModal";
-import ChoiceModal from "./choiceModal";
 
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
@@ -32,11 +30,11 @@ const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-content"
   &-content {
     position: relative;
-    overflow-y: hidden;
-    overflow-x: hidden;
+
     background-color: black;
     border-radius: 4px;
     scroll-behavior: smooth;
+    transition: all 0.2s;
     animation: fadein 0.5s 1;
     @keyframes fadein {
       0% {
@@ -50,10 +48,6 @@ const StyledPopup = styled(Popup)`
         transform: translateY(0px);
       }
     }
-  }
-
-  & {
-    overflow-y: auto;
   }
 
   @media (max-width: 1000px) {

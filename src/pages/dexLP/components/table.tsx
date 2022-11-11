@@ -1,22 +1,20 @@
 import styled from "@emotion/styled";
 
 const Container = styled.table`
-  & {
-    border: none;
-    margin: 5px auto;
-    width: 1204px;
-    color: var(--primary-color);
-    text-align: center;
-    border-collapse: collapse;
-    border-spacing: 0;
-  }
+  border: none;
+  margin: 5px auto;
+  width: 1200px;
+  color: var(--primary-color);
+  text-align: center;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border-spacing: 0 1rem;
+  border-collapse: separate !important;
+
   thead {
     text-transform: lowercase;
+    border-radius: 4px;
     font-size: 14px;
-    background-color: #06fc9a1b;
-    tr {
-      border-bottom: var(--primary-color) solid 1px !important;
-    }
   }
   th {
     padding: 8px;
@@ -28,33 +26,49 @@ const Container = styled.table`
     font-size: 14px;
     font-weight: 400;
     line-height: 4rem;
-    border-bottom: transparent solid 1px;
-
-    animation: fader 0.5s;
-    animation-fill-mode: forwards;
-
-    /*  */
-    @keyframes fader {
-      0% {
-        border-bottom: transparent solid 1px;
-      }
-      to {
-        border-bottom: var(--primary-color) solid 1px;
-      }
-    }
+    background-color: black;
   }
 
   tbody {
-    border: var(--primary-color) solid 1px;
+    tr {
+      border-radius: 4px;
+      border-left: 3px solid var(--primary-color);
+      border-right: 3px solid var(--primary-color);
+      transition: all 0.2s;
 
+      &:hover {
+        background-color: #163428;
+        cursor: pointer;
+        transform: scale(1.02);
+      }
+      position: relative;
+    }
     tr:hover {
-      background-color: #06fc9a1b;
+      background-color: #09291c;
       cursor: pointer;
     }
   }
   @media (max-width: 1000px) {
-    width: 800px;
-    margin: 0 2rem;
+    width: 100%;
+    padding: 0 1rem;
+    /* td,
+    th {
+      display: none;
+    } */
+
+    th:nth-of-type(3) {
+      display: none;
+    }
+    td:nth-of-type(3) {
+      display: none;
+    }
+
+    th:nth-of-type(4) {
+      display: none;
+    }
+    td:nth-of-type(4) {
+      display: none;
+    }
   }
 `;
 type Props = {
