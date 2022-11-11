@@ -3,6 +3,7 @@ import { formatUnits } from "ethers/lib/utils";
 import {
   CantoTransactionType,
   TransactionActionObject,
+  TransactionState,
 } from "global/config/transactionTypes";
 
 export function classNames(...classes: unknown[]): string {
@@ -113,7 +114,7 @@ export function getTransactionStatusString(
   action: string,
   inAction: string,
   postAction: string,
-  status?: string
+  status?: TransactionState
 ) {
   switch (status) {
     case "None":
@@ -210,6 +211,12 @@ export const transactionStatusActions = (
         action: "decollateralize",
         inAction: "decollateralizing",
         postAction: "decollateralized",
+      };
+    case CantoTransactionType.VOTING:
+      return {
+        action: "cast vote",
+        inAction: "casting vote",
+        postAction: "casted vote",
       };
     default:
       return {

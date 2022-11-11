@@ -12,6 +12,7 @@ export enum CantoTransactionType {
   COLLATERALIZE,
   DECOLLATERLIZE,
   STAKE,
+  VOTING,
 }
 
 //Do not change, same as useTransaction, but need for compatability with cosmos transactions
