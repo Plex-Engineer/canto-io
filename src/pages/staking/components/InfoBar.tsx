@@ -57,5 +57,10 @@ const Styled = styled.div`
     font-family: "Silkscreen", cursive;
     font-size: 30px;
   }
+  @media (max-width: 1000px) {
+    width: 100%;
+    gap: 1rem;
+    flex-direction: column;
+  }
 `;
 export default InfoBar;
