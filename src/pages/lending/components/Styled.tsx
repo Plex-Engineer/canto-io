@@ -23,6 +23,7 @@ export const Styled = styled.div`
   }
   .balance {
     font-weight: 300;
+    font-family: "SilkScreen";
     font-size: 56px;
     color: var(--primary-color);
     text-shadow: 0px 14px 14px rgba(6, 252, 153, 0.2);

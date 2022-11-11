@@ -9,6 +9,7 @@ import CypherText from "./CypherText";
 import { BorrowRow, SupplyRow } from "./lendingRow";
 import LendingTable from "./table";
 import FadeIn from "react-fade-in";
+import { Text } from "global/packages/src";
 
 function sortColumnsByType(value1: unknown, value2: unknown) {
   if (typeof value1 === "string") {
@@ -43,7 +44,9 @@ export const SupplyTable = ({
 
   return (
     <div className="left">
-      <p>{supplying ? "supplying" : "available"}</p>
+      <Text type="title" size="title3" align="left">
+        {supplying ? "supplying" : "available"}
+      </Text>
 
       <LendingTable
         columns={columns}
@@ -116,13 +119,9 @@ export const BorrowingTable = ({
 
   return (
     <div className="right">
-      <p
-        style={{
-          textAlign: "right",
-        }}
-      >
-        borrowing
-      </p>
+      <Text type="title" size="title3" align="right">
+        {borrowing ? "borrowing" : "available"}
+      </Text>
       <LendingTable columns={columns} isLending={false}>
         {userLMTokens
           .map((token) => {
@@ -177,7 +176,9 @@ export const LMPositionBar = ({
     <React.Fragment>
       <Hero>
         <div>
-          <p>supply balance</p>
+          <Text type="title" align="left">
+            supply balance
+          </Text>
           {/* <h1 className="balance">{noteSymbol}{stats?.totalSupply.toFixed(2)??"000.00000"}</h1> */}
           <h1 className="balance">
             {noteSymbol}
@@ -196,7 +197,9 @@ export const LMPositionBar = ({
             textAlign: "right",
           }}
         >
-          <p>borrow balance</p>
+          <Text type="title" align="right">
+            borrow balance
+          </Text>
           {/* <h1 className="balance">{noteSymbol}{stats?.totalBorrow.toFixed(2)??"000.00000"}</h1> */}
           <h1 className="balance">
             {noteSymbol}

@@ -30,17 +30,11 @@ const Table = styled.table`
     font-size: 14px;
     font-weight: 400;
     line-height: 4rem;
-    border-radius: 4px;
-    border-left: 3px solid var(--primary-color);
-    border-right: 3px solid var(--primary-color);
-    transition: all 0.2s;
+
     background-color: black;
     margin-top: 1rem;
-    &:hover {
-      background-color: #163428;
-      cursor: pointer;
-      transform: scale(1.02);
-    }
+    transition: all 0.2s ease;
+
     position: relative;
   }
   td:first-of-type,
@@ -64,11 +58,10 @@ const Table = styled.table`
   }
   tbody {
     tr:hover {
-      background-color: #14392a;
+      background-color: #2c2c2c;
       cursor: pointer;
     }
   }
-
   @media (max-width: 1000px) {
     width: 800px;
 
