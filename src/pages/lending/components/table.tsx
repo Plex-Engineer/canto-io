@@ -1,21 +1,17 @@
 import styled from "@emotion/styled";
-import { useState } from "react";
+import arrow from "assets/rightArrow.svg";
 
 const Table = styled.table`
   border: none;
-  border: var(--primary-color) solid 1px;
-  box-shadow: 0px 0px 10px #94ffb241;
   margin: 5px auto;
   color: var(--primary-color);
   width: calc(100% - 10px);
   text-align: center;
-  border-collapse: collapse;
-  border-spacing: 0;
-
+  border-spacing: 0 1rem;
+  border-collapse: separate !important;
   thead {
     text-transform: lowercase;
     font-size: 14px;
-    background-color: #06fc9a1b;
   }
   td {
     display: table-cell;
@@ -34,17 +30,18 @@ const Table = styled.table`
     font-size: 14px;
     font-weight: 400;
     line-height: 4rem;
+    border-radius: 4px;
+    border-left: 3px solid var(--primary-color);
+    border-right: 3px solid var(--primary-color);
+    transition: all 0.2s;
     background-color: black;
-    border-bottom: var(--primary-color) solid 1px;
-    animation-fill-mode: forwards;
-    @keyframes fader {
-      from {
-        border-bottom: transparent solid 1px;
-      }
-      to {
-        border-bottom: var(--primary-color) solid 1px;
-      }
+    margin-top: 1rem;
+    &:hover {
+      background-color: #163428;
+      cursor: pointer;
+      transform: scale(1.02);
     }
+    position: relative;
   }
   td:first-of-type,
   th:first-of-type {
@@ -66,13 +63,12 @@ const Table = styled.table`
     /* background-color: #cecece; */
   }
   tbody {
-    border: var(--primary-color) solid 1px;
-
     tr:hover {
       background-color: #14392a;
       cursor: pointer;
     }
   }
+
   @media (max-width: 1000px) {
     width: 800px;
 
@@ -89,9 +85,11 @@ interface Props {
 const LendingTable = (props: Props) => {
   return (
     <div
-      style={{
-        overflowX: "auto",
-      }}
+      style={
+        {
+          // overflowX: "auto",
+        }
+      }
     >
       <Table>
         <thead>
