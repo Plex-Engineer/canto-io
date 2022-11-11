@@ -33,6 +33,11 @@ import { getDelegationsForAddress } from "pages/staking/utils/transactions";
 import { CantoMainnet } from "global/config/networks";
 import { calculateTotalStaked } from "pages/staking/utils/allUserValidatorInfo";
 import { formatBigNumber } from "global/packages/src/utils/formatNumbers";
+import GlobalLoadingModal from "global/components/modals/loadingModal";
+import {
+  CantoTransactionType,
+  TransactionState,
+} from "global/config/transactionTypes";
 const Proposal = () => {
   const [chainId, account] = useNetworkInfo((state) => [
     Number(state.chainId),
@@ -88,26 +93,11 @@ const Proposal = () => {
 
   const voteEnded = proposal.status != VoteStatus.votingOngoing;
 
-  const votingModal: any = (close: () => void) => {
-    return (
-      <GovModal
-        onVote={async (vote: VotingOption) => {
-          const voteSuccess = await voteOnProposal(
-            Number(proposal.proposal_id),
-            convertToVoteNumber(vote),
-            nodeURL(chainId),
-            votingFee,
-            chain,
-            memo
-          );
-          setVoteSuccess(voteSuccess);
-          close();
-        }}
-        proposal={proposal}
-        currentVote={accountVote}
-      />
-    );
-  };
+  const [castingVote, setCastingVote] = useState<VotingOption>(
+    VotingOption.NONE
+  );
+  const [voteStatus, setVoteStatus] = useState<TransactionState>("None");
+
   return (
     <ProposalContainer>
       <div className="details">
@@ -272,13 +262,53 @@ const Proposal = () => {
             backdropFilter: "blur(35px)",
           }}
           trigger={
-            <PrimaryButton disabled={voteEnded} autoFocus={false}>
+            <PrimaryButton disabled={false} autoFocus={false}>
               {voteEnded ? "voting has ended" : "vote"}
             </PrimaryButton>
           }
           modal={true}
+          onClose={() => {
+            setCastingVote(VotingOption.NONE);
+            setVoteStatus("None");
+          }}
         >
-          {votingModal}
+          {
+            <div>
+              {voteStatus != "None" && (
+                <GlobalLoadingModal
+                  transactionType={CantoTransactionType.VOTING}
+                  status={voteStatus}
+                  tokenName={convertVoteNumberToString(castingVote)}
+                  onClose={() => {
+                    setCastingVote(VotingOption.NONE);
+                    setVoteStatus("None");
+                  }}
+                />
+              )}
+              <GovModal
+                onVote={async (vote: VotingOption) => {
+                  setVoteStatus("PendingSignature");
+                  setCastingVote(vote);
+                  const voteSuccess = await voteOnProposal(
+                    Number(proposal.proposal_id),
+                    convertToVoteNumber(vote),
+                    nodeURL(chainId),
+                    votingFee,
+                    chain,
+                    memo
+                  );
+                  setVoteSuccess(voteSuccess);
+                  if (voteSuccess) {
+                    setVoteStatus("Success");
+                  } else {
+                    setVoteStatus("Fail");
+                  }
+                }}
+                proposal={proposal}
+                currentVote={accountVote}
+              />
+            </div>
+          }
         </Popup>
         {accountVote != VotingOption.NONE ? (
           <p style={{ color: "white" }}>

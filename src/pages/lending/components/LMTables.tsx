@@ -9,6 +9,7 @@ import CypherText from "./CypherText";
 import { BorrowRow, SupplyRow } from "./lendingRow";
 import LendingTable from "./table";
 import FadeIn from "react-fade-in";
+import { Text } from "global/packages/src";
 
 function sortColumnsByType(value1: unknown, value2: unknown) {
   if (typeof value1 === "string") {
@@ -43,7 +44,9 @@ export const SupplyTable = ({
 
   return (
     <div className="left">
-      <p>{supplying ? "supplying" : "available"}</p>
+      <Text type="title" size="title3" align="left">
+        {supplying ? "supplying" : "available"}
+      </Text>
 
       <LendingTable
         columns={columns}
@@ -73,13 +76,24 @@ export const SupplyTable = ({
                 collateral={token.collateral}
                 rewards={truncateNumber(formatUnits(token.rewards))}
                 onToggle={() => onToggle(token)}
-                sortableProps={[
-                  token.data.underlying.symbol,
-                  token.distAPY,
-                  Number(formatEther(token.rewards)),
-                  Number(formatEther(token.supplyBalanceinNote)),
-                  token.collateral,
-                ]}
+                sortableProps={
+                  supplying
+                    ? [
+                        token.data.underlying.symbol,
+                        token.distAPY,
+                        Number(formatEther(token.rewards)),
+                        Number(formatEther(token.supplyBalanceinNote)),
+                        token.collateral,
+                      ]
+                    : [
+                        token.data.underlying.symbol,
+                        token.distAPY,
+                        Number(
+                          formatUnits(token.balanceOf, token.data.decimals)
+                        ),
+                        token.collateral,
+                      ]
+                }
               />
             );
           })
@@ -108,22 +122,20 @@ export const BorrowingTable = ({
   position,
   onClick,
 }: BorrowingProps) => {
+  const [columnClicked, setColumnClicked] = useState(0);
   //this should prevent the table from showing up if there are not items to be displayed
   if (userLMTokens.length == 0 || !visible) return null;
+
   const columns = borrowing
     ? ["asset", "apr/accrued", "balance", "% of limit"]
     : ["asset", "apr", "wallet", "liquidity"];
 
   return (
     <div className="right">
-      <p
-        style={{
-          textAlign: "right",
-        }}
-      >
-        borrowing
-      </p>
-      <LendingTable columns={columns} isLending={false}>
+      <Text type="title" size="title3" align="right">
+        {borrowing ? "borrowing" : "available"}
+      </Text>
+      <LendingTable columns={columns} isLending={false} onColumnClicked={(column) => setColumnClicked(column)} >
         {userLMTokens
           .map((token) => {
             const amount = borrowing ? token.borrowBalance : token.balanceOf;
@@ -149,11 +161,27 @@ export const BorrowingTable = ({
                 )}
                 symbol={token.data.underlying.symbol}
                 liquidity={liquidity}
+                sortableProps={[
+                  token.data.underlying.symbol,
+                  token.borrowAPY,
+                  Number(
+                    borrowing
+                      ? formatEther(token.borrowBalanceinNote)
+                      : formatUnits(
+                          token.balanceOf,
+                          token.data.underlying.decimals
+                        )
+                  ),
+                  liquidity,
+                ]}
               />
             );
           })
           .sort((a, b) => {
-            return String(a?.props.symbol).localeCompare(b?.props.symbol);
+            return sortColumnsByType(
+              a.props.sortableProps?.[columnClicked],
+              b.props.sortableProps?.[columnClicked]
+            );
           })}
       </LendingTable>
     </div>
@@ -177,7 +205,9 @@ export const LMPositionBar = ({
     <React.Fragment>
       <Hero>
         <div>
-          <p>supply balance</p>
+          <Text type="title" align="left">
+            supply balance
+          </Text>
           {/* <h1 className="balance">{noteSymbol}{stats?.totalSupply.toFixed(2)??"000.00000"}</h1> */}
           <h1 className="balance">
             {noteSymbol}
@@ -196,7 +226,9 @@ export const LMPositionBar = ({
             textAlign: "right",
           }}
         >
-          <p>borrow balance</p>
+          <Text id="bor-bal" type="title" align="right">
+            borrow balance
+          </Text>
           {/* <h1 className="balance">{noteSymbol}{stats?.totalBorrow.toFixed(2)??"000.00000"}</h1> */}
           <h1 className="balance">
             {noteSymbol}

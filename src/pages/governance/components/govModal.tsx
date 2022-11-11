@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
 import { ProposalData, VotingOption } from "../config/interfaces";
+import { PrimaryButton } from "global/packages/src";
 
 const Container = styled.div`
   background-color: #040404;
@@ -11,6 +12,9 @@ const Container = styled.div`
   align-items: center;
   justify-content: start;
   padding: 1rem;
+  .btn {
+    margin-top: 1rem;
+  }
   h2 {
     font-style: normal;
     font-weight: 300;
@@ -113,7 +117,9 @@ const GovModal = ({ proposal, currentVote, onVote }: Props) => {
         onChange={handleChange}
       />
 
-      <Button onClick={() => onVote(option)}>vote</Button>
+      <PrimaryButton className="btn" onClick={() => onVote(option)}>
+        vote
+      </PrimaryButton>
     </Container>
   );
 };

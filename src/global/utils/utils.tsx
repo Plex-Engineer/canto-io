@@ -1,5 +1,10 @@
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
+import {
+  CantoTransactionType,
+  TransactionActionObject,
+  TransactionState,
+} from "global/config/transactionTypes";
 
 export function classNames(...classes: unknown[]): string {
   return classes.filter(Boolean).join(" ");
@@ -66,7 +71,9 @@ function findFirstNonZeroAfter(value: string, after: number) {
 export function removeLeadingZeros(value: string) {
   for (let i = 0; i < value.length; i++) {
     if (value[i] != "0") {
-      return value.slice(value[i] == "." ? i - 1 : i);
+      //if first index is a decimal point we will add the zero before it
+      const zeroPad = value[i] == "." && i == 0 ? "0" : "";
+      return zeroPad + value.slice(i);
     }
   }
   return "0";
@@ -109,18 +116,19 @@ export function getTransactionStatusString(
   action: string,
   inAction: string,
   postAction: string,
-  status?: string
+  status?: TransactionState
 ) {
   switch (status) {
     case "None":
       return action;
     case "PendingSignature":
-      return "please sign to " + action;
+      return "awaiting signature to " + action + "...";
     case "Mining":
-      return inAction;
+      return inAction + "...";
     case "Success":
       return "successfully " + postAction;
     case "Exception":
+      return "user denied transaction";
     case "Fail":
       return "unable to " + action;
     default:
@@ -129,52 +137,88 @@ export function getTransactionStatusString(
 }
 
 export const transactionStatusActions = (
-  actionType: string,
+  actionType: CantoTransactionType,
   tokenName?: string
-) => {
+): TransactionActionObject => {
   const token = tokenName ?? "token";
   switch (actionType) {
-    case "enable":
+    case CantoTransactionType.ENABLE:
       return {
         action: `enable ${token}`,
         inAction: `enabling ${token}`,
         postAction: `enabled ${token}`,
       };
-    case "increase allowance":
+    case CantoTransactionType.INCREASE_ALLOWANCE:
       return {
         action: "increase allowance",
         inAction: "increasing allowance",
         postAction: "increased allowance",
       };
-    case "send token":
+    case CantoTransactionType.SEND_TOKEN:
       return {
         action: `send ${token}`,
         inAction: `sending ${token}`,
         postAction: `sent ${token}`,
       };
-    case "add":
+    case CantoTransactionType.ADD_LIQUIDITY:
       return {
         action: "add liquidity",
         inAction: "adding liquidity",
         postAction: "added liquidity",
       };
-    case "claim":
+    case CantoTransactionType.CLAIM_REWARDS:
       return {
         action: "claim",
         inAction: "claiming",
         postAction: "claimed",
       };
-    case "remove":
+    case CantoTransactionType.REMOVE_LIQUIDITY:
       return {
         action: "remove liquidity",
         inAction: "removing liquidity",
         postAction: "removed liquidity",
       };
-    case "supply":
+    case CantoTransactionType.SUPPLY:
       return {
         action: `supply ${token}`,
         inAction: `supplying ${token}`,
         postAction: `supplied ${token}`,
+      };
+    case CantoTransactionType.WITHDRAW:
+      return {
+        action: `withdraw ${token}`,
+        inAction: `withdrawing ${token}`,
+        postAction: `withdrew ${token}`,
+      };
+    case CantoTransactionType.BORROW:
+      return {
+        action: `borrow ${token}`,
+        inAction: `borrowing ${token}`,
+        postAction: `borrowed ${token}`,
+      };
+    case CantoTransactionType.REPAY:
+      return {
+        action: `repay ${token}`,
+        inAction: `repaying ${token}`,
+        postAction: `repaid ${token}`,
+      };
+    case CantoTransactionType.COLLATERALIZE:
+      return {
+        action: "collateralize",
+        inAction: "collateralizing",
+        postAction: "collateralized",
+      };
+    case CantoTransactionType.DECOLLATERLIZE:
+      return {
+        action: "decollateralize",
+        inAction: "decollateralizing",
+        postAction: "decollateralized",
+      };
+    case CantoTransactionType.VOTING:
+      return {
+        action: "cast vote",
+        inAction: "casting vote",
+        postAction: "casted vote",
       };
     default:
       return {

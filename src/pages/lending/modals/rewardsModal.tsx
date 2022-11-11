@@ -1,11 +1,5 @@
 import logo from "assets/logo.svg";
-import { useEffect } from "react";
-import {
-  getTransactionStatusString,
-  noteSymbol,
-  transactionStatusActions,
-  truncateNumber,
-} from "global/utils/utils";
+import { noteSymbol, truncateNumber } from "global/utils/utils";
 import { useClaim, useDrip } from "pages/lending/hooks/useTransaction";
 import { UserLMRewards } from "pages/lending/config/interfaces";
 import { ethers } from "ethers";
@@ -13,6 +7,8 @@ import { valueInNote } from "pages/dexLP/utils/utils";
 import { PrimaryButton } from "global/packages/src";
 import { RewardsContainer } from "../components/Styled";
 import { reservoirAdddress } from "../config/lendingMarketTokens";
+import GlobalLoadingModal from "global/components/modals/loadingModal";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 interface Props {
   rewardsObj: UserLMRewards;
@@ -23,17 +19,19 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
   const { send, state } = useClaim(rewardsObj.cantroller);
   const { send: sendDrip, state: stateDrip } = useDrip(reservoirAdddress);
 
-  useEffect(() => {
-    // console.log(enterState)
-    if (["Success", "Fail", "Exception"].includes(state.status)) {
-      setTimeout(onClose, 500);
-    }
-  }, [state.status]);
-  const statusObj = transactionStatusActions("claim");
   //boolean for if the user needs to call drip in order to claim their rewards
   const needDrip = rewardsObj.comptrollerBalance.lt(rewardsObj.accrued);
   return (
     <RewardsContainer>
+      {state.status != "None" && (
+        <GlobalLoadingModal
+          transactionType={CantoTransactionType.CLAIM_REWARDS}
+          status={state.status}
+          tokenName={"claim rewards"}
+          txHash={state.transaction?.hash}
+          onClose={onClose}
+        />
+      )}
       <div className="title">canto balance</div>
       <div className="logo">
         <img src={logo} height={30} />
@@ -85,18 +83,11 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
         {needDrip
           ? "drip and claim"
           : !rewardsObj.accrued.isZero()
-          ? getTransactionStatusString(
-              statusObj.action,
-              statusObj.inAction,
-              statusObj.postAction,
-              state.status
-            )
+          ? "claim"
           : "nothing to claim"}
       </PrimaryButton>
     </RewardsContainer>
   );
 };
-
-// 'None' | 'PendingSignature' | 'Mining' | 'Success' | 'Fail' | 'Exception'
 
 export default RewardsModal;

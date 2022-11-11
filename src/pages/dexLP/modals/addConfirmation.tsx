@@ -2,9 +2,8 @@ import { ethers, Contract, BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import IconPair from "../components/iconPair";
 import { RowCell } from "./removeModal";
-import LoadingModal from "./loadingModal";
 import { useEffect, useState } from "react";
-import useModals, { ModalType } from "../hooks/useModals";
+import useModals from "../hooks/useModals";
 import { CantoMainnet, CantoTestnet } from "global/config/networks";
 import {
   useAddLiquidity,
@@ -19,11 +18,13 @@ import {
 } from "../utils/utils";
 import { ERC20Abi, routerAbi } from "global/config/abi";
 import { UserLPPairInfo } from "../config/interfaces";
-import { DexModalContainer, DexLoadingOverlay } from "../components/Styled";
+import { DexModalContainer } from "../components/Styled";
 import { ADDRESSES } from "global/config/addresses";
 import { PrimaryButton } from "global/packages/src";
 import CheckBox from "global/components/checkBox";
 import { useSupply } from "pages/lending/hooks/useTransaction";
+import GlobalLoadingModal from "global/components/modals/loadingModal";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 interface AddConfirmationProps {
   pair: UserLPPairInfo;
@@ -34,6 +35,7 @@ interface AddConfirmationProps {
   chainId?: number;
   account?: string;
   expectedLP: BigNumber;
+  onClose: () => void;
 }
 
 const AddLiquidityButton = (props: AddConfirmationProps) => {
@@ -83,7 +85,6 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
     props.pair.basePairInfo,
     props.chainId
   );
-  const setModalType = useModals((state) => state.setModalType);
 
   const amountMinOut1 = props.value1.mul(Number(props.slippage)).div(100);
   const amountMinOut2 = props.value2.mul(Number(props.slippage)).div(100);
@@ -123,20 +124,12 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
 
   useEffect(() => {
     if (
-      addLiquidityState.status == "Success" ||
-      addLiquidityCANTOState.status == "Success"
+      (addLiquidityState.status == "Success" ||
+        addLiquidityCANTOState.status == "Success") &&
+      confirmSupply &&
+      supplyLP.status == "None"
     ) {
-      if (confirmSupply) {
-        if (supplyLP.status == "None") {
-          supplyLPInLending();
-          return;
-        } else if (supplyLP.status != "Success") {
-          return;
-        }
-      }
-      setTimeout(() => {
-        setModalType(ModalType.NONE);
-      }, 500);
+      supplyLPInLending();
     }
   }, [
     addLiquidityState.status,
@@ -146,54 +139,43 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
 
   return (
     <DexModalContainer>
-      <DexLoadingOverlay
-        show={
-          (["Mining", "PendingSignature", "Success"].includes(
-            addLiquidityState.status
-          ) ||
-            ["Mining", "PendingSignature", "Success"].includes(
-              addLiquidityCANTOState.status
-            )) &&
-          supplyLP.status == "None"
-        }
-      >
-        <LoadingModal
-          icons={{
-            icon1: props.pair.basePairInfo.token1.icon,
-            icon2: props.pair.basePairInfo.token2.icon,
-          }}
-          name={
-            props.pair.basePairInfo.token1.symbol +
-            " / " +
-            props.pair.basePairInfo.token2.symbol
-          }
-          amount={"0"}
-          type="add"
-          status={
-            isToken1Canto || isToken2Canto
-              ? addLiquidityCANTOState.status
-              : addLiquidityState.status
-          }
-          account={props.account}
-        />
-      </DexLoadingOverlay>
-      <DexLoadingOverlay show={supplyLP.status != "None"}>
-        <LoadingModal
-          icons={{
-            icon1: props.pair.basePairInfo.token1.icon,
-            icon2: props.pair.basePairInfo.token2.icon,
-          }}
-          name={
-            props.pair.basePairInfo.token1.symbol +
-            " / " +
-            props.pair.basePairInfo.token2.symbol
-          }
-          amount={"0"}
-          type="supply"
+      {(addLiquidityState.status != "None" ||
+        addLiquidityCANTOState.status != "None") &&
+        supplyLP.status == "None" && (
+          <GlobalLoadingModal
+            transactionType={CantoTransactionType.ADD_LIQUIDITY}
+            status={
+              isToken1Canto || isToken2Canto
+                ? addLiquidityCANTOState.status
+                : addLiquidityState.status
+            }
+            tokenName={
+              props.pair.basePairInfo.token1.symbol +
+              " / " +
+              props.pair.basePairInfo.token2.symbol +
+              " LP"
+            }
+            txHash={
+              isToken1Canto || isToken2Canto
+                ? addLiquidityCANTOState.transaction?.hash
+                : addLiquidityState.transaction?.hash
+            }
+            onClose={props.onClose}
+          />
+        )}
+      {supplyLP.status != "None" && (
+        <GlobalLoadingModal
+          transactionType={CantoTransactionType.SUPPLY}
           status={supplyLP.status}
-          account={props.account}
+          tokenName={
+            props.pair.basePairInfo.token1.symbol +
+            " / " +
+            props.pair.basePairInfo.token2.symbol
+          }
+          txHash={supplyLP.transaction?.hash}
+          onClose={props.onClose}
         />
-      </DexLoadingOverlay>
+      )}
       <div className="title">
         {props.pair.basePairInfo.token1.symbol +
           " / " +
@@ -398,6 +380,7 @@ export const AddLiquidityConfirmation = (props: Props) => {
         chainId={props.chainId}
         account={props.account}
         expectedLP={expectedLP}
+        onClose={props.onClose}
       ></AddLiquidityButton>
     </div>
   );

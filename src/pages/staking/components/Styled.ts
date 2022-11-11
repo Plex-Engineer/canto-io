@@ -4,7 +4,6 @@ export const StakingModalContainer = styled.div`
   background-color: #040404;
   height: fit-content;
   max-height: 90vh;
-  overflow-y: scroll;
   padding-bottom: 1.4rem;
   width: 33rem;
   display: flex;
@@ -201,7 +200,9 @@ export const StakingModalContainer = styled.div`
   }
 
   .desc {
-    margin: 0 2rem;
+    padding: 0 2rem;
+    width: 100%;
+
     display: flex;
     flex-direction: column;
     align-items: center;

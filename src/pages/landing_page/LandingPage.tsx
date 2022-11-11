@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { openLink } from "./landingScript";
 import { Styled } from "./styled";
 import Typing from "./Typing";
+import { pageList } from "global/config/pageList";
 
 const LandingPage = () => {
   const [userInput, setUserInput] = useState("");
@@ -21,28 +22,6 @@ const LandingPage = () => {
   }
   blinkAnimation();
 
-  const pageList = [
-    {
-      name: "bridge",
-      link: "/bridge",
-    },
-    {
-      name: "governance",
-      link: "/governance",
-    },
-    {
-      name: "lending",
-      link: "/lending",
-    },
-    {
-      name: "lp interface",
-      link: "/lp",
-    },
-    {
-      name: "staking",
-      link: "/staking",
-    },
-  ];
   function handleInputChange(value: string) {
     if (value.length > 0) {
       setShowCursor(false);
