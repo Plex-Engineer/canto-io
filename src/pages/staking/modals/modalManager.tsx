@@ -9,9 +9,7 @@ import { StakingModal } from "./stakingModal";
 import close from "assets/close.svg";
 import DelegationModal from "./delegationModal";
 import RedelgationModal from "./redelgationModal";
-import ChoiceModal from "./choiceModal";
 import useTransactionStore from "../stores/transactionStore";
-
 
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
@@ -133,6 +131,11 @@ export const ModalManager = (props: ModalManagerProps) => {
           allValidators={props.allValidators}
           balance={networkInfo.balance}
           account={networkInfo.account}
+          onClose={() =>
+            validatorModals.close(() =>
+              transactionStore.setTransactionStatus(undefined)
+            )
+          }
         />
         // <ChoiceModal
         //   validator={validatorModals.activeValidator}

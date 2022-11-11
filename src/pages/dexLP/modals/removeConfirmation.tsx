@@ -29,6 +29,7 @@ interface RemoveConfirmationProps {
   deadline: number;
   chainId?: number;
   account?: string;
+  onClose: () => void;
 }
 
 export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
@@ -114,6 +115,7 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
               ? removeLiquidityCANTOState.transaction?.hash
               : removeLiquidityState.transaction?.hash
           }
+          onClose={props.onClose}
         />
       )}
       <div className="title">
@@ -267,6 +269,7 @@ export const RemoveLiquidityConfirmation = (props: Props) => {
       deadline={confirmValues.deadline}
       chainId={props.chainId}
       account={props.account}
+      onClose={props.onClose}
     ></RemoveLiquidityButton>
   );
 };

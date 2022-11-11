@@ -128,7 +128,7 @@ interface Props {
   chainId?: number;
   account?: string;
 }
-const RemoveModal = ({ activePair, chainId, account }: Props) => {
+const RemoveModal = ({ activePair, chainId, onClose }: Props) => {
   const [percentage, setPercentage] = useState("1");
   const [slippage, setSlippage] = useState("1");
   const [deadline, setDeadline] = useState("10");
@@ -169,6 +169,7 @@ const RemoveModal = ({ activePair, chainId, account }: Props) => {
             activePair.basePairInfo.token2.symbol
           }
           status={tokenAllowanceStatus}
+          onClose={onClose}
         />
       </DexLoadingOverlay>
       <div className="title">

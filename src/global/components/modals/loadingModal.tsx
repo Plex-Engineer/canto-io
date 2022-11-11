@@ -12,6 +12,7 @@ import {
   TransactionState,
 } from "global/config/transactionTypes";
 import { ReactNode } from "react";
+import close from "assets/close.svg";
 
 interface GlobalLoadingProps {
   transactionType: CantoTransactionType;
@@ -19,6 +20,7 @@ interface GlobalLoadingProps {
   tokenName?: string;
   customMessage?: string | ReactNode;
   txHash?: string;
+  onClose: () => void;
 }
 
 const GlobalLoadingModal = (props: GlobalLoadingProps) => {
@@ -34,6 +36,24 @@ const GlobalLoadingModal = (props: GlobalLoadingProps) => {
   );
   return (
     <LoadingModal>
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => {
+          props.onClose();
+        }}
+      >
+        <img
+          src={close}
+          style={{
+            position: "absolute",
+            top: "0.5rem",
+            right: "0.5rem",
+            width: "40px",
+            cursor: "pointer",
+          }}
+        />
+      </div>
       <img
         src={
           props.status == "Success"
@@ -76,7 +96,7 @@ const LoadingModal = styled.div`
   width: 100%;
   top: 0;
   left: 0;
-  z-index: 3;
+  z-index: 10;
   flex-direction: column;
   justify-content: center;
   align-items: center;

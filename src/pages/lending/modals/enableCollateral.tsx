@@ -36,7 +36,7 @@ const APY = styled.div`
 `;
 
 interface Props {
-  onClose: (result: boolean) => void;
+  onClose: () => void;
   decollateralize: boolean;
   position: UserLMPosition;
 }
@@ -100,6 +100,7 @@ const CollatModal = (props: Props) => {
               ? exitState.transaction?.hash
               : enterState.transaction?.hash
           }
+          onClose={props.onClose}
         />
       )}
       <img

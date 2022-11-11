@@ -20,7 +20,7 @@ interface IProps {
   onClose: () => void;
   position: UserLMPosition;
 }
-const BorrowModal = ({ position }: IProps) => {
+const BorrowModal = ({ position, onClose }: IProps) => {
   const modalStore = useModalStore();
   const token: UserLMTokenDetails = modalStore.activeToken;
   const [transaction, setTransaction] = useState<TransactionStatus>();
@@ -251,6 +251,7 @@ const BorrowModal = ({ position }: IProps) => {
           status={transaction.status}
           tokenName={token.data.underlying.symbol}
           txHash={transaction.transaction?.hash}
+          onClose={onClose}
         />
       )}
 

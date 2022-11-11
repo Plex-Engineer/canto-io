@@ -262,7 +262,7 @@ const Proposal = () => {
             backdropFilter: "blur(35px)",
           }}
           trigger={
-            <PrimaryButton disabled={voteEnded} autoFocus={false}>
+            <PrimaryButton disabled={false} autoFocus={false}>
               {voteEnded ? "voting has ended" : "vote"}
             </PrimaryButton>
           }
@@ -279,6 +279,10 @@ const Proposal = () => {
                   transactionType={CantoTransactionType.VOTING}
                   status={voteStatus}
                   tokenName={convertVoteNumberToString(castingVote)}
+                  onClose={() => {
+                    setCastingVote(VotingOption.NONE);
+                    setVoteStatus("None");
+                  }}
                 />
               )}
               <GovModal

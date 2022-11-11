@@ -35,6 +35,7 @@ interface AddConfirmationProps {
   chainId?: number;
   account?: string;
   expectedLP: BigNumber;
+  onClose: () => void;
 }
 
 const AddLiquidityButton = (props: AddConfirmationProps) => {
@@ -159,6 +160,7 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
                 ? addLiquidityCANTOState.transaction?.hash
                 : addLiquidityState.transaction?.hash
             }
+            onClose={props.onClose}
           />
         )}
       {supplyLP.status != "None" && (
@@ -171,6 +173,7 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
             props.pair.basePairInfo.token2.symbol
           }
           txHash={supplyLP.transaction?.hash}
+          onClose={props.onClose}
         />
       )}
       <div className="title">
@@ -377,6 +380,7 @@ export const AddLiquidityConfirmation = (props: Props) => {
         chainId={props.chainId}
         account={props.account}
         expectedLP={expectedLP}
+        onClose={props.onClose}
       ></AddLiquidityButton>
     </div>
   );

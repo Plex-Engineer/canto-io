@@ -61,7 +61,7 @@ interface Props {
   account?: string;
 }
 
-const EnableModal = ({ activePair, chainId, account }: Props) => {
+const EnableModal = ({ activePair, chainId, onClose }: Props) => {
   const { state: addAllowanceA, send: addAllowanceASend } = useSetAllowance({
     type: "Enable",
     address: activePair.basePairInfo.token1.address,
@@ -101,6 +101,7 @@ const EnableModal = ({ activePair, chainId, account }: Props) => {
             activePair.basePairInfo.token2.symbol
           }
           txHash={addAllowanceA.transaction?.hash}
+          onClose={onClose}
         />
       )}
       {addAllowanceB.status != "None" && (
@@ -113,6 +114,7 @@ const EnableModal = ({ activePair, chainId, account }: Props) => {
             activePair.basePairInfo.token2.symbol
           }
           txHash={addAllowanceB.transaction?.hash}
+          onClose={onClose}
         />
       )}
       {addLPAllowance.status != "None" && (
@@ -125,6 +127,7 @@ const EnableModal = ({ activePair, chainId, account }: Props) => {
             activePair.basePairInfo.token2.symbol
           }
           txHash={addLPAllowance.transaction?.hash}
+          onClose={onClose}
         />
       )}
       <div className="title">{"Enable Token"}</div>

@@ -29,6 +29,7 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
           status={state.status}
           tokenName={"claim rewards"}
           txHash={state.transaction?.hash}
+          onClose={onClose}
         />
       )}
       <div className="title">canto balance</div>

@@ -21,7 +21,7 @@ interface IProps {
   onClose: () => void;
 }
 
-const SupplyModal = ({ position }: IProps) => {
+const SupplyModal = ({ position, onClose }: IProps) => {
   const modalStore = useModalStore();
   const token: UserLMTokenDetails = modalStore.activeToken;
   const [transaction, setTransaction] = useState<TransactionStatus>();
@@ -251,6 +251,7 @@ const SupplyModal = ({ position }: IProps) => {
           status={transaction.status}
           tokenName={token.data.underlying.symbol}
           txHash={transaction.transaction?.hash}
+          onClose={onClose}
         />
       )}
       <div className="title">

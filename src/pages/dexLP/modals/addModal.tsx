@@ -154,7 +154,7 @@ interface Props {
   account?: string;
 }
 
-const AddModal = ({ activePair, chainId, account }: Props) => {
+const AddModal = ({ activePair, chainId, onClose }: Props) => {
   const [value1, setValue1] = useState("");
   const [value2, setValue2] = useState("");
   const [slippage, setSlippage] = useState("1");
@@ -186,6 +186,7 @@ const AddModal = ({ activePair, chainId, account }: Props) => {
             activePair.basePairInfo.token2.symbol
           }
           status={token1AllowanceStatus}
+          onClose={onClose}
         />
       </DexLoadingOverlay>
       <DexLoadingOverlay
@@ -201,6 +202,7 @@ const AddModal = ({ activePair, chainId, account }: Props) => {
             activePair.basePairInfo.token2.symbol
           }
           status={token2AllowanceStatus}
+          onClose={onClose}
         />
       </DexLoadingOverlay>
       <div className="title">

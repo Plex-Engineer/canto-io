@@ -35,12 +35,14 @@ interface StakingModalProps {
   allValidators: Validator[];
   balance: BigNumber;
   account?: string;
+  onClose: () => void;
 }
 export const StakingModal = ({
   validator,
   allValidators,
   balance,
   account,
+  onClose,
 }: StakingModalProps) => {
   const [amount, setAmount] = useState("");
   const [agreed, setAgreed] = useState(false);
@@ -146,6 +148,7 @@ export const StakingModal = ({
           status={transactionStore.transactionStatus.status}
           tokenName={"staking"}
           customMessage={transactionStore.transactionStatus.message}
+          onClose={onClose}
         />
       )}
       <div className="title">{validator.validator.description.moniker}</div>
