@@ -88,8 +88,21 @@ const Container = styled.table`
     }
   }
   @media (max-width: 1000px) {
-    width: 800px;
-    margin: 0 2rem;
+    width: 100%;
+
+    th:first-of-type {
+      display: none;
+    }
+    td:first-of-type {
+      display: none;
+    }
+
+    th:last-of-type {
+      display: none;
+    }
+    td:last-of-type {
+      display: none;
+    }
   }
 `;
 type Props = {

@@ -70,7 +70,15 @@ const Styled = styled.div`
     border-top: 1px solid var(--primary-color);
     display: flex;
     justify-content: center;
-    min-height: 47rem;
+  }
+
+  @media (max-width: 1000px) {
+    width: 100%;
+    padding: 0 2rem;
+
+    .react-tabs__tab-panel {
+      width: 100%;
+    }
   }
 `;
 
