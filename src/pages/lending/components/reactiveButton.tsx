@@ -108,8 +108,8 @@ const ReactiveButton = ({
   return (
     <div style={{ margin: "1rem", display: "flex", justifyContent: "center" }}>
       <PrimaryButton
-        size="lg"
         disabled={disabled}
+        weight="bold"
         onClick={async () => {
           if (state == InputState.ENABLE) {
             enableSend(

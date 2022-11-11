@@ -31,13 +31,11 @@ const StyledPopup = styled(Popup)`
   }
   // use your custom style for ".popup-content"
   &-content {
-    /* height: 400px; */
     position: relative;
     overflow-y: hidden;
     overflow-x: hidden;
     background-color: black;
     border-radius: 4px;
-    /* border: 1px solid var(--primary-color); */
     scroll-behavior: smooth;
     animation: fadein 0.5s 1;
     @keyframes fadein {
