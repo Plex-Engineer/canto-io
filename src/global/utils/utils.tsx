@@ -181,6 +181,36 @@ export const transactionStatusActions = (
         inAction: `supplying ${token}`,
         postAction: `supplied ${token}`,
       };
+    case CantoTransactionType.WITHDRAW:
+      return {
+        action: `withdraw ${token}`,
+        inAction: `withdrawing ${token}`,
+        postAction: `withdrew ${token}`,
+      };
+    case CantoTransactionType.BORROW:
+      return {
+        action: `borrow ${token}`,
+        inAction: `borrowing ${token}`,
+        postAction: `borrowed ${token}`,
+      };
+    case CantoTransactionType.REPAY:
+      return {
+        action: `repay ${token}`,
+        inAction: `repaying ${token}`,
+        postAction: `repaid ${token}`,
+      };
+    case CantoTransactionType.COLLATERALIZE:
+      return {
+        action: "collateralize",
+        inAction: "collateralizing",
+        postAction: "collateralized",
+      };
+    case CantoTransactionType.DECOLLATERLIZE:
+      return {
+        action: "decollateralize",
+        inAction: "decollateralizing",
+        postAction: "decollateralized",
+      };
     default:
       return {
         action: "confirm",

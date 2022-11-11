@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Details, TrasanctionType } from "../components/BorrowLimits";
 import { TransactionStatus } from "@usedapp/core";
 import { InputState, ReactiveButton } from "../components/reactiveButton";
-import LoadingModal from "./loadingModal";
 import { truncateNumber } from "global/utils/utils";
 import useModalStore from "pages/lending/stores/useModals";
 import {
@@ -14,23 +13,20 @@ import {
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { userMaximumWithdrawal } from "pages/lending/utils/supplyWithdrawLimits";
-import {
-  SupplyBorrowContainer,
-  ModalWallet,
-  SupplyBorrowLoadingOverlay,
-} from "../components/Styled";
+import { SupplyBorrowContainer, ModalWallet } from "../components/Styled";
+import GlobalLoadingModal from "global/components/modals/loadingModal";
+import { CantoTransactionType } from "global/config/transactionTypes";
 interface IProps {
   position: UserLMPosition;
   onClose: () => void;
 }
 
-const SupplyModal = ({ onClose, position }: IProps) => {
+const SupplyModal = ({ position }: IProps) => {
   const modalStore = useModalStore();
   const token: UserLMTokenDetails = modalStore.activeToken;
   const [transaction, setTransaction] = useState<TransactionStatus>();
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isMax, setMax] = useState(false);
-
   const [inputState, setInputState] = useState(
     !token.allowance ? InputState.ENABLE : InputState.ENTERAMOUNT
   );
@@ -38,22 +34,17 @@ const SupplyModal = ({ onClose, position }: IProps) => {
   const [userAmount, setUserAmount] = useState("");
 
   useEffect(() => {
-    if (
-      ["Success", "Fail", "Exception"].includes(transaction?.status ?? "none")
-    ) {
-      setTimeout(onClose, 1000);
-    }
-  }, [transaction?.status]);
+    resetInput();
+  }, [isWithdrawing]);
 
   function resetInput() {
     //if in supply tab and allowance is true or if withdraw is true
     // console.log("withdrawing " + isWithdrawing);
-    if ((!isWithdrawing && token.allowance) || isWithdrawing) {
-      setInputState(InputState.ENTERAMOUNT);
-    } else {
+    if (!(token.allowance || isWithdrawing)) {
       setInputState(InputState.ENABLE);
+    } else {
+      setInputState(InputState.ENTERAMOUNT);
     }
-
     setUserAmount("");
   }
 
@@ -248,17 +239,20 @@ const SupplyModal = ({ onClose, position }: IProps) => {
         e.preventDefault();
       }}
     >
-      {["PendingSignature", "Mining", "Success", "Fail", "Exception"].includes(
-        transaction?.status ?? "none"
-      ) ? (
-        <SupplyBorrowLoadingOverlay>
-          <LoadingModal
-            isLoading
-            modalText="borrowing bat"
-            status={transaction?.status}
-          />
-        </SupplyBorrowLoadingOverlay>
-      ) : null}
+      {transaction?.status != "None" && transaction?.status && (
+        <GlobalLoadingModal
+          transactionType={
+            inputState == InputState.ENABLE
+              ? CantoTransactionType.ENABLE
+              : isWithdrawing
+              ? CantoTransactionType.WITHDRAW
+              : CantoTransactionType.SUPPLY
+          }
+          status={transaction.status}
+          tokenName={token.data.underlying.symbol}
+          txHash={transaction.transaction?.hash}
+        />
+      )}
       <div className="title">
         <img
           style={{
@@ -289,8 +283,7 @@ const SupplyModal = ({ onClose, position }: IProps) => {
             className={"tab"}
             selectedClassName="tab-selected"
             onClick={() => {
-              setIsWithdrawing(true);
-              resetInput();
+              setIsWithdrawing(false);
             }}
           >
             supply
@@ -299,8 +292,7 @@ const SupplyModal = ({ onClose, position }: IProps) => {
             className={"tab"}
             selectedClassName="tab-selected"
             onClick={() => {
-              setIsWithdrawing(false);
-              resetInput();
+              setIsWithdrawing(true);
             }}
           >
             withdraw

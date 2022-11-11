@@ -4,9 +4,8 @@ import {
   useEnterMarkets,
   useExitMarket,
 } from "../hooks/useTransaction";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import LoadingModal from "../modals/loadingModal";
 import useModalStore from "pages/lending/stores/useModals";
 import {
   UserLMPosition,
@@ -16,6 +15,8 @@ import { willWithdrawalGoOverLimit } from "pages/lending/utils/supplyWithdrawLim
 import { enableCollateralButtonAndModalText } from "../utils/modalButtonParams";
 import { PrimaryButton } from "global/packages/src";
 import { EnableCollateralContainer } from "../components/Styled";
+import GlobalLoadingModal from "global/components/modals/loadingModal";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 const APY = styled.div`
   display: flex;
@@ -55,48 +56,7 @@ const CollatModal = (props: Props) => {
 
   const { state: enterState, send: enterSend } = useEnterMarkets(details);
   const { state: exitState, send: exitSend } = useExitMarket(details);
-  const LoadingOverlay = styled.div`
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: black;
-  `;
 
-  useEffect(() => {
-    // console.log(enterState)
-    if (
-      ["Success", "Fail", "Exception"].includes(enterState.status) ||
-      ["Success", "Fail", "Exception"].includes(exitState.status)
-    ) {
-      setTimeout(props.onClose, 500);
-    }
-  }, [enterState.status, exitState.status]);
-  if (
-    ["Mining", "PendingSignature", "Success"].includes(enterState.status) ||
-    ["Mining", "PendingSignature", "Success"].includes(exitState.status)
-  ) {
-    return (
-      <EnableCollateralContainer>
-        <LoadingOverlay>
-          <LoadingModal
-            isLoading={true}
-            status={
-              ["Mining", "PendingSignature", "Success"].includes(
-                enterState.status
-              )
-                ? enterState.status
-                : exitState.status
-            }
-            modalText={""}
-          />
-        </LoadingOverlay>
-      </EnableCollateralContainer>
-      // <Container>
-      //   <h1>{enterState.status !== "None" ? enterState.status : null} </h1>
-      //   <h1>{exitState.status !== "None" ? exitState.status : null}</h1>
-      // </Container>
-    );
-  }
   const willGoOverLimit80PercentLimit = willWithdrawalGoOverLimit(
     props.position.totalBorrow,
     props.position.totalBorrowLimit,
@@ -124,6 +84,24 @@ const CollatModal = (props: Props) => {
     );
   return (
     <EnableCollateralContainer>
+      {(enterState.status != "None" || exitState.status != "None") && (
+        <GlobalLoadingModal
+          transactionType={
+            enterState.status == "None"
+              ? CantoTransactionType.DECOLLATERLIZE
+              : CantoTransactionType.COLLATERALIZE
+          }
+          status={
+            enterState.status == "None" ? exitState.status : enterState.status
+          }
+          tokenName={token.data.underlying.symbol}
+          txHash={
+            enterState.status == "None"
+              ? exitState.transaction?.hash
+              : enterState.transaction?.hash
+          }
+        />
+      )}
       <img
         src={token.data.underlying.icon}
         height={50}

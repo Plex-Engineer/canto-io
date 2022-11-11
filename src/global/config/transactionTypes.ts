@@ -6,6 +6,11 @@ export enum CantoTransactionType {
   REMOVE_LIQUIDITY,
   CLAIM_REWARDS,
   SUPPLY,
+  WITHDRAW,
+  BORROW,
+  REPAY,
+  COLLATERALIZE,
+  DECOLLATERLIZE,
   STAKE,
 }
 
