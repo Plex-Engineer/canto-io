@@ -1,9 +1,63 @@
 import styled from "@emotion/styled";
 
-const Container = styled.div`
+const GovBar = (props: barProps) => {
+  return (
+    <Styled onClick={props.onClick}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <p className="number">#{props.proposalID}</p>
+        <p className="number">
+          {props.status == "PROPOSAL_STATUS_VOTING_PERIOD"
+            ? "Voting"
+            : props.status == "PROPOSAL_STATUS_PASSED"
+            ? "Passed"
+            : "Rejected"}
+        </p>
+      </div>
+      <h1>{props.name}</h1>
+
+      <div className="options">
+        <div className="details options-1">
+          <p>start {props.startDate}</p> <p> &nbsp;→&nbsp; </p>
+          <p>end {props.endDate}</p>
+        </div>
+
+        <div className="details options-2">
+          <div
+            style={{
+              display: "flex",
+              gap: "1rem",
+            }}
+          >
+            <BlobText color="#06fc99">
+              yes {props.yesPecterage.toFixed(2)}%
+            </BlobText>
+            <BlobText color="#ff4646">
+              no {props.noPecterage.toFixed(2)}%
+            </BlobText>
+            <BlobText color="#710808">
+              no with veto {props.vetoPecterage.toFixed(2)}%
+            </BlobText>
+            <BlobText color="#fbea51">
+              abstain {props.abstainPecterage.toFixed(2)}%
+            </BlobText>
+          </div>
+        </div>
+      </div>
+      <GraphBar {...props} />
+    </Styled>
+  );
+};
+
+const Styled = styled.div`
   background-color: black;
   padding: 1rem;
   border: 1px solid transparent;
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -15,14 +69,23 @@ const Container = styled.div`
     font-weight: 300;
     font-size: 1.4rem;
     letter-spacing: -0.05em;
-    height: 3rem;
+    max-height: 3rem;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   .details {
+    position: absolute;
+    top: 0px;
     display: flex;
     color: #7f7f7f;
     margin: 0.5rem 0 -0.5rem 0;
     justify-content: space-between;
+  }
+
+  .options {
+    position: relative;
+    height: 4rem;
   }
   .options-1 {
     display: flex;
@@ -48,57 +111,6 @@ const Container = styled.div`
     }
   }
 `;
-
-const GovBar = (props: barProps) => {
-  return (
-    <Container onClick={props.onClick}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <p className="number">#{props.proposalID}</p>
-        <p className="number">
-          {props.status == "PROPOSAL_STATUS_VOTING_PERIOD"
-            ? "Voting"
-            : props.status == "PROPOSAL_STATUS_PASSED"
-            ? "Passed"
-            : "Rejected"}
-        </p>
-      </div>
-      <h1>{props.name}</h1>
-
-      <div className="details options-1">
-        <p>start {props.startDate}</p> <p> &nbsp;→&nbsp; </p>
-        <p>end {props.endDate}</p>
-      </div>
-
-      <div className="details options-2">
-        <div
-          style={{
-            display: "flex",
-            gap: "1rem",
-          }}
-        >
-          <BlobText color="#06fc99">
-            yes {props.yesPecterage.toFixed(2)}%
-          </BlobText>
-          <BlobText color="#ff4646">
-            no {props.noPecterage.toFixed(2)}%
-          </BlobText>
-          <BlobText color="#710808">
-            no with veto {props.vetoPecterage.toFixed(2)}%
-          </BlobText>
-          <BlobText color="#fbea51">
-            abstain {props.abstainPecterage.toFixed(2)}%
-          </BlobText>
-        </div>
-      </div>
-      <GraphBar {...props} />
-    </Container>
-  );
-};
 interface barProps {
   yesPecterage: number;
   noPecterage: number;

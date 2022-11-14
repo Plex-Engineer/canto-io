@@ -21,7 +21,7 @@ const Container = styled.div`
     font-size: 22px;
     line-height: 130%;
     text-align: center;
-    letter-spacing: -0.1em;
+    letter-spacing: -0.3px;
     text-transform: lowercase;
     color: #efefef;
     margin-bottom: 2rem;
@@ -79,14 +79,22 @@ const GovModal = ({ proposal, currentVote, onVote }: Props) => {
       <p
         style={{
           marginTop: "2rem",
+          color: "#999",
         }}
       >
         your vote for #{proposal.proposal_id}
       </p>
-      <h2>{proposal.content.title}</h2>
+      <h2
+        style={{
+          marginBottom: ".3rem",
+        }}
+      >
+        {proposal.content.title}
+      </h2>
       <h2
         style={{
           fontSize: "14px",
+          color: "#999",
         }}
       >
         {proposal.content.description}

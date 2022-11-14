@@ -8,6 +8,7 @@ import { ProposalData } from "./config/interfaces";
 import { GovernanceContainer } from "./components/Styled";
 import HelmetSEO from "global/components/seo";
 import { useNavigate } from "react-router-dom";
+import { Text } from "global/packages/src";
 const Governance = () => {
   //network info store
   const networkInfo = useNetworkInfo();
@@ -73,22 +74,28 @@ const Governance = () => {
 
   return (
     <GovernanceContainer>
-      <div className="title subtitle">
-        <a href="https://staking.canto.io/">stake</a> your canto to participate
-        in governance
-      </div>
+      <Text
+        size="title2"
+        type="title"
+        color="white"
+        style={{
+          margin: "3rem 1rem",
+        }}
+      >
+        <a
+          style={{
+            fontFamily: "Silkscreen",
+            textDecoration: "underline",
+          }}
+          href="https://staking.canto.io/"
+        >
+          stake
+        </a>{" "}
+        your canto to participate in governance
+      </Text>
       <div className="grid">
         <AllGovBars />
       </div>
-
-      {/* <StyledPopup
-        open={isOpen}
-        onClose={() => {
-          setIsOpened(false);
-        }}
-      >
-        <Proposal />
-      </StyledPopup> */}
     </GovernanceContainer>
   );
 };

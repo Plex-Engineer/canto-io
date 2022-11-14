@@ -6,31 +6,6 @@ export const GovernanceContainer = styled.div`
   color: #fff;
   width: 1200px;
   margin: 0 auto 3rem auto;
-  .title {
-    font-weight: 300;
-    font-size: 140px;
-    line-height: 130%;
-    text-align: center;
-    letter-spacing: -0.13em;
-    color: #06fc99;
-    text-shadow: 0px 12.2818px 12.2818px rgba(6, 252, 153, 0.2);
-    margin-top: 4rem;
-    margin-bottom: 2rem;
-  }
-
-  .subtitle {
-    margin: 0;
-    margin-bottom: 5rem;
-    a {
-      color: var(--primary-color);
-    }
-    margin-top: 40px;
-    text-shadow: none;
-    color: white;
-    text-align: center;
-    font-size: 35px;
-    font-weight: 400;
-  }
 
   & > button {
     background-color: var(--primary-color);
@@ -61,6 +36,7 @@ export const GovernanceContainer = styled.div`
 
   @media (max-width: 1000px) {
     width: 100%;
+    padding: 0 1rem;
     .grid {
       grid-template-columns: 1fr;
       row-gap: 1rem;
@@ -76,6 +52,7 @@ export const ProposalContainer = styled.div`
   align-items: stretch;
   gap: 4rem;
   background-color: black;
+  height: 100%;
   margin: 0 auto; /* width */
 
   .details {
@@ -140,12 +117,16 @@ export const ProposalContainer = styled.div`
   }
 
   @media (max-width: 1000px) {
-    padding: 2rem;
+    padding: 1rem;
     width: 100%;
     flex-direction: column;
-    .pie {
+    .details {
       width: 100%;
-      gap: 1rem;
+    }
+    .voting {
+      width: 100%;
+      gap: 2rem;
+      margin-bottom: 1rem;
     }
   }
 `;
