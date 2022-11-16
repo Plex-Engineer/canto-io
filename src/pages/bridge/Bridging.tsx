@@ -12,7 +12,11 @@ import { useEthGravityTokens } from "./hooks/useEthGravityTokens";
 import { SelectedTokens, useTokenStore } from "./stores/tokenStore";
 import { getNativeCantoBalance } from "./utils/nativeBalances";
 import { useCantoERC20Balances } from "./hooks/useERC20Balances";
-import { convertCoinTokens } from "./config/gravityBridgeTokens";
+import {
+  allBridgeOutNetworks,
+  BridgeOutNetworks,
+  convertCoinTokens,
+} from "./config/gravityBridgeTokens";
 import { ETHGravityTokens } from "./config/gravityBridgeTokens";
 import { BigNumber } from "ethers";
 import Transactions from "./Transactions";
@@ -24,7 +28,6 @@ import {
   getBridgeOutTransactions,
 } from "./utils/utils";
 import { useBridgeTransactionStore } from "./stores/transactionStore";
-import { Helmet } from "react-helmet-async";
 import HelmetSEO from "global/components/seo";
 
 const BridgingPage = () => {
@@ -74,6 +77,11 @@ const BridgingPage = () => {
       networkInfo.cantoAddress,
       convertCoinTokens
     );
+    const bridgeOutTokens = await getNativeCantoBalance(
+      CantoMainnet.cosmosAPIEndpoint,
+      networkInfo.cantoAddress,
+      allBridgeOutNetworks[tokenStore.bridgeOutNetwork].tokens
+    );
     if (!cantoERC20Fail) {
       setUserConvertTokens(
         userConvertERC20Tokens.map((token) => {
@@ -87,7 +95,7 @@ const BridgingPage = () => {
         })
       );
     }
-    setUserBridgeOutTokens(convertNativeWithBalance);
+    setUserBridgeOutTokens(bridgeOutTokens);
   }
 
   useEffect(() => {
@@ -97,7 +105,7 @@ const BridgingPage = () => {
       transactionStore.checkAccount(networkInfo.account);
       tokenStore.checkTimeAndResetTokens();
     }
-  }, [networkInfo.account, networkInfo.cantoAddress]);
+  }, [networkInfo.account, networkInfo.cantoAddress, cantoERC20Fail]);
 
   //Useffect for calling data per block
   useEffect(() => {

@@ -28,6 +28,7 @@ import FadeIn from "react-fade-in";
 import { PrimaryButton } from "global/packages/src";
 import { Text } from "global/packages/src/components/atoms/Text";
 import { BridgeStyled } from "./BridgeIn";
+import { allBridgeOutNetworks } from "./config/gravityBridgeTokens";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -39,6 +40,8 @@ const BridgeOut = ({
 }: BridgeOutProps) => {
   const networkInfo = useNetworkInfo();
   const tokenStore = useTokenStore();
+  const selectedBridgeOutNetwork =
+    allBridgeOutNetworks[tokenStore.bridgeOutNetwork];
   const selectedConvertToken =
     tokenStore.selectedTokens[SelectedTokens.CONVERTOUT];
   const selectedNativeToken =
@@ -137,8 +140,8 @@ const BridgeOut = ({
           name: "EVM",
         }}
         right={{
-          icon: "https://raw.githubusercontent.com/Gravity-Bridge/Gravity-Docs/main/assets/Graviton-Grey.svg",
-          name: "gravity Bridge",
+          icon: selectedBridgeOutNetwork.icon,
+          name: selectedBridgeOutNetwork.name,
           height: 48,
         }}
       />

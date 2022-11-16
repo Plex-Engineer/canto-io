@@ -7,17 +7,23 @@ import ImageButton from "global/components/ImageButton";
 import { Text } from "global/packages/src";
 import { useBridgeStore } from "../stores/gravityStore";
 import LoadingBlip from "./LoadingBlip";
+import down from "assets/down.svg";
+import { StyledPopup } from "./TokenSelect";
 
 interface Props {
   left: {
     icon: string;
     name: string;
     height?: number;
+    //selectable indicates selectable bridge in network
+    selectable?: boolean;
   };
   right: {
     icon: string;
     name: string;
     height?: number;
+    //selectable indicates selectable bridge out network
+    selectable?: boolean;
   };
 }
 const SwitchBridging = (props: Props) => {
@@ -67,9 +73,26 @@ const SwitchBridging = (props: Props) => {
             height={props.right.height ?? 42}
             onClick={() => SetTransactionType("Convert")}
           />
-          <Text className="name" type="text">
-            {props.right.name}
-          </Text>
+          <StyledPopup
+            overlayStyle={{ zIndex: 1000 }}
+            trigger={
+              <div style={{ gap: "0.3rem", display: "flex", zIndex: "10000" }}>
+                <Text className="name" type="text" style={{ zIndex: "1000" }}>
+                  {props.right.name}
+                </Text>
+                <img src={down} alt="" />
+              </div>
+            }
+            onClose={() => {}}
+          >
+            <StyledPPP>
+              <p>hkljjlkhkjhjkhkj</p>
+              <p>hkljjlkhkjhjkhkj</p>
+              <p>hkljjlkhkjhjkhkj</p>
+              <p>hkljjlkhkjhjkhkj</p>
+              <img src={props.right.icon} />
+            </StyledPPP>
+          </StyledPopup>
         </div>
       </div>
 
@@ -82,12 +105,29 @@ const SwitchBridging = (props: Props) => {
         <div
           className={`right ${transactionType == "Convert" ? "active" : ""}`}
           onClick={() => SetTransactionType("Convert")}
-        />
+        ></div>
       </div>
     </Styled>
   );
 };
-
+const StyledPPP = styled.div`
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  width: 3100px;
+  p {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 21px;
+    letter-spacing: -0.03em;
+    color: var(--primary-color);
+  }
+  span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+`;
 const Styled = styled.div`
   width: 34rem;
   max-width: 34rem;

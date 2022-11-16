@@ -1,5 +1,6 @@
 import { TOKENS } from "global/config/tokenInfo";
-import { NativeERC20Tokens } from "./interfaces";
+import { BaseToken, NativeERC20Tokens } from "./interfaces";
+import cosmosIcon from "assets/icons/ATOM.svg";
 
 export const gravityTokenBase = [
   TOKENS.GravityBridge.E2H,
@@ -20,12 +21,6 @@ const IBCTokens = {
   ATOM: "ibc/9117A26BA81E29FA4F78F57DC2BD90CD3D26848101BA880445F119B22A1E254E",
 };
 
-export const CantoGravityTokens = [
-  { ...TOKENS.cantoMainnet.USDT, nativeName: IBCTokens.USDT }, // mapping to the actual native token name,
-  { ...TOKENS.cantoMainnet.USDC, nativeName: IBCTokens.USDC },
-  { ...TOKENS.cantoMainnet.ETH, nativeName: IBCTokens.ETH },
-];
-
 export const ETHGravityTokens = [
   { ...TOKENS.ETHMainnet.USDC, nativeName: IBCTokens.USDC },
   { ...TOKENS.ETHMainnet.USDT, nativeName: IBCTokens.USDT },
@@ -38,3 +33,39 @@ export const convertCoinTokens: NativeERC20Tokens[] = [
   { ...TOKENS.cantoMainnet.ETH, nativeName: IBCTokens.ETH },
   { ...TOKENS.cantoMainnet.ATOM, nativeName: IBCTokens.ATOM },
 ];
+
+const gBridgeOutTokens = [
+  { ...TOKENS.cantoMainnet.USDT, nativeName: IBCTokens.USDT }, // mapping to the actual native token name,
+  { ...TOKENS.cantoMainnet.USDC, nativeName: IBCTokens.USDC },
+  { ...TOKENS.cantoMainnet.ETH, nativeName: IBCTokens.ETH },
+  { ...TOKENS.cantoMainnet.ATOM, nativeName: IBCTokens.ATOM },
+];
+const cosmosHubBridgeOutTokens = [
+  { ...TOKENS.cantoMainnet.ATOM, nativeName: IBCTokens.ATOM },
+];
+
+export interface BridgeOutNetworkInfo {
+  name: string;
+  icon: string;
+  tokens: NativeERC20Tokens[];
+}
+type BridgeOutNetworkTokenData = {
+  [key in BridgeOutNetworks]: BridgeOutNetworkInfo;
+};
+
+export enum BridgeOutNetworks {
+  GRAVITY_BRIDGE,
+  COSMOS_HUB,
+}
+export const allBridgeOutNetworks: BridgeOutNetworkTokenData = {
+  [BridgeOutNetworks.GRAVITY_BRIDGE]: {
+    name: "gravity bridge",
+    icon: "https://raw.githubusercontent.com/Gravity-Bridge/Gravity-Docs/main/assets/Graviton-Grey.svg",
+    tokens: gBridgeOutTokens,
+  },
+  [BridgeOutNetworks.COSMOS_HUB]: {
+    name: "cosmos hub",
+    icon: cosmosIcon,
+    tokens: cosmosHubBridgeOutTokens,
+  },
+};
