@@ -1,6 +1,7 @@
 import { BigNumber } from "ethers";
 import create from "zustand";
 import { devtools, persist } from "zustand/middleware";
+import { BridgeOutNetworks } from "../config/gravityBridgeTokens";
 import {
   BaseToken,
   EmptySelectedConvertToken,
@@ -32,6 +33,8 @@ interface TokenStore {
   ) => void;
   lastTokenSelect: number;
   checkTimeAndResetTokens: () => void;
+  bridgeOutNetwork: BridgeOutNetworks;
+  setBridgeOutNetwork: (network: BridgeOutNetworks) => void;
 }
 export const useTokenStore = create<TokenStore>()(
   devtools(
@@ -73,6 +76,14 @@ export const useTokenStore = create<TokenStore>()(
               },
             });
           }
+        },
+        bridgeOutNetwork: BridgeOutNetworks.GRAVITY_BRIDGE,
+        setBridgeOutNetwork: (network: BridgeOutNetworks) => {
+          get().setSelectedToken(
+            EmptySelectedNativeToken,
+            SelectedTokens.BRIDGEOUT
+          );
+          set({ bridgeOutNetwork: network });
         },
       }),
       {

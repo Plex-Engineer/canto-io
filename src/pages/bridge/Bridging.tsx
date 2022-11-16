@@ -12,7 +12,10 @@ import { useEthGravityTokens } from "./hooks/useEthGravityTokens";
 import { SelectedTokens, useTokenStore } from "./stores/tokenStore";
 import { getNativeCantoBalance } from "./utils/nativeBalances";
 import { useCantoERC20Balances } from "./hooks/useERC20Balances";
-import { convertCoinTokens } from "./config/gravityBridgeTokens";
+import {
+  allBridgeOutNetworks,
+  convertCoinTokens,
+} from "./config/gravityBridgeTokens";
 import { ETHGravityTokens } from "./config/gravityBridgeTokens";
 import { BigNumber } from "ethers";
 import Transactions from "./Transactions";
@@ -24,7 +27,6 @@ import {
   getBridgeOutTransactions,
 } from "./utils/utils";
 import { useBridgeTransactionStore } from "./stores/transactionStore";
-import { Helmet } from "react-helmet-async";
 import HelmetSEO from "global/components/seo";
 
 const BridgingPage = () => {
@@ -68,7 +70,7 @@ const BridgingPage = () => {
     UserNativeTokens[]
   >([]);
 
-  async function getAllBalances() {
+  async function getConvertCoinBalance() {
     const convertNativeWithBalance = await getNativeCantoBalance(
       CantoMainnet.cosmosAPIEndpoint,
       networkInfo.cantoAddress,
@@ -87,7 +89,18 @@ const BridgingPage = () => {
         })
       );
     }
-    setUserBridgeOutTokens(convertNativeWithBalance);
+  }
+  async function getBridgeOutTokens() {
+    const bridgeOutTokens = await getNativeCantoBalance(
+      CantoMainnet.cosmosAPIEndpoint,
+      networkInfo.cantoAddress,
+      allBridgeOutNetworks[tokenStore.bridgeOutNetwork].tokens
+    );
+    setUserBridgeOutTokens(bridgeOutTokens);
+  }
+  async function getAllBalances() {
+    await getConvertCoinBalance();
+    await getBridgeOutTokens();
   }
 
   useEffect(() => {
@@ -98,6 +111,14 @@ const BridgingPage = () => {
       tokenStore.checkTimeAndResetTokens();
     }
   }, [networkInfo.account, networkInfo.cantoAddress]);
+
+  //useEffect to get tokens quick after user makes changes
+  useEffect(() => {
+    getConvertCoinBalance();
+  }, [cantoERC20Fail]);
+  useEffect(() => {
+    getBridgeOutTokens();
+  }, [tokenStore.bridgeOutNetwork]);
 
   //Useffect for calling data per block
   useEffect(() => {
@@ -160,13 +181,13 @@ const BridgingPage = () => {
               className="tab"
               // resetting the selected token when a new tab is selected
             >
-              bridge In
+              bridge in
             </Tab>
             <Tab
               className="tab"
               // resetting the selected token when a new tab is selected
             >
-              bridge Out
+              bridge out
             </Tab>
             <Tab className="tab">
               transactions{" "}

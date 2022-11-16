@@ -88,7 +88,7 @@ export function getBridgeOutButtonText(
   amount: BigNumber,
   token: UserNativeTokens,
   maxAmount: BigNumber,
-  gravityAddress: string
+  cosmosAddress: boolean
 ): [string, boolean] {
   const [text, disabled] = getConvertButtonText(
     amount,
@@ -98,7 +98,7 @@ export function getBridgeOutButtonText(
   );
   if (disabled) {
     return [text, disabled];
-  } else if (!checkGravityAddress(gravityAddress)) {
+  } else if (!cosmosAddress) {
     return ["invalid address", true];
   } else {
     return ["bridge out", false];

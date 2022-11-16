@@ -24,7 +24,7 @@ const TransactionBox = (props: Props) => {
       <p className="status">
         bridge {props.type}
         {props.secondsUntilConfirmed
-          ? " - confimred in: " +
+          ? " - confirmed in: " +
             convertSecondsToString(props.secondsUntilConfirmed)
           : ""}
       </p>

@@ -64,7 +64,7 @@ export const TokenWallet = ({
   );
 };
 
-const StyledPopup = styled(Popup)`
+export const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
   &-overlay {
     z-index: 10;

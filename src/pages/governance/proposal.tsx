@@ -143,7 +143,7 @@ const Proposal = () => {
           tabIndex={0}
           className="details"
           onClick={() => setShowPercentVote(!showPercentVote)}
-          style={{ cursor: "pointer" }}
+          style={{ cursor: "pointer", width: "100%" }}
         >
           <RowCell
             color="#06fc99"
@@ -262,7 +262,7 @@ const Proposal = () => {
             backdropFilter: "blur(35px)",
           }}
           trigger={
-            <PrimaryButton disabled={false} autoFocus={false}>
+            <PrimaryButton disabled={voteEnded} autoFocus={false}>
               {voteEnded ? "voting has ended" : "vote"}
             </PrimaryButton>
           }
