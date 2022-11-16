@@ -14,7 +14,6 @@ export async function getNativeCantoBalance(
       Accept: "application/json",
     },
   };
-
   const result = await fetch(url, options)
     .then((response) => response.json())
     .then((result) => {

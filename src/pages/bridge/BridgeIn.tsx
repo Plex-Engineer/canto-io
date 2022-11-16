@@ -25,6 +25,7 @@ import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import FadeIn from "react-fade-in";
 import { ADDRESSES } from "global/config/addresses";
 import { Text } from "global/packages/src";
+import bridgeIcon from "assets/icons/canto-bridge.svg";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];
@@ -180,12 +181,12 @@ const BridgeIn = ({
           from={{
             address: networkInfo.account,
             name: "ethereum",
-            // icon: ethIcon,
+            icon: ethIcon,
           }}
           to={{
             address: networkInfo.cantoAddress,
             name: "canto (bridge)",
-            // icon: bridgeIcon,
+            icon: bridgeIcon,
           }}
           networkName="ethereum"
           onSwitch={() => {
