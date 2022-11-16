@@ -74,7 +74,7 @@ export const GeneralTransferBox = (props: Props) => {
               : "connected to " + props.networkName}
           </PrimaryButton>
         </div>
-        {props.needAddressBox && (
+        {props.needAddressBox && props.connected && (
           <CInput
             placeholder="gravity address (gravity...)"
             type="text"

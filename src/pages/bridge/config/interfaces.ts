@@ -53,11 +53,23 @@ export const EmptySelectedConvertToken = {
 };
 export const EmptySelectedETHToken = {
   ...emptyTokenData,
-  allowance: BigNumber.from(-1),
-  balanceOf: BigNumber.from(-1),
+  allowance: BigNumber.from("-1"),
+  balanceOf: BigNumber.from("-1"),
 };
 export const EmptySelectedNativeToken = {
   ...emptyTokenData,
   nativeName: "ibc/000",
   nativeBalance: BigNumber.from(0),
 };
+
+export interface DepositEvent {
+  amount: string;
+  block_height: string;
+  blocks_until_confirmed: string;
+  confirmed: boolean;
+  destination: string;
+  erc20: string;
+  event_nonce: number;
+  seconds_until_confirmed: string;
+  sender: string;
+}

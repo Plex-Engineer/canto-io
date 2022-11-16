@@ -4,6 +4,7 @@ import { ETHMainnet } from "pages/bridge/config/networks";
 import { gravityabi } from "../config/gravityBridgeAbi";
 import { ADDRESSES } from "global/config/addresses";
 import { TOKENS } from "global/config/tokenInfo";
+import { DepositEvent } from "../config/interfaces";
 
 const globalFetchOptions = {
   method: "GET",
@@ -13,12 +14,16 @@ const globalFetchOptions = {
 };
 
 export interface EventWithTime extends Event {
-  timestamp: string;
+  timestamp: number;
+}
+export interface PendingEvent extends EventWithTime {
+  secondsUntilConfirmed: string;
 }
 export async function getAllBridgeTransactionsWithStatus(
   ethAccount?: string,
   cantoAccount?: string
 ): Promise<[EventWithTime[], Event[]]> {
+  await getBridgeInEventsWithStatus(ethAccount);
   const ethEvents = await getEthGBridgeInEvents(ethAccount);
   const cantoEventInfo = await getCompletedBridgeInEvents(cantoAccount);
   const completedEvents: EventWithTime[] = [];
@@ -43,7 +48,9 @@ export async function getAllBridgeTransactionsWithStatus(
   return [completedEvents, pendingEvents];
 }
 
-export async function getEthGBridgeInEvents(ethAccount?: string) {
+async function getEthGBridgeInEvents(
+  ethAccount?: string
+): Promise<EventWithTime[]> {
   const provider = new ethers.providers.JsonRpcProvider(ETHMainnet.rpcUrl);
   const gbridgeContract = new Contract(
     ADDRESSES.ETHMainnet.GravityBridge,
@@ -54,10 +61,63 @@ export async function getEthGBridgeInEvents(ethAccount?: string) {
     null,
     ethAccount
   );
-  return await gbridgeContract.queryFilter(eventFilters);
+  const filteredEvents = await gbridgeContract.queryFilter(eventFilters);
+  return await Promise.all(
+    filteredEvents.map(async (event) => {
+      return {
+        ...event,
+        timestamp: (await provider.getBlock(event.blockNumber)).timestamp,
+      };
+    })
+  );
 }
 
-export async function getCompletedBridgeInEvents(cantoAccount?: string) {
+async function getLatestGBridgeTransactions(
+  ethAccount?: string
+): Promise<DepositEvent[]> {
+  const latestTransactions = await (
+    await fetch("https://info.gravitychain.io:9000/eth_bridge_info")
+  ).json();
+  const deposits = latestTransactions?.deposit_events;
+  if (deposits) {
+    return deposits.filter(
+      (deposit: DepositEvent) => deposit.sender == ethAccount
+    );
+  }
+  return [];
+}
+
+export async function getBridgeInEventsWithStatus(
+  ethAccount?: string
+): Promise<[EventWithTime[], PendingEvent[]]> {
+  const completedEvents: EventWithTime[] = [];
+  const pendingEvents: PendingEvent[] = [];
+  const userBridgeInEvents = await getEthGBridgeInEvents(ethAccount);
+  const latestBridgeTransactions = await getLatestGBridgeTransactions(
+    ethAccount
+  );
+  userBridgeInEvents.forEach((event) => {
+    const matchedTx = latestBridgeTransactions.find(
+      (bridgeTx: DepositEvent) =>
+        Number(bridgeTx.block_height) == event.blockNumber
+    );
+    if (!matchedTx) {
+      completedEvents.push(event);
+    } else {
+      if (matchedTx.confirmed) {
+        completedEvents.push(event);
+      } else {
+        pendingEvents.push({
+          ...event,
+          secondsUntilConfirmed: matchedTx.seconds_until_confirmed,
+        });
+      }
+    }
+  });
+  return [completedEvents, pendingEvents];
+}
+
+async function getCompletedBridgeInEvents(cantoAccount?: string) {
   const gBridgeIBCTransfers = [];
   const IBC = await (
     await fetch(
@@ -161,10 +221,10 @@ export function findGravityToken(tokenAddress: string) {
     (token) => token.address === tokenAddress
   );
 }
-
-export function getBridgeStatus(blockNumber: number, txBlockNumber: number) {
-  if (blockNumber - txBlockNumber > 100) {
-    return "confirmed";
+export function convertSecondsToString(seconds: string) {
+  if (Number(seconds) <= 60) {
+    return seconds + "seconds";
   }
-  return "pending...";
+  const minutes = Math.ceil(Number(seconds) / 60);
+  return minutes + " min";
 }

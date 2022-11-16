@@ -49,7 +49,7 @@ export const NavBar = (props: Props) => {
             currentPage={currentPage}
             pageList={pageList}
           />
-          <a id="logo" href="https://canto.io">
+          <a id="logo" href="/">
             <img src={logo} />
             <Glitch title={"canto"} />
           </a>
@@ -68,13 +68,27 @@ const Container = styled.div`
   position: sticky;
   top: 0%;
   z-index: 12;
+  transition: all 1s;
 
   .scroll {
-    border-bottom: 1px solid var(--primary-color);
+    /* border-bottom: 1px solid var(--primary-color);
     background-color: #09221454;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px); */
+    animation: scroll-down 1s forwards ease;
   }
 
+  @keyframes scroll-down {
+    0% {
+      border-bottom: 1px solid transparent;
+      background-color: transparent;
+      backdrop-filter: blur(0px);
+    }
+    100% {
+      border-bottom: 1px solid var(--primary-color);
+      background-color: #09221454;
+      backdrop-filter: blur(5px);
+    }
+  }
   .center {
     display: flex;
     justify-content: center;

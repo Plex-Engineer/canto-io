@@ -1,7 +1,6 @@
 import Input from "../components/input";
 import { useEffect, useState } from "react";
 import { noteSymbol, truncateNumber } from "global/utils/utils";
-import LoadingModal from "./loadingModal";
 import SettingsIcon from "assets/settings.svg";
 import IconPair from "../components/iconPair";
 import useModals, { ModalType } from "../hooks/useModals";
@@ -17,6 +16,9 @@ import {
   DexLoadingOverlay,
   SettingsPopIn,
 } from "../components/Styled";
+import { TransactionState } from "@usedapp/core";
+import GlobalLoadingModal from "global/components/modals/loadingModal";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 interface RowCellProps {
   type: string;
@@ -49,7 +51,7 @@ interface ConfirmButtonProps {
   slippage: number;
   deadline: number;
   chainId?: number;
-  status: (val: string) => void;
+  status: (val: TransactionState) => void;
 }
 
 const ConfirmButton = (props: ConfirmButtonProps) => {
@@ -126,7 +128,7 @@ interface Props {
   chainId?: number;
   account?: string;
 }
-const RemoveModal = ({ activePair, chainId, account }: Props) => {
+const RemoveModal = ({ activePair, chainId, onClose }: Props) => {
   const [percentage, setPercentage] = useState("1");
   const [slippage, setSlippage] = useState("1");
   const [deadline, setDeadline] = useState("10");
@@ -134,7 +136,8 @@ const RemoveModal = ({ activePair, chainId, account }: Props) => {
   const [value2, setValue2] = useState(BigNumber.from(0));
   const [openSettings, setOpenSettings] = useState(false);
 
-  const [tokenAllowanceStatus, setTokenAllowanceStatus] = useState("None");
+  const [tokenAllowanceStatus, setTokenAllowanceStatus] =
+    useState<TransactionState>("None");
   const displayReserveRatio = getReserveRatioAtoB(
     activePair.totalSupply.ratio.ratio,
     activePair.totalSupply.ratio.aTob,
@@ -158,20 +161,15 @@ const RemoveModal = ({ activePair, chainId, account }: Props) => {
           tokenAllowanceStatus
         )}
       >
-        <LoadingModal
-          icons={{
-            icon1: activePair.basePairInfo.token1.icon,
-            icon2: activePair.basePairInfo.token2.icon,
-          }}
-          name={
+        <GlobalLoadingModal
+          transactionType={CantoTransactionType.ENABLE}
+          tokenName={
             activePair.basePairInfo.token1.symbol +
             " / " +
             activePair.basePairInfo.token2.symbol
           }
-          amount={"0"}
-          type="remove"
           status={tokenAllowanceStatus}
-          account={account}
+          onClose={onClose}
         />
       </DexLoadingOverlay>
       <div className="title">

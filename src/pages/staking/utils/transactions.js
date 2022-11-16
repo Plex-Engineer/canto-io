@@ -1,6 +1,5 @@
 import {
   createTxMsgDelegate,
-  createMessageSend,
   createTxMsgUndelegate,
   createTxMsgMultipleWithdrawDelegatorReward,
   createTxMsgBeginRedelegate,
@@ -8,11 +7,9 @@ import {
 import {
   generateEndpointDistributionRewardsByAddress,
   generateEndpointGetDelegations,
-  generateEndpointGetValidators,
   generateEndpointGetUndelegations,
   generateEndpointBalances,
   createTxMsgWithdrawValidatorCommission,
-  generateEndpointAccount,
 } from "@tharsis/provider";
 import {
   getSenderObj,
@@ -156,7 +153,7 @@ export async function txClaimRewards(
   const params = {
     validatorAddresses: Array.from(
       validators.map((validator) => {
-        return validator["operator_address"];
+        return validator.validator["operator_address"];
       })
     ),
   };
@@ -172,7 +169,13 @@ export async function txClaimRewards(
     memo,
     params
   );
-  await signAndBroadcastTxMsg(msg, senderObj, chain, nodeAddressIP, account);
+  return await signAndBroadcastTxMsg(
+    msg,
+    senderObj,
+    chain,
+    nodeAddressIP,
+    account
+  );
 }
 
 /**

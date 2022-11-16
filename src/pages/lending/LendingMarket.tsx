@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useNotifications, Notification } from "@usedapp/core";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import LendingTable from "./components/table";
 import { TransactionRow } from "./components/lendingRow";
 import { ModalType, ModalManager } from "./modals/modalManager";
@@ -24,7 +24,6 @@ import { SpecialTabs } from "./components/SpecialTabs";
 import { OutlinedButton } from "global/packages/src";
 import FadeIn from "react-fade-in";
 const LendingMarket = () => {
-  //intialize network store
   const networkInfo = useNetworkInfo();
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);

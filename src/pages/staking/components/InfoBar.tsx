@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React from "react";
+import { OutlinedButton } from "global/packages/src";
 
 interface Props {
   balance: string;
@@ -7,35 +7,42 @@ interface Props {
   totalUnbonding: string;
   rewards: string;
   apr: string;
+  onRewards: () => Promise<void>;
 }
-const InfoBar = ({ totalStaked, totalUnbonding, rewards, apr }: Props) => {
+const InfoBar = ({ totalStaked, rewards, apr, onRewards }: Props) => {
   return (
     <Styled>
       <div className="dual-item">
         <div className="top">total staked</div>
         <div className="bottom">{totalStaked}</div>
       </div>
+
       <div className="dual-item">
-        <div className="top">total unbonding</div>
-        <div className="bottom">{totalUnbonding}</div>
+        <div className="top">apr</div>
+        <div className="bottom">{apr + "%"}</div>
       </div>
       <div className="dual-item">
         <div className="top">rewards</div>
         <div className="bottom">{rewards}</div>
       </div>
-      <div className="dual-item">
-        <div className="top">apr</div>
-        <div className="bottom">{apr + "%"}</div>
-      </div>
+      <OutlinedButton
+        height="big"
+        disabled={Number(rewards) == 0}
+        onClick={() => {
+          onRewards();
+        }}
+      >
+        claim rewards
+      </OutlinedButton>
     </Styled>
   );
 };
 
 const Styled = styled.div`
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   color: var(--primary-color);
-  padding: 2rem;
+  padding: 2rem 0;
   .dual-item {
     display: flex;
     flex-direction: column-reverse;
@@ -49,6 +56,11 @@ const Styled = styled.div`
   .bottom {
     font-family: "Silkscreen", cursive;
     font-size: 30px;
+  }
+  @media (max-width: 1000px) {
+    width: 100%;
+    gap: 1rem;
+    flex-direction: column;
   }
 `;
 export default InfoBar;

@@ -1,6 +1,5 @@
 import { useCalls, useEtherBalance } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
-import { PAIR, TESTPAIRS, MAINPAIRS } from "../config/pairs";
 import { CantoTestnet, CantoMainnet } from "global/config/networks";
 import { cERC20Abi, ERC20Abi, routerAbi } from "global/config/abi";
 import { LPPairInfo, UserLPPairInfo } from "../config/interfaces";
@@ -8,7 +7,6 @@ import { getSupplyBalanceFromCTokens } from "pages/lending/utils/utils";
 import { formatUnits } from "ethers/lib/utils";
 import { checkForCantoInPair } from "../utils/utils";
 import { ADDRESSES } from "global/config/addresses";
-import { TOKENS as ALLTOKENS } from "global/config/tokenInfo";
 
 const useUserLPTokenInfo = (
   LPTokens: LPPairInfo[],
@@ -23,20 +21,19 @@ const useUserLPTokenInfo = (
       ? ADDRESSES.testnet.PriceFeed
       : ADDRESSES.cantoMainnet.PriceFeed;
   const RouterContract = new Contract(routerAddress, routerAbi);
-
-  const PAIRS: PAIR[] = chainId == CantoTestnet.chainId ? TESTPAIRS : MAINPAIRS;
-  const TOKENS =
-    chainId == CantoTestnet.chainId
-      ? ALLTOKENS.cantoTestnet
-      : ALLTOKENS.cantoMainnet;
-
   const CANTOBalance = useEtherBalance(account) ?? BigNumber.from(0);
 
-  const calls = PAIRS.map((pair) => {
-    const ERC20Contract = new Contract(pair.address, ERC20Abi);
-    const ERC20ContractA = new Contract(pair.token1.address, ERC20Abi);
-    const ERC20ContractB = new Contract(pair.token2.address, ERC20Abi);
-    const cLPToken = new Contract(pair.cLPaddress, cERC20Abi);
+  const calls = LPTokens.map((pair) => {
+    const ERC20Contract = new Contract(pair.basePairInfo.address, ERC20Abi);
+    const ERC20ContractA = new Contract(
+      pair.basePairInfo.token1.address,
+      ERC20Abi
+    );
+    const ERC20ContractB = new Contract(
+      pair.basePairInfo.token2.address,
+      ERC20Abi
+    );
+    const cLPToken = new Contract(pair.basePairInfo.cLPaddress, cERC20Abi);
 
     return [
       //0
@@ -93,7 +90,7 @@ const useUserLPTokenInfo = (
   const results =
     useCalls(LPTokens && onCanto && account ? calls.flat() : []) ?? {};
 
-  const chuckSize = !PAIRS ? 0 : results.length / PAIRS.length;
+  const chuckSize = !LPTokens ? 0 : results.length / LPTokens.length;
   let processedTokens: Array<any>;
   const array_chunks = (array: any[], chunk_size: number) => {
     const rep = array.map((array) => array?.value);
@@ -106,7 +103,7 @@ const useUserLPTokenInfo = (
     return chunks;
   };
 
-  if (chuckSize > 0 && results?.[0] != undefined && !results?.[0].error) {
+  if (chuckSize > 0 && results?.[1] != undefined && !results?.[1].error) {
     processedTokens = array_chunks(results, chuckSize);
     return processedTokens.map((tokenData, idx) => {
       const userLP = tokenData[0][0];

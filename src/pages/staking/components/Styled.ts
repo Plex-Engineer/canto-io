@@ -4,8 +4,7 @@ export const StakingModalContainer = styled.div`
   background-color: #040404;
   height: fit-content;
   max-height: 90vh;
-  overflow-y: scroll;
-  padding-bottom: 1rem;
+  padding-bottom: 1.4rem;
   width: 33rem;
   display: flex;
   flex-direction: column;
@@ -20,58 +19,51 @@ export const StakingModalContainer = styled.div`
     border-bottom: 1px solid #444444;
   }
 
-  /* padding: 1rem; */
-  .react-select-container {
+  .agreement {
+    display: flex;
+    gap: 1rem;
   }
-  .eact-select__input-container {
-    color: var(--primary-color) !important;
+  .tabPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
-  .react-select__control {
-    background-color: #040404 !important;
-    color: var(--primary-color) !important;
-    border: 1px solid var(--primary-color) !important;
-    border-radius: 0%;
-
-    &:focus,
-    &:hover {
-      outline: none;
+  .amount {
+    input {
+      width: 100%;
+      margin: 6px 0;
+      text-align: start;
     }
-  }
-  /* .react-select__input {
-  color: var(--primary-color) !important;
-  &::placeholder {
-    color: var(--primary-color) !important;
-  }
-  input[type="text"] {
-    &::placeholder {
-      color: var(--primary-color) !important;
+    position: relative;
+    .max {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 140%;
+      letter-spacing: -0.03em;
+      text-transform: lowercase;
+      color: #efefef;
+      border: 1px solid #efefef;
+      opacity: 0.5;
+      position: absolute;
+      right: 12px;
+      border-radius: 4px;
+      padding: 4px 8px;
+      top: 18px;
+      transition: all 0.1s;
+      background-color: transparent;
+      cursor: pointer;
+      &:hover {
+        opacity: 1;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+      }
     }
-  }
-} */
-  .react-select__menu {
-    background-color: #040404 !important;
-    color: var(--primary-color) !important;
-  }
-  .react-select__value-container {
-    * {
-      color: var(--primary-color) !important;
-    }
-  }
-  .react-select__menu-list {
-    outline: none;
-    color: var(--primary-color) !important;
-  }
-
-  .react-select__option {
-    background-color: #040404 !important;
-    &:hover {
-      background-color: #1b2b24 !important;
-    }
+    width: 100%;
   }
 
   .redelegate {
     width: 100%;
-    margin: 2rem 0;
     .btn-grp {
       width: 100%;
       align-items: center;
@@ -109,51 +101,91 @@ export const StakingModalContainer = styled.div`
       margin-top: 2rem !important;
     }
   }
-  .title {
-    font-weight: 300;
-    font-size: 22px;
-    text-align: center;
-    letter-spacing: -0.1em;
-    text-transform: lowercase;
-    color: var(--primary-color);
+  .group {
     width: 100%;
-    background-color: #06fc991a;
-    padding: 1rem;
-    border-bottom: 1px solid var(--primary-color);
+  }
+  .title {
+    font-family: Silkscreen;
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 34px;
+    letter-spacing: -0.08em;
+    text-align: left;
+
+    color: var(--primary-color);
+    width: 90%;
+    padding: 1rem 0;
+    border-bottom: 1px solid #222;
     margin-bottom: 1rem;
   }
 
   .dual-h-row {
     font-size: 18px;
-    width: 28rem;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     margin: 0.4rem 0;
   }
 
   .type {
-    color: #8b8b8b;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 147%;
+    letter-spacing: -0.03em;
+    text-transform: lowercase;
+    color: #06fc99;
+
+    opacity: 0.4;
   }
   .value {
     color: var(--primary-color);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 147%;
+    text-align: right;
+    letter-spacing: -0.03em;
   }
   .line {
     border-bottom: 1px solid #222;
   }
-
-  h2 {
-    color: #777;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 20px;
-    text-align: left;
-    line-height: 120%;
-    margin-bottom: 0.4rem;
+  .tabs {
+    margin-top: 1rem;
   }
-
-  h4 {
+  .btn {
     width: 100%;
   }
+  .tablist {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--primary-color);
+    padding: 0;
+    color: #efefef;
+    font-weight: 400;
+    .selected {
+      background: rgba(6, 252, 153, 0.1);
+      border-bottom: 4px solid var(--primary-color);
+    }
+    .tab {
+      height: 50px;
+      flex: 1;
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: all 0.2s ease-in-out;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      &:hover:not(.selected) {
+        background: #a7efd218;
+      }
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
   .secondaryBalance {
     font-weight: 300;
     font-size: 16px;
@@ -165,11 +197,12 @@ export const StakingModalContainer = styled.div`
     display: flex;
     justify-content: space-between;
     width: 100%;
-    margin: 2rem 0;
   }
 
   .desc {
-    margin: 0 2rem;
+    padding: 0 2rem;
+    width: 100%;
+
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -177,7 +210,7 @@ export const StakingModalContainer = styled.div`
   .textField {
     margin: 0.1rem 0;
     padding: 0.4rem 0;
-    width: 28rem;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -203,5 +236,9 @@ export const StakingModalContainer = styled.div`
     p {
       font-size: 14px;
     }
+  }
+
+  @media (max-width: 1000px) {
+    width: 100%;
   }
 `;

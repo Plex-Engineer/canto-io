@@ -46,26 +46,26 @@ const Transactions = () => {
     const token = findGravityToken(tx.args?.[0]);
     return (
       <TransactionBox
+        key={tx.transactionHash}
         balance={formatUnits(tx.args?.[3], token?.decimals)}
-        id={new Date(tx.timestamp).toLocaleDateString()}
         status={"complete"}
         symbol={token?.symbol ?? "unknown"}
         blockExplorerUrl={"https://etherscan.io/tx/" + tx.transactionHash}
         type={"in"}
-        key={tx.blockNumber}
+        timestamp={tx.timestamp * 1000}
       />
     );
   });
   const completedBridgeOut = bridgeOutTransactions.map((tx) => {
     return (
       <TransactionBox
+        key={tx.tx.txhash}
         balance={formatUnits(tx.amount, tx.token.decimals)}
-        id={new Date(tx.tx.timestamp).toLocaleDateString()}
         status={"complete"}
         symbol={tx.token.symbol}
         blockExplorerUrl={"https://ping.pub/canto/tx/" + tx.tx.txhash}
         type={"out"}
-        key={tx.tx.transactionHash}
+        timestamp={tx.tx.timestamp}
       />
     );
   });
@@ -74,19 +74,20 @@ const Transactions = () => {
       {completedBridgeTransactions.length +
         bridgeOutTransactions.length +
         pendingBridgeTransactions.length ==
-        0 && (
-        <NotConnected
-          title="No Transactions"
-          subtext="You haven't made any transactions using bridging yet."
-          buttonText="Get Started"
-          bgFilled
-          onClick={() => {
-            // activateBrowserWallet();
-            // addNetwork();
-          }}
-          icon={warningIcon}
-        />
-      )}
+        0 &&
+        transactionStore.oldTransactionLength == 0 && (
+          <NotConnected
+            title="No Transactions"
+            subtext="You haven't made any transactions using bridging yet."
+            buttonText="Get Started"
+            bgFilled
+            onClick={() => {
+              // activateBrowserWallet();
+              // addNetwork();
+            }}
+            icon={warningIcon}
+          />
+        )}
       <Text
         type="title"
         color="primary"
@@ -105,13 +106,14 @@ const Transactions = () => {
           const token = findGravityToken(tx.args?.[0]);
           return (
             <TransactionBox
+              key={tx.blockNumber}
               balance={formatUnits(tx.args?.[3], token?.decimals)}
-              id={tx.blockNumber.toString()}
               status={"loading"}
               symbol={token?.symbol ?? "unknown"}
               blockExplorerUrl={"https://etherscan.io/tx/" + tx.transactionHash}
               type={"in"}
-              key={tx.blockNumber}
+              timestamp={tx.timestamp * 1000}
+              secondsUntilConfirmed={tx.secondsUntilConfirmed}
             />
           );
         })
@@ -135,7 +137,7 @@ const Transactions = () => {
       </Text>
       {[...completedBridgeIn, ...completedBridgeOut].sort(
         (a: JSX.Element, b: JSX.Element) =>
-          new Date(a.props.id) > new Date(b.props.id) ? -1 : 1
+          new Date(a.props.timestamp) > new Date(b.props.timestamp) ? -1 : 1
       )}
     </Styled>
   );

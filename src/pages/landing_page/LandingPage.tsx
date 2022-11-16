@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { openLink } from "./landingScript";
 import { Styled } from "./styled";
 import Typing from "./Typing";
+import { pageList } from "global/config/pageList";
 
 const LandingPage = () => {
   const [userInput, setUserInput] = useState("");
@@ -21,28 +22,6 @@ const LandingPage = () => {
   }
   blinkAnimation();
 
-  const pageList = [
-    {
-      name: "bridge",
-      link: "/bridge",
-    },
-    {
-      name: "governance",
-      link: "/governance",
-    },
-    {
-      name: "lending",
-      link: "/lending",
-    },
-    {
-      name: "lp interface",
-      link: "/lp",
-    },
-    {
-      name: "staking",
-      link: "/staking",
-    },
-  ];
   function handleInputChange(value: string) {
     if (value.length > 0) {
       setShowCursor(false);
@@ -55,16 +34,8 @@ const LandingPage = () => {
   }
   return (
     <Styled>
-      <div className="layer"></div>
-      <div className="overlayScan"></div>
-      <div className="overlayStatic"></div>
-      <div className="overlayAnimation"></div>
       <div className="container">
-        <div className="title glitch">
-          <span>Canto</span>
-          Canto
-          <span>Canto</span>
-        </div>
+        <h1>Canto</h1>
         <Typing />
 
         <div className="dim">*** enter a command to continue ***</div>
@@ -77,7 +48,10 @@ const LandingPage = () => {
             );
           })}
         </ul>
-        <div className="seperator"></div>
+        <div className="alert blink">
+          <div id="error">invalid entry!</div>
+          <div id="warning">launching soon.</div>
+        </div>
         <div className="input-bar">
           <span className="tag">.canto@:\user_&gt; </span>
           <input
@@ -91,11 +65,6 @@ const LandingPage = () => {
               }
             }}
           />
-        </div>
-
-        <div className="alert blink">
-          <div id="error">invalid entry!</div>
-          <div id="warning">launching soon.</div>
         </div>
       </div>
     </Styled>

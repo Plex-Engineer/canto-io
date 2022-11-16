@@ -27,16 +27,19 @@ import {
 } from "./utils/allUserValidatorInfo";
 import { ModalManager } from "./modals/modalManager";
 import useTransactionStore from "./stores/transactionStore";
-import { OutlinedButton } from "global/packages/src/components/atoms/Button";
-import { userTxMessages } from "./config/messages";
-import { getActiveTransactionMessage } from "./utils/utils";
 import { chain, memo } from "global/config/cosmosConstants";
 import { claimRewardFee } from "./config/fees";
 import HelmetSEO from "global/components/seo";
+import useValidatorModalStore, {
+  ValidatorModalType,
+} from "./stores/validatorModalStore";
+import { performTxAndSetStatus } from "./utils/utils";
 
 const Staking = () => {
   const networkInfo = useNetworkInfo();
   const transactionStore = useTransactionStore();
+  const validatorModalStore = useValidatorModalStore();
+
   // get all of the validators
   const [validators, setValidators] = useState<Validator[]>([]);
   const [stakingApr, setStakingApr] = useState("");
@@ -50,24 +53,22 @@ const Staking = () => {
   const [rewards, setRewards] = useState<BigNumber>(BigNumber.from("0"));
 
   async function handleClaimRewards() {
-    transactionStore.setTransactionMessage(userTxMessages.waitSign);
-    await txClaimRewards(
-      networkInfo.account ?? "",
-      CantoMainnet.cosmosAPIEndpoint,
-      claimRewardFee,
-      chain,
-      memo,
-      userValidators
-    );
-    transactionStore.setTransactionMessage(userTxMessages.waitVerify);
-    transactionStore.setTransactionMessage(
-      await getActiveTransactionMessage(
-        networkInfo.account ?? "",
-        "",
-        rewards,
-        networkInfo.balance,
-        StakingTransactionType.CLAIM_REWARDS
-      )
+    validatorModalStore.open(ValidatorModalType.STAKE);
+    performTxAndSetStatus(
+      async () =>
+        await txClaimRewards(
+          networkInfo.account ?? "",
+          CantoMainnet.cosmosAPIEndpoint,
+          claimRewardFee,
+          chain,
+          memo,
+          userValidators
+        ),
+      StakingTransactionType.CLAIM_REWARDS,
+      transactionStore.setTransactionStatus,
+      validatorModalStore.close,
+      "",
+      rewards
     );
   }
 
@@ -107,9 +108,6 @@ const Staking = () => {
     getAllData();
   }, [networkInfo.account]);
 
-  //   useEffect(() => {
-  //     toast
-  //   }, [transactionStore.transactionMessage]);
   const allValidatorData = getAllValidatorData(
     validators,
     delegations,
@@ -131,29 +129,14 @@ const Staking = () => {
       />
       <Styled>
         <ModalManager allValidators={validators} />
-        <Tabs className={"tabs"}>
-          <TabList>
-            <Tab>my staking</Tab>
-            <Tab>all validators</Tab>
-            <div
-              style={{
-                flex: "5",
-                display: "flex",
-                justifyContent: "right",
-              }}
-            >
-              <OutlinedButton
-                onClick={() => {
-                  handleClaimRewards();
-                }}
-              >
-                claim rewards
-              </OutlinedButton>
-            </div>
+        <Tabs className="tabs">
+          <TabList className="tablist">
+            <Tab className="tab">my staking</Tab>
+            <Tab className="tab">all validators</Tab>
           </TabList>
-          {transactionStore.transactionMessage}
           <TabPanel>
             <MyStaking
+              onRewards={handleClaimRewards}
               connected={Number(networkInfo.chainId) == CantoMainnet.chainId}
               account={networkInfo.account ?? ""}
               balance={networkInfo.balance}

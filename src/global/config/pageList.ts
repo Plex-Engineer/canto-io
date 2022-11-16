@@ -14,6 +14,17 @@ export const PAGES = {
     link: "/governance",
     pageTitle: "governance",
     networks: [CantoMainnet.chainId, CantoTestnet.chainId],
+    subpages: {
+      proposal: {
+        name: "proposal",
+        link: "/governance/proposal/:id",
+        pageTitle: "proposal #0",
+        pageTitleFunction: (link: string) => {
+          return "proposal #" + link.split("/")[3];
+        },
+        networks: [CantoMainnet.chainId, CantoTestnet.chainId],
+      },
+    },
   },
   lending: {
     name: "lending",
@@ -46,8 +57,10 @@ export interface PageObject {
   name: string;
   link: string;
   pageTitle: string;
+  pageTitleFunction?: (link: string) => string;
   networks: number[];
   balanceLimits?: BalanceLimits[];
+  subpages?: PageObject[];
 }
 interface BalanceLimits {
   minBalance: BigNumber;
@@ -62,16 +75,11 @@ export const pageList: PageObject[] = [
     networks: PAGES.bridge.networks,
   },
   {
-    name: PAGES.governance.name,
-    link: PAGES.governance.link,
-    pageTitle: PAGES.governance.pageTitle,
-    networks: PAGES.governance.networks,
-  },
-  {
-    name: PAGES.lending.name,
-    link: PAGES.lending.link,
-    pageTitle: PAGES.lending.pageTitle,
-    networks: PAGES.lending.networks,
+    name: PAGES.staking.name,
+    link: PAGES.staking.link,
+    pageTitle: PAGES.staking.pageTitle,
+    networks: PAGES.staking.networks,
+    balanceLimits: PAGES.staking.balanceLimits,
   },
   {
     name: PAGES.lp.name,
@@ -80,10 +88,24 @@ export const pageList: PageObject[] = [
     networks: PAGES.lp.networks,
   },
   {
-    name: PAGES.staking.name,
-    link: PAGES.staking.link,
-    pageTitle: PAGES.staking.pageTitle,
-    networks: PAGES.staking.networks,
-    balanceLimits: PAGES.staking.balanceLimits,
+    name: PAGES.lending.name,
+    link: PAGES.lending.link,
+    pageTitle: PAGES.lending.pageTitle,
+    networks: PAGES.lending.networks,
+  },
+  {
+    name: PAGES.governance.name,
+    link: PAGES.governance.link,
+    pageTitle: PAGES.governance.pageTitle,
+    networks: PAGES.governance.networks,
+    subpages: [
+      {
+        name: PAGES.governance.subpages.proposal.name,
+        link: PAGES.governance.subpages.proposal.link,
+        pageTitle: PAGES.governance.subpages.proposal.pageTitle,
+        pageTitleFunction: PAGES.governance.subpages.proposal.pageTitleFunction,
+        networks: PAGES.governance.subpages.proposal.networks,
+      },
+    ],
   },
 ];

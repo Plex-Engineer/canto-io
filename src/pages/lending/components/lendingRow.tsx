@@ -4,6 +4,7 @@ import { noteSymbol } from "global/utils/utils";
 import { ToolTip } from "./Tooltip";
 import React from "react";
 import { formatLiquidity } from "../utils/utils";
+import cantoIcon from "assets/logo.svg";
 
 interface BorrowingProps {
   borrowing: boolean;
@@ -15,6 +16,7 @@ interface BorrowingProps {
   symbol?: string;
   liquidity: number;
   onClick: () => void;
+  sortableProps?: unknown[];
 }
 interface SupplyProps {
   supplying: boolean;
@@ -46,19 +48,6 @@ interface ItemProps {
   bottom: string;
 }
 
-// const RowStyle = styled.tr<RowProps>`
-//   opacity: 0;
-//   animation: fadein 0.6s ${(props) => props.delay}s, fader 0.5s;
-//   animation-fill-mode: forwards;
-//   @keyframes fadein {
-//     from {
-//       opacity: 0;
-//     }
-//     to {
-//       opacity: 1;
-//     }
-//   }
-// `;
 const DualRow = ({ top, bottom }: ItemProps) => {
   return (
     <div
@@ -91,7 +80,7 @@ const BorrowRow = (props: BorrowingProps) => {
         <React.Fragment>
           <td>
             <DualRow
-              top={props.amount + " " + props.symbol}
+              top={props.amount}
               bottom={noteSymbol + props.amountInNote}
             ></DualRow>
           </td>
@@ -99,7 +88,7 @@ const BorrowRow = (props: BorrowingProps) => {
         </React.Fragment>
       ) : (
         <React.Fragment>
-          <td>{props.amount + " " + props.symbol}</td>
+          <td>{props.amount}</td>
           {props.assetName == "NOTE" ? (
             <ToolTip as={"td"} data-tooltip="Note Liquidity Is Infinite">
               N/A
@@ -134,16 +123,23 @@ const SupplyRow = (props: SupplyProps) => {
       </td>
       {props.supplying ? (
         <React.Fragment>
-          <td>{Number(props.rewards).toFixed(2)} WCANTO</td>
+          <td>
+            {Number(props.rewards).toFixed(2)}{" "}
+            <img
+              src={cantoIcon}
+              alt="canto"
+              style={{ height: "14px", paddingTop: "3px" }}
+            />
+          </td>
           <td>
             <DualRow
-              top={props.amount + " " + props.symbol}
+              top={props.amount}
               bottom={noteSymbol + props.amountInNote}
             ></DualRow>
           </td>
         </React.Fragment>
       ) : (
-        <td>{props.amount + " " + props.symbol}</td>
+        <td>{props.amount}</td>
       )}
 
       <td>

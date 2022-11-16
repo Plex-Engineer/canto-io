@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 export const DexModalContainer = styled.div`
   background-color: #040404;
-  height: 36rem;
+  height: 42rem;
   width: 30rem;
   display: flex;
   flex-direction: column;
@@ -110,6 +110,12 @@ export const DexModalContainer = styled.div`
       width: 90%;
     }
   }
+  .row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+  }
 `;
 export const AddRemoveContainer = styled(DexModalContainer)`
   gap: 0.7rem;
@@ -170,21 +176,6 @@ export const SettingsPopIn = styled.div<showProps>`
 export const DexContainer = styled.div`
   display: flex;
   flex-direction: column;
-  color: #fff;
-  min-height: 100vh;
-  h1 {
-    font-size: 12rem;
-    color: var(--primary-color);
-    text-align: center;
-    font-weight: 300;
-    letter-spacing: -0.13em;
-    position: relative;
-    height: 26rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-shadow: 0px 14px 14px rgba(6, 252, 153, 0.2);
-  }
 
   .tableName {
     width: 1200px;
@@ -192,27 +183,7 @@ export const DexContainer = styled.div`
     padding: 0;
   }
 
-  & > button {
-    background-color: var(--primary-color);
-    border: none;
-    border-radius: 0px;
-    padding: 0.6rem 2.4rem;
-    font-size: 1.2rem;
-    font-weight: 500;
-    letter-spacing: -0.03em;
-    width: fit-content;
-    margin: 0 auto;
-    margin-bottom: 3rem;
-
-    &:hover {
-      background-color: var(--primary-color-dark);
-    }
-  }
-
   @media (max-width: 1000px) {
-    h1 {
-      font-size: 20vw;
-    }
     .tableName {
       width: 100%;
       padding: 0 2rem;

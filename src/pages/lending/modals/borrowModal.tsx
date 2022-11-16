@@ -5,7 +5,6 @@ import { InputState, ReactiveButton } from "../components/reactiveButton";
 import { truncateNumber } from "global/utils/utils";
 import LendingField from "../components/lendingField";
 import { Details, TrasanctionType } from "../components/BorrowLimits";
-import LoadingModal from "./loadingModal";
 import useModalStore from "pages/lending/stores/useModals";
 import {
   UserLMPosition,
@@ -14,34 +13,34 @@ import {
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { maxBorrowInUnderlying } from "pages/lending/utils/borrowRepayLimits";
 import { BigNumber } from "ethers";
-import {
-  SupplyBorrowContainer,
-  ModalWallet,
-  SupplyBorrowLoadingOverlay,
-} from "../components/Styled";
+import { SupplyBorrowContainer, ModalWallet } from "../components/Styled";
+import GlobalLoadingModal from "global/components/modals/loadingModal";
+import { CantoTransactionType } from "global/config/transactionTypes";
 interface IProps {
   onClose: () => void;
   position: UserLMPosition;
 }
-const BorrowModal = ({ onClose, position }: IProps) => {
+const BorrowModal = ({ position, onClose }: IProps) => {
   const modalStore = useModalStore();
   const token: UserLMTokenDetails = modalStore.activeToken;
   const [transaction, setTransaction] = useState<TransactionStatus>();
-  const [isRepaying, setIsRepaying] = useState(true);
+  const [isRepaying, setIsRepaying] = useState(false);
   const [isMax, setMax] = useState(false);
 
   const [inputState, setInputState] = useState(InputState.ENTERAMOUNT);
 
   const [userAmount, setUserAmount] = useState("");
 
+  useEffect(() => {
+    resetInput();
+  }, [isRepaying]);
   function resetInput() {
     //if in repay tab and allowance is true or if borrowing is true
-    if ((isRepaying && token.allowance) || !isRepaying) {
-      setInputState(InputState.ENTERAMOUNT);
-    } else {
+    if (isRepaying && !token.allowance) {
       setInputState(InputState.ENABLE);
+    } else {
+      setInputState(InputState.ENTERAMOUNT);
     }
-
     setUserAmount("");
   }
 
@@ -238,28 +237,23 @@ const BorrowModal = ({ onClose, position }: IProps) => {
     );
   };
 
-  useEffect(() => {
-    if (
-      ["Success", "Fail", "Exception"].includes(transaction?.status ?? "none")
-    ) {
-      setTimeout(onClose, 1000);
-    }
-  }, [transaction?.status]);
-
   return (
     <SupplyBorrowContainer>
-      {/* 'None' , 'PendingSignature' , 'Mining' , 'Success' , 'Fail' , 'Exception' */}
-      {["PendingSignature", "Mining", "Success", "Fail", "Exception"].includes(
-        transaction?.status ?? "none"
-      ) ? (
-        <SupplyBorrowLoadingOverlay>
-          <LoadingModal
-            isLoading
-            modalText="borrowing bat"
-            status={transaction?.status}
-          />
-        </SupplyBorrowLoadingOverlay>
-      ) : null}
+      {transaction?.status != "None" && transaction?.status && (
+        <GlobalLoadingModal
+          transactionType={
+            inputState == InputState.ENABLE
+              ? CantoTransactionType.ENABLE
+              : isRepaying
+              ? CantoTransactionType.REPAY
+              : CantoTransactionType.BORROW
+          }
+          status={transaction.status}
+          tokenName={token.data.underlying.symbol}
+          txHash={transaction.transaction?.hash}
+          onClose={onClose}
+        />
+      )}
 
       <div className="title">
         <img
@@ -292,8 +286,7 @@ const BorrowModal = ({ onClose, position }: IProps) => {
             className={"tab"}
             selectedClassName="tab-selected"
             onClick={() => {
-              setIsRepaying(true);
-              resetInput();
+              setIsRepaying(false);
             }}
           >
             borrow
@@ -302,8 +295,7 @@ const BorrowModal = ({ onClose, position }: IProps) => {
             className={"tab"}
             selectedClassName="tab-selected"
             onClick={() => {
-              setIsRepaying(false);
-              resetInput();
+              setIsRepaying(true);
             }}
           >
             repay

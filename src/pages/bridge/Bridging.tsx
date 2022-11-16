@@ -20,7 +20,7 @@ import { useEthers } from "@usedapp/core";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import {
-  getAllBridgeTransactionsWithStatus,
+  getBridgeInEventsWithStatus,
   getBridgeOutTransactions,
 } from "./utils/utils";
 import { useBridgeTransactionStore } from "./stores/transactionStore";
@@ -37,10 +37,7 @@ const BridgingPage = () => {
   async function setBridgingTransactions() {
     if (networkInfo.account && networkInfo.cantoAddress) {
       const [completedBridgeIn, pendingBridgeIn] =
-        await getAllBridgeTransactionsWithStatus(
-          networkInfo.account,
-          networkInfo.cantoAddress
-        );
+        await getBridgeInEventsWithStatus(networkInfo.account);
       const bridgeOutTransactions = await getBridgeOutTransactions(
         networkInfo.cantoAddress
       );
@@ -131,10 +128,10 @@ const BridgingPage = () => {
     const tabs = [];
     for (let i = 0; i < 3; i++) {
       tabs.push(
-        <TabPanel>
+        <TabPanel key={i}>
           <NotConnected
             title="Wallet is not connected"
-            subtext="to use bridge you need to connect a wallet through the service metamask"
+            subtext="to use bridge you need to connect a wallet through metamask"
             buttonText="connnect wallet"
             bgFilled
             onClick={() => {
@@ -284,6 +281,7 @@ const Styled = styled.div`
       border: none;
       background-color: #06fc9a4c;
       border-bottom: 4px solid var(--primary-color);
+      border-top: 4px solid transparent;
     }
   }
   .tablist {
@@ -293,6 +291,8 @@ const Styled = styled.div`
   .react-tabs__tab--selected {
     border: none;
     border-bottom: 4px solid var(--primary-color);
+    border-top: 4px solid transparent;
+
     background-color: #06fc991a;
   }
   .react-tabs__tab--disabled {

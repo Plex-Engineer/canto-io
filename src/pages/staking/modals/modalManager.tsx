@@ -7,7 +7,9 @@ import useValidatorModalStore, {
 } from "../stores/validatorModalStore";
 import { StakingModal } from "./stakingModal";
 import close from "assets/close.svg";
-import FadeIn from "react-fade-in";
+import DelegationModal from "./delegationModal";
+import RedelgationModal from "./redelgationModal";
+import useTransactionStore from "../stores/transactionStore";
 
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
@@ -28,13 +30,12 @@ const StyledPopup = styled(Popup)`
   }
   // use your custom style for ".popup-content"
   &-content {
-    /* height: 400px; */
     position: relative;
-    overflow-y: hidden;
-    overflow-x: hidden;
+
     background-color: black;
-    border: 1px solid var(--primary-color);
+    border-radius: 4px;
     scroll-behavior: smooth;
+    transition: all 0.2s;
     animation: fadein 0.5s 1;
     @keyframes fadein {
       0% {
@@ -50,8 +51,10 @@ const StyledPopup = styled(Popup)`
     }
   }
 
-  & {
-    overflow-y: auto;
+  @media (max-width: 1000px) {
+    /* &-overlay {
+      width: 100%;
+    } */
   }
 `;
 interface ModalManagerProps {
@@ -59,18 +62,31 @@ interface ModalManagerProps {
 }
 export const ModalManager = (props: ModalManagerProps) => {
   const validatorModals = useValidatorModalStore();
+  const transactionStore = useTransactionStore();
   const networkInfo = useNetworkInfo();
 
   return (
     <StyledPopup
       open={validatorModals.currentModal != ValidatorModalType.NONE}
-      onClose={validatorModals.close}
+      onClose={() =>
+        validatorModals.close(() =>
+          transactionStore.setTransactionStatus(undefined)
+        )
+      }
       lockScroll
       modal
       position="center center"
       nested
     >
-      <div role="button" tabIndex={0} onClick={validatorModals.close}>
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() =>
+          validatorModals.close(() =>
+            transactionStore.setTransactionStatus(undefined)
+          )
+        }
+      >
         <img
           src={close}
           style={{
@@ -84,13 +100,47 @@ export const ModalManager = (props: ModalManagerProps) => {
           alt="close"
         />
       </div>
+      {validatorModals.currentModal == ValidatorModalType.DELEGATE && (
+        <DelegationModal
+          validator={validatorModals.activeValidator}
+          allValidators={props.allValidators}
+          balance={networkInfo.balance}
+          account={networkInfo.account}
+        />
+      )}
+      {validatorModals.currentModal == ValidatorModalType.UNDELEGATE && (
+        <DelegationModal
+          undelegation
+          validator={validatorModals.activeValidator}
+          allValidators={props.allValidators}
+          balance={networkInfo.balance}
+          account={networkInfo.account}
+        />
+      )}
+      {validatorModals.currentModal == ValidatorModalType.REDELEGATE && (
+        <RedelgationModal
+          validator={validatorModals.activeValidator}
+          allValidators={props.allValidators}
+          balance={networkInfo.balance}
+          account={networkInfo.account}
+        />
+      )}
       {validatorModals.currentModal === ValidatorModalType.STAKE && (
         <StakingModal
           validator={validatorModals.activeValidator}
           allValidators={props.allValidators}
           balance={networkInfo.balance}
           account={networkInfo.account}
+          onClose={() =>
+            validatorModals.close(() =>
+              transactionStore.setTransactionStatus(undefined)
+            )
+          }
         />
+        // <ChoiceModal
+        //   validator={validatorModals.activeValidator}
+        //   balance={networkInfo.balance}
+        // />
       )}
     </StyledPopup>
   );

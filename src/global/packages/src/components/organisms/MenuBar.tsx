@@ -67,7 +67,7 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
           </div>
         </header>
         <div className="navlinks">
-          {pageList?.map((page) => {
+          {pageList?.map((page, idx) => {
             return (
               <Navlink
                 id={page.name}
@@ -77,8 +77,8 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
                 to={page.link}
                 key={page.name}
               >
-                <Text2 size="text2" type="text" align="left" id={page.name}>
-                  {page.name}
+                <Text2 size="text3" type="title" align="left" id={page.name}>
+                  {"0" + (idx + 1) + " " + page.name}
                 </Text2>
               </Navlink>
             );
@@ -108,6 +108,10 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
           >
             add to keplr
           </OutlinedButton>
+          <div className="links">
+            <a href="https://forms.gle/gkr5pDZYX8ZRWYWJ8">report a bug</a>
+            <a href="https://docs.canto.io/">docs</a>
+          </div>
         </footer>
       </div>
     </Styled>
@@ -124,6 +128,10 @@ const Styled = styled.div<MenuState>`
   }
   .navlinks {
     flex: 2;
+    /* margin-top: 40%; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .overlay {
     position: absolute;
@@ -152,6 +160,13 @@ const Styled = styled.div<MenuState>`
     flex-direction: column;
   }
 
+  .links {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
+  }
+
   header {
     display: flex;
     justify-content: space-between;
@@ -177,7 +192,7 @@ const Navlink = styled(Link)`
   display: flex;
   text-align: left;
   width: 100%;
-  padding: 1rem;
+  padding: 1rem 1.4rem;
   opacity: 0.5;
   position: relative;
   transition: all 0.1s;
