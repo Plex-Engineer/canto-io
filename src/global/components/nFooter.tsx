@@ -13,7 +13,7 @@ const Footer = () => {
           <Text type="text">report bug</Text>
         </a>
         <a href="https://docs.canto.io/">
-          <Text type="text">document</Text>
+          <Text type="text">documents</Text>
         </a>
         <a href="https://docs.canto.io/">
           <Text type="text">about canto</Text>
@@ -43,7 +43,7 @@ const Footer = () => {
             alt="github"
             height={40}
             onClick={() => {
-              window.open("https://github.com/Plex-Engineer/canto-mono");
+              window.open("https://github.com/Canto-Network");
             }}
           />
           <ImageButton

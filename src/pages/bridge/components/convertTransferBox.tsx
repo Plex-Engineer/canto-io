@@ -17,6 +17,8 @@ import { convertStringToBigNumber } from "../utils/stringToBigNumber";
 import { formatUnits } from "ethers/lib/utils";
 import { GeneralTransferBox } from "./generalTransferBox";
 import { PrimaryButton } from "global/packages/src";
+import bridgeIcon from "assets/icons/canto-bridge.svg";
+import cantoIcon from "assets/icons/canto-evm.svg";
 
 interface ConvertTransferBoxProps {
   cantoToEVM: boolean;
@@ -79,12 +81,12 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
       from={{
         address: props.cantoToEVM ? props.cantoAddress : props.ETHAddress,
         name: props.cantoToEVM ? "canto (bridge)" : "canto (EVM)",
-        // icon: props.cantoToEVM ? bridgeIcon : cantoIcon,
+        icon: props.cantoToEVM ? bridgeIcon : cantoIcon,
       }}
       to={{
         address: !props.cantoToEVM ? props.cantoAddress : props.ETHAddress,
         name: !props.cantoToEVM ? "canto (bridge)" : "canto (EVM)",
-        // icon: !props.cantoToEVM ? bridgeIcon : cantoIcon,
+        icon: !props.cantoToEVM ? bridgeIcon : cantoIcon,
       }}
       networkName="canto"
       onSwitch={props.onSwitch}

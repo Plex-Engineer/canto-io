@@ -1,7 +1,6 @@
 import { CantoMainnet } from "global/config/networks";
 import { useEffect, useState } from "react";
 import { useBridgeStore } from "./stores/gravityStore";
-import styled from "@emotion/styled";
 import { TokenWallet } from "./components/TokenSelect";
 import { useEthers } from "@usedapp/core";
 import { BigNumber } from "ethers";
@@ -13,6 +12,8 @@ import { useNetworkInfo } from "global/stores/networkInfo";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import cantoIcon from "assets/icons/canto-evm.svg";
 import SwitchBridging from "./components/SwitchBridging";
+import bridgeIcon from "assets/icons/canto-bridge.svg";
+
 import {
   EmptySelectedConvertToken,
   EmptySelectedNativeToken,
@@ -51,7 +52,7 @@ const BridgeOut = ({
   const { activateBrowserWallet } = useEthers();
 
   //BRIDGE OUT STATES
-  const [userGravityAddress, setUserGravityAddress] = useState("");
+  const [userCosmosAddress, setUserCosmosAddress] = useState("");
   //bridging to gravity bridge status
   const [bridgeConfirmation, setBridgeConfirmation] =
     useState("select a token");
@@ -64,7 +65,7 @@ const BridgeOut = ({
     convertStringToBigNumber(amount, selectedNativeToken.decimals),
     selectedNativeToken,
     selectedNativeToken.nativeBalance,
-    userGravityAddress
+    selectedBridgeOutNetwork.checkAddress(userCosmosAddress)
   );
 
   //Useffect for calling data per block
@@ -143,6 +144,7 @@ const BridgeOut = ({
           icon: selectedBridgeOutNetwork.icon,
           name: selectedBridgeOutNetwork.name,
           height: 48,
+          selectable: true,
         }}
       />
 
@@ -195,17 +197,18 @@ const BridgeOut = ({
           }
           needAddressBox={true}
           onAddressChange={(value: string) => {
-            setUserGravityAddress(value);
+            setUserCosmosAddress(value);
           }}
+          AddressBoxPlaceholder={`${selectedBridgeOutNetwork.name} address (${selectedBridgeOutNetwork.addressBeginning}...)`}
           from={{
             address: networkInfo.cantoAddress,
             name: "canto (bridge)",
-            // icon: bridgeIcon,
+            icon: bridgeIcon,
           }}
           to={{
-            address: userGravityAddress,
-            name: "gravity bridge",
-            // icon: "https://raw.githubusercontent.com/Gravity-Bridge/Gravity-Docs/main/assets/Graviton-Grey.svg",
+            address: userCosmosAddress,
+            name: selectedBridgeOutNetwork.name,
+            icon: selectedBridgeOutNetwork.icon,
           }}
           networkName="canto"
           onSwitch={() => {
@@ -233,15 +236,15 @@ const BridgeOut = ({
                 );
                 setPrevBridgeBalance(selectedNativeToken.nativeBalance);
                 await txIBCTransfer(
-                  userGravityAddress,
-                  "channel-0",
+                  userCosmosAddress,
+                  selectedBridgeOutNetwork.channel,
                   convertStringToBigNumber(
                     amount,
                     selectedNativeToken.decimals
                   ).toString(),
                   selectedNativeToken.nativeName,
                   CantoMainnet.cosmosAPIEndpoint,
-                  "https://gravitychain.io:1317",
+                  selectedBridgeOutNetwork.endpoint,
                   fee,
                   chain,
                   memo

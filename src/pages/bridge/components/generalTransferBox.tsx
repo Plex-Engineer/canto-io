@@ -30,6 +30,7 @@ interface Props {
   //if we need to send to specific address
   needAddressBox: boolean;
   onAddressChange?: (s: string) => void;
+  AddressBoxPlaceholder?: string;
 }
 
 export const GeneralTransferBox = (props: Props) => {
@@ -76,7 +77,7 @@ export const GeneralTransferBox = (props: Props) => {
         </div>
         {props.needAddressBox && props.connected && (
           <CInput
-            placeholder="gravity address (gravity...)"
+            placeholder={props.AddressBoxPlaceholder}
             type="text"
             name="address"
             id="address"

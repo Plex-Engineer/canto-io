@@ -48,8 +48,12 @@ export interface BridgeOutNetworkInfo {
   name: string;
   icon: string;
   tokens: NativeERC20Tokens[];
+  channel: string;
+  endpoint: string;
+  addressBeginning: string;
+  checkAddress: (address: string) => boolean;
 }
-type BridgeOutNetworkTokenData = {
+export type BridgeOutNetworkTokenData = {
   [key in BridgeOutNetworks]: BridgeOutNetworkInfo;
 };
 
@@ -62,10 +66,28 @@ export const allBridgeOutNetworks: BridgeOutNetworkTokenData = {
     name: "gravity bridge",
     icon: "https://raw.githubusercontent.com/Gravity-Bridge/Gravity-Docs/main/assets/Graviton-Grey.svg",
     tokens: gBridgeOutTokens,
+    channel: "channel-0",
+    endpoint: "https://gravitychain.io:1317",
+    addressBeginning: "gravity",
+    checkAddress: function (address) {
+      return (
+        address.slice(0, this.addressBeginning.length) ==
+          this.addressBeginning && address.length == 46
+      );
+    },
   },
   [BridgeOutNetworks.COSMOS_HUB]: {
     name: "cosmos hub",
     icon: cosmosIcon,
     tokens: cosmosHubBridgeOutTokens,
+    channel: "channel-2",
+    endpoint: "https://api-cosmoshub-ia.cosmosia.notional.ventures/",
+    addressBeginning: "cosmos",
+    checkAddress: function (address) {
+      return (
+        address.slice(0, this.addressBeginning.length) ==
+          this.addressBeginning && address.length == 45
+      );
+    },
   },
 };

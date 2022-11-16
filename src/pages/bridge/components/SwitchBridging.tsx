@@ -9,6 +9,10 @@ import { useBridgeStore } from "../stores/gravityStore";
 import LoadingBlip from "./LoadingBlip";
 import down from "assets/down.svg";
 import { StyledPopup } from "./TokenSelect";
+import NetworksModal from "./networksModal";
+import { allBridgeOutNetworks } from "../config/gravityBridgeTokens";
+import { useTokenStore } from "../stores/tokenStore";
+import { useRef } from "react";
 
 interface Props {
   left: {
@@ -27,10 +31,12 @@ interface Props {
   };
 }
 const SwitchBridging = (props: Props) => {
+  const networkSelectRef = useRef(null);
   const [transactionType, SetTransactionType] = useBridgeStore((state) => [
     state.transactionType,
     state.setTransactionType,
   ]);
+  const setBridgeOutNetwork = useTokenStore().setBridgeOutNetwork;
   return (
     <Styled>
       <div
@@ -82,7 +88,7 @@ const SwitchBridging = (props: Props) => {
             <Text className="name" type="text" style={{ zIndex: "1000" }}>
               {props.right.name}
             </Text>
-            <img src={down} alt="" />
+            {props.right.selectable ? <img src={down} alt="" /> : null}
           </div>
         </div>
       </div>
@@ -98,6 +104,7 @@ const SwitchBridging = (props: Props) => {
           onClick={() => SetTransactionType("Convert")}
         >
           <StyledPopup
+            ref={networkSelectRef}
             overlayStyle={{ zIndex: 1000 }}
             arrow={false}
             trigger={
@@ -108,7 +115,6 @@ const SwitchBridging = (props: Props) => {
                     width: "50%",
                     marginLeft: "50%",
                     marginTop: "25%",
-                    backgroundColor: "red",
                     opacity: "0.2",
                   }}
                 ></div>
@@ -117,37 +123,23 @@ const SwitchBridging = (props: Props) => {
               )
             }
           >
-            <StyledPPP>
-              <p>hkljjlkhkjhjkhkj</p>
-              <p>hkljjlkhkjhjkhkj</p>
-              <p>hkljjlkhkjhjkhkj</p>
-              <p>hkljjlkhkjhjkhkj</p>
-              <img src={props.right.icon} />
-            </StyledPPP>
+            <NetworksModal
+              networks={allBridgeOutNetworks}
+              onClose={(network) => {
+                if (networkSelectRef != null) {
+                  //@ts-ignore
+                  networkSelectRef.current?.close();
+                }
+                setBridgeOutNetwork(network ?? 0);
+              }}
+            />
           </StyledPopup>
         </div>
       </div>
     </Styled>
   );
 };
-const StyledPPP = styled.div`
-  z-index: 500;
-  width: 13rem;
-  display: flex;
-  flex-direction: column;
-  p {
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 21px;
-    letter-spacing: -0.03em;
-    color: var(--primary-color);
-  }
-  span {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-`;
+
 const Styled = styled.div`
   width: 34rem;
   max-width: 34rem;
