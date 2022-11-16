@@ -73,26 +73,17 @@ const SwitchBridging = (props: Props) => {
             height={props.right.height ?? 42}
             onClick={() => SetTransactionType("Convert")}
           />
-          <StyledPopup
-            overlayStyle={{ zIndex: 1000 }}
-            trigger={
-              <div style={{ gap: "0.3rem", display: "flex", zIndex: "10000" }}>
-                <Text className="name" type="text" style={{ zIndex: "1000" }}>
-                  {props.right.name}
-                </Text>
-                <img src={down} alt="" />
-              </div>
-            }
-            onClose={() => {}}
+          <div
+            style={{
+              gap: "0.3rem",
+              display: "flex",
+            }}
           >
-            <StyledPPP>
-              <p>hkljjlkhkjhjkhkj</p>
-              <p>hkljjlkhkjhjkhkj</p>
-              <p>hkljjlkhkjhjkhkj</p>
-              <p>hkljjlkhkjhjkhkj</p>
-              <img src={props.right.icon} />
-            </StyledPPP>
-          </StyledPopup>
+            <Text className="name" type="text" style={{ zIndex: "1000" }}>
+              {props.right.name}
+            </Text>
+            <img src={down} alt="" />
+          </div>
         </div>
       </div>
 
@@ -105,16 +96,45 @@ const SwitchBridging = (props: Props) => {
         <div
           className={`right ${transactionType == "Convert" ? "active" : ""}`}
           onClick={() => SetTransactionType("Convert")}
-        ></div>
+        >
+          <StyledPopup
+            overlayStyle={{ zIndex: 1000 }}
+            arrow={false}
+            trigger={
+              transactionType == "Convert" ? (
+                <div
+                  style={{
+                    height: "50%",
+                    width: "50%",
+                    marginLeft: "50%",
+                    marginTop: "25%",
+                    backgroundColor: "red",
+                    opacity: "0.2",
+                  }}
+                ></div>
+              ) : (
+                <></>
+              )
+            }
+          >
+            <StyledPPP>
+              <p>hkljjlkhkjhjkhkj</p>
+              <p>hkljjlkhkjhjkhkj</p>
+              <p>hkljjlkhkjhjkhkj</p>
+              <p>hkljjlkhkjhjkhkj</p>
+              <img src={props.right.icon} />
+            </StyledPPP>
+          </StyledPopup>
+        </div>
       </div>
     </Styled>
   );
 };
 const StyledPPP = styled.div`
   z-index: 500;
+  width: 13rem;
   display: flex;
   flex-direction: column;
-  width: 3100px;
   p {
     font-size: 16px;
     font-weight: 500;
@@ -171,7 +191,7 @@ const Styled = styled.div`
 
   .left,
   .right {
-    pointer-events: fill;
+    /* pointer-events: fill; */
 
     width: 100%;
     height: 100%;
