@@ -7,24 +7,36 @@ import ImageButton from "global/components/ImageButton";
 import { Text } from "global/packages/src";
 import { useBridgeStore } from "../stores/gravityStore";
 import LoadingBlip from "./LoadingBlip";
+import down from "assets/down.svg";
+import { StyledPopup } from "./TokenSelect";
+import NetworksModal from "./networksModal";
+import { allBridgeOutNetworks } from "../config/gravityBridgeTokens";
+import { useTokenStore } from "../stores/tokenStore";
+import { useRef } from "react";
 
 interface Props {
   left: {
     icon: string;
     name: string;
     height?: number;
+    //selectable indicates selectable bridge in network
+    selectable?: boolean;
   };
   right: {
     icon: string;
     name: string;
     height?: number;
+    //selectable indicates selectable bridge out network
+    selectable?: boolean;
   };
 }
 const SwitchBridging = (props: Props) => {
+  const networkSelectRef = useRef(null);
   const [transactionType, SetTransactionType] = useBridgeStore((state) => [
     state.transactionType,
     state.setTransactionType,
   ]);
+  const setBridgeOutNetwork = useTokenStore().setBridgeOutNetwork;
   return (
     <Styled>
       <div
@@ -67,9 +79,17 @@ const SwitchBridging = (props: Props) => {
             height={props.right.height ?? 42}
             onClick={() => SetTransactionType("Convert")}
           />
-          <Text className="name" type="text">
-            {props.right.name}
-          </Text>
+          <div
+            style={{
+              gap: "0.3rem",
+              display: "flex",
+            }}
+          >
+            <Text className="name" type="text" style={{ zIndex: "1000" }}>
+              {props.right.name}
+            </Text>
+            {props.right.selectable ? <img src={down} alt="" /> : null}
+          </div>
         </div>
       </div>
 
@@ -82,7 +102,39 @@ const SwitchBridging = (props: Props) => {
         <div
           className={`right ${transactionType == "Convert" ? "active" : ""}`}
           onClick={() => SetTransactionType("Convert")}
-        />
+        >
+          <StyledPopup
+            ref={networkSelectRef}
+            overlayStyle={{ zIndex: 1000 }}
+            arrow={false}
+            trigger={
+              transactionType == "Convert" ? (
+                <div
+                  style={{
+                    height: "50%",
+                    width: "50%",
+                    marginLeft: "50%",
+                    marginTop: "25%",
+                    opacity: "0.2",
+                  }}
+                ></div>
+              ) : (
+                <></>
+              )
+            }
+          >
+            <NetworksModal
+              networks={allBridgeOutNetworks}
+              onClose={(network) => {
+                if (networkSelectRef != null) {
+                  //@ts-ignore
+                  networkSelectRef.current?.close();
+                }
+                setBridgeOutNetwork(network ?? 0);
+              }}
+            />
+          </StyledPopup>
+        </div>
       </div>
     </Styled>
   );
@@ -131,7 +183,7 @@ const Styled = styled.div`
 
   .left,
   .right {
-    pointer-events: fill;
+    /* pointer-events: fill; */
 
     width: 100%;
     height: 100%;
