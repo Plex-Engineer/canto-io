@@ -87,7 +87,7 @@ const Governance = () => {
             fontFamily: "Silkscreen",
             textDecoration: "underline",
           }}
-          href="https://staking.canto.io/"
+          href="/staking"
         >
           stake
         </a>{" "}
