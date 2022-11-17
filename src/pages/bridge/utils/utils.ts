@@ -5,6 +5,7 @@ import { gravityabi } from "../config/gravityBridgeAbi";
 import { ADDRESSES } from "global/config/addresses";
 import { TOKENS } from "global/config/tokenInfo";
 import { DepositEvent } from "../config/interfaces";
+import { allBridgeOutNetworks } from "../config/gravityBridgeTokens";
 
 const globalFetchOptions = {
   method: "GET",
@@ -155,13 +156,18 @@ async function getCompletedBridgeInEvents(cantoAccount?: string) {
 }
 
 export async function getBridgeOutTransactions(cantoAccount?: string) {
+  const bridgeOutNetworks = Object.keys(allBridgeOutNetworks).map(
+    (key, network) =>
+      allBridgeOutNetworks[network as keyof typeof allBridgeOutNetworks].channel
+  );
   const bridgeOutData = [];
   const IBC = await (
     await fetch(
       CantoMainnet.cosmosAPIEndpoint +
         "/cosmos/tx/v1beta1/txs?events=fungible_token_packet.sender%3D'" +
         cantoAccount +
-        "'&acknowledge_packet.packet_src_channel%3D'channel-0'",
+        "'",
+      // "'&acknowledge_packet.packet_src_channel%3D'channel-0'",
       globalFetchOptions
     )
   ).json();
@@ -171,18 +177,29 @@ export async function getBridgeOutTransactions(cantoAccount?: string) {
     const allEvents = tx.logs.map((log) => log.events).flat();
     for (const event of allEvents) {
       if (event.type === "fungible_token_packet") {
-        const denom = event.attributes.find(
+        const denom: string = event.attributes.find(
           (att: any) => att.key === "denom"
         )?.value;
         const amount = event.attributes.find(
           (att: any) => att.key === "amount"
         )?.value;
-        const tokenAddress = denom.split("/")[2];
-        const token =
-          tokenAddress == "uatom"
-            ? findGravityToken(tokenAddress)
-            : findGravityToken(tokenAddress.slice(7));
-        bridgeOutData.push({ token, amount, tx });
+        //sometimes other transaction included with different sender (check here for sender)
+        const sender = event.attributes.find(
+          (att: any) => att.key === "sender"
+        )?.value;
+        //"transfer/channel-0/gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" ~ return of denom
+        const [type, channel, tokenAddress] = denom.split("/");
+        if (
+          type == "transfer" &&
+          bridgeOutNetworks.includes(channel) &&
+          sender == cantoAccount
+        ) {
+          const token =
+            tokenAddress == "uatom"
+              ? findGravityToken(tokenAddress)
+              : findGravityToken(tokenAddress.slice(7));
+          bridgeOutData.push({ token, amount, tx });
+        }
       }
     }
   }
