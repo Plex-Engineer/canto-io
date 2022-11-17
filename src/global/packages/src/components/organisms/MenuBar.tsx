@@ -76,6 +76,7 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
                 }`}
                 to={page.link}
                 key={page.name}
+                onClick={() => setIsOpen(false)}
               >
                 <Text2 size="text3" type="title" align="left" id={page.name}>
                   {"0" + (idx + 1) + " " + page.name}
