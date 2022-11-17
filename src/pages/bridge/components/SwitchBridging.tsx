@@ -85,7 +85,7 @@ const SwitchBridging = (props: Props) => {
               display: "flex",
             }}
           >
-            <Text className="name" type="text" style={{ zIndex: "1000" }}>
+            <Text className="name" type="text">
               {props.right.name}
             </Text>
             {props.right.selectable ? <img src={down} alt="" /> : null}
