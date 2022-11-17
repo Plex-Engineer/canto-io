@@ -17,14 +17,7 @@ import {
   newBorrowAmount,
 } from "../utils/borrowRepayLimits";
 import React from "react";
-
-export enum TransactionType {
-  SUPPLY,
-  WITHDRAW,
-  BORROW,
-  REPAY,
-  ENABLE,
-}
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 interface IDetailProps {
   borrowLimit: BigNumber;
@@ -32,7 +25,7 @@ interface IDetailProps {
   stringAmount: string;
   token: UserLMTokenDetails;
   isBorrowing: boolean;
-  transactionType: TransactionType;
+  transactionType: CantoTransactionType;
   borrowBalance: BigNumber;
 }
 
@@ -71,13 +64,13 @@ const Details = ({
   const cBorrowLimitHypo = formatUnits(
     isBorrowing
       ? newBorrowAmount(
-          transactionType == TransactionType.BORROW,
+          transactionType == CantoTransactionType.BORROW,
           amount,
           borrowBalance,
           token.price
         )
       : newBorrowLimit(
-          transactionType == TransactionType.SUPPLY,
+          transactionType == CantoTransactionType.SUPPLY,
           amount,
           token.collateralFactor,
           token.price,
@@ -88,14 +81,14 @@ const Details = ({
 
   const cBorrowLimitUsedHypo = isBorrowing
     ? expectedBorrowLimitUsedInBorrowOrRepay(
-        transactionType == TransactionType.BORROW,
+        transactionType == CantoTransactionType.BORROW,
         amount,
         borrowBalance,
         token.price,
         borrowLimit
       ) * 100
     : expectedBorrowLimitUsedInSupplyOrWithdraw(
-        transactionType == TransactionType.SUPPLY,
+        transactionType == CantoTransactionType.SUPPLY,
         amount,
         token.collateralFactor,
         token.price,
@@ -221,4 +214,4 @@ const LimitBar = ({ progress }: LimitBarProps) => {
   );
 };
 
-export { Details, LimitBar, TransactionType as TrasanctionType };
+export { Details, LimitBar };

@@ -61,7 +61,7 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
   ]);
 
   const { state: addAllowance, send: addAllowanceSend } = useSetAllowance({
-    type: "Enable",
+    type: CantoTransactionType.ENABLE,
     address: props.pair.basePairInfo.address,
     amount: "-1",
     // TODO? : needs access of iconpair

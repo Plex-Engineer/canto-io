@@ -4,7 +4,7 @@ import { TransactionStatus } from "@usedapp/core";
 import { InputState, ReactiveButton } from "../components/reactiveButton";
 import { truncateNumber } from "global/utils/utils";
 import LendingField from "../components/lendingField";
-import { Details, TrasanctionType } from "../components/BorrowLimits";
+import { Details } from "../components/BorrowLimits";
 import useModalStore from "pages/lending/stores/useModals";
 import {
   UserLMPosition,
@@ -112,7 +112,7 @@ const BorrowModal = ({ position, onClose }: IProps) => {
         <LendingField
           token={token}
           value={userAmount}
-          transactionType={TrasanctionType.BORROW}
+          transactionType={CantoTransactionType.BORROW}
           canDoMax={false}
           onMax={() => {
             if (inputState != InputState.ENABLE) {
@@ -139,7 +139,7 @@ const BorrowModal = ({ position, onClose }: IProps) => {
         />
         {/* 1st tab */}
         <Details
-          transactionType={TrasanctionType.BORROW}
+          transactionType={CantoTransactionType.BORROW}
           stringAmount={truncateNumber(
             userAmount,
             token.data.underlying.decimals
@@ -152,7 +152,7 @@ const BorrowModal = ({ position, onClose }: IProps) => {
         />
 
         <ReactiveButton
-          transactionType={TrasanctionType.BORROW}
+          transactionType={CantoTransactionType.BORROW}
           state={inputState}
           token={token}
           amount={userAmount}
@@ -182,7 +182,7 @@ const BorrowModal = ({ position, onClose }: IProps) => {
         <LendingField
           token={token}
           value={userAmount}
-          transactionType={TrasanctionType.REPAY}
+          transactionType={CantoTransactionType.REPAY}
           canDoMax={true}
           //repay
           onMax={() => {
@@ -205,7 +205,7 @@ const BorrowModal = ({ position, onClose }: IProps) => {
         />
         {/* 2nd tab */}
         <Details
-          transactionType={TrasanctionType.REPAY}
+          transactionType={CantoTransactionType.REPAY}
           stringAmount={truncateNumber(
             userAmount,
             token.data.underlying.decimals
@@ -227,8 +227,8 @@ const BorrowModal = ({ position, onClose }: IProps) => {
           amount={userAmount}
           transactionType={
             inputState != InputState.ENABLE
-              ? TrasanctionType.REPAY
-              : TrasanctionType.ENABLE
+              ? CantoTransactionType.REPAY
+              : CantoTransactionType.ENABLE
           }
         />
 

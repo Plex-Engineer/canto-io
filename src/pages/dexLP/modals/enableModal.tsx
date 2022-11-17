@@ -63,21 +63,21 @@ interface Props {
 
 const EnableModal = ({ activePair, chainId, onClose }: Props) => {
   const { state: addAllowanceA, send: addAllowanceASend } = useSetAllowance({
-    type: "Enable",
+    type: CantoTransactionType.ENABLE,
     address: activePair.basePairInfo.token1.address,
     amount: "-1",
     icon: activePair.basePairInfo.token1.icon,
     name: activePair.basePairInfo.token1.symbol,
   });
   const { state: addAllowanceB, send: addAllowanceBSend } = useSetAllowance({
-    type: "Enable",
+    type: CantoTransactionType.ENABLE,
     address: activePair.basePairInfo.token2.address,
     amount: "-1",
     icon: activePair.basePairInfo.token2.icon,
     name: activePair.basePairInfo.token2.symbol,
   });
   const { state: addLPAllowance, send: addLPAllowanceSend } = useSetAllowance({
-    type: "Enable",
+    type: CantoTransactionType.ENABLE,
     address: activePair.basePairInfo.address,
     amount: "-1",
     // TODO? : needs access of iconpair

@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Notification } from "@usedapp/core";
 import { toast } from "react-toastify";
+import { transactionStatusActions } from "global/utils/utils";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 export const useToast = (
   setIsMobile: React.Dispatch<React.SetStateAction<boolean>>,
@@ -49,37 +51,15 @@ export const useToast = (
         const isSuccesful = noti.type != "transactionFailed";
         //@ts-ignore
         const msg: Details = JSON.parse(noti?.transactionName);
-        switch (msg.type) {
-          case "Supply":
-            msg.type = "supplied";
-            break;
-          case "Borrow":
-            msg.type = "borrowed";
-            break;
-          case "Withdraw":
-            msg.type = "withdrawn";
-            break;
-          case "Repay":
-            msg.type = "repaid";
-            break;
-          case "Collateralize":
-            msg.type = "collateralized";
-            break;
-          case "Decollateralize":
-            msg.type = "decollateralized";
-            break;
-          case "Enable":
-            msg.type = "enabled";
-            break;
-          case "Claim":
-            msg.type = "claimed";
-            break;
-        }
-
-        const errormsg = isSuccesful ? "" : "not";
-        const msged =
-          (Number(msg.amount) > 0 ? Number(msg.amount).toFixed(2) : "") +
-          ` ${msg.name} has ${errormsg} been ${msg.type}`;
+        const msgName =
+          Number(msg.amount) > 0
+            ? `${Number(msg.amount).toFixed(2)} ${msg.name}`
+            : msg.name;
+        const toastMsg = transactionStatusActions(
+          Number(msg.type),
+          msgName
+        ).postAction;
+        const msged = `${isSuccesful ? "" : "un"}successfully ${toastMsg}`;
 
         toast(msged, {
           position: "top-right",

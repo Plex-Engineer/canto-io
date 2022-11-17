@@ -43,7 +43,7 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
   const { state: addLiquidityState, send: addLiquiditySend } = useAddLiquidity(
     props.chainId,
     {
-      type: "add",
+      type: CantoTransactionType.ADD_LIQUIDITY,
       address: "",
       amount: "-1",
       icon: {
@@ -58,7 +58,7 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
   );
   const { state: addLiquidityCANTOState, send: addLiquidityCANTOSend } =
     useAddLiquidityCANTO(props.chainId, {
-      type: "add",
+      type: CantoTransactionType.ADD_LIQUIDITY,
       address: "",
       amount: "-1",
       icon: {
@@ -78,7 +78,7 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
     address: props.pair.basePairInfo.cLPaddress,
     icon: props.pair.basePairInfo.token1.icon,
     amount: "-1",
-    type: "supplied",
+    type: CantoTransactionType.SUPPLY,
   });
 
   const [isToken1Canto, isToken2Canto] = checkForCantoInPair(

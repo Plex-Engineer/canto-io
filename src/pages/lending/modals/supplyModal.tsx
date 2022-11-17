@@ -1,7 +1,7 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import LendingField from "../components/lendingField";
 import { useState, useEffect } from "react";
-import { Details, TrasanctionType } from "../components/BorrowLimits";
+import { Details } from "../components/BorrowLimits";
 import { TransactionStatus } from "@usedapp/core";
 import { InputState, ReactiveButton } from "../components/reactiveButton";
 import { truncateNumber } from "global/utils/utils";
@@ -104,7 +104,7 @@ const SupplyModal = ({ position, onClose }: IProps) => {
         <LendingField
           token={token}
           value={userAmount}
-          transactionType={TrasanctionType.SUPPLY}
+          transactionType={CantoTransactionType.SUPPLY}
           canDoMax={true}
           onMax={() => {
             if (inputState != InputState.ENABLE) {
@@ -126,7 +126,7 @@ const SupplyModal = ({ position, onClose }: IProps) => {
         />
         {/* 1st tab */}
         <Details
-          transactionType={TrasanctionType.SUPPLY}
+          transactionType={CantoTransactionType.SUPPLY}
           stringAmount={truncateNumber(
             userAmount,
             token.data.underlying.decimals
@@ -144,8 +144,8 @@ const SupplyModal = ({ position, onClose }: IProps) => {
           }}
           transactionType={
             inputState != InputState.ENABLE
-              ? TrasanctionType.SUPPLY
-              : TrasanctionType.ENABLE
+              ? CantoTransactionType.SUPPLY
+              : CantoTransactionType.ENABLE
           }
           state={inputState}
           max={isMax}
@@ -178,7 +178,7 @@ const SupplyModal = ({ position, onClose }: IProps) => {
         <LendingField
           token={token}
           value={userAmount}
-          transactionType={TrasanctionType.WITHDRAW}
+          transactionType={CantoTransactionType.WITHDRAW}
           canDoMax={isMax}
           //Withdraw
           onMax={() => {
@@ -205,7 +205,7 @@ const SupplyModal = ({ position, onClose }: IProps) => {
         />
         {/* 2nd tab */}
         <Details
-          transactionType={TrasanctionType.WITHDRAW}
+          transactionType={CantoTransactionType.WITHDRAW}
           icon={token.data.underlying.icon}
           token={token}
           stringAmount={truncateNumber(
@@ -225,7 +225,7 @@ const SupplyModal = ({ position, onClose }: IProps) => {
           token={token}
           isEth={token.data.symbol == "cCANTO"}
           amount={userAmount}
-          transactionType={TrasanctionType.WITHDRAW}
+          transactionType={CantoTransactionType.WITHDRAW}
         />
 
         {WalletForWithdraw()}

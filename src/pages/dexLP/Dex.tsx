@@ -7,7 +7,11 @@ import useModals, { ModalType } from "./hooks/useModals";
 import { ModalManager } from "./modals/ModalManager";
 import { ethers } from "ethers";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import { noteSymbol, truncateNumber } from "global/utils/utils";
+import {
+  noteSymbol,
+  transactionStatusActions,
+  truncateNumber,
+} from "global/utils/utils";
 import useLPTokenData from "./hooks/useLPTokenData";
 import useUserLPTokenInfo from "./hooks/useUserLPTokenData";
 import { LPPairInfo, UserLPPairInfo } from "./config/interfaces";
@@ -15,6 +19,7 @@ import { formatUnits } from "ethers/lib/utils";
 import { DexContainer } from "./components/Styled";
 import FadeIn from "react-fade-in";
 import { Text } from "global/packages/src";
+import { Details } from "pages/lending/hooks/useTransaction";
 const Dex = () => {
   // Mixpanel.events.pageOpened("Dex Market", '');
 
@@ -65,22 +70,8 @@ const Dex = () => {
         const isSuccesful = noti.type != "transactionFailed";
         //@ts-ignore
         const msg: Details = JSON.parse(noti?.transactionName);
-        switch (msg.type) {
-          case "add":
-            msg.type = "added";
-            break;
-          case "remove":
-            msg.type = "removed";
-            break;
-          case "Enable":
-            msg.type = "enabled";
-            break;
-        }
-
-        const errormsg = isSuccesful ? "" : "not";
-        const msged =
-          (Number(msg.amount) > 0 ? Number(msg.amount).toFixed(2) : "") +
-          ` ${msg.name} has ${errormsg} been ${msg.type}`;
+        const actionMsg = transactionStatusActions(Number(msg.type)).postAction;
+        const msged = `${isSuccesful ? "" : "un"}successfully ${actionMsg}`;
 
         toast(msged, {
           position: "top-right",
@@ -157,32 +148,15 @@ const Dex = () => {
               ) {
                 //@ts-ignore
                 const msg: Details = JSON.parse(item?.transactionName);
-
-                switch (msg.type) {
-                  case "add":
-                    msg.type = "adding";
-                    break;
-                  case "remove":
-                    msg.type = "removing";
-                    break;
-                  case "Enable":
-                    msg.type = "enabling";
-                    break;
-                }
+                const actionMsg = transactionStatusActions(
+                  Number(msg.type)
+                ).inAction;
                 return (
                   <TransactionRow
                     key={item.submittedAt}
                     icons={msg.icon}
                     name={msg.name.toLowerCase()}
-                    status={
-                      msg.type +
-                      " " +
-                      (Number(msg.amount) > 0
-                        ? Number(msg.amount).toFixed(2)
-                        : "") +
-                      " " +
-                      msg.name
-                    }
+                    status={actionMsg}
                     date={new Date(item.submittedAt)}
                   />
                 );

@@ -1,18 +1,18 @@
 import { BigNumber } from "ethers";
-import { TransactionType } from "../components/BorrowLimits";
+import { CantoTransactionType } from "global/config/transactionTypes";
 import { InputState } from "../components/reactiveButton";
 
-export function showText(transactionType: TransactionType) {
+export function showText(transactionType: CantoTransactionType) {
   switch (transactionType) {
-    case TransactionType.SUPPLY:
+    case CantoTransactionType.SUPPLY:
       return "supply";
-    case TransactionType.BORROW:
+    case CantoTransactionType.BORROW:
       return "borrow";
-    case TransactionType.REPAY:
+    case CantoTransactionType.REPAY:
       return "repay";
-    case TransactionType.WITHDRAW:
+    case CantoTransactionType.WITHDRAW:
       return "withdraw";
-    case TransactionType.ENABLE:
+    case CantoTransactionType.ENABLE:
       return "enable";
     default:
       return "enable";
@@ -21,7 +21,7 @@ export function showText(transactionType: TransactionType) {
 //returns text for the button and if it is disabled
 export function getReactiveButtonText(
   inputState: InputState,
-  transactionType: TransactionType,
+  transactionType: CantoTransactionType,
   amount: BigNumber,
   liquidity: BigNumber,
   borrowCap: BigNumber,
@@ -34,13 +34,16 @@ export function getReactiveButtonText(
       return ["enter amount", true];
     case InputState.CONFIRM:
       if (
-        (transactionType == TransactionType.BORROW ||
-          transactionType == TransactionType.WITHDRAW) &&
+        (transactionType == CantoTransactionType.BORROW ||
+          transactionType == CantoTransactionType.WITHDRAW) &&
         liquidity.lt(amount)
       ) {
         return [`no ${tokenSymbol} left`, true];
       }
-      if (transactionType == TransactionType.BORROW && borrowCap.lt(amount)) {
+      if (
+        transactionType == CantoTransactionType.BORROW &&
+        borrowCap.lt(amount)
+      ) {
         return ["borrow cap reached", true];
       }
       return [showText(transactionType), false];
