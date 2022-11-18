@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
+import { CantoTransactionType } from "global/config/transactionTypes";
 import { useState } from "react";
-import { TrasanctionType } from "./BorrowLimits";
 import { UserLMTokenDetails } from "../config/interfaces";
 
 type styleProps = {
@@ -58,7 +58,7 @@ const Max = styled.span`
 type Props = {
   balance: string;
   token: UserLMTokenDetails;
-  transactionType: TrasanctionType;
+  transactionType: CantoTransactionType;
   onChange: (value: string) => void;
   onMax: () => void;
   value: string;

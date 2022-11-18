@@ -67,14 +67,14 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
   const routerAddress = getRouterAddress(props.chainId);
 
   const { state: addAllowanceA, send: addAllowanceASend } = useSetAllowance({
-    type: "Enable",
+    type: CantoTransactionType.ENABLE,
     address: props.pair.basePairInfo.token1.address,
     amount: "-1",
     icon: props.pair.basePairInfo.token1.icon,
     name: props.pair.basePairInfo.token1.symbol,
   });
   const { state: addAllowanceB, send: addAllowanceBSend } = useSetAllowance({
-    type: "Enable",
+    type: CantoTransactionType.ENABLE,
     address: props.pair.basePairInfo.token2.address,
     amount: "-1",
     icon: props.pair.basePairInfo.token2.icon,

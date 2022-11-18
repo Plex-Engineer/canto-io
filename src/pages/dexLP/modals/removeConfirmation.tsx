@@ -41,7 +41,7 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
   );
   const { state: removeLiquidityState, send: removeLiquiditySend } =
     useRemoveLiquidity(props.chainId, {
-      type: "remove",
+      type: CantoTransactionType.REMOVE_LIQUIDITY,
       address: "",
       amount: "-1",
       icon: {
@@ -55,7 +55,7 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
     });
   const { state: removeLiquidityCANTOState, send: removeLiquidityCANTOSend } =
     useRemoveLiquidityCANTO(props.chainId, {
-      type: "remove",
+      type: CantoTransactionType.REMOVE_LIQUIDITY,
       address: "",
       amount: "-1",
       icon: {

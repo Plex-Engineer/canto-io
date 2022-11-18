@@ -1,4 +1,3 @@
-import { TransactionType } from "./BorrowLimits";
 import { TransactionStatus } from "@usedapp/core";
 import { BigNumber } from "ethers";
 import {
@@ -17,7 +16,8 @@ import { UserLMTokenDetails } from "../config/interfaces";
 import { parseUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
 import { PrimaryButton } from "global/packages/src";
-import { getReactiveButtonText, showText } from "../utils/modalButtonParams";
+import { getReactiveButtonText } from "../utils/modalButtonParams";
+import { CantoTransactionType } from "global/config/transactionTypes";
 //ENUM
 enum InputState {
   ENABLE,
@@ -30,7 +30,7 @@ interface IButton {
   state: InputState;
   token: UserLMTokenDetails;
   amount: string;
-  transactionType: TransactionType;
+  transactionType: CantoTransactionType;
   max: boolean;
   isEth: boolean;
   onTransaction: (transaction: TransactionStatus) => void;
@@ -58,7 +58,7 @@ const ReactiveButton = ({
     address: token.data.address,
     icon: token.data.underlying.icon,
     amount: amount,
-    type: showText(transactionType),
+    type: transactionType,
   };
   const { state: supplyState, send: supplySend } = useSupply(details);
   const { sendTransaction: supplySendEth, state: supplyStateEth } =
@@ -74,7 +74,7 @@ const ReactiveButton = ({
     address: token.data.underlying.address,
     icon: token.data.underlying.icon,
     amount: amount,
-    type: showText(transactionType),
+    type: CantoTransactionType.ENABLE,
   });
 
   const transaction: TransactionStatus = initTransaction();
@@ -83,17 +83,19 @@ const ReactiveButton = ({
 
   function initTransaction() {
     switch (transactionType) {
-      case TransactionType.SUPPLY:
+      case CantoTransactionType.SUPPLY:
         if (isEth) return supplyStateEth;
         else return supplyState;
-      case TransactionType.BORROW:
+      case CantoTransactionType.BORROW:
         return borrowState;
-      case TransactionType.REPAY:
+      case CantoTransactionType.REPAY:
         if (isEth) return repayStateEth;
         else return repayState;
-      case TransactionType.WITHDRAW:
+      case CantoTransactionType.WITHDRAW:
         return redeemState;
-      case TransactionType.ENABLE:
+      case CantoTransactionType.ENABLE:
+        return enableState;
+      default:
         return enableState;
     }
   }
@@ -120,7 +122,7 @@ const ReactiveButton = ({
             );
           } else {
             switch (transactionType) {
-              case TransactionType.SUPPLY:
+              case CantoTransactionType.SUPPLY:
                 if (isEth) {
                   const gas = max ? parseUnits("1", "17") : BigNumber.from(0);
                   supplySendEth({
@@ -138,7 +140,7 @@ const ReactiveButton = ({
                 );
 
                 break;
-              case TransactionType.BORROW:
+              case CantoTransactionType.BORROW:
                 borrowSend(BNAmount);
                 Mixpanel.events.lendingMarketActions.borrow(
                   token.wallet ?? "",
@@ -147,7 +149,7 @@ const ReactiveButton = ({
                   token.price.toString()
                 );
                 break;
-              case TransactionType.REPAY:
+              case CantoTransactionType.REPAY:
                 if (isEth) {
                   repaySendEth({
                     to: token.data.address,
@@ -170,7 +172,7 @@ const ReactiveButton = ({
                   token.price.toString()
                 );
                 break;
-              case TransactionType.WITHDRAW:
+              case CantoTransactionType.WITHDRAW:
                 redeemSend(BNAmount);
                 Mixpanel.events.lendingMarketActions.withdraw(
                   token.wallet ?? "",

@@ -7,10 +7,10 @@ import { useState } from "react";
 import styled from "@emotion/styled";
 import cantoFullImg from "assets/logo-full.svg";
 import { Link } from "react-router-dom";
-import { Text2 } from "../atoms/Text2";
 import { OutlinedButton } from "../atoms/Button";
 import { addCantoToKeplr } from "../../utils/walletFunctionality";
 import useGlobalModals, { ModalType } from "../../stores/useModals";
+import { Text } from "../atoms/Text";
 interface BurgerMenuProps {
   chainId: number;
   pageList?: Page[];
@@ -20,7 +20,7 @@ interface BurgerMenuProps {
 const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const setModalType = useGlobalModals((state) => state.setModalType);
-
+  const [isHovering, setIsHovering] = useState(false);
   return (
     <Styled isOpen={isOpen}>
       {/* <Styled className={isOpen ? "active" : ""}> */}
@@ -49,16 +49,11 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
       <div className="content">
         <header>
           <img src={cantoFullImg} alt="canto logo" />
-          <div
-            className="menu-btn"
-            // style={{
-            //   transform: isOpen ? "translateX(200px)" : "translateX(0)",
-            // }}
-          >
+          <div className="menu-btn" id="close">
             <ImageButton
               src={closeImg}
-              height={27}
               width={27}
+              height={27}
               alt="menu"
               onClick={() => {
                 setIsOpen(false);
@@ -66,24 +61,38 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
             />
           </div>
         </header>
-        <div className="navlinks">
-          {pageList?.map((page, idx) => {
-            return (
-              <Navlink
-                id={page.name}
-                className={`menu-item ${
-                  currentPage == page.name ? "active" : ""
-                }`}
-                to={page.link}
-                key={page.name}
-                onClick={() => setIsOpen(false)}
-              >
-                <Text2 size="text3" type="title" align="left" id={page.name}>
-                  {"0" + (idx + 1) + " " + page.name}
-                </Text2>
-              </Navlink>
-            );
-          })}
+        <div className="nav-container">
+          <div
+            className="navlinks"
+            onMouseEnter={() => {
+              setIsHovering(true);
+            }}
+            onMouseLeave={() => {
+              setIsHovering(false);
+            }}
+          >
+            {pageList?.map((page, idx) => {
+              return (
+                <Navlink
+                  id={page.name}
+                  className={`menu-item ${
+                    currentPage == page.name && !isHovering
+                      ? "active-bar active"
+                      : currentPage == page.name && isHovering
+                      ? "active-bar "
+                      : ""
+                  }`}
+                  to={page.link}
+                  key={page.name}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Text size="text2" type="title" align="left" id={page.name}>
+                    {"0" + (idx + 1) + " " + page.name}
+                  </Text>
+                </Navlink>
+              );
+            })}
+          </div>
         </div>
         <footer>
           <OutlinedButton
@@ -124,15 +133,31 @@ interface MenuState {
 }
 const Styled = styled.div<MenuState>`
   .menu-btn {
-    transition: all 0.4s;
+    transition: all 0.3s;
     z-index: 200;
-  }
-  .navlinks {
-    flex: 2;
-    /* margin-top: 40%; */
     display: flex;
     flex-direction: column;
     justify-content: center;
+  }
+
+  #close {
+    transition: transform 0.3s;
+
+    &:hover {
+      transform: rotateZ(90deg);
+    }
+  }
+
+  .nav-container {
+    flex: 2;
+    align-items: center;
+    display: flex;
+  }
+  .navlinks {
+    display: flex;
+    width: 100%;
+    height: min-content;
+    flex-direction: column;
   }
   .overlay {
     position: absolute;
@@ -144,7 +169,7 @@ const Styled = styled.div<MenuState>`
     /* backdrop-filter: blur(1px); */
     opacity: ${({ isOpen }) => (isOpen ? "1" : "0")};
 
-    transition: opacity 0.4s;
+    transition: opacity 0.3s ease;
     pointer-events: ${({ isOpen }) => (isOpen ? "all" : "none")};
   }
 
@@ -156,22 +181,34 @@ const Styled = styled.div<MenuState>`
     width: 260px;
     height: 100vh;
     z-index: 100;
-    transition: all 0.4s;
+    transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
   }
 
   .links {
+    margin-top: 1rem;
     text-align: center;
     display: flex;
     flex-direction: column;
     row-gap: 15px;
+
+    font-size: 12px;
+    line-height: 16px;
+
+    letter-spacing: -0.03em;
+    text-decoration-line: underline;
+
+    color: #06fc99;
+
+    opacity: 0.7;
   }
 
   header {
     display: flex;
     justify-content: space-between;
-    padding: 1rem;
+    align-items: flex-end;
+    padding: 28px 24px 28px 2rem;
   }
   footer {
     display: flex;
@@ -185,6 +222,10 @@ const Styled = styled.div<MenuState>`
       transform: scaleY(1);
     }
     opacity: 1;
+  }
+
+  .active-bar {
+    opacity: 1;
     border-right: 4px solid var(--primary-color);
   }
 `;
@@ -193,7 +234,7 @@ const Navlink = styled(Link)`
   display: flex;
   text-align: left;
   width: 100%;
-  padding: 1rem 1.4rem;
+  padding: 1rem 2rem;
   opacity: 0.5;
   position: relative;
   transition: all 0.1s;
@@ -202,6 +243,10 @@ const Navlink = styled(Link)`
     background-color: #01190f;
     opacity: 1;
   } */
+
+  &:hover {
+    opacity: 1;
+  }
   &:hover::before {
     transform: scaleY(1);
   }

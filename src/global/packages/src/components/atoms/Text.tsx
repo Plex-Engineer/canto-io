@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 interface Props {
   type: "title" | "text";
   color?: "white" | "primary";
+  bold?: boolean;
   align?: "left" | "center" | "right";
   size?: "text1" | "text2" | "text3" | "text4" | "title1" | "title2" | "title3";
 }
@@ -29,4 +30,5 @@ export const Text = styled.p<Props>`
   line-height: 140%;
   font-size: ${({ size }) => Mapper.size[size ?? "text2"] + "px"};
   text-align: ${({ align }) => align ?? "center"};
+  font-weight: ${({ bold }) => (bold ? "500" : "400")};
 `;
