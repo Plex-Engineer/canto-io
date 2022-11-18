@@ -8,7 +8,7 @@ import { Details } from "./hooks/useTransaction";
 import { Styled } from "./components/Styled";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { Mixpanel } from "mixpanel";
-import { truncateNumber } from "global/utils/utils";
+import { transactionStatusActions, truncateNumber } from "global/utils/utils";
 import useModalStore from "./stores/useModals";
 import { useLMTokenData } from "./hooks/useLMTokenData";
 import { LMTokenDetails } from "./config/interfaces";
@@ -23,6 +23,7 @@ import { useToast } from "./hooks/useToasts";
 import { SpecialTabs } from "./components/SpecialTabs";
 import { OutlinedButton } from "global/packages/src";
 import FadeIn from "react-fade-in";
+import { CantoTransactionType } from "global/config/transactionTypes";
 const LendingMarket = () => {
   const networkInfo = useNetworkInfo();
   const { notifications } = useNotifications();
@@ -137,47 +138,20 @@ const LendingMarket = () => {
                   ) {
                     //@ts-ignore
                     const msg: Details = JSON.parse(item?.transactionName);
-
-                    switch (msg.type) {
-                      case "Supply":
-                        msg.type = "supplying";
-                        break;
-                      case "Borrow":
-                        msg.type = "borrowing";
-                        break;
-                      case "Withdraw":
-                        msg.type = "withdrawing";
-                        break;
-                      case "Repay":
-                        msg.type = "repaying";
-                        break;
-                      case "Collateralize":
-                        msg.type = "collateralizing";
-                        break;
-                      case "Decollateralize":
-                        msg.type = "decollateralizing";
-                        break;
-                      case "Enable":
-                        msg.type = "enabling";
-                        break;
-                      case "Claim":
-                        msg.type = "claiming";
-                        break;
-                    }
+                    const amount =
+                      Number(msg.amount) > 0
+                        ? `${Number(msg.amount).toFixed(2)} ${msg.name}`
+                        : msg.name;
+                    const actionMsg = transactionStatusActions(
+                      Number(msg.type),
+                      amount
+                    ).inAction;
                     return (
                       <TransactionRow
                         key={msg.name + msg.type}
                         icon={msg.icon}
                         name={msg.name.toLowerCase()}
-                        status={
-                          msg.type +
-                          " " +
-                          (Number(msg.amount) > 0
-                            ? Number(msg.amount).toFixed(2)
-                            : "") +
-                          " " +
-                          msg.name
-                        }
+                        status={actionMsg}
                         date={new Date(item.submittedAt)}
                       />
                     );

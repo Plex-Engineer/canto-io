@@ -3,6 +3,7 @@ import { useContractFunction } from "@usedapp/core";
 import { CantoTestnet } from "global/config/networks";
 import { ERC20Abi, routerAbi } from "global/config/abi";
 import { ADDRESSES } from "global/config/addresses";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 interface Details {
   address: string;
@@ -14,7 +15,7 @@ interface Details {
       }
     | string;
   amount: string;
-  type: string;
+  type: CantoTransactionType;
 }
 
 export function getRouterAddress(chainId: number | undefined) {
