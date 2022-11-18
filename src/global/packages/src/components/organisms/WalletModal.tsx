@@ -55,7 +55,7 @@ const WalletModal = () => {
             style={{ cursor: "pointer" }}
           >
             {account
-              ? account.slice(0, 5) + "..." + account.slice(-4)
+              ? account.slice(0, 6) + "..." + account.slice(-4)
               : "retrieving wallet"}{" "}
             <img
               src={CopyIcon}
@@ -101,9 +101,6 @@ const WalletModal = () => {
 
       <OutlinedButton
         height="small"
-        style={{
-          width: "90%",
-        }}
         onClick={() => {
           deactivate();
           window.location.reload();
@@ -116,7 +113,6 @@ const WalletModal = () => {
 };
 
 const Styled = styled.div`
-  height: 232px;
   width: 287px;
   background-color: #d9d9d933;
   border-radius: 4px;
@@ -128,8 +124,9 @@ const Styled = styled.div`
   gap: 1rem;
   animation: fadein 0.2s;
   position: fixed;
-  top: 3.5rem;
+  top: 4.75rem;
   right: 1rem;
+  padding: 24px 16px;
   @keyframes fadein {
     0% {
       opacity: 0;
@@ -149,18 +146,21 @@ const Styled = styled.div`
     align-items: center;
     gap: 0.4rem;
   }
+  .address {
+    margin-top: -8px;
+  }
   .address p {
     font-family: "Silkscreen";
-    margin-bottom: 10px;
   }
 
   .row {
     display: flex;
-    width: 90%;
+    width: 100%;
     justify-content: space-between;
   }
+
   button {
-    margin: 10px 0;
+    width: 100%;
   }
 `;
 

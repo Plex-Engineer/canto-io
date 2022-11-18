@@ -51,12 +51,26 @@ export const NavBar = (props: Props) => {
           />
           <a id="logo" href="/">
             <img src={logo} />
-            <Glitch title={"canto"} />
+            <div
+              style={{
+                transform: "translateY(-2px)",
+              }}
+            >
+              <Glitch title={"canto"} />
+            </div>
           </a>
         </div>
-        <Text id="title" type="title">
+
+        <Text
+          id="title"
+          type="title"
+          style={{
+            transform: "translateY(-3px)",
+          }}
+        >
           {currentPage}
         </Text>
+
         <ConnectWallet {...props} />
         <ModalManager chainId={chainId} />
       </nav>
@@ -99,9 +113,10 @@ const Container = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     align-items: center;
-    padding: 1rem;
+    justify-content: center;
     transition: all 0.1s ease-in-out;
-
+    height: 80px;
+    padding: 0 1rem;
     .menu {
       display: flex;
     }
@@ -110,7 +125,6 @@ const Container = styled.div`
       justify-content: end;
     }
     #title {
-      font-family: Silkscreen;
       font-size: 44px;
       letter-spacing: -0.08em;
     }
