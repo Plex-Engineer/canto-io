@@ -22,7 +22,13 @@ const Style = styled.button`
 `;
 const ImageButton = ({ onClick, alt, src, height, width }: Props) => {
   return (
-    <Style onClick={onClick}>
+    <Style
+      onClick={onClick}
+      style={{
+        height,
+        width,
+      }}
+    >
       <img src={src} alt={alt} height={height} width={width} />
     </Style>
   );

@@ -51,7 +51,9 @@ const CollatModal = (props: Props) => {
     address: token.data.address ?? "",
     icon: token.data.underlying.icon ?? "",
     amount: "0",
-    type: props.decollateralize ? "Decollateralize" : "Collateralize",
+    type: props.decollateralize
+      ? CantoTransactionType.DECOLLATERLIZE
+      : CantoTransactionType.COLLATERALIZE,
   };
 
   const { state: enterState, send: enterSend } = useEnterMarkets(details);

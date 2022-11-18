@@ -12,7 +12,6 @@ import {
   UserGravityBridgeTokens,
   UserNativeTokens,
 } from "../config/interfaces";
-import { checkGravityAddress } from "./bridgeConfirmations";
 
 const increaseAllowanceActions = transactionStatusActions(
   CantoTransactionType.INCREASE_ALLOWANCE

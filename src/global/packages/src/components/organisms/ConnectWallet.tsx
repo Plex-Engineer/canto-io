@@ -1,4 +1,4 @@
-import { OutlinedButton } from "global/packages/src";
+import { OutlinedButton, Text } from "global/packages/src";
 import cantoIMG from "assets/logo.svg";
 import ethIMG from "assets/icons/ETH.svg";
 import { formatBigNumber } from "../../utils/formatNumbers";
@@ -14,24 +14,21 @@ interface Props {
   chainId: number;
   onClick: () => void;
 }
-const ConnectWallet = ({ isConnected, balance, currency, onClick }: Props) => {
+const ConnectWallet = ({ balance, currency, onClick }: Props) => {
   const { account } = useEthers();
   return (
     <div className="wallet">
       {account != null ? (
         <Popup
           arrow={false}
-          offsetY={8}
+          offsetY={18}
           closeOnEscape
           position="bottom right"
           trigger={
             <div>
               <OutlinedButton
-                onClick={() => {
-                  // setIsModalOpen(true)
-                }}
                 style={{
-                  fontSize: "14px",
+                  fontSize: "12px",
                   fontWeight: "500",
                   letterSpacing: "-0.03em",
                   borderRadius: "4px",
@@ -76,14 +73,13 @@ const ConnectWallet = ({ isConnected, balance, currency, onClick }: Props) => {
         <OutlinedButton
           onClick={onClick}
           style={{
-            fontSize: "14px",
-            fontWeight: "500",
-            letterSpacing: "-0.03em",
             borderRadius: "4px",
             height: "32px",
           }}
         >
-          connect <span className="hide-on-mobile">&nbsp;wallet</span>
+          <Text type="text" size="text4" bold>
+            connect<span className="hide-on-mobile">&nbsp;wallet</span>
+          </Text>
         </OutlinedButton>
       )}
     </div>

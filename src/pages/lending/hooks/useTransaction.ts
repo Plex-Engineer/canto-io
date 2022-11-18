@@ -13,6 +13,7 @@ import {
 } from "global/config/abi";
 import { ADDRESSES } from "global/config/addresses";
 import { TOKENS } from "global/config/tokenInfo";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 //Ex : DAI 50
 //On enter market : Collateralizing DAI : DAI is being collateralized: DAI has been collateralized
@@ -108,7 +109,7 @@ export function useClaim(address: string) {
         name: "CANTO",
         icon: TOKENS.cantoMainnet.CANTO.icon,
         amount: -1,
-        type: "Claim",
+        type: CantoTransactionType.CLAIM_REWARDS,
       }),
     }
   );
@@ -120,7 +121,7 @@ export interface Details {
   name: string;
   icon: string;
   amount: string;
-  type: string;
+  type: CantoTransactionType;
 }
 
 export function useReedem(props: Details) {
