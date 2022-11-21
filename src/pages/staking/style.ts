@@ -41,12 +41,7 @@ const Styled = styled.div`
 
     &:hover {
       border: none;
-      /* background-color: #06fc9a4c; */
       background-color: #06fc991a;
-
-      border-top: 4px solid transparent;
-
-      border-bottom: 4px solid var(--primary-color);
     }
   }
 
@@ -59,6 +54,16 @@ const Styled = styled.div`
     border-bottom: 4px solid var(--primary-color);
     border-top: 4px solid transparent;
     background-color: #06fc991a;
+    &:hover {
+      border-top: 4px solid transparent;
+      background-color: #06fc991a !important;
+
+      border-bottom: 4px solid var(--primary-color);
+    }
+
+    &.tab-hover {
+      background-color: transparent;
+    }
   }
   .react-tabs__tab--disabled {
   }

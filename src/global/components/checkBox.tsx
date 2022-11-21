@@ -23,6 +23,7 @@ const Styled = styled.div<Props>`
 
   height: 20px;
   width: 20px;
+  border-radius: 4px;
   border: ${(props) =>
     props.checked
       ? "3px solid var(--primary-darker-color)"

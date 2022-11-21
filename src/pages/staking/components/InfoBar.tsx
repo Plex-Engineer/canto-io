@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { OutlinedButton } from "global/packages/src";
+import { OutlinedButton, Text } from "global/packages/src";
 
 interface Props {
   balance: string;
@@ -32,7 +32,9 @@ const InfoBar = ({ totalStaked, rewards, apr, onRewards }: Props) => {
           onRewards();
         }}
       >
-        claim rewards
+        <Text size="text2" type="text">
+          claim rewards
+        </Text>
       </OutlinedButton>
     </Styled>
   );
@@ -42,12 +44,12 @@ const Styled = styled.div`
   display: flex;
   justify-content: space-between;
   color: var(--primary-color);
-  padding: 2rem 0;
+  padding: 40px 0;
   .dual-item {
     display: flex;
     flex-direction: column-reverse;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.4rem;
   }
   .top {
@@ -55,7 +57,7 @@ const Styled = styled.div`
   }
   .bottom {
     font-family: "Silkscreen", cursive;
-    font-size: 30px;
+    font-size: 40px;
   }
   @media (max-width: 1000px) {
     width: 100%;

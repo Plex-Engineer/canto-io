@@ -91,7 +91,7 @@ export const ModalManager = (props: ModalManagerProps) => {
           src={close}
           style={{
             position: "absolute",
-            top: "1.3rem",
+            top: "2rem",
             right: "1.4rem",
             width: "30px",
             cursor: "pointer",

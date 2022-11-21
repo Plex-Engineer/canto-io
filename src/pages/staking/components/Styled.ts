@@ -4,7 +4,7 @@ export const StakingModalContainer = styled.div`
   background-color: #040404;
   height: fit-content;
   max-height: 90vh;
-  padding-bottom: 1.4rem;
+  padding-bottom: 40px;
   width: 33rem;
   display: flex;
   flex-direction: column;
@@ -21,7 +21,7 @@ export const StakingModalContainer = styled.div`
 
   .agreement {
     display: flex;
-    gap: 1rem;
+    gap: 0.8rem;
   }
   .tabPanel {
     display: flex;
@@ -105,18 +105,13 @@ export const StakingModalContainer = styled.div`
     width: 100%;
   }
   .title {
-    font-family: Silkscreen;
-    font-size: 26px;
-    font-weight: 400;
-    line-height: 34px;
-    letter-spacing: -0.08em;
-    text-align: left;
-
-    color: var(--primary-color);
     width: 90%;
-    padding: 1rem 0;
     border-bottom: 1px solid #222;
     margin-bottom: 1rem;
+
+    display: flex;
+    align-items: center;
+    min-height: 90px;
   }
 
   .dual-h-row {
@@ -200,12 +195,12 @@ export const StakingModalContainer = styled.div`
   }
 
   .desc {
-    padding: 0 2rem;
+    padding: 0 30px;
     width: 100%;
 
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
   }
   .textField {
     margin: 0.1rem 0;

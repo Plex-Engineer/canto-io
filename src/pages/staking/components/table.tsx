@@ -53,12 +53,13 @@ const Container = styled.table`
     display: flex;
     justify-content: space-around;
 
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 400;
     line-height: 90px;
 
     animation-fill-mode: forwards;
     background-color: black;
+
     margin-top: 0.5rem;
     @keyframes fader {
       from {
