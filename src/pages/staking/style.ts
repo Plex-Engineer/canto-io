@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 const Styled = styled.div`
   display: flex;
   align-self: center;
+  height: 100%;
   max-width: 1200px;
   section {
     flex-grow: 2;

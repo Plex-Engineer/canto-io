@@ -32,49 +32,50 @@ const MyStaking = (props: MyStakingProps) => {
           }}
         />
       ) : (
-        <div>
-          <InfoBar
-            balance={truncateNumber(formatEther(props.balance))}
-            totalStaked={truncateNumber(formatEther(props.totalStaked))}
-            totalUnbonding={truncateNumber(formatEther(props.totalUnbonding))}
-            onRewards={props.onRewards}
-            rewards={truncateNumber(formatEther(props.totalRewards))}
-            apr={props.apr}
-          />
-          <Text
-            type="title"
-            size="title3"
-            color="primary"
-            align="left"
-            hidden={props.userValidationInfo.length == 0}
-          >
-            current staking position
-          </Text>
-          <ValidatorTable
-            validators={props.userValidationInfo}
-            sortBy="userTotal"
-          />
+        <>
+          <div>
+            <InfoBar
+              balance={truncateNumber(formatEther(props.balance))}
+              totalStaked={truncateNumber(formatEther(props.totalStaked))}
+              totalUnbonding={truncateNumber(formatEther(props.totalUnbonding))}
+              onRewards={props.onRewards}
+              rewards={truncateNumber(formatEther(props.totalRewards))}
+              apr={props.apr}
+            />
+            <Text
+              type="title"
+              size="title3"
+              color="primary"
+              align="left"
+              hidden={props.userValidationInfo.length == 0}
+            >
+              current staking position
+            </Text>
+            <ValidatorTable
+              validators={props.userValidationInfo}
+              sortBy="userTotal"
+            />
 
-          <Text
-            type="title"
-            size="title3"
-            color="primary"
-            align="left"
-            hidden={props.undelegationValidators.length == 0}
-            style={{ marginTop: "2rem" }}
-          >
-            currently undelegating
-          </Text>
-          <UndelegatingTable validators={props.undelegationValidators} />
-          <br />
-        </div>
+            <Text
+              type="title"
+              size="title3"
+              color="primary"
+              align="left"
+              hidden={props.undelegationValidators.length == 0}
+              style={{ marginTop: "2rem" }}
+            >
+              currently undelegating
+            </Text>
+            <UndelegatingTable validators={props.undelegationValidators} />
+            <br />
+          </div>
+          <div
+            style={{
+              height: "60px",
+            }}
+          />
+        </>
       )}
-
-      <div
-        style={{
-          height: "60px",
-        }}
-      />
     </Styled>
   );
 };
