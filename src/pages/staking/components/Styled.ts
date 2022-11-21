@@ -22,6 +22,7 @@ export const StakingModalContainer = styled.div`
   .agreement {
     display: flex;
     gap: 0.8rem;
+    margin-bottom: 10px;
   }
   .tabPanel {
     display: flex;
