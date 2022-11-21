@@ -15,10 +15,20 @@ const Container = styled.table`
     text-transform: lowercase;
     font-size: 14px;
     border-radius: 4px;
-
+    background-color: black;
+    display: inline-table;
+    width: 100%;
     /* tr {
       border-bottom: var(--primary-color) solid 1px !important;
     } */
+    tr {
+      font-size: 12px;
+      background-color: transparent;
+      margin-top: 0;
+    }
+    th {
+      padding: 7px;
+    }
   }
   th {
     padding: 8px;
@@ -45,11 +55,11 @@ const Container = styled.table`
 
     font-size: 14px;
     font-weight: 400;
-    line-height: 4rem;
+    line-height: 90px;
 
     animation-fill-mode: forwards;
     background-color: black;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
     @keyframes fader {
       from {
         border-bottom: transparent solid 1px;

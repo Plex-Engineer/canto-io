@@ -41,7 +41,9 @@ const Styled = styled.div`
 
     &:hover {
       border: none;
-      background-color: #06fc9a4c;
+      /* background-color: #06fc9a4c; */
+      background-color: #06fc991a;
+
       border-top: 4px solid transparent;
 
       border-bottom: 4px solid var(--primary-color);

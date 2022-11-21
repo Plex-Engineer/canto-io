@@ -119,11 +119,18 @@ const AllDerevatives = (props: AllDerevativesProps) => {
           </Text>
         </div>
       ) : (
-        <ValidatorTable
-          validators={searchedValidators()}
-          sortBy="validatorTotal"
-          searched={userSearch}
-        />
+        <>
+          <ValidatorTable
+            validators={searchedValidators()}
+            sortBy="validatorTotal"
+            searched={userSearch}
+          />
+          <div
+            style={{
+              height: "60px",
+            }}
+          />
+        </>
       )}
     </Styled>
   );
