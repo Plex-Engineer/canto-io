@@ -275,7 +275,6 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     border-radius: 4px;
   }
   .overlay {
-    border-radius: 18px;
     width: 100%;
     height: 100%;
     top: 0;
@@ -315,6 +314,8 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
 
   .amount {
     filter: ${(props) => (props.disabled ? "grayscale(100%)" : "none")};
+    opacity: ${(props) => (props.disabled ? ".4" : "1")};
+
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -322,9 +323,14 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     height: 6rem;
     border-radius: 4px;
     background-color: #222222;
+
     .token-selector {
       width: 12rem;
       height: 100%;
+
+      & > div {
+        border-radius: 4px 0 0 4px;
+      }
     }
     .amount-input {
       height: 100%;
@@ -335,10 +341,15 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
       align-items: center;
       padding: 1rem;
       gap: 1rem;
+
       p {
         white-space: nowrap;
       }
     }
+  }
+
+  #amount-bridge {
+    outline: none;
   }
 
   input[type="number"] {
@@ -356,7 +367,7 @@ export const TransferBoxStyled = styled.div<StyeldProps>`
     }
     &:focus,
     &:hover {
-      background-color: #111;
+      /* background-color: #181818; */
 
       outline: 1px solid var(--primary-color);
     }

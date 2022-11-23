@@ -1,6 +1,8 @@
 import styled from "@emotion/styled";
 import loadingIcon from "assets/loading.gif";
 import completeIcon from "assets/complete.svg";
+import bridgeInIcon from "assets/bridge-in.svg";
+import bridgeOutIcon from "assets/bridge-out.svg";
 import { convertSecondsToString } from "../utils/utils";
 
 interface Props {
@@ -16,7 +18,13 @@ const TransactionBox = (props: Props) => {
   return (
     <Styled>
       <img
-        src={props.status == "loading" ? loadingIcon : completeIcon}
+        src={
+          props.status == "loading"
+            ? loadingIcon
+            : props.type == "in"
+            ? bridgeInIcon
+            : bridgeOutIcon
+        }
         alt="loading"
         className="status-icon"
       />
