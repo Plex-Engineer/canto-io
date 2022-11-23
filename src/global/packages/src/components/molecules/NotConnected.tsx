@@ -9,6 +9,7 @@ interface Props {
   buttonText: string;
   onClick: () => void;
   bgFilled?: boolean;
+  style?: React.CSSProperties;
 }
 const NotConnected = ({
   icon,
@@ -17,11 +18,13 @@ const NotConnected = ({
   buttonText,
   onClick,
   bgFilled = false,
+  style,
 }: Props) => {
   return (
     <Styled
       style={{
         backgroundColor: bgFilled ? "black" : "none",
+        ...style,
       }}
     >
       <FadeIn className="container">
