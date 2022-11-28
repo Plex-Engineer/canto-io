@@ -96,6 +96,8 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
         </div>
         <footer>
           <OutlinedButton
+            filled
+            weight="bold"
             onClick={() => {
               // addTokens(chainId);
               setModalType(ModalType.TOKENS);
@@ -112,6 +114,8 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
           import cTokens
         </OutlinedButton> */}
           <OutlinedButton
+            filled
+            weight="bold"
             onClick={() => {
               addCantoToKeplr();
             }}
@@ -215,6 +219,10 @@ const Styled = styled.div<MenuState>`
     flex-direction: column;
     gap: 1rem;
     margin: 2rem;
+
+    button {
+      height: 48px;
+    }
   }
 
   .active {

@@ -26,6 +26,7 @@ interface Props {
   padding?: "xx-sm" | "x-sm" | "sm" | "md" | "lg" | "x-lg";
   weight?: "light" | "normal" | "bold" | "x-bold";
   height?: "small" | "normal" | "big";
+  filled?: boolean;
 }
 const PrimaryButton = styled.button<Props>`
   font-size: ${({ size }) => Sizes[size ?? "x-sm"] + "px"};
@@ -40,6 +41,7 @@ const PrimaryButton = styled.button<Props>`
   align-items: center;
   justify-content: center;
   text-align: center;
+  width: ${({ filled }) => (filled ? "100%" : "fit-content")};
 
   &:hover {
     background-color: var(--primary-dark-color);

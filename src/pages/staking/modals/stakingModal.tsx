@@ -199,17 +199,17 @@ export const StakingModal = ({
           >
             <TabList className={"tablist"}>
               <Tab className={"tab"} selectedClassName="tab-selected">
-                <Text size="text3" type="text" align="left">
+                <Text size="text3" type="text" align="left" bold>
                   delegate
                 </Text>
               </Tab>
               <Tab className={"tab"} selectedClassName="tab-selected">
-                <Text size="text3" type="text" align="left">
+                <Text size="text3" type="text" align="left" bold>
                   undelegate
                 </Text>
               </Tab>
               <Tab className={"tab"} selectedClassName="tab-selected">
-                <Text size="text3" type="text" align="left">
+                <Text size="text3" type="text" align="left" bold>
                   redelegate
                 </Text>
               </Tab>

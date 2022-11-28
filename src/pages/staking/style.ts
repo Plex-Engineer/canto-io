@@ -39,7 +39,7 @@ const Styled = styled.div`
     padding: 1.8rem 0;
     cursor: pointer;
     font-size: 16px;
-
+    font-weight: 500;
     &:hover {
       border: none;
       background-color: #06fc991a;

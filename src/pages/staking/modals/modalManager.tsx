@@ -91,11 +91,11 @@ export const ModalManager = (props: ModalManagerProps) => {
           src={close}
           style={{
             position: "absolute",
-            top: "2rem",
-            right: "1.4rem",
-            width: "30px",
+            top: ".5rem",
+            right: ".5rem",
             cursor: "pointer",
             zIndex: "3",
+            padding: ".5rem",
           }}
           alt="close"
         />
