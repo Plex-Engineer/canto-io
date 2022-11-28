@@ -8,6 +8,7 @@ import {
 import { getReactiveButtonText } from "../utils/reactiveButtonText";
 import { convertStringToBigNumber } from "../utils/stringToBigNumber";
 import { PrimaryButton } from "global/packages/src";
+import styled from "@emotion/styled";
 
 interface RBProps {
   amount: string;
@@ -40,12 +41,7 @@ export const ReactiveButton = ({ amount, token, onClick }: RBProps) => {
   }, [approveStatus]);
 
   return (
-    <PrimaryButton
-      onClick={onClick}
-      disabled={disabled}
-      height="big"
-      weight="bold"
-    >
+    <Styled onClick={onClick} disabled={disabled} height="big" weight="bold">
       {buttonText}
       {approveStatus == "Mining" || cosmosStatus == "Mining" ? (
         <img
@@ -57,6 +53,21 @@ export const ReactiveButton = ({ amount, token, onClick }: RBProps) => {
           src={loading}
         />
       ) : null}
-    </PrimaryButton>
+    </Styled>
   );
 };
+
+const Styled = styled(PrimaryButton)`
+  .loading {
+    animation: rotation 3s infinite linear;
+  }
+
+  @keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(359deg);
+    }
+  }
+`;
