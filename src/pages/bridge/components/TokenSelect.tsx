@@ -73,6 +73,10 @@ export const StyledPopup = styled(Popup)`
     background: rgba(217, 217, 217, 0.2);
     backdrop-filter: blur(35px);
     border-radius: 7px;
+
+    .token-item img {
+      margin-left: 0px !important;
+    }
   }
 `;
 
@@ -86,6 +90,7 @@ const Styled = styled.div`
   width: 100%;
   height: 100%;
   cursor: pointer;
+
   /* border: 1px solid black; */
   &:hover {
     /* border: 1px solid var(--primary-color); */

@@ -42,7 +42,7 @@ const SwitchBridging = (props: Props) => {
       <div
         className="active-back"
         style={{
-          right: transactionType == "Bridge" ? "39.7%" : "0px",
+          right: transactionType == "Bridge" ? "calc(41.2% - 4px)" : "0px",
         }}
       ></div>
       <div className="Switch">
@@ -64,7 +64,7 @@ const SwitchBridging = (props: Props) => {
             src={bridgeIcon}
             alt={"canto (Bridge)"}
             height={42}
-            style={{ marginBottom: "3px" }}
+            style={{ marginBottom: "2px" }}
           />
           <Text className="name" type="text">
             Bridge
@@ -211,8 +211,8 @@ const Styled = styled.div`
     background-color: #000000ae;
     border-radius: 4px;
     width: 58%;
-    margin: 6px;
-    height: 92%;
+    margin: 4px;
+    height: calc(100% - 8px);
     transition: right 0.3s;
   }
   @media (max-width: 1000px) {

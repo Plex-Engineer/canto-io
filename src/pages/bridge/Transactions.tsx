@@ -88,19 +88,11 @@ const Transactions = () => {
             icon={warningIcon}
           />
         )}
-      <Text
-        type="title"
-        color="primary"
-        style={{
-          fontFamily: "Silkscreen",
-          lineHeight: "3rem",
-          fontSize: "26px",
-          fontWeight: "400",
-          letterSpacing: "-0.08em",
-        }}
-      >
-        {pendingBridgeTransactions.length != 0 ? "In Progress" : ""}
-      </Text>
+      {pendingBridgeTransactions.length != 0 ? (
+        <Text type="title" color="primary" size="title2">
+          In Progress
+        </Text>
+      ) : null}
       {pendingBridgeTransactions
         .map((tx) => {
           const token = findGravityToken(tx.args?.[0]);
@@ -120,17 +112,7 @@ const Transactions = () => {
         .sort((a: JSX.Element, b: JSX.Element) =>
           a.props.id > b.props.id ? -1 : 1
         )}
-      <Text
-        type="title"
-        color="primary"
-        style={{
-          fontFamily: "Silkscreen",
-          lineHeight: "3rem",
-          fontSize: "26px",
-          fontWeight: "400",
-          letterSpacing: "-0.08em",
-        }}
-      >
+      <Text type="title" color="primary" size="title2">
         {completedBridgeTransactions.length + bridgeOutTransactions.length != 0
           ? "complete"
           : ""}
@@ -148,7 +130,7 @@ const Styled = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  padding: 3rem 0;
+  padding: 60px 0;
   max-width: 600px;
   flex-grow: 1;
 
