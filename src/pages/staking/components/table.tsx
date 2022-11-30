@@ -4,7 +4,7 @@ const Container = styled.table`
   & {
     border: none;
     /* border: var(--primary-color) solid 1px; */
-    margin: 5px auto;
+    margin: 24px auto;
     width: 1204px;
     color: var(--primary-color);
     text-align: center;
@@ -90,7 +90,7 @@ const Container = styled.table`
         content: url(${arrow});
         position: absolute;
         right: 6px;
-        top: 10px;
+        top: 8px;
 
         &:hover {
           transform: translateX(10);

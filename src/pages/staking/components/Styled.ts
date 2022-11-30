@@ -8,6 +8,7 @@ export const StakingModalContainer = styled.div`
   width: 33rem;
   display: flex;
   flex-direction: column;
+  border-radius: 4px;
   align-items: center;
 
   input {

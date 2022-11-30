@@ -55,16 +55,17 @@ const Styled = styled.div`
   padding: 25px;
   justify-content: center;
   flex-grow: 1;
-
+  min-height: 600px;
   .container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 2rem;
-    max-width: 420px;
+    max-width: 410px;
     button {
-      width: 100%;
+      width: 100vmax;
+      max-width: 410px;
     }
   }
 `;
