@@ -24,6 +24,7 @@ import { SpecialTabs } from "./components/SpecialTabs";
 import { OutlinedButton } from "global/packages/src";
 import FadeIn from "react-fade-in";
 import { CantoTransactionType } from "global/config/transactionTypes";
+import HelmetSEO from "global/components/seo";
 const LendingMarket = () => {
   const networkInfo = useNetworkInfo();
   const { notifications } = useNotifications();
@@ -46,124 +47,134 @@ const LendingMarket = () => {
   const [onLeftTab, setOnLeftTab] = useState(true);
 
   return (
-    <Styled as={FadeIn}>
-      <ModalManager
-        isOpen={modalStore.currentModal != ModalType.NONE}
-        position={position}
-        rewards={rewards}
+    <>
+      <HelmetSEO
+        title="Canto - Lending"
+        description="Canto Homepage serves De-fi applications"
+        link="lending"
       />
-      <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <OutlinedButton
-          onClick={() => {
-            modalStore.open(ModalType.BALANCE);
-          }}
-        >
-          claim LM rewards
-        </OutlinedButton>
-      </div>
-      <div style={{ textAlign: "right" }}>
-        {!rewards.accrued.isZero()
-          ? truncateNumber(formatUnits(rewards.accrued)) + " WCANTO "
-          : ""}
-      </div>
-
-      <LMPositionBar
-        borrowBalance={position.totalBorrow}
-        borrowLimit={position.totalBorrowLimit}
-        supplyBalance={position.totalSupply}
-      />
-
-      <SpecialTabs
-        active={onLeftTab}
-        onLeftTabClick={() => {
-          setOnLeftTab(true);
-        }}
-        onRightTabClick={() => {
-          setOnLeftTab(false);
-        }}
-      />
-
-      <div>
-        <div
-          className="tables"
-          style={{
-            marginBottom: "2rem",
-          }}
-        >
-          <SupplyTable
-            visible={!isMobile || onLeftTab}
-            supplying={true}
-            userLMTokens={userLMTokens.filter((token) => token.inSupplyMarket)}
-            onClick={(token) => {
-              modalStore.setActiveToken(token);
-              modalStore.open(ModalType.LENDING);
+      <Styled as={FadeIn}>
+        <ModalManager
+          isOpen={modalStore.currentModal != ModalType.NONE}
+          position={position}
+          rewards={rewards}
+        />
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <OutlinedButton
+            onClick={() => {
+              modalStore.open(ModalType.BALANCE);
             }}
-            onToggle={(token) => {
-              modalStore.setActiveToken(token);
-              token.collateral
-                ? modalStore.open(ModalType.DECOLLATERAL)
-                : modalStore.open(ModalType.COLLATERAL);
-            }}
-          />
-
-          <BorrowingTable
-            visible={!isMobile || !onLeftTab}
-            borrowing={true}
-            userLMTokens={userLMTokens.filter((token) => token.inBorrowMarket)}
-            position={position}
-            onClick={(token) => {
-              modalStore.setActiveToken(token);
-              modalStore.open(ModalType.BORROW);
-            }}
-          />
+          >
+            claim LM rewards
+          </OutlinedButton>
+        </div>
+        <div style={{ textAlign: "right" }}>
+          {!rewards.accrued.isZero()
+            ? truncateNumber(formatUnits(rewards.accrued)) + " WCANTO "
+            : ""}
         </div>
 
-        {/* This table is used for showing transaction status */}
-        <div
-          className="tables"
-          style={{
-            marginBottom: "1rem",
+        <LMPositionBar
+          borrowBalance={position.totalBorrow}
+          borrowLimit={position.totalBorrowLimit}
+          supplyBalance={position.totalSupply}
+        />
+
+        <SpecialTabs
+          active={onLeftTab}
+          onLeftTabClick={() => {
+            setOnLeftTab(true);
           }}
-        >
-          <div className="left">
-            {notifs.filter(
-              (filterItem) => filterItem.type == "transactionStarted"
-            ).length > 0 ? (
-              <LendingTable columns={["ongoing transactions"]} isLending>
-                {notifs.map((item) => {
-                  if (
-                    //@ts-ignore
-                    item?.transactionName?.includes("type") &&
-                    item.type == "transactionStarted"
-                  ) {
-                    //@ts-ignore
-                    const msg: Details = JSON.parse(item?.transactionName);
-                    const amount =
-                      Number(msg.amount) > 0
-                        ? `${Number(msg.amount).toFixed(2)} ${msg.name}`
-                        : msg.name;
-                    const actionMsg = transactionStatusActions(
-                      Number(msg.type),
-                      amount
-                    ).inAction;
-                    return (
-                      <TransactionRow
-                        key={msg.name + msg.type}
-                        icon={msg.icon}
-                        name={msg.name.toLowerCase()}
-                        status={actionMsg}
-                        date={new Date(item.submittedAt)}
-                      />
-                    );
-                  }
-                  return null;
-                })}
-              </LendingTable>
-            ) : null}
+          onRightTabClick={() => {
+            setOnLeftTab(false);
+          }}
+        />
+
+        <div>
+          <div
+            className="tables"
+            style={{
+              marginBottom: "2rem",
+            }}
+          >
+            <SupplyTable
+              visible={!isMobile || onLeftTab}
+              supplying={true}
+              userLMTokens={userLMTokens.filter(
+                (token) => token.inSupplyMarket
+              )}
+              onClick={(token) => {
+                modalStore.setActiveToken(token);
+                modalStore.open(ModalType.LENDING);
+              }}
+              onToggle={(token) => {
+                modalStore.setActiveToken(token);
+                token.collateral
+                  ? modalStore.open(ModalType.DECOLLATERAL)
+                  : modalStore.open(ModalType.COLLATERAL);
+              }}
+            />
+
+            <BorrowingTable
+              visible={!isMobile || !onLeftTab}
+              borrowing={true}
+              userLMTokens={userLMTokens.filter(
+                (token) => token.inBorrowMarket
+              )}
+              position={position}
+              onClick={(token) => {
+                modalStore.setActiveToken(token);
+                modalStore.open(ModalType.BORROW);
+              }}
+            />
           </div>
 
-          <div className="right">
-            {/* {borrowFilter.length > 0 ? (
+          {/* This table is used for showing transaction status */}
+          <div
+            className="tables"
+            style={{
+              marginBottom: "1rem",
+            }}
+          >
+            <div className="left">
+              {notifs.filter(
+                (filterItem) => filterItem.type == "transactionStarted"
+              ).length > 0 ? (
+                <LendingTable columns={["ongoing transactions"]} isLending>
+                  {notifs.map((item) => {
+                    if (
+                      //@ts-ignore
+                      item?.transactionName?.includes("type") &&
+                      item.type == "transactionStarted"
+                    ) {
+                      //@ts-ignore
+                      const msg: Details = JSON.parse(item?.transactionName);
+                      const amount =
+                        Number(msg.amount) > 0
+                          ? `${Number(msg.amount).toFixed(2)} ${msg.name}`
+                          : msg.name;
+                      const actionMsg = transactionStatusActions(
+                        Number(msg.type),
+                        amount
+                      ).inAction;
+                      return (
+                        <TransactionRow
+                          key={msg.name + msg.type}
+                          icon={msg.icon}
+                          name={msg.name.toLowerCase()}
+                          status={actionMsg}
+                          date={new Date(item.submittedAt)}
+                        />
+                      );
+                    }
+                    return null;
+                  })}
+                </LendingTable>
+              ) : null}
+            </div>
+
+            <div className="right">
+              {/* {borrowFilter.length > 0 ? (
             <LendingTable columns={["ongoing transactions"]} isLending>
               {borrowFilter.map((rand) => {
                 //@ts-ignore
@@ -179,52 +190,53 @@ const LendingMarket = () => {
               })}
             </LendingTable>
           ) : null} */}
+            </div>
+          </div>
+          {/* These tables only show ERC20TOKENs*/}
+          <div
+            className="tables"
+            style={{
+              display: "flex",
+            }}
+          >
+            {
+              <SupplyTable
+                visible={!isMobile || onLeftTab}
+                supplying={false}
+                userLMTokens={userLMTokens.filter(
+                  (token) => !token.inSupplyMarket
+                )}
+                onClick={(token) => {
+                  modalStore.setActiveToken(token);
+                  modalStore.open(ModalType.LENDING);
+                }}
+                onToggle={(token) => {
+                  modalStore.setActiveToken(token);
+                  token.collateral
+                    ? modalStore.open(ModalType.DECOLLATERAL)
+                    : modalStore.open(ModalType.COLLATERAL);
+                }}
+              />
+            }
+
+            {
+              <BorrowingTable
+                visible={!isMobile || !onLeftTab}
+                borrowing={false}
+                userLMTokens={userLMTokens.filter(
+                  (token) => !token.inBorrowMarket
+                )}
+                position={position}
+                onClick={(token) => {
+                  modalStore.setActiveToken(token);
+                  modalStore.open(ModalType.BORROW);
+                }}
+              />
+            }
           </div>
         </div>
-        {/* These tables only show ERC20TOKENs*/}
-        <div
-          className="tables"
-          style={{
-            display: "flex",
-          }}
-        >
-          {
-            <SupplyTable
-              visible={!isMobile || onLeftTab}
-              supplying={false}
-              userLMTokens={userLMTokens.filter(
-                (token) => !token.inSupplyMarket
-              )}
-              onClick={(token) => {
-                modalStore.setActiveToken(token);
-                modalStore.open(ModalType.LENDING);
-              }}
-              onToggle={(token) => {
-                modalStore.setActiveToken(token);
-                token.collateral
-                  ? modalStore.open(ModalType.DECOLLATERAL)
-                  : modalStore.open(ModalType.COLLATERAL);
-              }}
-            />
-          }
-
-          {
-            <BorrowingTable
-              visible={!isMobile || !onLeftTab}
-              borrowing={false}
-              userLMTokens={userLMTokens.filter(
-                (token) => !token.inBorrowMarket
-              )}
-              position={position}
-              onClick={(token) => {
-                modalStore.setActiveToken(token);
-                modalStore.open(ModalType.BORROW);
-              }}
-            />
-          }
-        </div>
-      </div>
-    </Styled>
+      </Styled>
+    </>
   );
 };
 
