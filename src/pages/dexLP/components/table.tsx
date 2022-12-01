@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { useState } from "react";
 
 const Container = styled.table`
   border: none;
@@ -20,6 +21,10 @@ const Container = styled.table`
     padding: 8px;
     font-weight: 400;
     line-height: 1rem;
+    &:hover {
+      background-color: #14392a;
+      cursor: pointer;
+    }
   }
 
   tr {
@@ -74,9 +79,13 @@ const Container = styled.table`
 type Props = {
   children: React.ReactNode;
   columns: string[];
+  onColumnClicked?: (column: number) => void;
+  columnClicked?: number;
 };
 
 const Table: React.FC<Props> = (props: Props) => {
+  const [wasColumnClicked, setWasColumnClicked] = useState(false);
+
   return (
     <div
       style={{
@@ -86,8 +95,22 @@ const Table: React.FC<Props> = (props: Props) => {
       <Container>
         <thead>
           <tr>
-            {props.columns.map((item) => (
-              <th key={item}>{item}</th>
+            {props.columns.map((item, key) => (
+              <th
+                key={item}
+                style={{
+                  backgroundColor:
+                    wasColumnClicked && key == props.columnClicked
+                      ? "#14392a"
+                      : "",
+                }}
+                onClick={() => {
+                  props.onColumnClicked ? props.onColumnClicked(key) : {};
+                  setWasColumnClicked(true);
+                }}
+              >
+                {item}
+              </th>
             ))}
           </tr>
         </thead>
