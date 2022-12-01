@@ -13,7 +13,7 @@ const Footer = () => {
           <Text type="text">report bug</Text>
         </a>
         <a href="https://docs.canto.io/">
-          <Text type="text">documents</Text>
+          <Text type="text">docs</Text>
         </a>
         <a href="https://docs.canto.io/">
           <Text type="text">about canto</Text>
@@ -61,7 +61,7 @@ const Footer = () => {
 };
 
 const Styled = styled.div`
-  max-width: 1205px;
+  max-width: 1200px;
   width: 100%;
   border-top: 1px solid var(--primary-color);
   margin: 0 auto;

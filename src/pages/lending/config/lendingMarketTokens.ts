@@ -36,4 +36,4 @@ export const mainnetTokens = [
   TOKENS.cantoMainnet.USDC,
   TOKENS.cantoMainnet.USDT,
 ];
-export const reservoirAdddress = "0xF55b9a38a7937f6554d67bAF7a1aeA7eAF3509CA";
+export const reservoirAdddress = "0x07C50Bf0804A06860AeACAcFaf029F9a1c014F91";

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { OutlinedButton } from "global/packages/src";
+import { OutlinedButton, Text } from "global/packages/src";
 
 interface Props {
   balance: string;
@@ -14,16 +14,22 @@ const InfoBar = ({ totalStaked, rewards, apr, onRewards }: Props) => {
     <Styled>
       <div className="dual-item">
         <div className="top">total staked</div>
-        <div className="bottom">{totalStaked}</div>
+        <div className="bottom">
+          <Text type="title">{totalStaked}</Text>
+        </div>
       </div>
 
       <div className="dual-item">
         <div className="top">apr</div>
-        <div className="bottom">{apr + "%"}</div>
+        <div className="bottom">
+          <Text type="title">{apr + "%"}</Text>
+        </div>
       </div>
       <div className="dual-item">
         <div className="top">rewards</div>
-        <div className="bottom">{rewards}</div>
+        <div className="bottom">
+          <Text type="title">{rewards}</Text>
+        </div>
       </div>
       <OutlinedButton
         height="big"
@@ -32,7 +38,9 @@ const InfoBar = ({ totalStaked, rewards, apr, onRewards }: Props) => {
           onRewards();
         }}
       >
-        claim rewards
+        <Text size="text2" type="text" bold>
+          claim rewards
+        </Text>
       </OutlinedButton>
     </Styled>
   );
@@ -41,21 +49,24 @@ const InfoBar = ({ totalStaked, rewards, apr, onRewards }: Props) => {
 const Styled = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   color: var(--primary-color);
-  padding: 2rem 0;
+  padding: 40px 0;
   .dual-item {
     display: flex;
     flex-direction: column-reverse;
     justify-content: center;
-    align-items: center;
-    gap: 0.4rem;
+    align-items: flex-start;
+    gap: 4px;
   }
   .top {
     font-size: 14px;
   }
   .bottom {
-    font-family: "Silkscreen", cursive;
-    font-size: 30px;
+    /* font-family: "Silkscreen", cursive; */
+    p {
+      font-size: 40px !important;
+    }
   }
   @media (max-width: 1000px) {
     width: 100%;

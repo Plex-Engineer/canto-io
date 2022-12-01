@@ -120,6 +120,8 @@ const Staking = () => {
   const userValidators = allValidatorData.filter(
     (validator) => !!validator.userDelegations
   );
+
+  const [isHovering, setIsHovering] = useState(false);
   return (
     <>
       <HelmetSEO
@@ -131,8 +133,28 @@ const Staking = () => {
         <ModalManager allValidators={validators} />
         <Tabs className="tabs">
           <TabList className="tablist">
-            <Tab className="tab">my staking</Tab>
-            <Tab className="tab">all validators</Tab>
+            <Tab
+              className={isHovering ? "tab tab-hover" : "tab"}
+              onMouseEnter={() => {
+                setIsHovering(true);
+              }}
+              onMouseLeave={() => {
+                setIsHovering(false);
+              }}
+            >
+              my staking
+            </Tab>
+            <Tab
+              className={isHovering ? "tab tab-hover" : "tab"}
+              onMouseEnter={() => {
+                setIsHovering(true);
+              }}
+              onMouseLeave={() => {
+                setIsHovering(false);
+              }}
+            >
+              all validators
+            </Tab>
           </TabList>
           <TabPanel>
             <MyStaking

@@ -6,7 +6,7 @@ import useValidatorModalStore, {
   ValidatorModalType,
 } from "../stores/validatorModalStore";
 import { StakingModal } from "./stakingModal";
-import close from "assets/close.svg";
+import close from "assets/icons/close.svg";
 import DelegationModal from "./delegationModal";
 import RedelgationModal from "./redelgationModal";
 import useTransactionStore from "../stores/transactionStore";
@@ -93,9 +93,9 @@ export const ModalManager = (props: ModalManagerProps) => {
             position: "absolute",
             top: ".5rem",
             right: ".5rem",
-            width: "40px",
             cursor: "pointer",
             zIndex: "3",
+            padding: ".5rem",
           }}
           alt="close"
         />

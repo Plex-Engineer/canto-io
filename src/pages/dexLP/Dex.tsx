@@ -20,6 +20,7 @@ import { DexContainer } from "./components/Styled";
 import FadeIn from "react-fade-in";
 import { Text } from "global/packages/src";
 import { Details } from "pages/lending/hooks/useTransaction";
+import HelmetSEO from "global/components/seo";
 const Dex = () => {
   // Mixpanel.events.pageOpened("Dex Market", '');
 
@@ -103,187 +104,195 @@ const Dex = () => {
   }, [notifications]);
 
   return (
-    <DexContainer as={FadeIn}>
-      <div>
-        <ModalManager
-          chainId={Number(networkInfo.chainId)}
-          account={networkInfo.account}
-          onClose={() => {
-            setModalType(ModalType.NONE);
-          }}
-        />
-      </div>
-      {/* Title widget the margin of 2rem */}
-      <div
-        style={{
-          margin: "2rem 0",
-        }}
-      >
-        <Text type="title" color="white">
-          to swap tokens, visit{" "}
-          <a
-            style={{
-              color: "#a2fca3",
-              textDecoration: "underline",
-              fontFamily: "Silkscreen",
+    <>
+      <HelmetSEO
+        title="Canto - LP interface"
+        description="Canto Homepage serves De-fi applications"
+        link="lp"
+      />
+      <DexContainer as={FadeIn}>
+        <div>
+          <ModalManager
+            chainId={Number(networkInfo.chainId)}
+            account={networkInfo.account}
+            onClose={() => {
+              setModalType(ModalType.NONE);
             }}
-            href="https://app.slingshot.finance/trade/"
-          >
-            Slingshot
-          </a>
-        </Text>
-      </div>
-
-      {/* Transactions table will be shown here */}
-      {notifs.filter((filterItem) => filterItem.type == "transactionStarted")
-        .length > 0 ? (
-        <div>
-          <p className="tableName">ongoing transaction</p>
-          <Table columns={["name", "transaction", "time"]}>
-            {notifs.map((item) => {
-              if (
-                //@ts-ignore
-                item?.transactionName?.includes("type") &&
-                item.type == "transactionStarted"
-              ) {
-                //@ts-ignore
-                const msg: Details = JSON.parse(item?.transactionName);
-                const actionMsg = transactionStatusActions(
-                  Number(msg.type)
-                ).inAction;
-                return (
-                  <TransactionRow
-                    key={item.submittedAt}
-                    icons={msg.icon}
-                    name={msg.name.toLowerCase()}
-                    status={actionMsg}
-                    date={new Date(item.submittedAt)}
-                  />
-                );
-              }
-              return null;
-            })}
-          </Table>
+          />
         </div>
-      ) : null}
-      {userPairs?.filter(
-        (pair: UserLPPairInfo) =>
-          !pair.userSupply.totalLP.isZero() || pair.userSupply.percentOwned > 0
-      ).length ? (
-        <div>
-          <Text type="title" align="left" className="tableName">
-            current position
+        {/* Title widget the margin of 2rem */}
+        <div
+          style={{
+            margin: "2rem 0",
+          }}
+        >
+          <Text type="title" color="white">
+            to swap tokens, visit{" "}
+            <a
+              style={{
+                color: "#a2fca3",
+                textDecoration: "underline",
+                fontFamily: "Silkscreen",
+              }}
+              href="https://app.slingshot.finance/trade/"
+            >
+              Slingshot
+            </a>
           </Text>
-          <FadeIn>
-            <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-              {userPairs?.map((pair: UserLPPairInfo, idx) => {
-                return !pair.userSupply.totalLP.isZero() ||
-                  pair.userSupply.percentOwned > 0 ? (
-                  <Row
-                    delay={0.2 * idx}
-                    key={pair.basePairInfo.address}
-                    iconLeft={pair.basePairInfo.token1.icon}
-                    iconRight={pair.basePairInfo.token2.icon}
-                    onClick={() => {
-                      setActivePair(pair);
-                      setModalType(
-                        !pair.userSupply.totalLP.isZero()
-                          ? ModalType.ADD_OR_REMOVE
-                          : ModalType.ADD
-                      );
-                    }}
-                    assetName={
-                      pair.basePairInfo.token1.symbol +
-                      "/" +
-                      pair.basePairInfo.token2.symbol
-                    }
-                    totalValueLocked={
-                      noteSymbol +
-                      ethers.utils.commify(
-                        truncateNumber(formatUnits(pair.totalSupply.tvl))
-                      )
-                    }
-                    apr={"23.2"}
-                    position={
-                      truncateNumber(
-                        formatUnits(
-                          pair.userSupply.totalLP,
-                          pair.basePairInfo.decimals
-                        )
-                      ) + " LP Tokens"
-                    }
-                    share={truncateNumber(
-                      (pair.userSupply.percentOwned * 100).toString()
-                    )}
-                  />
-                ) : null;
-              })}
-            </Table>
-          </FadeIn>
         </div>
-      ) : null}
-      {
-        userPairs?.filter(
-          (pair: UserLPPairInfo) =>
-            pair.userSupply.totalLP.isZero() &&
-            pair.userSupply.percentOwned == 0
-        ).length ? (
+
+        {/* Transactions table will be shown here */}
+        {notifs.filter((filterItem) => filterItem.type == "transactionStarted")
+          .length > 0 ? (
           <div>
-            <Text type="title" align="left" className="tableName">
-              pools
-            </Text>
-            <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-              {userPairs?.map((pair: UserLPPairInfo, idx) => {
-                return !(
-                  pair.userSupply.totalLP.isZero() &&
-                  pair.userSupply.percentOwned == 0
-                ) ? null : (
-                  <Row
-                    delay={0.1 * idx}
-                    key={pair.basePairInfo.address}
-                    iconLeft={pair.basePairInfo.token1.icon}
-                    iconRight={pair.basePairInfo.token2.icon}
-                    onClick={() => {
-                      setActivePair(pair);
-                      setModalType(
-                        Number(pair.userSupply.totalLP) > 0
-                          ? ModalType.ADD_OR_REMOVE
-                          : ModalType.ADD
-                      );
-                    }}
-                    assetName={
-                      pair.basePairInfo.token1.symbol +
-                      "/" +
-                      pair.basePairInfo.token2.symbol
-                    }
-                    totalValueLocked={
-                      noteSymbol +
-                      ethers.utils.commify(
-                        truncateNumber(formatUnits(pair.totalSupply.tvl))
-                      )
-                    }
-                    apr={"23.2"}
-                    position={
-                      truncateNumber(formatUnits(pair.userSupply.totalLP)) +
-                      " LP Tokens"
-                    }
-                    share={truncateNumber(
-                      (pair.userSupply.percentOwned * 100).toString()
-                    )}
-                  />
-                );
+            <p className="tableName">ongoing transaction</p>
+            <Table columns={["name", "transaction", "time"]}>
+              {notifs.map((item) => {
+                if (
+                  //@ts-ignore
+                  item?.transactionName?.includes("type") &&
+                  item.type == "transactionStarted"
+                ) {
+                  //@ts-ignore
+                  const msg: Details = JSON.parse(item?.transactionName);
+                  const actionMsg = transactionStatusActions(
+                    Number(msg.type)
+                  ).inAction;
+                  return (
+                    <TransactionRow
+                      key={item.submittedAt}
+                      icons={msg.icon}
+                      name={msg.name.toLowerCase()}
+                      status={actionMsg}
+                      date={new Date(item.submittedAt)}
+                    />
+                  );
+                }
+                return null;
               })}
             </Table>
           </div>
-        ) : null
-        // <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-        //   <LoadingRow colSpan={4} />
-        //   <LoadingRow colSpan={4} />
-        //   <LoadingRow colSpan={4} />
-        //   <LoadingRow colSpan={4} />
-        // </Table>
-      }
-    </DexContainer>
+        ) : null}
+        {userPairs?.filter(
+          (pair: UserLPPairInfo) =>
+            !pair.userSupply.totalLP.isZero() ||
+            pair.userSupply.percentOwned > 0
+        ).length ? (
+          <div>
+            <Text type="title" align="left" className="tableName">
+              current position
+            </Text>
+            <FadeIn>
+              <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
+                {userPairs?.map((pair: UserLPPairInfo, idx) => {
+                  return !pair.userSupply.totalLP.isZero() ||
+                    pair.userSupply.percentOwned > 0 ? (
+                    <Row
+                      delay={0.2 * idx}
+                      key={pair.basePairInfo.address}
+                      iconLeft={pair.basePairInfo.token1.icon}
+                      iconRight={pair.basePairInfo.token2.icon}
+                      onClick={() => {
+                        setActivePair(pair);
+                        setModalType(
+                          !pair.userSupply.totalLP.isZero()
+                            ? ModalType.ADD_OR_REMOVE
+                            : ModalType.ADD
+                        );
+                      }}
+                      assetName={
+                        pair.basePairInfo.token1.symbol +
+                        "/" +
+                        pair.basePairInfo.token2.symbol
+                      }
+                      totalValueLocked={
+                        noteSymbol +
+                        ethers.utils.commify(
+                          truncateNumber(formatUnits(pair.totalSupply.tvl))
+                        )
+                      }
+                      apr={"23.2"}
+                      position={
+                        truncateNumber(
+                          formatUnits(
+                            pair.userSupply.totalLP,
+                            pair.basePairInfo.decimals
+                          )
+                        ) + " LP Tokens"
+                      }
+                      share={truncateNumber(
+                        (pair.userSupply.percentOwned * 100).toString()
+                      )}
+                    />
+                  ) : null;
+                })}
+              </Table>
+            </FadeIn>
+          </div>
+        ) : null}
+        {
+          userPairs?.filter(
+            (pair: UserLPPairInfo) =>
+              pair.userSupply.totalLP.isZero() &&
+              pair.userSupply.percentOwned == 0
+          ).length ? (
+            <div>
+              <Text type="title" align="left" className="tableName">
+                pools
+              </Text>
+              <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
+                {userPairs?.map((pair: UserLPPairInfo, idx) => {
+                  return !(
+                    pair.userSupply.totalLP.isZero() &&
+                    pair.userSupply.percentOwned == 0
+                  ) ? null : (
+                    <Row
+                      delay={0.1 * idx}
+                      key={pair.basePairInfo.address}
+                      iconLeft={pair.basePairInfo.token1.icon}
+                      iconRight={pair.basePairInfo.token2.icon}
+                      onClick={() => {
+                        setActivePair(pair);
+                        setModalType(
+                          Number(pair.userSupply.totalLP) > 0
+                            ? ModalType.ADD_OR_REMOVE
+                            : ModalType.ADD
+                        );
+                      }}
+                      assetName={
+                        pair.basePairInfo.token1.symbol +
+                        "/" +
+                        pair.basePairInfo.token2.symbol
+                      }
+                      totalValueLocked={
+                        noteSymbol +
+                        ethers.utils.commify(
+                          truncateNumber(formatUnits(pair.totalSupply.tvl))
+                        )
+                      }
+                      apr={"23.2"}
+                      position={
+                        truncateNumber(formatUnits(pair.userSupply.totalLP)) +
+                        " LP Tokens"
+                      }
+                      share={truncateNumber(
+                        (pair.userSupply.percentOwned * 100).toString()
+                      )}
+                    />
+                  );
+                })}
+              </Table>
+            </div>
+          ) : null
+          // <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
+          //   <LoadingRow colSpan={4} />
+          //   <LoadingRow colSpan={4} />
+          //   <LoadingRow colSpan={4} />
+          //   <LoadingRow colSpan={4} />
+          // </Table>
+        }
+      </DexContainer>
+    </>
   );
 };
 export default Dex;
