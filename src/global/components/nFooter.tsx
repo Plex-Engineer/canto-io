@@ -13,7 +13,7 @@ const Footer = () => {
           <Text type="text">report bug</Text>
         </a>
         <a href="https://docs.canto.io/">
-          <Text type="text">documents</Text>
+          <Text type="text">docs</Text>
         </a>
         <a href="https://docs.canto.io/">
           <Text type="text">about canto</Text>
