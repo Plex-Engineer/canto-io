@@ -43,7 +43,7 @@ const ConnectWallet = ({ balance, currency, onClick }: Props) => {
                 <span
                   className="hide-on-mobile"
                   style={{
-                    fontWeight: "600",
+                    fontWeight: "500",
                     gap: "10px",
                   }}
                 >

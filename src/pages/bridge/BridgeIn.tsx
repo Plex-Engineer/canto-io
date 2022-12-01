@@ -255,7 +255,7 @@ export const BridgeStyled = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: start;
-  padding: 50px 0;
+  padding: 60px 0;
   flex-grow: 1;
 
   @media (max-width: 1000px) {

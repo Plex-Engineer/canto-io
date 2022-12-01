@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 const Styled = styled.div`
   display: flex;
   align-self: center;
+  height: 100%;
   max-width: 1200px;
   section {
     flex-grow: 2;
@@ -38,13 +39,10 @@ const Styled = styled.div`
     padding: 1.8rem 0;
     cursor: pointer;
     font-size: 16px;
-
+    font-weight: 500;
     &:hover {
       border: none;
-      background-color: #06fc9a4c;
-      border-top: 4px solid transparent;
-
-      border-bottom: 4px solid var(--primary-color);
+      background-color: #06fc991a;
     }
   }
 
@@ -57,6 +55,16 @@ const Styled = styled.div`
     border-bottom: 4px solid var(--primary-color);
     border-top: 4px solid transparent;
     background-color: #06fc991a;
+    &:hover {
+      border-top: 4px solid transparent;
+      background-color: #06fc991a !important;
+
+      border-bottom: 4px solid var(--primary-color);
+    }
+
+    &.tab-hover {
+      background-color: transparent;
+    }
   }
   .react-tabs__tab--disabled {
   }

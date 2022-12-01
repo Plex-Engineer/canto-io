@@ -63,6 +63,7 @@ const AllDerevatives = (props: AllDerevativesProps) => {
         flexDirection: "column",
         width: "100%",
         height: "100%",
+        backgroundColor: searchedValidators().length == 0 ? "black" : "none",
       }}
     >
       <div
@@ -98,14 +99,18 @@ const AllDerevatives = (props: AllDerevativesProps) => {
           placeholder="search.."
         />
       </div>
+
+      <div
+        style={{
+          height: "16px",
+        }}
+      />
       {searchedValidators().length == 0 ? (
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             gap: "2rem",
-            flexGrow: "1",
-            background: "black",
             marginTop: "1rem",
             borderTopLeftRadius: "4px",
             borderTopRightRadius: "4px",
@@ -119,11 +124,18 @@ const AllDerevatives = (props: AllDerevativesProps) => {
           </Text>
         </div>
       ) : (
-        <ValidatorTable
-          validators={searchedValidators()}
-          sortBy="validatorTotal"
-          searched={userSearch}
-        />
+        <>
+          <ValidatorTable
+            validators={searchedValidators()}
+            sortBy="validatorTotal"
+            searched={userSearch}
+          />
+          <div
+            style={{
+              height: "60px",
+            }}
+          />
+        </>
       )}
     </Styled>
   );

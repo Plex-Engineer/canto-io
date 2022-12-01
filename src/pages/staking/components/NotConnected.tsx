@@ -33,5 +33,9 @@ const Styled = styled.div`
     width: 340px;
     text-align: center;
   }
+  button {
+    width: 340px !important;
+    background-color: red;
+  }
 `;
 export default NotConnected;

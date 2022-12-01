@@ -151,14 +151,23 @@ export const StakingModal = ({
           onClose={onClose}
         />
       )}
-      <div className="title">{validator.validator.description.moniker}</div>
+      <Text size="title2" type="title" className="title">
+        {validator.validator.description.moniker}
+      </Text>
       <div className="desc">
         <div
           style={{
             marginBottom: ".5rem",
           }}
         >
-          <Text size="text2" type="text" align="left">
+          <Text
+            size="text2"
+            type="text"
+            align="left"
+            style={{
+              padding: "8px 0",
+            }}
+          >
             {validator.validator.description.details.toLowerCase()}{" "}
           </Text>
         </div>
@@ -190,17 +199,17 @@ export const StakingModal = ({
           >
             <TabList className={"tablist"}>
               <Tab className={"tab"} selectedClassName="tab-selected">
-                <Text size="text2" type="text" align="left">
+                <Text size="text3" type="text" align="left" bold>
                   delegate
                 </Text>
               </Tab>
               <Tab className={"tab"} selectedClassName="tab-selected">
-                <Text size="text2" type="text" align="left">
+                <Text size="text3" type="text" align="left" bold>
                   undelegate
                 </Text>
               </Tab>
               <Tab className={"tab"} selectedClassName="tab-selected">
-                <Text size="text2" type="text" align="left">
+                <Text size="text3" type="text" align="left" bold>
                   redelegate
                 </Text>
               </Tab>
@@ -390,8 +399,6 @@ export const StakingModal = ({
             </TabPanel>
           </Tabs>
         </div>
-
-        <hr />
       </div>
     </StakingModalContainer>
   );

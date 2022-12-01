@@ -150,7 +150,7 @@ const EnableModal = ({ activePair, chainId, onClose }: Props) => {
           textAlign: "center",
         }}
       >
-        enable your tokens to be transfered in the canto lp interface
+        enable your tokens to be transferred in the canto lp interface
       </p>
       {prevModalType == ModalType.ADD ? (
         <AddAllowanceButton
