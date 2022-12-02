@@ -11,7 +11,7 @@ import LendingTable from "./table";
 import FadeIn from "react-fade-in";
 import { Text } from "global/packages/src";
 
-function sortColumnsByType(value1: unknown, value2: unknown) {
+export function sortColumnsByType(value1: unknown, value2: unknown) {
   if (typeof value1 === "string") {
     return value1.localeCompare(value2 as string);
   } else if (typeof value1 === "number") {
@@ -52,6 +52,7 @@ export const SupplyTable = ({
         columns={columns}
         isLending
         onColumnClicked={(column) => setColumnClicked(column)}
+        columnClicked={columnClicked}
       >
         {userLMTokens
           .map((token) => {
@@ -135,7 +136,12 @@ export const BorrowingTable = ({
       <Text type="title" size="title3" align="right">
         {borrowing ? "borrowing" : "available"}
       </Text>
-      <LendingTable columns={columns} isLending={false} onColumnClicked={(column) => setColumnClicked(column)} >
+      <LendingTable
+        columns={columns}
+        isLending={false}
+        onColumnClicked={(column) => setColumnClicked(column)}
+        columnClicked={columnClicked}
+      >
         {userLMTokens
           .map((token) => {
             const amount = borrowing ? token.borrowBalance : token.balanceOf;

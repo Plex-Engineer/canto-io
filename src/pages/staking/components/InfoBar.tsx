@@ -20,9 +20,9 @@ const InfoBar = ({ totalStaked, rewards, apr, onRewards }: Props) => {
       </div>
 
       <div className="dual-item">
-        <div className="top">apr</div>
+        <div className="top">% apr</div>
         <div className="bottom">
-          <Text type="title">{apr + "%"}</Text>
+          <Text type="title">{apr}</Text>
         </div>
       </div>
       <div className="dual-item">
