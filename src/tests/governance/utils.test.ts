@@ -1,3 +1,4 @@
+import { VotingOption } from "pages/governance/config/interfaces";
 import {
   convertDateToString,
   convertToVoteNumber,
@@ -24,12 +25,12 @@ test("formatting dates correctly", () => {
 
 test("converting votes to numbers", () => {
   const testCases = [
-    { vote: "yes", expected: 1 },
-    { vote: "abstain", expected: 2 },
-    { vote: "no", expected: 3 },
-    { vote: "veto", expected: 4 },
-    { vote: "anything", expected: 0 },
-    { vote: "", expected: 0 },
+    { vote: VotingOption.YES, expected: 1 },
+    { vote: VotingOption.ABSTAIN, expected: 2 },
+    { vote: VotingOption.NO, expected: 3 },
+    { vote: VotingOption.VETO, expected: 4 },
+    { vote: 5, expected: 0 },
+    { vote: 10, expected: 0 },
   ];
   const test = testCases.map((testCase) => convertToVoteNumber(testCase.vote));
   for (let i = 0; i < testCases.length; i++) {

@@ -92,7 +92,7 @@ describe("Testing Truncation", () => {
     }
   });
 
-  it("should truncate numbers to 2 decimals after the first non-zero value", () => {
+  it("should truncate numbers to 2 decimals after the first non-zero value (or show zero if too many decimals)", () => {
     const testCases = [
       "10.0000001",
       "0.00000000091234321",
@@ -100,13 +100,7 @@ describe("Testing Truncation", () => {
       "0000.5129",
       "0005.999E-2",
     ];
-    const expectedTruncation = [
-      "10.00",
-      "0.000000000912",
-      "0.1",
-      "0.512",
-      "0.0599",
-    ];
+    const expectedTruncation = ["10.00", "0.00", "0.1", "0.512", "0.0599"];
     const testTruncationToZeros = testCases.map((testCase) =>
       truncateNumber(testCase)
     );
