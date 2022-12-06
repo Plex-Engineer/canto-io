@@ -1,9 +1,5 @@
 import { toast } from "react-toastify";
 
-export function checkGravityAddress(address: string) {
-  return address.slice(0, 7) == "gravity" && address.length == 46;
-}
-
 export function toastBridge(success: boolean) {
   if (success) {
     toast("bridge successful", {

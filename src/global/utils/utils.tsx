@@ -72,7 +72,7 @@ export function removeLeadingZeros(value: string) {
   for (let i = 0; i < value.length; i++) {
     if (value[i] != "0") {
       //if first index is a decimal point we will add the zero before it
-      const zeroPad = value[i] == "." && i == 0 ? "0" : "";
+      const zeroPad = value[i] == "." ? "0" : "";
       return zeroPad + value.slice(i);
     }
   }
