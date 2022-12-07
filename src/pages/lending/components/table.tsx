@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { useState } from "react";
-
+import downImg from "assets/down.svg";
 const Table = styled.table`
   border: none;
   margin: 5px auto;
@@ -21,7 +21,6 @@ const Table = styled.table`
     font-weight: 400;
     line-height: 1rem;
     &:hover {
-      background-color: #14392a;
       cursor: pointer;
     }
   }
@@ -30,11 +29,8 @@ const Table = styled.table`
     font-size: 14px;
     font-weight: 400;
     line-height: 4rem;
-
     background-color: black;
-    margin-top: 1rem;
     transition: all 0.2s ease;
-
     position: relative;
   }
   td:first-of-type,
@@ -48,13 +44,33 @@ const Table = styled.table`
   }
   th:first-of-type {
     text-transform: lowercase;
+    border-left: 4px solid black;
+    border-radius: 4px;
+  }
+
+  th:last-of-type {
+    border-right: 4px solid black;
+    border-radius: 4px;
   }
   img {
     height: 30px;
   }
   tbody {
+    td:first-of-type {
+      border-left: 4px solid var(--primary-color);
+      border-radius: 4px;
+      height: 90px;
+    }
+    td:last-of-type {
+      border-right: 4px solid var(--primary-color);
+      border-radius: 4px;
+    }
+    tr {
+      height: 90px;
+      border: 2px solid green;
+    }
     tr:hover {
-      background-color: #2c2c2c;
+      background-color: #173428;
       cursor: pointer;
     }
   }
@@ -93,10 +109,7 @@ const LendingTable = (props: Props) => {
             {props.columns.map((heading, key) => (
               <th
                 style={{
-                  backgroundColor:
-                    wasColumnClicked && key == props.columnClicked
-                      ? "#14392a"
-                      : "",
+                  position: "relative",
                 }}
                 key={heading + (Math.random() + 1).toString(36).substring(7)}
                 onClick={() => {
@@ -105,6 +118,15 @@ const LendingTable = (props: Props) => {
                 }}
               >
                 {heading}
+                {wasColumnClicked && key == props.columnClicked ? (
+                  <img
+                    src={downImg}
+                    width="10"
+                    style={{ position: "absolute", right: "10px", top: "2px" }}
+                  />
+                ) : (
+                  ""
+                )}
               </th>
             ))}
           </tr>

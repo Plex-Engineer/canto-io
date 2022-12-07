@@ -76,16 +76,17 @@ const LendingMarket = () => {
           borrowLimit={position.totalBorrowLimit}
           supplyBalance={position.totalSupply}
         />
-
-        {/* <SpecialTabs
-          active={onLeftTab}
-          onLeftTabClick={() => {
-            setOnLeftTab(true);
-          }}
-          onRightTabClick={() => {
-            setOnLeftTab(false);
-          }}
-        /> */}
+        {isMobile ? (
+          <SpecialTabs
+            active={onLeftTab}
+            onLeftTabClick={() => {
+              setOnLeftTab(true);
+            }}
+            onRightTabClick={() => {
+              setOnLeftTab(false);
+            }}
+          />
+        ) : null}
 
         <div>
           <div

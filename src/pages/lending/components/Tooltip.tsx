@@ -2,7 +2,8 @@ import styled from "@emotion/styled";
 
 export const ToolTip = styled.div`
   position: relative;
-
+  z-index: 10;
+  padding: 1rem;
   &::before,
   &::after {
     --scale: 0;
