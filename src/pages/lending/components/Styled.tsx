@@ -89,17 +89,29 @@ export const Hero = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  /* min-height: 20rem; */
-  margin-top: 5rem;
-  margin-bottom: 0rem;
-  div {
-    width: 50%;
+  margin-top: 2rem;
+  align-items: flex-end;
+  .middle {
+    flex-grow: 1;
+    margin: 0 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
   }
-  p {
-    font-weight: 400;
-    font-size: 16px;
-    color: var(--primary-color);
+  .balance {
+    font-size: 26px;
+    line-height: 34px;
+    letter-spacing: -0.08em;
   }
+
+  .row {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+
   @media (max-width: 1000px) {
     flex-direction: column;
     margin: 0;
@@ -111,18 +123,19 @@ export const Hero = styled.div`
       text-align: left !important;
     }
     .balance {
-      font-size: 48px;
+      font-size: 26px;
     }
   }
 `;
 
-export const TinyTable = styled.div`
+export const LimitBar = styled.div`
   display: flex;
   flex-grow: 1;
   flex-direction: column;
-  margin: 2rem 0;
-  /* justify-content: start; */
+  width: 100%;
+  max-width: 690px;
   align-items: flex-start;
+  margin-top: 0.5rem;
   .tables {
     display: flex;
     z-index: 700;
@@ -136,30 +149,34 @@ export const TinyTable = styled.div`
     /* width: 30rem; */
     width: 100%;
     display: flex;
+    background-color: #3a3f3d;
+    border-radius: 4px;
+    height: 5px;
   }
   .green {
     border: 2px solid var(--primary-color);
     background-color: #6fff8773;
-    height: 10px;
+    height: 5px;
+    border-radius: 4px;
+
     width: 0%;
   }
   .red {
     border: 2px solid var(--error-color);
     border-left: 0px;
     background-color: #ff6f6f73;
-    height: 10px;
+    border-radius: 4px;
+
+    height: 5px;
   }
   .gray {
-    border: 2px solid #7b7b7b73;
     border-left: 0px;
-    background-color: #1616169b;
-    height: 10px;
+    background-color: #3a3f3d;
+    border-radius: 4px;
+    height: 5px;
     /* width: 66%; */
   }
-  p {
-    color: var(--primary-color);
-    margin-bottom: 0.5rem;
-  }
+
   h1 {
     font-weight: 400;
     font-size: 18px;
