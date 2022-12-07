@@ -3,6 +3,12 @@ import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 
 export const PAGES = {
+  landing_page: {
+    name: "landing page",
+    link: "/",
+    pageTitle: "home",
+    networks: [CantoMainnet.chainId, CantoTestnet.chainId, 1],
+  },
   bridge: {
     name: "bridge",
     link: "/bridge",
@@ -67,6 +73,7 @@ interface BalanceLimits {
   description: string;
   warningMessage: string;
 }
+
 export const pageList: PageObject[] = [
   {
     name: PAGES.bridge.name,

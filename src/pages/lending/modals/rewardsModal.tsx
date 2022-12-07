@@ -30,6 +30,11 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
           tokenName={"claim rewards"}
           txHash={state.transaction?.hash}
           onClose={onClose}
+          mixPanelEventInfo={{
+            amount: formatUnits(rewardsObj.accrued),
+            tokenName: "WCANTO",
+            tokenPrice: formatUnits(rewardsObj.price),
+          }}
         />
       )}
       <div className="title">canto balance</div>

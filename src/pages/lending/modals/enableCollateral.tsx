@@ -17,6 +17,7 @@ import { PrimaryButton } from "global/packages/src";
 import { EnableCollateralContainer } from "../components/Styled";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
+import { formatUnits } from "ethers/lib/utils";
 
 const APY = styled.div`
   display: flex;
@@ -103,6 +104,13 @@ const CollatModal = (props: Props) => {
               : enterState.transaction?.hash
           }
           onClose={props.onClose}
+          mixPanelEventInfo={{
+            tokenName: token.data.underlying.symbol,
+            tokenPrice: formatUnits(
+              token.price,
+              36 - token.data.underlying.decimals
+            ),
+          }}
         />
       )}
       <img

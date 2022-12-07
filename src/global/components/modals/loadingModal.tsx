@@ -11,8 +11,10 @@ import {
   CantoTransactionType,
   TransactionState,
 } from "global/config/transactionTypes";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import close from "assets/close.svg";
+import { Mixpanel } from "mixpanel";
+import { useNetworkInfo } from "global/stores/networkInfo";
 
 interface GlobalLoadingProps {
   transactionType: CantoTransactionType;
@@ -21,9 +23,18 @@ interface GlobalLoadingProps {
   customMessage?: string | ReactNode;
   txHash?: string;
   onClose: () => void;
+  mixPanelEventInfo?: object;
 }
 
 const GlobalLoadingModal = (props: GlobalLoadingProps) => {
+  const account = useNetworkInfo().account;
+  useEffect(() => {
+    Mixpanel.events.transactionStarted(
+      props.transactionType,
+      account,
+      props.mixPanelEventInfo
+    );
+  }, []);
   const actionObj = transactionStatusActions(
     props.transactionType,
     props.tokenName

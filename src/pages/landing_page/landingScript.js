@@ -1,36 +1,34 @@
-export function openLink(input) {
+import { PAGES } from "global/config/pageList";
+import { Mixpanel } from "mixpanel";
+
+export function openLink(input, account) {
+  const [link, name] = getLink(input);
+  if (!link) {
+    document.querySelector("#error").style.display = "block";
+    setTimeout(() => {
+      document.querySelector("#error").style.display = "none";
+    }, 3000);
+  } else {
+    Mixpanel.events.landingPageActions.navigatedTo(name, account);
+    window.open(link, "_self");
+  }
+}
+
+export function getLink(input) {
   switch (input) {
     case "0":
-      window.open("/bridge", "_self");
-      // alert();
-      break;
+      return [PAGES.bridge.link, PAGES.bridge.name];
     case "1":
-      window.open("/staking", "_self");
-      // alert();
-      break;
-    case "4":
-      window.open("/governance", "_self");
-      // alert();
-      break;
+      return [PAGES.staking.link, PAGES.staking.name];
     case "2":
-      window.open("/lp", "_self");
-      // alert();
-      break;
+      return [PAGES.lp.link, PAGES.lp.name];
     case "3":
-      window.open("/lending", "_self");
-      // alert();
-      break;
-    case "6":
+      return [PAGES.lending.link, PAGES.lending.name];
+    case "4":
+      return [PAGES.governance.link, PAGES.governance.name];
     case "7":
-      window.open(
-        "https://canto.gitbook.io/canto/overview/about-canto",
-        "_self"
-      );
-      break;
+      return ["https://canto.gitbook.io/canto/overview/about-canto", "about"];
     default:
-      document.querySelector("#error").style.display = "block";
-      setTimeout(() => {
-        document.querySelector("#error").style.display = "none";
-      }, 3000);
+      return ["", ""];
   }
 }

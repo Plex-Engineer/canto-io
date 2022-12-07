@@ -11,7 +11,6 @@ import {
   useRepayEth,
   Details,
 } from "../hooks/useTransaction";
-import { Mixpanel } from "mixpanel";
 import { UserLMTokenDetails } from "../config/interfaces";
 import { parseUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
@@ -132,22 +131,9 @@ const ReactiveButton = ({
                 } else {
                   supplySend(BNAmount);
                 }
-                Mixpanel.events.lendingMarketActions.supply(
-                  token.wallet ?? "" ?? "",
-                  token.data.symbol,
-                  BNAmount.toString(),
-                  token.price.toString()
-                );
-
                 break;
               case CantoTransactionType.BORROW:
                 borrowSend(BNAmount);
-                Mixpanel.events.lendingMarketActions.borrow(
-                  token.wallet ?? "",
-                  token.data.symbol,
-                  BNAmount.toString(),
-                  token.price.toString()
-                );
                 break;
               case CantoTransactionType.REPAY:
                 if (isEth) {
@@ -165,21 +151,9 @@ const ReactiveButton = ({
                       : BNAmount
                   );
                 }
-                Mixpanel.events.lendingMarketActions.repay(
-                  token.wallet ?? "",
-                  token.data.symbol,
-                  BNAmount.toString(),
-                  token.price.toString()
-                );
                 break;
               case CantoTransactionType.WITHDRAW:
                 redeemSend(BNAmount);
-                Mixpanel.events.lendingMarketActions.withdraw(
-                  token.wallet ?? "",
-                  token.data.symbol,
-                  BNAmount.toString(),
-                  token.price.toString()
-                );
             }
           }
         }}
