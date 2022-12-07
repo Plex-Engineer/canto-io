@@ -29,11 +29,13 @@ interface GlobalLoadingProps {
 const GlobalLoadingModal = (props: GlobalLoadingProps) => {
   const account = useNetworkInfo().account;
   useEffect(() => {
-    Mixpanel.events.transactionStarted(
-      props.transactionType,
-      account,
-      props.mixPanelEventInfo
-    );
+    if (props.status != "None") {
+      Mixpanel.events.transactionStarted(
+        props.transactionType,
+        account,
+        props.mixPanelEventInfo
+      );
+    }
   }, []);
   const actionObj = transactionStatusActions(
     props.transactionType,

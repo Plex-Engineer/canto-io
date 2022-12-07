@@ -102,6 +102,12 @@ const EnableModal = ({ activePair, chainId, onClose }: Props) => {
           }
           txHash={addAllowanceA.transaction?.hash}
           onClose={onClose}
+          mixPanelEventInfo={{
+            tokenName:
+              activePair.basePairInfo.token1.symbol +
+              " / " +
+              activePair.basePairInfo.token2.symbol,
+          }}
         />
       )}
       {addAllowanceB.status != "None" && (
@@ -115,6 +121,12 @@ const EnableModal = ({ activePair, chainId, onClose }: Props) => {
           }
           txHash={addAllowanceB.transaction?.hash}
           onClose={onClose}
+          mixPanelEventInfo={{
+            tokenName:
+              activePair.basePairInfo.token1.symbol +
+              " / " +
+              activePair.basePairInfo.token2.symbol,
+          }}
         />
       )}
       {addLPAllowance.status != "None" && (
@@ -128,6 +140,12 @@ const EnableModal = ({ activePair, chainId, onClose }: Props) => {
           }
           txHash={addLPAllowance.transaction?.hash}
           onClose={onClose}
+          mixPanelEventInfo={{
+            tokenName:
+              activePair.basePairInfo.token1.symbol +
+              " / " +
+              activePair.basePairInfo.token2.symbol,
+          }}
         />
       )}
       <div className="title">{"Enable Token"}</div>

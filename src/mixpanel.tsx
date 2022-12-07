@@ -71,6 +71,36 @@ const actions = {
         }
       },
     },
+    lpInterfaceActions: {
+      modalInteraction: (
+        account: string | undefined,
+        modalType: string,
+        tokenName: string,
+        opened: boolean
+      ) => {
+        if (opened) {
+          mixpanel.track("LP Interface Modal Opened", {
+            distinct_id: account,
+            tokenName: tokenName,
+            modalType: modalType,
+            wallet: account,
+          });
+        } else {
+          mixpanel.track("LP Interface Modal Closed", {
+            distinct_id: account,
+            tokenName: tokenName,
+            modalType: modalType,
+            wallet: account,
+          });
+        }
+      },
+      visitSlingshot: (account: string | undefined) => {
+        mixpanel.track("Visit Slingshot", {
+          distinct_id: account,
+          wallet: account,
+        });
+      },
+    },
   },
 };
 
