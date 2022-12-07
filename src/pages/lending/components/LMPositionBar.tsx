@@ -6,20 +6,26 @@ import CypherText from "./CypherText";
 import { formatUnits } from "ethers/lib/utils";
 import Popup from "reactjs-popup";
 import RewardsBox from "./RewardsBox";
+import useModalStore, { ModalType } from "../stores/useModals";
 
 interface LMPositionBarProps {
   borrowBalance: BigNumber;
   borrowLimit: BigNumber;
   supplyBalance: BigNumber;
+  rewardBalance: string;
 }
 export const LMPositionBar = ({
   borrowBalance,
   borrowLimit,
   supplyBalance,
+  rewardBalance,
 }: LMPositionBarProps) => {
   const borrowPercentage = !borrowLimit.isZero()
     ? borrowBalance.mul(100).div(borrowLimit)
     : BigNumber.from(0);
+
+  const modalStore = useModalStore();
+
   return (
     <>
       <Hero>
@@ -53,11 +59,14 @@ export const LMPositionBar = ({
             }
           }
         >
-          <RewardsBox rewards="343.48" />
+          <RewardsBox rewards={rewardBalance} />
           <OutlinedButton
             weight="bold"
             style={{
               height: "36px",
+            }}
+            onClick={() => {
+              modalStore.open(ModalType.BALANCE);
             }}
           >
             <Text type="text">claim</Text>

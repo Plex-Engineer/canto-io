@@ -72,6 +72,11 @@ const LendingMarket = () => {
         </div> */}
 
         <LMPositionBar
+          rewardBalance={
+            !rewards.accrued.isZero()
+              ? truncateNumber(formatUnits(rewards.accrued))
+              : "000.000"
+          }
           borrowBalance={position.totalBorrow}
           borrowLimit={position.totalBorrowLimit}
           supplyBalance={position.totalSupply}
