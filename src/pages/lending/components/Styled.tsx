@@ -313,7 +313,7 @@ export const RewardsContainer = styled.div`
     flex-direction: column;
     flex-grow: 1;
     justify-content: end;
-    width: 18rem;
+    width: 21rem;
   }
   .bal {
     display: flex;
