@@ -13,6 +13,10 @@ export enum CantoTransactionType {
   DECOLLATERLIZE = "Decollateralize",
   STAKE = "Stake",
   VOTING = "Voting",
+  BRIDGE_IN = "Bridge In",
+  BRIDGE_OUT = "Bridge Out",
+  CONVERT_TO_EVM = "Convert to EVM",
+  CONVERT_TO_COSMOS = "Convert to Cosmos",
 }
 
 //Do not change, same as useTransaction, but need for compatability with cosmos transactions

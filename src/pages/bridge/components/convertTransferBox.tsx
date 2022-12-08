@@ -19,6 +19,8 @@ import { GeneralTransferBox } from "./generalTransferBox";
 import { PrimaryButton } from "global/packages/src";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
 import cantoIcon from "assets/icons/canto-evm.svg";
+import { Mixpanel } from "mixpanel";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 interface ConvertTransferBoxProps {
   cantoToEVM: boolean;
@@ -103,6 +105,13 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
           height="big"
           weight="bold"
           onClick={async () => {
+            Mixpanel.events.transactionStarted(
+              props.cantoToEVM
+                ? CantoTransactionType.CONVERT_TO_EVM
+                : CantoTransactionType.CONVERT_TO_COSMOS,
+              props.ETHAddress,
+              { tokenName: props.activeToken.symbol, amount: props.amount }
+            );
             setInConvertTransaction(true);
             setConvertConfirmation(
               "waiting for the metamask transaction to be signed..."

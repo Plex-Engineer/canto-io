@@ -26,8 +26,6 @@ export const UndelegatingTable = (props: TableProps) => {
       }
     }
   }
-  console.log(columnClicked);
-
   if (props.validators.length) {
     return (
       <Table

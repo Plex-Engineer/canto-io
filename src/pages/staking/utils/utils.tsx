@@ -19,7 +19,7 @@ export async function performTxAndSetStatus(
   //metamask pops up waiting for signature
   setStatus({
     status: "PendingSignature",
-    type: StakingTransactionType.DELEGATE,
+    type: txType,
     message: userTxMessages.waitSign,
   });
   let transaction;

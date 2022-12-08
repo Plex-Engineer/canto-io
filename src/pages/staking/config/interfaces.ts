@@ -73,11 +73,11 @@ export interface AllStakingProps {
   validators: Validator[];
 }
 export enum StakingTransactionType {
-  NONE,
-  DELEGATE,
-  UNDELEGATE,
-  REDELEGATE,
-  CLAIM_REWARDS,
+  NONE = "NONE",
+  DELEGATE = "DELEGATE",
+  UNDELEGATE = "UNDELEGATE",
+  REDELEGATE = "REDELEGATE",
+  CLAIM_REWARDS = "CLAIM_REWARDS",
 }
 
 export interface ValidatorTableProps {

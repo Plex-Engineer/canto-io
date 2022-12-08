@@ -10,6 +10,8 @@ import close from "assets/icons/close.svg";
 import DelegationModal from "./delegationModal";
 import RedelgationModal from "./redelgationModal";
 import useTransactionStore from "../stores/transactionStore";
+import { useEffect } from "react";
+import { Mixpanel } from "mixpanel";
 
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
@@ -65,14 +67,29 @@ export const ModalManager = (props: ModalManagerProps) => {
   const transactionStore = useTransactionStore();
   const networkInfo = useNetworkInfo();
 
+  useEffect(() => {
+    if (validatorModals.currentModal != ValidatorModalType.NONE) {
+      Mixpanel.events.stakingActions.modalInteraction(
+        networkInfo.account,
+        validatorModals.activeValidator.validator.description.moniker,
+        true
+      );
+    }
+  }, [validatorModals.currentModal]);
+
   return (
     <StyledPopup
       open={validatorModals.currentModal != ValidatorModalType.NONE}
-      onClose={() =>
+      onClose={() => {
         validatorModals.close(() =>
           transactionStore.setTransactionStatus(undefined)
-        )
-      }
+        );
+        Mixpanel.events.stakingActions.modalInteraction(
+          networkInfo.account,
+          validatorModals.activeValidator.validator.description.moniker,
+          false
+        );
+      }}
       lockScroll
       modal
       position="center center"
@@ -137,10 +154,6 @@ export const ModalManager = (props: ModalManagerProps) => {
             )
           }
         />
-        // <ChoiceModal
-        //   validator={validatorModals.activeValidator}
-        //   balance={networkInfo.balance}
-        // />
       )}
     </StyledPopup>
   );

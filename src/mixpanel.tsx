@@ -119,6 +119,41 @@ const actions = {
         });
       },
     },
+    stakingActions: {
+      modalInteraction: (
+        account: string | undefined,
+        validatorName: string,
+        opened: boolean
+      ) => {
+        if (opened) {
+          mixpanel.track("Staking Modal Opened", {
+            distinct_id: account,
+            wallet: account,
+            validatorName: validatorName,
+          });
+        } else {
+          mixpanel.track("Staking Modal Closed", {
+            distinct_id: account,
+            wallet: account,
+            validatorName: validatorName,
+          });
+        }
+      },
+      userSearch: () => {
+        mixpanel.track("Validators Searched");
+      },
+    },
+    bridgeActions: {
+      transactionPageOpened: () => {
+        mixpanel.track("Bridge Transaction Page Opened");
+      },
+      viewBlockExplorer: (txType: string, status: string) => {
+        mixpanel.track("Bridge View Block Explorer", {
+          txType: txType,
+          status: status,
+        });
+      },
+    },
   },
 };
 

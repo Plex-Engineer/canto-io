@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
 import loadingIcon from "assets/loading.gif";
-import completeIcon from "assets/complete.svg";
 import bridgeInIcon from "assets/bridge-in.svg";
 import bridgeOutIcon from "assets/bridge-out.svg";
 import { convertSecondsToString } from "../utils/utils";
+import { Mixpanel } from "mixpanel";
 
 interface Props {
   type: "in" | "out";
@@ -42,6 +42,12 @@ const TransactionBox = (props: Props) => {
         target="_blank"
         rel="noreferrer"
         className="link"
+        onClick={() =>
+          Mixpanel.events.bridgeActions.viewBlockExplorer(
+            "bridge " + props.type,
+            props.status
+          )
+        }
       >
         view on explorer
       </a>
