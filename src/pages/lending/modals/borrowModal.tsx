@@ -36,7 +36,7 @@ const BorrowModal = ({ position, onClose }: IProps) => {
   }, [isRepaying]);
   function resetInput() {
     //if in repay tab and allowance is true or if borrowing is true
-    if (isRepaying && !token.allowance) {
+    if (isRepaying && token.allowance.isZero()) {
       setInputState(InputState.ENABLE);
     } else {
       setInputState(InputState.ENTERAMOUNT);
@@ -53,6 +53,11 @@ const BorrowModal = ({ position, onClose }: IProps) => {
         setInputState(InputState.ENTERAMOUNT);
       } else if (parseUnits(value, token.data.underlying.decimals).gt(max)) {
         setInputState(InputState.NOFUNDS);
+      } else if (
+        parseUnits(value, token.data.underlying.decimals).gt(token.allowance) &&
+        isRepaying
+      ) {
+        setInputState(InputState.INCREASE_ALLOWANCE);
       } else {
         setInputState(InputState.CONFIRM);
       }
@@ -127,6 +132,7 @@ const BorrowModal = ({ position, onClose }: IProps) => {
                 setInputState(InputState.CONFIRM);
               }
             }
+            //no allowance needed for borrow, so validation not needed
           }}
           onChange={(value) => {
             setUserAmount(value);
@@ -193,6 +199,10 @@ const BorrowModal = ({ position, onClose }: IProps) => {
               setMax(true);
               setInputState(InputState.CONFIRM);
             }
+            inputValidation(
+              formatUnits(repayLimit, token.data.underlying.decimals),
+              repayLimit
+            );
           }}
           onChange={(value) => {
             setUserAmount(value);
@@ -226,9 +236,10 @@ const BorrowModal = ({ position, onClose }: IProps) => {
           token={token}
           amount={userAmount}
           transactionType={
-            inputState != InputState.ENABLE
-              ? CantoTransactionType.REPAY
-              : CantoTransactionType.ENABLE
+            inputState == InputState.ENABLE ||
+            inputState == InputState.INCREASE_ALLOWANCE
+              ? CantoTransactionType.ENABLE
+              : CantoTransactionType.REPAY
           }
         />
 
@@ -244,6 +255,8 @@ const BorrowModal = ({ position, onClose }: IProps) => {
           transactionType={
             inputState == InputState.ENABLE
               ? CantoTransactionType.ENABLE
+              : inputState == InputState.INCREASE_ALLOWANCE
+              ? CantoTransactionType.INCREASE_ALLOWANCE
               : isRepaying
               ? CantoTransactionType.REPAY
               : CantoTransactionType.BORROW

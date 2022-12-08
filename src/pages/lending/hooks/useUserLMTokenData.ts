@@ -136,15 +136,10 @@ export function useUserLMTokenData(
 
       const inSupplyMarket = !balanceOfC.isZero();
       const inBorrowMarket = !borrowBalance.isZero();
-      const allowance: boolean =
+      const allowance: BigNumber =
         LMTokens[idx].data.symbol === "cCANTO"
-          ? true
-          : Number(
-              ethers.utils.formatUnits(
-                tokenData[3][0],
-                LMTokens[idx].data.underlying.decimals
-              )
-            ) > 0;
+          ? BigNumber.from(ethers.constants.MaxUint256)
+          : tokenData[3][0];
 
       const supplyBalance = getSupplyBalanceFromCTokens(
         balanceOfC,

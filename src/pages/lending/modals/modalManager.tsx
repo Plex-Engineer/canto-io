@@ -5,11 +5,9 @@ import close from "assets/close.svg";
 import CollatModal from "./enableCollateral";
 import SupplyModal from "./supplyModal";
 import BorrowModal from ".//borrowModal";
-import { Mixpanel } from "mixpanel";
 import RewardsModal from "./rewardsModal";
 import useModalStore, { ModalType } from "pages/lending/stores/useModals";
 import { UserLMPosition, UserLMRewards } from "pages/lending/config/interfaces";
-import { useEffect } from "react";
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
   &-overlay {
@@ -64,28 +62,10 @@ interface Props {
 
 const ModalManager = ({ isOpen, position, rewards }: Props) => {
   const modalStore = useModalStore();
-  useEffect(() => {
-    if (modalStore.currentModal !== ModalType.NONE && modalStore.activeToken) {
-      Mixpanel.events.lendingMarketActions.modalInteraction(
-        modalStore.activeToken.wallet ?? "",
-        modalStore.currentModal.toString(),
-        modalStore.activeToken.data.symbol,
-        true
-      );
-    }
-  }, [modalStore.currentModal]);
   return (
     <StyledPopup
       open={isOpen}
-      onClose={() => {
-        modalStore.close();
-        Mixpanel.events.lendingMarketActions.modalInteraction(
-          modalStore.activeToken.wallet ?? "",
-          modalStore.currentModal.toString(),
-          modalStore.activeToken.data.symbol,
-          false
-        );
-      }}
+      onClose={modalStore.close}
       lockScroll
       modal
       position="center center"
