@@ -1,5 +1,6 @@
 import { UserLMTokenDetails, EmptyActiveLMToken } from "../config/interfaces";
 import create from "zustand";
+import { Mixpanel } from "mixpanel";
 
 export enum ModalType {
   WALLET_CONNECTION = "WALLET_CONNECTION",
@@ -23,8 +24,26 @@ interface ModalState {
 }
 const useModalStore = create<ModalState>((set, get) => ({
   currentModal: ModalType.NONE,
-  open: (modal) => set({ currentModal: modal }),
-  close: () => set({ currentModal: ModalType.NONE }),
+  open: (modal) => {
+    set({ currentModal: modal });
+    const activeToken = get().activeToken;
+    Mixpanel.events.lendingMarketActions.modalInteraction(
+      activeToken.wallet ?? "",
+      modal,
+      activeToken.data.symbol,
+      true
+    );
+  },
+  close: () => {
+    const activeToken = get().activeToken;
+    Mixpanel.events.lendingMarketActions.modalInteraction(
+      activeToken.wallet ?? "",
+      get().currentModal,
+      activeToken.data.symbol,
+      false
+    );
+    set({ currentModal: ModalType.NONE });
+  },
   isOpen: (modal) => modal === get().currentModal,
   redirect: (modal) => {
     set({ currentModal: modal });
