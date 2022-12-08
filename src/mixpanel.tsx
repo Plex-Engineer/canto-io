@@ -101,6 +101,24 @@ const actions = {
         });
       },
     },
+    governanceActions: {
+      openedStakingPage: (account: string | undefined) => {
+        mixpanel.track("Visit Staking Page From Governance Page", {
+          distinct_id: account,
+          wallet: account,
+        });
+      },
+      proposalOpened: (
+        account: string | undefined,
+        proposalId: string | undefined
+      ) => {
+        mixpanel.track("Proposal Opened", {
+          distinct_id: account,
+          wallet: account,
+          proposalId: proposalId,
+        });
+      },
+    },
   },
 };
 
