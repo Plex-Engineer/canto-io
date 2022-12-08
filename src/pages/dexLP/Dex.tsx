@@ -21,6 +21,7 @@ import FadeIn from "react-fade-in";
 import { Text } from "global/packages/src";
 import { Details } from "pages/lending/hooks/useTransaction";
 import HelmetSEO from "global/components/seo";
+import { sortColumnsByType } from "pages/lending/components/LMTables";
 const Dex = () => {
   // Mixpanel.events.pageOpened("Dex Market", '');
 
@@ -103,6 +104,9 @@ const Dex = () => {
     });
   }, [notifications]);
 
+  const [currentPoolsColumnClicked, setCurrentPoolsColumnClicked] = useState(0);
+  const [availablePoolsColumnClicked, setAvailablePoolsColumnCLicked] =
+    useState(0);
   return (
     <>
       <HelmetSEO
@@ -183,65 +187,97 @@ const Dex = () => {
               current position
             </Text>
             <FadeIn>
-              <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-                {userPairs?.map((pair: UserLPPairInfo, idx) => {
-                  return !pair.userSupply.totalLP.isZero() ||
-                    pair.userSupply.percentOwned > 0 ? (
-                    <Row
-                      delay={0.2 * idx}
-                      key={pair.basePairInfo.address}
-                      iconLeft={pair.basePairInfo.token1.icon}
-                      iconRight={pair.basePairInfo.token2.icon}
-                      onClick={() => {
-                        setActivePair(pair);
-                        setModalType(
-                          !pair.userSupply.totalLP.isZero()
-                            ? ModalType.ADD_OR_REMOVE
-                            : ModalType.ADD
-                        );
-                      }}
-                      assetName={
-                        pair.basePairInfo.token1.symbol +
-                        "/" +
-                        pair.basePairInfo.token2.symbol
-                      }
-                      totalValueLocked={
-                        noteSymbol +
-                        ethers.utils.commify(
-                          truncateNumber(formatUnits(pair.totalSupply.tvl))
-                        )
-                      }
-                      apr={"23.2"}
-                      position={
-                        truncateNumber(
-                          formatUnits(
-                            pair.userSupply.totalLP,
-                            pair.basePairInfo.decimals
+              <Table
+                columns={["Asset", "TVL", "wallet", "% Share"]}
+                onColumnClicked={(column) =>
+                  setCurrentPoolsColumnClicked(column)
+                }
+                columnClicked={currentPoolsColumnClicked}
+              >
+                {userPairs
+                  ?.map((pair: UserLPPairInfo, idx) => {
+                    return !pair.userSupply.totalLP.isZero() ||
+                      pair.userSupply.percentOwned > 0 ? (
+                      <Row
+                        delay={0.2 * idx}
+                        key={pair.basePairInfo.address}
+                        iconLeft={pair.basePairInfo.token1.icon}
+                        iconRight={pair.basePairInfo.token2.icon}
+                        onClick={() => {
+                          setActivePair(pair);
+                          setModalType(
+                            !pair.userSupply.totalLP.isZero()
+                              ? ModalType.ADD_OR_REMOVE
+                              : ModalType.ADD
+                          );
+                        }}
+                        assetName={
+                          pair.basePairInfo.token1.symbol +
+                          "/" +
+                          pair.basePairInfo.token2.symbol
+                        }
+                        totalValueLocked={
+                          noteSymbol +
+                          ethers.utils.commify(
+                            truncateNumber(formatUnits(pair.totalSupply.tvl))
                           )
-                        ) + " LP Tokens"
-                      }
-                      share={truncateNumber(
-                        (pair.userSupply.percentOwned * 100).toString()
-                      )}
-                    />
-                  ) : null;
-                })}
+                        }
+                        apr={"23.2"}
+                        position={
+                          truncateNumber(
+                            formatUnits(
+                              pair.userSupply.totalLP,
+                              pair.basePairInfo.decimals
+                            )
+                          ) + " LP Tokens"
+                        }
+                        share={truncateNumber(
+                          (pair.userSupply.percentOwned * 100).toString()
+                        )}
+                        sortableProps={[
+                          pair.basePairInfo.token1.symbol +
+                            "/" +
+                            pair.basePairInfo.token2.symbol,
+                          Number(formatUnits(pair.totalSupply.tvl)),
+                          Number(
+                            formatUnits(
+                              pair.userSupply.totalLP,
+                              pair.basePairInfo.decimals
+                            )
+                          ),
+                          pair.userSupply.percentOwned,
+                        ]}
+                      />
+                    ) : null;
+                  })
+                  .sort((a, b) => {
+                    return sortColumnsByType(
+                      a?.props.sortableProps?.[currentPoolsColumnClicked],
+                      b?.props.sortableProps?.[currentPoolsColumnClicked]
+                    );
+                  })}
               </Table>
             </FadeIn>
           </div>
         ) : null}
-        {
-          userPairs?.filter(
-            (pair: UserLPPairInfo) =>
-              pair.userSupply.totalLP.isZero() &&
-              pair.userSupply.percentOwned == 0
-          ).length ? (
-            <div>
-              <Text type="title" align="left" className="tableName">
-                pools
-              </Text>
-              <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-                {userPairs?.map((pair: UserLPPairInfo, idx) => {
+        {userPairs?.filter(
+          (pair: UserLPPairInfo) =>
+            pair.userSupply.totalLP.isZero() &&
+            pair.userSupply.percentOwned == 0
+        ).length ? (
+          <div>
+            <Text type="title" align="left" className="tableName">
+              pools
+            </Text>
+            <Table
+              columns={["Asset", "TVL", "wallet", "% Share"]}
+              onColumnClicked={(column) =>
+                setAvailablePoolsColumnCLicked(column)
+              }
+              columnClicked={availablePoolsColumnClicked}
+            >
+              {userPairs
+                ?.map((pair: UserLPPairInfo, idx) => {
                   return !(
                     pair.userSupply.totalLP.isZero() &&
                     pair.userSupply.percentOwned == 0
@@ -278,19 +314,31 @@ const Dex = () => {
                       share={truncateNumber(
                         (pair.userSupply.percentOwned * 100).toString()
                       )}
+                      sortableProps={[
+                        pair.basePairInfo.token1.symbol +
+                          "/" +
+                          pair.basePairInfo.token2.symbol,
+                        Number(formatUnits(pair.totalSupply.tvl)),
+                        Number(
+                          formatUnits(
+                            pair.userSupply.totalLP,
+                            pair.basePairInfo.decimals
+                          )
+                        ),
+                        pair.userSupply.percentOwned,
+                      ]}
                     />
                   );
+                })
+                .sort((a, b) => {
+                  return sortColumnsByType(
+                    a?.props.sortableProps?.[availablePoolsColumnClicked],
+                    b?.props.sortableProps?.[availablePoolsColumnClicked]
+                  );
                 })}
-              </Table>
-            </div>
-          ) : null
-          // <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-          //   <LoadingRow colSpan={4} />
-          //   <LoadingRow colSpan={4} />
-          //   <LoadingRow colSpan={4} />
-          //   <LoadingRow colSpan={4} />
-          // </Table>
-        }
+            </Table>
+          </div>
+        ) : null}
       </DexContainer>
     </>
   );

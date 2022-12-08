@@ -1,10 +1,11 @@
 import { VotingOption } from "../config/interfaces";
 
 export function convertDateToString(dateString: string) {
+  const date = new Date(dateString);
   return (
-    new Date(dateString).toLocaleDateString().replaceAll("/", ".") +
+    date.toLocaleDateString().replace(/[/]/g, ".") +
     " : " +
-    new Date(dateString).toLocaleTimeString()
+    date.toLocaleTimeString()
   );
 }
 

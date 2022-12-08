@@ -1,31 +1,40 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import {
+  CantoTransactionType,
+  TransactionActionObject,
+  TransactionState,
+} from "global/config/transactionTypes";
+import {
   getTransactionStatusString,
   transactionStatusActions,
 } from "global/utils/utils";
 
+interface LocalTestType {
+  value: TransactionActionObject;
+  status?: TransactionState;
+  expected: string;
+}
 test("checking reactive button status is correct", () => {
-  const enableString = "enable";
-  const increaseAllowanceString = "increase allowance";
-  const sendTokenString = "send token";
-  const addString = "add";
-  const removeString = "remove";
-  const randomString = "random";
-
-  const enableActions = transactionStatusActions(enableString);
+  const enableActions = transactionStatusActions(CantoTransactionType.ENABLE);
   const increaseAllowanceActions = transactionStatusActions(
-    increaseAllowanceString
+    CantoTransactionType.INCREASE_ALLOWANCE
   );
-  const sendTokenActions = transactionStatusActions(sendTokenString);
+  const sendTokenActions = transactionStatusActions(
+    CantoTransactionType.SEND_TOKEN
+  );
   const sendTokenActionsWithTokenName = transactionStatusActions(
-    sendTokenString,
+    CantoTransactionType.SEND_TOKEN,
     "NAME"
   );
-  const addActions = transactionStatusActions(addString);
-  const removeActions = transactionStatusActions(removeString);
-  const randomActions = transactionStatusActions(randomString);
+  const addActions = transactionStatusActions(
+    CantoTransactionType.ADD_LIQUIDITY
+  );
+  const removeActions = transactionStatusActions(
+    CantoTransactionType.REMOVE_LIQUIDITY
+  );
+  const randomActions = transactionStatusActions(100);
 
-  const testCases = [
+  const testCases: LocalTestType[] = [
     { value: enableActions, status: "None", expected: "enable token" },
     {
       value: increaseAllowanceActions,
@@ -45,54 +54,58 @@ test("checking reactive button status is correct", () => {
     {
       value: enableActions,
       status: "PendingSignature",
-      expected: "please sign to enable token",
+      expected: "awaiting signature to enable token...",
     },
     {
       value: increaseAllowanceActions,
       status: "PendingSignature",
-      expected: "please sign to increase allowance",
+      expected: "awaiting signature to increase allowance...",
     },
     {
       value: sendTokenActions,
       status: "PendingSignature",
-      expected: "please sign to send token",
+      expected: "awaiting signature to send token...",
     },
     {
       value: sendTokenActionsWithTokenName,
       status: "PendingSignature",
-      expected: "please sign to send NAME",
+      expected: "awaiting signature to send NAME...",
     },
     {
       value: addActions,
       status: "PendingSignature",
-      expected: "please sign to add liquidity",
+      expected: "awaiting signature to add liquidity...",
     },
     {
       value: removeActions,
       status: "PendingSignature",
-      expected: "please sign to remove liquidity",
+      expected: "awaiting signature to remove liquidity...",
     },
     {
       value: randomActions,
       status: "PendingSignature",
-      expected: "please sign to confirm",
+      expected: "awaiting signature to confirm...",
     },
 
-    { value: enableActions, status: "Mining", expected: "enabling token" },
+    { value: enableActions, status: "Mining", expected: "enabling token..." },
     {
       value: increaseAllowanceActions,
       status: "Mining",
-      expected: "increasing allowance",
+      expected: "increasing allowance...",
     },
-    { value: sendTokenActions, status: "Mining", expected: "sending token" },
+    { value: sendTokenActions, status: "Mining", expected: "sending token..." },
     {
       value: sendTokenActionsWithTokenName,
       status: "Mining",
-      expected: "sending NAME",
+      expected: "sending NAME...",
     },
-    { value: addActions, status: "Mining", expected: "adding liquidity" },
-    { value: removeActions, status: "Mining", expected: "removing liquidity" },
-    { value: randomActions, status: "Mining", expected: "validating" },
+    { value: addActions, status: "Mining", expected: "adding liquidity..." },
+    {
+      value: removeActions,
+      status: "Mining",
+      expected: "removing liquidity...",
+    },
+    { value: randomActions, status: "Mining", expected: "validating..." },
 
     {
       value: enableActions,
@@ -133,37 +146,37 @@ test("checking reactive button status is correct", () => {
     {
       value: enableActions,
       status: "Exception",
-      expected: "unable to enable token",
+      expected: "user denied transaction",
     },
     {
       value: increaseAllowanceActions,
       status: "Exception",
-      expected: "unable to increase allowance",
+      expected: "user denied transaction",
     },
     {
       value: sendTokenActions,
       status: "Exception",
-      expected: "unable to send token",
+      expected: "user denied transaction",
     },
     {
       value: sendTokenActionsWithTokenName,
       status: "Exception",
-      expected: "unable to send NAME",
+      expected: "user denied transaction",
     },
     {
       value: addActions,
       status: "Exception",
-      expected: "unable to add liquidity",
+      expected: "user denied transaction",
     },
     {
       value: removeActions,
       status: "Exception",
-      expected: "unable to remove liquidity",
+      expected: "user denied transaction",
     },
     {
       value: randomActions,
       status: "Exception",
-      expected: "unable to confirm",
+      expected: "user denied transaction",
     },
 
     {
@@ -194,21 +207,21 @@ test("checking reactive button status is correct", () => {
     },
     { value: randomActions, status: "Fail", expected: "unable to confirm" },
 
-    { value: enableActions, status: "Random", expected: "enable token" },
+    { value: enableActions, status: undefined, expected: "enable token" },
     {
       value: increaseAllowanceActions,
-      status: "Random",
+      status: undefined,
       expected: "increase allowance",
     },
-    { value: sendTokenActions, status: "Random", expected: "send token" },
+    { value: sendTokenActions, status: undefined, expected: "send token" },
     {
       value: sendTokenActionsWithTokenName,
-      status: "Random",
+      status: undefined,
       expected: "send NAME",
     },
-    { value: addActions, status: "Random", expected: "add liquidity" },
-    { value: removeActions, status: "Random", expected: "remove liquidity" },
-    { value: randomActions, status: "Random", expected: "confirm" },
+    { value: addActions, status: undefined, expected: "add liquidity" },
+    { value: removeActions, status: undefined, expected: "remove liquidity" },
+    { value: randomActions, status: undefined, expected: "confirm" },
   ];
   const testReturns = testCases.map((testCase) =>
     getTransactionStatusString(
