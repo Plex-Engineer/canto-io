@@ -38,6 +38,7 @@ import {
   CantoTransactionType,
   TransactionState,
 } from "global/config/transactionTypes";
+import { Mixpanel } from "mixpanel";
 const Proposal = () => {
   const [chainId, account] = useNetworkInfo((state) => [
     Number(state.chainId),
@@ -86,6 +87,9 @@ const Proposal = () => {
     showAccountVote();
     getProposalData();
   }, []);
+  useEffect(() => {
+    Mixpanel.events.governanceActions.proposalOpened(account, id);
+  }, [account]);
   const chain = {
     chainId: chainId ?? 0,
     cosmosChainId: `canto_${chainId}-1`,
@@ -282,6 +286,10 @@ const Proposal = () => {
                   onClose={() => {
                     setCastingVote(VotingOption.NONE);
                     setVoteStatus("None");
+                  }}
+                  mixPanelEventInfo={{
+                    proposalId: proposal.proposal_id,
+                    vote: convertVoteNumberToString(castingVote),
                   }}
                 />
               )}

@@ -88,6 +88,11 @@ const Governance = () => {
             textDecoration: "underline",
           }}
           href="/staking"
+          onClick={() =>
+            Mixpanel.events.governanceActions.openedStakingPage(
+              networkInfo.account
+            )
+          }
         >
           stake
         </a>{" "}

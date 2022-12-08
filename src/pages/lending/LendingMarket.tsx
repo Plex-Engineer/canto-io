@@ -7,7 +7,6 @@ import { ModalType, ModalManager } from "./modals/modalManager";
 import { Details } from "./hooks/useTransaction";
 import { Styled } from "./components/Styled";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import { Mixpanel } from "mixpanel";
 import { transactionStatusActions, truncateNumber } from "global/utils/utils";
 import useModalStore from "./stores/useModals";
 import { useLMTokenData } from "./hooks/useLMTokenData";
@@ -23,7 +22,6 @@ import { useToast } from "./hooks/useToasts";
 import { SpecialTabs } from "./components/SpecialTabs";
 import { OutlinedButton } from "global/packages/src";
 import FadeIn from "react-fade-in";
-import { CantoTransactionType } from "global/config/transactionTypes";
 import HelmetSEO from "global/components/seo";
 const LendingMarket = () => {
   const networkInfo = useNetworkInfo();
@@ -33,9 +31,6 @@ const LendingMarket = () => {
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 1000);
 
   useToast(setIsMobile, notifications, notifs, setNotifs);
-
-  //this is used to generate some statistics about the token from the getMarkets
-  Mixpanel.events.pageOpened("Lending Market", networkInfo.account);
 
   const lmTokenData: LMTokenDetails[] = useLMTokenData(networkInfo.chainId);
   const { userLMTokens, position, rewards } = useUserLMTokenData(
@@ -154,7 +149,7 @@ const LendingMarket = () => {
                           ? `${Number(msg.amount).toFixed(2)} ${msg.name}`
                           : msg.name;
                       const actionMsg = transactionStatusActions(
-                        Number(msg.type),
+                        msg.type,
                         amount
                       ).inAction;
                       return (

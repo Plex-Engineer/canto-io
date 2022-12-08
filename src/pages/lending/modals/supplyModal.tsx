@@ -252,6 +252,14 @@ const SupplyModal = ({ position, onClose }: IProps) => {
           tokenName={token.data.underlying.symbol}
           txHash={transaction.transaction?.hash}
           onClose={onClose}
+          mixPanelEventInfo={{
+            tokenName: token.data.underlying.symbol,
+            amount: userAmount,
+            tokenPrice: formatUnits(
+              token.price,
+              36 - token.data.underlying.decimals
+            ),
+          }}
         />
       )}
       <div className="title">

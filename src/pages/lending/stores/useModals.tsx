@@ -2,14 +2,14 @@ import { UserLMTokenDetails, EmptyActiveLMToken } from "../config/interfaces";
 import create from "zustand";
 
 export enum ModalType {
-  WALLET_CONNECTION,
-  LENDING,
-  BORROW,
-  DEX,
-  COLLATERAL,
-  DECOLLATERAL,
-  BALANCE,
-  NONE,
+  WALLET_CONNECTION = "WALLET_CONNECTION",
+  LENDING = "SUPPLY",
+  BORROW = "BORROW",
+  DEX = "DEX",
+  COLLATERAL = "COLLATERAL",
+  DECOLLATERAL = "DECOLLATERAL",
+  BALANCE = "REWARDS",
+  NONE = "NONE",
 }
 
 interface ModalState {

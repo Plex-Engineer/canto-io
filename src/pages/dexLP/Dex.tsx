@@ -22,6 +22,7 @@ import { Text } from "global/packages/src";
 import { Details } from "pages/lending/hooks/useTransaction";
 import HelmetSEO from "global/components/seo";
 import { sortColumnsByType } from "pages/lending/components/LMTables";
+import { Mixpanel } from "mixpanel";
 const Dex = () => {
   // Mixpanel.events.pageOpened("Dex Market", '');
 
@@ -72,7 +73,7 @@ const Dex = () => {
         const isSuccesful = noti.type != "transactionFailed";
         //@ts-ignore
         const msg: Details = JSON.parse(noti?.transactionName);
-        const actionMsg = transactionStatusActions(Number(msg.type)).postAction;
+        const actionMsg = transactionStatusActions(msg.type).postAction;
         const msged = `${isSuccesful ? "" : "un"}successfully ${actionMsg}`;
 
         toast(msged, {
@@ -133,6 +134,11 @@ const Dex = () => {
           <Text type="title" color="white">
             to swap tokens, visit{" "}
             <a
+              onClick={() =>
+                Mixpanel.events.lpInterfaceActions.visitSlingshot(
+                  networkInfo.account
+                )
+              }
               style={{
                 color: "#a2fca3",
                 textDecoration: "underline",
@@ -159,9 +165,7 @@ const Dex = () => {
                 ) {
                   //@ts-ignore
                   const msg: Details = JSON.parse(item?.transactionName);
-                  const actionMsg = transactionStatusActions(
-                    Number(msg.type)
-                  ).inAction;
+                  const actionMsg = transactionStatusActions(msg.type).inAction;
                   return (
                     <TransactionRow
                       key={item.submittedAt}

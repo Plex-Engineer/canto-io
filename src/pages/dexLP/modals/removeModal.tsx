@@ -170,6 +170,12 @@ const RemoveModal = ({ activePair, chainId, onClose }: Props) => {
           }
           status={tokenAllowanceStatus}
           onClose={onClose}
+          mixPanelEventInfo={{
+            tokenName:
+              activePair.basePairInfo.token1.symbol +
+              " / " +
+              activePair.basePairInfo.token2.symbol,
+          }}
         />
       </DexLoadingOverlay>
       <div className="title">

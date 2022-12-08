@@ -4,13 +4,13 @@ import create from "zustand";
 import { devtools } from "zustand/middleware";
 import { EmptySelectedLPToken, UserLPPairInfo } from "../config/interfaces";
 export enum ModalType {
-  NONE,
-  ADD,
-  ADD_CONFIRM,
-  REMOVE,
-  REMOVE_CONFIRM,
-  ADD_OR_REMOVE,
-  ENABLE,
+  NONE = "NONE",
+  ADD = "ADD",
+  ADD_CONFIRM = "ADD_CONFIRM",
+  REMOVE = "REMOVE",
+  REMOVE_CONFIRM = "REMOVE_CONFIRM",
+  ADD_OR_REMOVE = "ADD_OR_REMOVE",
+  ENABLE = "ENABLE",
 }
 
 interface ModalProps {

@@ -30,6 +30,8 @@ import { PrimaryButton } from "global/packages/src";
 import { Text } from "global/packages/src/components/atoms/Text";
 import { BridgeStyled } from "./BridgeIn";
 import { allBridgeOutNetworks } from "./config/gravityBridgeTokens";
+import { Mixpanel } from "mixpanel";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -230,6 +232,15 @@ const BridgeOut = ({
               weight="bold"
               disabled={disabled}
               onClick={async () => {
+                Mixpanel.events.transactions.transactionStarted(
+                  CantoTransactionType.BRIDGE_OUT,
+                  networkInfo.account,
+                  {
+                    tokenName: selectedNativeToken.symbol,
+                    amount: amount,
+                    bridgeOutNetwork: selectedBridgeOutNetwork.name,
+                  }
+                );
                 setInBridgeTransaction(true);
                 setBridgeConfirmation(
                   "waiting for the metamask transaction to be signed..."

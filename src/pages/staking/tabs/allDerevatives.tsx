@@ -1,7 +1,7 @@
 import { Text } from "global/packages/src";
 import { CInput } from "global/packages/src/components/atoms/Input";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import { ValidatorTable } from "../components/stakingTable";
 import { MasterValidatorProps } from "../config/interfaces";
@@ -10,6 +10,7 @@ import { Selected } from "../modals/redelgationModal";
 import { levenshteinDistance } from "../utils/utils";
 import warningImg from "assets/warning.svg";
 import styled from "@emotion/styled";
+import { Mixpanel } from "mixpanel";
 interface AllDerevativesProps {
   validators: MasterValidatorProps[];
 }
@@ -29,6 +30,7 @@ const ToggleDisplayOptions = [
 ];
 const AllDerevatives = (props: AllDerevativesProps) => {
   const [userSearch, setUserSearch] = useState("");
+  const [loggedSearch, setLoggedSearch] = useState(false);
   const [validatorDisplaySwitch, setValidatorDisplaySwitch] = useState<
     number | undefined
   >(1);
@@ -56,6 +58,13 @@ const AllDerevatives = (props: AllDerevativesProps) => {
       );
     });
   };
+
+  useEffect(() => {
+    if (!loggedSearch && userSearch !== "") {
+      Mixpanel.events.stakingActions.userSearch();
+      setLoggedSearch(true);
+    }
+  }, [userSearch]);
 
   return (
     <Styled

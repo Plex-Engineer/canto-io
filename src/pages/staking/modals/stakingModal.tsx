@@ -149,6 +149,11 @@ export const StakingModal = ({
           tokenName={"staking"}
           customMessage={transactionStore.transactionStatus.message}
           onClose={onClose}
+          mixPanelEventInfo={{
+            StakingTransactionType: transactionStore.transactionStatus.type,
+            validatorName: validator.validator.description.moniker,
+            amount: amount,
+          }}
         />
       )}
       <Text size="title2" type="title" className="title">

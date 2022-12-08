@@ -12,6 +12,7 @@ import ethIMG from "assets/icons/ETH.svg";
 import { formatEther } from "ethers/lib/utils";
 import { CantoMainnet } from "global/providers";
 import { ETHMainnet } from "pages/bridge/config/networks";
+import { Mixpanel } from "mixpanel";
 
 const WalletModal = () => {
   const { deactivate } = useEthers();
@@ -102,6 +103,7 @@ const WalletModal = () => {
       <OutlinedButton
         height="small"
         onClick={() => {
+          Mixpanel.events.connections.walletConnect(account, false);
           deactivate();
           window.location.reload();
         }}

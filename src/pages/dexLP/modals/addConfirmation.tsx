@@ -137,6 +137,35 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
     supplyLP.status,
   ]);
 
+  const mixPanelInfoObject = {
+    tokenName:
+      props.pair.basePairInfo.token1.symbol +
+      " / " +
+      props.pair.basePairInfo.token2.symbol +
+      " LP",
+    LPPrice: formatUnits(
+      props.pair.prices.LP,
+      36 - props.pair.basePairInfo.decimals
+    ),
+    token1Amount: formatUnits(
+      props.value1,
+      props.pair.basePairInfo.token1.decimals
+    ),
+
+    token1Price: formatUnits(
+      props.pair.prices.token1,
+      36 - props.pair.basePairInfo.token1.decimals
+    ),
+    token2Amount: formatUnits(
+      props.value2,
+      props.pair.basePairInfo.token2.decimals
+    ),
+    token2Price: formatUnits(
+      props.pair.prices.token2,
+      36 - props.pair.basePairInfo.token2.decimals
+    ),
+  };
+
   return (
     <DexModalContainer>
       {(addLiquidityState.status != "None" ||
@@ -161,6 +190,7 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
                 : addLiquidityState.transaction?.hash
             }
             onClose={props.onClose}
+            mixPanelEventInfo={mixPanelInfoObject}
           />
         )}
       {supplyLP.status != "None" && (
@@ -174,6 +204,7 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
           }
           txHash={supplyLP.transaction?.hash}
           onClose={props.onClose}
+          mixPanelEventInfo={mixPanelInfoObject}
         />
       )}
       <div className="title">
