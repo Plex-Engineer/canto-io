@@ -266,7 +266,7 @@ const Proposal = () => {
             backdropFilter: "blur(35px)",
           }}
           trigger={
-            <PrimaryButton disabled={false} autoFocus={false}>
+            <PrimaryButton disabled={voteEnded} autoFocus={false}>
               {voteEnded ? "voting has ended" : "vote"}
             </PrimaryButton>
           }
