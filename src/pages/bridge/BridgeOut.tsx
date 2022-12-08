@@ -232,7 +232,7 @@ const BridgeOut = ({
               weight="bold"
               disabled={disabled}
               onClick={async () => {
-                Mixpanel.events.transactionStarted(
+                Mixpanel.events.transactions.transactionStarted(
                   CantoTransactionType.BRIDGE_OUT,
                   networkInfo.account,
                   {

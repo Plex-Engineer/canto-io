@@ -11,7 +11,7 @@ import {
   CantoTransactionType,
   TransactionState,
 } from "global/config/transactionTypes";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import close from "assets/close.svg";
 import { Mixpanel } from "mixpanel";
 import { useNetworkInfo } from "global/stores/networkInfo";
@@ -27,16 +27,9 @@ interface GlobalLoadingProps {
 }
 
 const GlobalLoadingModal = (props: GlobalLoadingProps) => {
+  const [txLogged, setTxLogged] = useState(false);
+  const [txConfirmed, setTxConfirmed] = useState(false);
   const account = useNetworkInfo().account;
-  useEffect(() => {
-    if (props.status != "None") {
-      Mixpanel.events.transactionStarted(
-        props.transactionType,
-        account,
-        props.mixPanelEventInfo
-      );
-    }
-  }, []);
   const actionObj = transactionStatusActions(
     props.transactionType,
     props.tokenName
@@ -47,6 +40,39 @@ const GlobalLoadingModal = (props: GlobalLoadingProps) => {
     actionObj.postAction,
     props.status
   );
+  useEffect(() => {
+    if (props.status == "PendingSignature" && !txLogged) {
+      setTxLogged(true);
+      Mixpanel.events.transactions.transactionStarted(
+        props.transactionType,
+        account,
+        props.mixPanelEventInfo
+      );
+    }
+    if (props.status == "Success" && !txConfirmed) {
+      setTxConfirmed(true);
+      Mixpanel.events.transactions.transactionSuccess(
+        props.transactionType,
+        account,
+        props.txHash,
+        props.mixPanelEventInfo
+      );
+    }
+    if (
+      (props.status == "Fail" || props.status == "Exception") &&
+      !txConfirmed
+    ) {
+      setTxConfirmed(true);
+      Mixpanel.events.transactions.transactionFailed(
+        props.transactionType,
+        account,
+        props.txHash,
+        currentStatus,
+        props.mixPanelEventInfo
+      );
+    }
+  }, [props.status]);
+
   return (
     <LoadingModal>
       <div
@@ -88,6 +114,7 @@ const GlobalLoadingModal = (props: GlobalLoadingProps) => {
         <OutlinedButton
           className="btn"
           onClick={() => {
+            Mixpanel.events.loadingModal.blockExplorerOpened(props.txHash);
             window.open(
               "https://evm.explorer.canto.io/tx/" + props.txHash,
               "_blank"

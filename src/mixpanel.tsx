@@ -26,17 +26,71 @@ const actions = {
         wallet: account ?? 0,
       });
     },
-    transactionStarted: (
-      txType: CantoTransactionType,
-      account: string | undefined,
-      info: object | undefined
-    ) => {
-      mixpanel.track("Transaction Started", {
-        distinct_id: account,
-        wallet: account,
-        txType: txType,
-        ...info,
-      });
+    transactions: {
+      transactionStarted: (
+        txType: CantoTransactionType,
+        account: string | undefined,
+        info: object | undefined
+      ) => {
+        mixpanel.track("Transaction Started", {
+          distinct_id: account,
+          wallet: account,
+          txType: txType,
+          ...info,
+        });
+      },
+      transactionSuccess: (
+        txType: CantoTransactionType,
+        account: string | undefined,
+        txHash: string | undefined,
+        info: object | undefined
+      ) => {
+        mixpanel.track("Transaction Success", {
+          distinct_id: account,
+          wallet: account,
+          txType: txType,
+          txHash: txHash,
+          ...info,
+        });
+      },
+      transactionFailed: (
+        txType: CantoTransactionType,
+        account: string | undefined,
+        txHash: string | undefined,
+        errorReason: string,
+        info: object | undefined
+      ) => {
+        mixpanel.track("Transaction Fail", {
+          distinct_id: account,
+          wallet: account,
+          txType: txType,
+          txHash: txHash,
+          errorReason: errorReason,
+          ...info,
+        });
+      },
+    },
+    connections: {
+      walletConnect: (account: string | undefined, connected: boolean) => {
+        if (connected) {
+          mixpanel.track("Wallet Connected", {
+            distinct_id: account,
+            wallet: account,
+          });
+        } else {
+          mixpanel.track("Wallet Disconnected", {
+            distinct_id: account,
+            wallet: account,
+          });
+        }
+      },
+    },
+    loadingModal: {
+      blockExplorerOpened: (txHash: string | undefined) => {
+        mixpanel.track("Block Explorer Opened While Loading", {
+          txHash: txHash,
+        });
+      },
     },
     landingPageActions: {
       navigatedTo: (pageName: string, account: string | undefined) => {

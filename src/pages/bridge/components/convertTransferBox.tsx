@@ -105,7 +105,7 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
           height="big"
           weight="bold"
           onClick={async () => {
-            Mixpanel.events.transactionStarted(
+            Mixpanel.events.transactions.transactionStarted(
               props.cantoToEVM
                 ? CantoTransactionType.CONVERT_TO_EVM
                 : CantoTransactionType.CONVERT_TO_COSMOS,

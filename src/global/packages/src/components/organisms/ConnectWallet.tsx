@@ -5,6 +5,7 @@ import { formatBigNumber } from "../../utils/formatNumbers";
 import Popup from "reactjs-popup";
 import WalletModal from "./WalletModal";
 import { useEthers } from "@usedapp/core";
+import { Mixpanel } from "mixpanel";
 
 interface Props {
   isConnected: boolean;
@@ -71,7 +72,10 @@ const ConnectWallet = ({ balance, currency, onClick }: Props) => {
         </Popup>
       ) : (
         <OutlinedButton
-          onClick={onClick}
+          onClick={() => {
+            Mixpanel.events.connections.walletConnect(undefined, true);
+            onClick();
+          }}
           style={{
             borderRadius: "4px",
             height: "32px",

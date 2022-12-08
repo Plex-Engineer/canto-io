@@ -108,10 +108,14 @@ const BridgeIn = ({
   };
 
   function mixpanelTrack(txType: CantoTransactionType) {
-    Mixpanel.events.transactionStarted(txType, networkInfo.account, {
-      tokenName: selectedETHToken.symbol,
-      amount: amount,
-    });
+    Mixpanel.events.transactions.transactionStarted(
+      txType,
+      networkInfo.account,
+      {
+        tokenName: selectedETHToken.symbol,
+        amount: amount,
+      }
+    );
   }
 
   return (
