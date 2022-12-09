@@ -1,9 +1,9 @@
 import { CantoMainnet } from "global/config/networks";
-import { BigNumber, Contract, ethers, Event } from "ethers";
+import { Contract, ethers, Event } from "ethers";
 import { ETHMainnet } from "pages/bridge/config/networks";
 import { gravityabi } from "../config/gravityBridgeAbi";
 import { ADDRESSES } from "global/config/addresses";
-import { TOKENS } from "global/config/tokenInfo";
+import { Token, TOKENS } from "global/config/tokenInfo";
 import { DepositEvent } from "../config/interfaces";
 import { allBridgeOutNetworks } from "../config/gravityBridgeTokens";
 
@@ -19,34 +19,6 @@ export interface EventWithTime extends Event {
 }
 export interface PendingEvent extends EventWithTime {
   secondsUntilConfirmed: string;
-}
-export async function getAllBridgeTransactionsWithStatus(
-  ethAccount?: string,
-  cantoAccount?: string
-): Promise<[EventWithTime[], Event[]]> {
-  await getBridgeInEventsWithStatus(ethAccount);
-  const ethEvents = await getEthGBridgeInEvents(ethAccount);
-  const cantoEventInfo = await getCompletedBridgeInEvents(cantoAccount);
-  const completedEvents: EventWithTime[] = [];
-  const pendingEvents: Event[] = [];
-  for (const pendingTx of ethEvents) {
-    let complete = false;
-    let timestamp;
-    for (const completedTx of cantoEventInfo) {
-      if (
-        pendingTx.args?._amount.eq(BigNumber.from(completedTx.amount)) &&
-        pendingTx.args?._tokenContract === completedTx.denom.slice(7)
-      ) {
-        complete = true;
-        timestamp = completedTx.timestamp;
-        break;
-      }
-    }
-    complete
-      ? completedEvents.push({ ...pendingTx, timestamp })
-      : pendingEvents.push(pendingTx);
-  }
-  return [completedEvents, pendingEvents];
 }
 
 async function getEthGBridgeInEvents(
@@ -118,49 +90,25 @@ export async function getBridgeInEventsWithStatus(
   return [completedEvents, pendingEvents];
 }
 
-async function getCompletedBridgeInEvents(cantoAccount?: string) {
-  const gBridgeIBCTransfers = [];
-  const IBC = await (
-    await fetch(
-      CantoMainnet.cosmosAPIEndpoint +
-        "/cosmos/tx/v1beta1/txs?events=fungible_token_packet.receiver%3D'" +
-        cantoAccount +
-        "'",
-      globalFetchOptions
-    )
-  ).json();
-  for (const tx of IBC.tx_responses) {
-    //combine all events into one array to look through for gbridge identifier
-    //@ts-ignore
-    const allEvents = tx.logs.map((log) => log.events).flat();
-    for (const event of allEvents) {
-      if (event.type === "recv_packet") {
-        for (const attribute of event.attributes) {
-          if (
-            attribute.key === "packet_dst_channel" &&
-            attribute.value === "channel-0"
-          ) {
-            const txData = event.attributes.find(
-              (att: any) => att.key === "packet_data"
-            );
-            gBridgeIBCTransfers.push({
-              ...JSON.parse(txData.value),
-              timestamp: tx.timestamp,
-            });
-          }
-        }
-      }
-    }
-  }
-  return gBridgeIBCTransfers;
+//local interface to prevent use of any type
+interface Attribute {
+  key: string;
+  value: string;
 }
-
+export interface BridgeOutEvent {
+  token: Token | undefined;
+  amount: string;
+  tx: {
+    txhash: string;
+    timestamp: string;
+  };
+}
 export async function getBridgeOutTransactions(cantoAccount?: string) {
   const bridgeOutNetworks = Object.keys(allBridgeOutNetworks).map(
     (key, network) =>
       allBridgeOutNetworks[network as keyof typeof allBridgeOutNetworks].channel
   );
-  const bridgeOutData = [];
+  const bridgeOutData: BridgeOutEvent[] = [];
   const IBC = await (
     await fetch(
       CantoMainnet.cosmosAPIEndpoint +
@@ -178,14 +126,14 @@ export async function getBridgeOutTransactions(cantoAccount?: string) {
     for (const event of allEvents) {
       if (event.type === "fungible_token_packet") {
         const denom: string = event.attributes.find(
-          (att: any) => att.key === "denom"
+          (att: Attribute) => att.key === "denom"
         )?.value;
         const amount = event.attributes.find(
-          (att: any) => att.key === "amount"
+          (att: Attribute) => att.key === "amount"
         )?.value;
         //sometimes other transaction included with different sender (check here for sender)
         const sender = event.attributes.find(
-          (att: any) => att.key === "sender"
+          (att: Attribute) => att.key === "sender"
         )?.value;
         //"transfer/channel-0/gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" ~ return of denom
         const [type, channel, tokenAddress] = denom.split("/");
@@ -208,7 +156,7 @@ export async function getBridgeOutTransactions(cantoAccount?: string) {
 
 export async function getConvertTransactionsForUser(
   cantoAccount?: string
-): Promise<[any[], any[]]> {
+): Promise<[unknown[], unknown[]]> {
   const convertToERC20 = await (
     await fetch(
       CantoMainnet.cosmosAPIEndpoint +

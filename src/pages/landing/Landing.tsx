@@ -5,8 +5,11 @@ import { Styled } from "./styled";
 import Typing from "./Typing";
 import { pageList } from "global/config/pageList";
 import HelmetSEO from "global/components/seo";
+import { Mixpanel } from "mixpanel";
+import { useNetworkInfo } from "global/stores/networkInfo";
 
 const LandingPage = () => {
+  const account = useNetworkInfo().account;
   const [userInput, setUserInput] = useState("");
   const [showCursor, setShowCursor] = useState(true);
   const [cursor, setCursor] = useState("█");
@@ -49,7 +52,17 @@ const LandingPage = () => {
           <ul className="options" id="routes">
             {pageList.map((page, idx) => {
               return (
-                <NavLink to={page.link} key={page.name} id={page.name}>
+                <NavLink
+                  to={page.link}
+                  key={page.name}
+                  id={page.name}
+                  onClick={() =>
+                    Mixpanel.events.landingPageActions.navigatedTo(
+                      page.name,
+                      account
+                    )
+                  }
+                >
                   <a>{"[" + idx + "] " + page.name}</a>
                 </NavLink>
               );
@@ -68,7 +81,7 @@ const LandingPage = () => {
               onChange={(e) => handleInputChange(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  openLink(userInput);
+                  openLink(userInput, account);
                 }
               }}
             />

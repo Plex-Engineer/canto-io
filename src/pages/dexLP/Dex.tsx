@@ -2,7 +2,11 @@ import Table from "./components/table";
 import Row, { TransactionRow } from "./components/row";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useNotifications } from "@usedapp/core";
+import {
+  AddNotificationPayload,
+  Notification,
+  useNotifications,
+} from "@usedapp/core";
 import useModals, { ModalType } from "./hooks/useModals";
 import { ModalManager } from "./modals/ModalManager";
 import { ethers } from "ethers";
@@ -22,14 +26,13 @@ import { Text } from "global/packages/src";
 import { Details } from "pages/lending/hooks/useTransaction";
 import HelmetSEO from "global/components/seo";
 import { sortColumnsByType } from "pages/lending/components/LMTables";
+import { Mixpanel } from "mixpanel";
 const Dex = () => {
-  // Mixpanel.events.pageOpened("Dex Market", '');
-
   //get network info from store
   const networkInfo = useNetworkInfo();
 
   const { notifications } = useNotifications();
-  const [notifs, setNotifs] = useState<any[]>([]);
+  const [notifs, setNotifs] = useState<Notification[]>([]);
 
   const [setModalType, setActivePair] = useModals((state) => [
     state.setModalType,
@@ -55,9 +58,11 @@ const Dex = () => {
         item.type == "transactionFailed"
       ) {
         setNotifs(
-          notifs.filter(
-            (localItem) => localItem.transaction.hash != item.transaction.hash
-          )
+          notifs.filter((localItem) => {
+            if (localItem.type == "transactionStarted")
+              return localItem.transaction.hash != item.transaction.hash;
+            return true;
+          })
         );
       }
     });
@@ -72,7 +77,7 @@ const Dex = () => {
         const isSuccesful = noti.type != "transactionFailed";
         //@ts-ignore
         const msg: Details = JSON.parse(noti?.transactionName);
-        const actionMsg = transactionStatusActions(Number(msg.type)).postAction;
+        const actionMsg = transactionStatusActions(msg.type).postAction;
         const msged = `${isSuccesful ? "" : "un"}successfully ${actionMsg}`;
 
         toast(msged, {
@@ -133,6 +138,11 @@ const Dex = () => {
           <Text type="title" color="white">
             to swap tokens, visit{" "}
             <a
+              onClick={() =>
+                Mixpanel.events.lpInterfaceActions.visitSlingshot(
+                  networkInfo.account
+                )
+              }
               style={{
                 color: "#a2fca3",
                 textDecoration: "underline",
@@ -159,9 +169,7 @@ const Dex = () => {
                 ) {
                   //@ts-ignore
                   const msg: Details = JSON.parse(item?.transactionName);
-                  const actionMsg = transactionStatusActions(
-                    Number(msg.type)
-                  ).inAction;
+                  const actionMsg = transactionStatusActions(msg.type).inAction;
                   return (
                     <TransactionRow
                       key={item.submittedAt}

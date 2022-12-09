@@ -30,6 +30,8 @@ export function getReactiveButtonText(
   switch (inputState) {
     case InputState.ENABLE:
       return ["enable", false];
+    case InputState.INCREASE_ALLOWANCE:
+      return ["increase allowance", false];
     case InputState.ENTERAMOUNT:
       return ["enter amount", true];
     case InputState.CONFIRM:

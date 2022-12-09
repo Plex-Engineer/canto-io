@@ -3,6 +3,12 @@ import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 
 export const PAGES = {
+  landing_page: {
+    name: "landing page",
+    link: "/",
+    pageTitle: "home",
+    networks: [CantoMainnet.chainId, CantoTestnet.chainId, 1],
+  },
   bridge: {
     name: "bridge",
     link: "/bridge",
@@ -31,6 +37,14 @@ export const PAGES = {
     link: "/lending",
     pageTitle: "lending",
     networks: [CantoMainnet.chainId, CantoTestnet.chainId],
+    subpages: {
+      balanceSheet: {
+        name: "balance sheet",
+        link: "/lending/balanceSheet",
+        pageTitle: "balance sheet",
+        networks: [CantoMainnet.chainId, CantoTestnet.chainId],
+      },
+    },
   },
   lp: {
     name: "lp interface",
@@ -67,6 +81,7 @@ interface BalanceLimits {
   description: string;
   warningMessage: string;
 }
+
 export const pageList: PageObject[] = [
   {
     name: PAGES.bridge.name,
@@ -92,20 +107,13 @@ export const pageList: PageObject[] = [
     link: PAGES.lending.link,
     pageTitle: PAGES.lending.pageTitle,
     networks: PAGES.lending.networks,
+    subpages: [PAGES.lending.subpages.balanceSheet],
   },
   {
     name: PAGES.governance.name,
     link: PAGES.governance.link,
     pageTitle: PAGES.governance.pageTitle,
     networks: PAGES.governance.networks,
-    subpages: [
-      {
-        name: PAGES.governance.subpages.proposal.name,
-        link: PAGES.governance.subpages.proposal.link,
-        pageTitle: PAGES.governance.subpages.proposal.pageTitle,
-        pageTitleFunction: PAGES.governance.subpages.proposal.pageTitleFunction,
-        networks: PAGES.governance.subpages.proposal.networks,
-      },
-    ],
+    subpages: [PAGES.governance.subpages.proposal],
   },
 ];

@@ -1,14 +1,9 @@
-import { BigNumber } from "ethers";
 import { formatEther, formatUnits } from "ethers/lib/utils";
-import { noteSymbol, truncateNumber } from "global/utils/utils";
-import React, { useState } from "react";
-import Popup from "reactjs-popup";
+import { truncateNumber } from "global/utils/utils";
+import { useState } from "react";
 import { UserLMPosition, UserLMTokenDetails } from "../config/interfaces";
-import { Hero, TinyTable, ToolTipL } from "./Styled";
-import CypherText from "./CypherText";
 import { BorrowRow, SupplyRow } from "./lendingRow";
 import LendingTable from "./table";
-import FadeIn from "react-fade-in";
 import { Text } from "global/packages/src";
 
 export function sortColumnsByType(value1: unknown, value2: unknown) {
@@ -45,7 +40,7 @@ export const SupplyTable = ({
   return (
     <div className="left">
       <Text type="title" size="title3" align="left">
-        {supplying ? "supplying" : "available"}
+        {supplying ? "supplying" : "supply market"}
       </Text>
 
       <LendingTable
@@ -134,7 +129,7 @@ export const BorrowingTable = ({
   return (
     <div className="right">
       <Text type="title" size="title3" align="right">
-        {borrowing ? "borrowing" : "available"}
+        {borrowing ? "borrowing" : "borrow market"}
       </Text>
       <LendingTable
         columns={columns}
@@ -191,114 +186,5 @@ export const BorrowingTable = ({
           })}
       </LendingTable>
     </div>
-  );
-};
-
-interface LMPositionBarProps {
-  borrowBalance: BigNumber;
-  borrowLimit: BigNumber;
-  supplyBalance: BigNumber;
-}
-export const LMPositionBar = ({
-  borrowBalance,
-  borrowLimit,
-  supplyBalance,
-}: LMPositionBarProps) => {
-  const borrowPercentage = !borrowLimit.isZero()
-    ? borrowBalance.mul(100).div(borrowLimit)
-    : BigNumber.from(0);
-  return (
-    <React.Fragment>
-      <Hero>
-        <div>
-          <Text type="title" align="left">
-            supply balance
-          </Text>
-          {/* <h1 className="balance">{noteSymbol}{stats?.totalSupply.toFixed(2)??"000.00000"}</h1> */}
-          <h1 className="balance">
-            {noteSymbol}
-            <CypherText
-              text={
-                supplyBalance.isZero()
-                  ? "000.00"
-                  : truncateNumber(formatUnits(supplyBalance, 18))
-              }
-            />
-          </h1>
-        </div>
-
-        <div
-          style={{
-            textAlign: "right",
-          }}
-        >
-          <Text id="bor-bal" type="title" align="right">
-            borrow balance
-          </Text>
-          {/* <h1 className="balance">{noteSymbol}{stats?.totalBorrow.toFixed(2)??"000.00000"}</h1> */}
-          <h1 className="balance">
-            {noteSymbol}
-            <CypherText
-              text={
-                borrowBalance.isZero()
-                  ? "000.00"
-                  : truncateNumber(formatUnits(borrowBalance, 18))
-              }
-            />
-          </h1>
-        </div>
-      </Hero>
-      <Popup
-        trigger={
-          <TinyTable>
-            <div>
-              <p>borrow limit</p>
-            </div>
-            <div className="bar">
-              {borrowPercentage.lte(80) ? (
-                <div
-                  className="green"
-                  style={{ width: borrowPercentage.toNumber() + "%" }}
-                ></div>
-              ) : (
-                <div
-                  className="red"
-                  style={{ width: borrowPercentage.toNumber() + "%" }}
-                ></div>
-              )}
-              <div
-                className="gray"
-                style={{
-                  width: 100 - borrowPercentage.toNumber() + "%",
-                }}
-              ></div>
-            </div>
-            <p style={{ width: "100%", textAlign: "right" }}>
-              {noteSymbol + formatUnits(borrowLimit)}
-            </p>
-          </TinyTable>
-        }
-        position="top center"
-        on={["hover", "focus"]}
-        arrow={true}
-      >
-        <ToolTipL>
-          {borrowPercentage.lt(80) ? (
-            <p>
-              you will be liquidated if you go above your borrow limit <br></br>
-              Liquidity Cushion:{" "}
-              {noteSymbol +
-                truncateNumber(formatUnits(borrowLimit.sub(borrowBalance)))}
-            </p>
-          ) : (
-            <p>
-              you will be liquidated soon<br></br> Liquidity Cushion:{" "}
-              {noteSymbol +
-                truncateNumber(formatUnits(borrowLimit.sub(borrowBalance)))}
-            </p>
-          )}
-        </ToolTipL>
-      </Popup>
-    </React.Fragment>
   );
 };

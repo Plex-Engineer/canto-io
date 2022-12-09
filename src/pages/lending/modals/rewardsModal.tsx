@@ -30,6 +30,11 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
           tokenName={"claim rewards"}
           txHash={state.transaction?.hash}
           onClose={onClose}
+          mixPanelEventInfo={{
+            amount: formatUnits(rewardsObj.accrued),
+            tokenName: "WCANTO",
+            tokenPrice: formatUnits(rewardsObj.price),
+          }}
         />
       )}
       <div className="title">canto balance</div>
@@ -69,8 +74,9 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
         </div>
       </div>
       <PrimaryButton
-        style={{ margin: "2rem" }}
-        size="lg"
+        style={{ margin: "2rem", width: "20rem" }}
+        size="sm"
+        filled
         disabled={rewardsObj.accrued.isZero()}
         onClick={() => {
           if (needDrip) {

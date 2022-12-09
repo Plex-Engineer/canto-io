@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { generateEndpointIBCChannels } from "@tharsis/provider";
 import {
   getSenderObj,

@@ -7,6 +7,7 @@ import TransactionBox from "./components/TransactionBox";
 import warningIcon from "assets/warning.svg";
 import { findGravityToken } from "./utils/utils";
 import { useBridgeTransactionStore } from "./stores/transactionStore";
+import { Mixpanel } from "mixpanel";
 
 const Transactions = () => {
   const transactionStore = useBridgeTransactionStore();
@@ -21,6 +22,7 @@ const Transactions = () => {
     if (transactionStore.newTransactions) {
       transactionStore.setNewTransactions(0);
     }
+    Mixpanel.events.bridgeActions.transactionPageOpened();
   }, []);
 
   // useEffect(() => {
@@ -60,9 +62,9 @@ const Transactions = () => {
     return (
       <TransactionBox
         key={tx.tx.txhash}
-        balance={formatUnits(tx.amount, tx.token.decimals)}
+        balance={formatUnits(tx.amount, tx.token?.decimals)}
         status={"complete"}
-        symbol={tx.token.symbol}
+        symbol={tx.token?.symbol ?? "unknown"}
         blockExplorerUrl={"https://ping.pub/canto/tx/" + tx.tx.txhash}
         type={"out"}
         timestamp={tx.tx.timestamp}

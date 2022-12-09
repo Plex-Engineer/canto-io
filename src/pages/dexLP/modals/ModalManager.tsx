@@ -8,6 +8,8 @@ import AddRemoveModal from "./addRemove";
 import { RemoveLiquidityConfirmation } from "./removeConfirmation";
 import { AddLiquidityConfirmation } from "./addConfirmation";
 import EnableModal from "./enableModal";
+import { useEffect } from "react";
+import { Mixpanel } from "mixpanel";
 
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
@@ -44,17 +46,31 @@ const ModalManager = (props: Props) => {
     state.modalType,
     state.activePair,
   ]);
+  useEffect(() => {
+    if (modalType !== ModalType.NONE) {
+      Mixpanel.events.lpInterfaceActions.modalInteraction(
+        props.account,
+        modalType,
+        activePair.basePairInfo.token1.symbol +
+          " / " +
+          activePair.basePairInfo.token2.symbol,
+        true
+      );
+    }
+  }, [modalType]);
   return (
     <StyledPopup
       open={modalType != ModalType.NONE}
       onClose={() => {
+        Mixpanel.events.lpInterfaceActions.modalInteraction(
+          props.account,
+          modalType,
+          activePair.basePairInfo.token1.symbol +
+            " / " +
+            activePair.basePairInfo.token2.symbol,
+          false
+        );
         props.onClose();
-        //   Mixpanel.events.lendingMarketActions.modalInteraction(
-        //     "addd",
-        //     props.modalType.toString(),
-        //     "name",
-        //     false
-        //   );
       }}
       lockScroll
       modal

@@ -26,6 +26,8 @@ import FadeIn from "react-fade-in";
 import { ADDRESSES } from "global/config/addresses";
 import { Text } from "global/packages/src";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
+import { Mixpanel } from "mixpanel";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];
@@ -88,6 +90,7 @@ const BridgeIn = ({
         selectedETHToken.allowance.lte(0)) &&
       stateApprove.status == "None"
     ) {
+      mixpanelTrack(CantoTransactionType.ENABLE);
       sendApprove(
         gravityAddress,
         BigNumber.from(
@@ -95,6 +98,7 @@ const BridgeIn = ({
         )
       );
     } else if (parsedAmount.gt(0) && stateCosmos.status == "None") {
+      mixpanelTrack(CantoTransactionType.BRIDGE_IN);
       sendCosmos(
         selectedETHToken.address,
         networkInfo.cantoAddress,
@@ -102,6 +106,17 @@ const BridgeIn = ({
       );
     }
   };
+
+  function mixpanelTrack(txType: CantoTransactionType) {
+    Mixpanel.events.transactions.transactionStarted(
+      txType,
+      networkInfo.account,
+      {
+        tokenName: selectedETHToken.symbol,
+        amount: amount,
+      }
+    );
+  }
 
   return (
     <FadeIn wrapperTag={BridgeStyled}>

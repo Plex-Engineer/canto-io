@@ -9,8 +9,9 @@ const CheckBox = ({ checked, onChange }: Props) => {
   return (
     <Styled
       checked={checked}
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      onChange={() => {}}
+      onChange={() => {
+        return;
+      }}
       onClick={() => {
         onChange(!checked);
       }}

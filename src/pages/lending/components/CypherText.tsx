@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 interface Props {
   text: string;
 }
@@ -27,7 +27,7 @@ const CypherText = ({ text }: Props) => {
 
     setText();
   }, [text]);
-  return <React.Fragment>{value}</React.Fragment>;
+  return <>{value}</>;
 
   function timeout(delay: number) {
     return new Promise((res) => setTimeout(res, delay));

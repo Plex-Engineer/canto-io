@@ -1,4 +1,4 @@
-import { useCalls } from "@usedapp/core";
+import { CallResult, useCalls } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { PAIR, TESTPAIRS, MAINPAIRS } from "../config/pairs";
 import { CantoMainnet, CantoTestnet } from "global/config/networks";
@@ -62,8 +62,12 @@ const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
     }) ?? {};
 
   const chuckSize = !PAIRS ? 0 : results.length / PAIRS.length;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let processedTokens: Array<any>;
-  const array_chunks = (array: any[], chunk_size: number) => {
+  const array_chunks = (
+    array: CallResult<Contract, string>[],
+    chunk_size: number
+  ) => {
     const rep = array.map((array) => array?.value);
     const chunks = [];
 

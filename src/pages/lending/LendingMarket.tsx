@@ -7,24 +7,19 @@ import { ModalType, ModalManager } from "./modals/modalManager";
 import { Details } from "./hooks/useTransaction";
 import { Styled } from "./components/Styled";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import { Mixpanel } from "mixpanel";
 import { transactionStatusActions, truncateNumber } from "global/utils/utils";
 import useModalStore from "./stores/useModals";
 import { useLMTokenData } from "./hooks/useLMTokenData";
 import { LMTokenDetails } from "./config/interfaces";
 import { useUserLMTokenData } from "./hooks/useUserLMTokenData";
 import { formatUnits } from "ethers/lib/utils";
-import {
-  BorrowingTable,
-  LMPositionBar,
-  SupplyTable,
-} from "./components/LMTables";
+import { BorrowingTable, SupplyTable } from "./components/LMTables";
 import { useToast } from "./hooks/useToasts";
 import { SpecialTabs } from "./components/SpecialTabs";
 import { OutlinedButton } from "global/packages/src";
 import FadeIn from "react-fade-in";
-import { CantoTransactionType } from "global/config/transactionTypes";
 import HelmetSEO from "global/components/seo";
+import { LMPositionBar } from "./components/LMPositionBar";
 const LendingMarket = () => {
   const networkInfo = useNetworkInfo();
   const { notifications } = useNotifications();
@@ -33,9 +28,6 @@ const LendingMarket = () => {
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 1000);
 
   useToast(setIsMobile, notifications, notifs, setNotifs);
-
-  //this is used to generate some statistics about the token from the getMarkets
-  Mixpanel.events.pageOpened("Lending Market", networkInfo.account);
 
   const lmTokenData: LMTokenDetails[] = useLMTokenData(networkInfo.chainId);
   const { userLMTokens, position, rewards } = useUserLMTokenData(
@@ -59,7 +51,7 @@ const LendingMarket = () => {
           position={position}
           rewards={rewards}
         />
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        {/* <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <OutlinedButton
             onClick={() => {
               modalStore.open(ModalType.BALANCE);
@@ -72,23 +64,30 @@ const LendingMarket = () => {
           {!rewards.accrued.isZero()
             ? truncateNumber(formatUnits(rewards.accrued)) + " WCANTO "
             : ""}
-        </div>
+        </div> */}
 
         <LMPositionBar
+          isMobile={isMobile}
+          rewardBalance={
+            !rewards.accrued.isZero()
+              ? truncateNumber(formatUnits(rewards.accrued))
+              : "000.000"
+          }
           borrowBalance={position.totalBorrow}
           borrowLimit={position.totalBorrowLimit}
           supplyBalance={position.totalSupply}
         />
-
-        <SpecialTabs
-          active={onLeftTab}
-          onLeftTabClick={() => {
-            setOnLeftTab(true);
-          }}
-          onRightTabClick={() => {
-            setOnLeftTab(false);
-          }}
-        />
+        {isMobile ? (
+          <SpecialTabs
+            active={onLeftTab}
+            onLeftTabClick={() => {
+              setOnLeftTab(true);
+            }}
+            onRightTabClick={() => {
+              setOnLeftTab(false);
+            }}
+          />
+        ) : null}
 
         <div>
           <div
@@ -154,7 +153,7 @@ const LendingMarket = () => {
                           ? `${Number(msg.amount).toFixed(2)} ${msg.name}`
                           : msg.name;
                       const actionMsg = transactionStatusActions(
-                        Number(msg.type),
+                        msg.type,
                         amount
                       ).inAction;
                       return (

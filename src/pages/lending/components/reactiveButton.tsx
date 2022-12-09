@@ -1,5 +1,5 @@
 import { TransactionStatus } from "@usedapp/core";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import {
   useSupply,
   useBorrow,
@@ -11,7 +11,6 @@ import {
   useRepayEth,
   Details,
 } from "../hooks/useTransaction";
-import { Mixpanel } from "mixpanel";
 import { UserLMTokenDetails } from "../config/interfaces";
 import { parseUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
@@ -25,6 +24,7 @@ enum InputState {
   ENTERAMOUNT,
   CONFIRM,
   INVALID,
+  INCREASE_ALLOWANCE,
 }
 interface IButton {
   state: InputState;
@@ -113,12 +113,13 @@ const ReactiveButton = ({
         disabled={disabled}
         weight="bold"
         onClick={async () => {
-          if (state == InputState.ENABLE) {
+          if (
+            state == InputState.ENABLE ||
+            state == InputState.INCREASE_ALLOWANCE
+          ) {
             enableSend(
               token.data.address,
-              BigNumber.from(
-                "115792089237316195423570985008687907853269984665640564039457584007913129639935"
-              )
+              BigNumber.from(ethers.constants.MaxUint256)
             );
           } else {
             switch (transactionType) {
@@ -132,22 +133,9 @@ const ReactiveButton = ({
                 } else {
                   supplySend(BNAmount);
                 }
-                Mixpanel.events.lendingMarketActions.supply(
-                  token.wallet ?? "" ?? "",
-                  token.data.symbol,
-                  BNAmount.toString(),
-                  token.price.toString()
-                );
-
                 break;
               case CantoTransactionType.BORROW:
                 borrowSend(BNAmount);
-                Mixpanel.events.lendingMarketActions.borrow(
-                  token.wallet ?? "",
-                  token.data.symbol,
-                  BNAmount.toString(),
-                  token.price.toString()
-                );
                 break;
               case CantoTransactionType.REPAY:
                 if (isEth) {
@@ -165,21 +153,9 @@ const ReactiveButton = ({
                       : BNAmount
                   );
                 }
-                Mixpanel.events.lendingMarketActions.repay(
-                  token.wallet ?? "",
-                  token.data.symbol,
-                  BNAmount.toString(),
-                  token.price.toString()
-                );
                 break;
               case CantoTransactionType.WITHDRAW:
                 redeemSend(BNAmount);
-                Mixpanel.events.lendingMarketActions.withdraw(
-                  token.wallet ?? "",
-                  token.data.symbol,
-                  BNAmount.toString(),
-                  token.price.toString()
-                );
             }
           }
         }}

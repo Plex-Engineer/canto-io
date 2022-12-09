@@ -1,4 +1,4 @@
-import { Chain, Fee, Sender } from "../../../config/networks";
+import { Chain, Fee, Sender } from "global/config/cosmosConstants";
 
 import {
   createEIP712,

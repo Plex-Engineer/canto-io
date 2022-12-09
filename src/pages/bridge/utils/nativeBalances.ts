@@ -2,6 +2,10 @@ import { generateEndpointBalances } from "@tharsis/provider";
 import { BigNumber } from "ethers";
 import { NativeERC20Tokens, UserNativeTokens } from "../config/interfaces";
 
+interface NativeTokenResponse {
+  denom: string;
+  amount: string;
+}
 export async function getNativeCantoBalance(
   nodeAddressIP: string,
   cantoAddress: string,
@@ -20,7 +24,7 @@ export async function getNativeCantoBalance(
       return result["balances"];
     })
     .catch((err) => {
-      console.log(err);
+      console.error(err);
     });
   return nativeTokens.map((token) => {
     return {
@@ -28,8 +32,9 @@ export async function getNativeCantoBalance(
       wallet: cantoAddress,
       nativeBalance: BigNumber.from(
         result
-          ? result.find((data: any) => data.denom == token.nativeName)
-              ?.amount ?? 0
+          ? result.find(
+              (data: NativeTokenResponse) => data.denom == token.nativeName
+            )?.amount ?? 0
           : 0
       ),
     };

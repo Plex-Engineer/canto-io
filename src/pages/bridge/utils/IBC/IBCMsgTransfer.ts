@@ -11,7 +11,7 @@ import {
   createIBCMsgTransfer,
   IBC_MSG_TRANSFER_TYPES,
 } from "@tharsis/eip712";
-import { Chain, Fee, Sender } from "../../config/networks";
+import { Chain, Fee, Sender } from "global/config/cosmosConstants";
 export interface MessageIBCMsgTransfer {
   // Channel
   sourcePort: string;
