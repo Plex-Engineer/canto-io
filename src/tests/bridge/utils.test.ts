@@ -33,7 +33,7 @@ test("checking gravity address is valid", () => {
     )
   );
   for (let i = 0; i < testCases.length; i++) {
-    expect(testReturns[i]).toBe(!expected[i]);
+    expect(testReturns[i]).toBe(expected[i]);
   }
 });
 
