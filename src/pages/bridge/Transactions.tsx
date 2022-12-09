@@ -62,9 +62,9 @@ const Transactions = () => {
     return (
       <TransactionBox
         key={tx.tx.txhash}
-        balance={formatUnits(tx.amount, tx.token.decimals)}
+        balance={formatUnits(tx.amount, tx.token?.decimals)}
         status={"complete"}
-        symbol={tx.token.symbol}
+        symbol={tx.token?.symbol ?? "unknown"}
         blockExplorerUrl={"https://ping.pub/canto/tx/" + tx.tx.txhash}
         type={"out"}
         timestamp={tx.tx.timestamp}

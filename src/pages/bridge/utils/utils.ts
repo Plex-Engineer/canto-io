@@ -3,7 +3,7 @@ import { Contract, ethers, Event } from "ethers";
 import { ETHMainnet } from "pages/bridge/config/networks";
 import { gravityabi } from "../config/gravityBridgeAbi";
 import { ADDRESSES } from "global/config/addresses";
-import { TOKENS } from "global/config/tokenInfo";
+import { Token, TOKENS } from "global/config/tokenInfo";
 import { DepositEvent } from "../config/interfaces";
 import { allBridgeOutNetworks } from "../config/gravityBridgeTokens";
 
@@ -95,12 +95,20 @@ interface Attribute {
   key: string;
   value: string;
 }
+export interface BridgeOutEvent {
+  token: Token | undefined;
+  amount: string;
+  tx: {
+    txhash: string;
+    timestamp: string;
+  };
+}
 export async function getBridgeOutTransactions(cantoAccount?: string) {
   const bridgeOutNetworks = Object.keys(allBridgeOutNetworks).map(
     (key, network) =>
       allBridgeOutNetworks[network as keyof typeof allBridgeOutNetworks].channel
   );
-  const bridgeOutData = [];
+  const bridgeOutData: BridgeOutEvent[] = [];
   const IBC = await (
     await fetch(
       CantoMainnet.cosmosAPIEndpoint +
