@@ -74,8 +74,9 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
         </div>
       </div>
       <PrimaryButton
-        style={{ margin: "2rem" }}
-        size="lg"
+        style={{ margin: "2rem", width: "20rem" }}
+        size="sm"
+        filled
         disabled={rewardsObj.accrued.isZero()}
         onClick={() => {
           if (needDrip) {

@@ -13,16 +13,13 @@ import { useLMTokenData } from "./hooks/useLMTokenData";
 import { LMTokenDetails } from "./config/interfaces";
 import { useUserLMTokenData } from "./hooks/useUserLMTokenData";
 import { formatUnits } from "ethers/lib/utils";
-import {
-  BorrowingTable,
-  LMPositionBar,
-  SupplyTable,
-} from "./components/LMTables";
+import { BorrowingTable, SupplyTable } from "./components/LMTables";
 import { useToast } from "./hooks/useToasts";
 import { SpecialTabs } from "./components/SpecialTabs";
 import { OutlinedButton } from "global/packages/src";
 import FadeIn from "react-fade-in";
 import HelmetSEO from "global/components/seo";
+import { LMPositionBar } from "./components/LMPositionBar";
 const LendingMarket = () => {
   const networkInfo = useNetworkInfo();
   const { notifications } = useNotifications();
@@ -54,7 +51,7 @@ const LendingMarket = () => {
           position={position}
           rewards={rewards}
         />
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        {/* <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <OutlinedButton
             onClick={() => {
               modalStore.open(ModalType.BALANCE);
@@ -67,23 +64,30 @@ const LendingMarket = () => {
           {!rewards.accrued.isZero()
             ? truncateNumber(formatUnits(rewards.accrued)) + " WCANTO "
             : ""}
-        </div>
+        </div> */}
 
         <LMPositionBar
+          isMobile={isMobile}
+          rewardBalance={
+            !rewards.accrued.isZero()
+              ? truncateNumber(formatUnits(rewards.accrued))
+              : "000.000"
+          }
           borrowBalance={position.totalBorrow}
           borrowLimit={position.totalBorrowLimit}
           supplyBalance={position.totalSupply}
         />
-
-        <SpecialTabs
-          active={onLeftTab}
-          onLeftTabClick={() => {
-            setOnLeftTab(true);
-          }}
-          onRightTabClick={() => {
-            setOnLeftTab(false);
-          }}
-        />
+        {isMobile ? (
+          <SpecialTabs
+            active={onLeftTab}
+            onLeftTabClick={() => {
+              setOnLeftTab(true);
+            }}
+            onRightTabClick={() => {
+              setOnLeftTab(false);
+            }}
+          />
+        ) : null}
 
         <div>
           <div

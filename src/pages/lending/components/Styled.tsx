@@ -24,7 +24,6 @@ export const Styled = styled.div`
   .balance {
     font-weight: 300;
     font-family: "SilkScreen";
-    font-size: 56px;
     color: var(--primary-color);
     text-shadow: 0px 14px 14px rgba(6, 252, 153, 0.2);
     & span {
@@ -65,9 +64,6 @@ export const Styled = styled.div`
     }
   }
   @media (max-width: 1000px) {
-    #bor-bal {
-      text-align: left !important;
-    }
     margin: 0;
     padding: 1rem;
     .balance {
@@ -89,40 +85,68 @@ export const Hero = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  /* min-height: 20rem; */
-  margin-top: 5rem;
-  margin-bottom: 0rem;
-  div {
-    width: 50%;
+  margin-top: 2rem;
+  align-items: flex-end;
+  .middle {
+    flex-grow: 1;
+    margin: 0 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
   }
-  p {
-    font-weight: 400;
-    font-size: 16px;
-    color: var(--primary-color);
+  .balance {
+    font-size: 26px;
+    line-height: 34px;
+    letter-spacing: -0.08em;
   }
+
+  .row {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+
   @media (max-width: 1000px) {
     flex-direction: column;
     margin: 0;
     margin-top: 2rem;
     justify-content: center;
-    align-items: flex-start;
     gap: 0.3rem;
-    div {
-      text-align: left !important;
+    & > :nth-of-type(1) {
+      order: 2;
+      align-self: flex-start;
+      justify-content: start;
+    }
+    & > :nth-of-type(2) {
+      order: 1;
+    }
+    & > :nth-of-type(3) {
+      order: 3;
+      position: relative;
+
+      top: -4.2rem;
     }
     .balance {
-      font-size: 48px;
+      font-size: 26px;
+    }
+
+    .middle {
+      width: 100%;
+      margin: 0;
     }
   }
 `;
 
-export const TinyTable = styled.div`
+export const LimitBar = styled.div`
   display: flex;
   flex-grow: 1;
   flex-direction: column;
-  margin: 2rem 0;
-  /* justify-content: start; */
+  width: 100%;
+  max-width: 690px;
   align-items: flex-start;
+  margin-top: 0.5rem;
   .tables {
     display: flex;
     z-index: 700;
@@ -136,30 +160,34 @@ export const TinyTable = styled.div`
     /* width: 30rem; */
     width: 100%;
     display: flex;
+    background-color: #3a3f3d;
+    border-radius: 4px;
+    height: 5px;
   }
   .green {
     border: 2px solid var(--primary-color);
     background-color: #6fff8773;
-    height: 10px;
+    height: 5px;
+    border-radius: 4px;
+
     width: 0%;
   }
   .red {
     border: 2px solid var(--error-color);
     border-left: 0px;
     background-color: #ff6f6f73;
-    height: 10px;
+    border-radius: 4px;
+
+    height: 5px;
   }
   .gray {
-    border: 2px solid #7b7b7b73;
     border-left: 0px;
-    background-color: #1616169b;
-    height: 10px;
+    background-color: #3a3f3d;
+    border-radius: 4px;
+    height: 5px;
     /* width: 66%; */
   }
-  p {
-    color: var(--primary-color);
-    margin-bottom: 0.5rem;
-  }
+
   h1 {
     font-weight: 400;
     font-size: 18px;
@@ -296,7 +324,7 @@ export const RewardsContainer = styled.div`
     flex-direction: column;
     flex-grow: 1;
     justify-content: end;
-    width: 18rem;
+    width: 21rem;
   }
   .bal {
     display: flex;
