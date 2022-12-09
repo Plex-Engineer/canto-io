@@ -7,7 +7,12 @@ import { StakingTransactionType } from "../config/interfaces";
 import { TransactionStatus } from "../stores/transactionStore";
 import { userTxMessages } from "../config/messages";
 
+interface Error {
+  code: number;
+}
+
 export async function performTxAndSetStatus(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx: () => Promise<any>,
   txType: StakingTransactionType,
   setStatus: (status: TransactionStatus | undefined) => void,
@@ -19,14 +24,14 @@ export async function performTxAndSetStatus(
   //metamask pops up waiting for signature
   setStatus({
     status: "PendingSignature",
-    type: StakingTransactionType.DELEGATE,
+    type: txType,
     message: userTxMessages.waitSign,
   });
   let transaction;
   try {
     transaction = await tx();
-  } catch (err: any) {
-    if (err.code == 4001) {
+  } catch (err: unknown) {
+    if ((err as Error).code == 4001) {
       setStatus({
         status: "Exception",
         type: txType,

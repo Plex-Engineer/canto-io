@@ -39,8 +39,7 @@ const SupplyModal = ({ position, onClose }: IProps) => {
 
   function resetInput() {
     //if in supply tab and allowance is true or if withdraw is true
-    // console.log("withdrawing " + isWithdrawing);
-    if (!(token.allowance || isWithdrawing)) {
+    if (token.allowance.isZero() && !isWithdrawing) {
       setInputState(InputState.ENABLE);
     } else {
       setInputState(InputState.ENTERAMOUNT);
@@ -57,6 +56,12 @@ const SupplyModal = ({ position, onClose }: IProps) => {
         setInputState(InputState.ENTERAMOUNT);
       } else if (parseUnits(value, token.data.underlying.decimals).gt(max)) {
         setInputState(InputState.NOFUNDS);
+      } else if (
+        parseUnits(value, token.data.underlying.decimals).gt(token.allowance) &&
+        !isWithdrawing
+      ) {
+        //need more allowance
+        setInputState(InputState.INCREASE_ALLOWANCE);
       } else {
         setInputState(InputState.CONFIRM);
       }
@@ -114,6 +119,11 @@ const SupplyModal = ({ position, onClose }: IProps) => {
               setMax(true);
               setInputState(InputState.CONFIRM);
             }
+            //have to call this to check allowance
+            inputValidation(
+              formatUnits(token.balanceOf, token.data.underlying.decimals),
+              token.balanceOf
+            );
           }}
           onChange={(value) => {
             setUserAmount(value);
@@ -143,9 +153,10 @@ const SupplyModal = ({ position, onClose }: IProps) => {
             setTransaction(e);
           }}
           transactionType={
-            inputState != InputState.ENABLE
-              ? CantoTransactionType.SUPPLY
-              : CantoTransactionType.ENABLE
+            inputState == InputState.ENABLE ||
+            inputState == InputState.INCREASE_ALLOWANCE
+              ? CantoTransactionType.ENABLE
+              : CantoTransactionType.SUPPLY
           }
           state={inputState}
           max={isMax}
@@ -193,6 +204,7 @@ const SupplyModal = ({ position, onClose }: IProps) => {
                 setInputState(InputState.CONFIRM);
               }
             }
+            //don't need to call validation since no allowance needed
           }}
           onChange={(value) => {
             setUserAmount(value);
@@ -244,6 +256,8 @@ const SupplyModal = ({ position, onClose }: IProps) => {
           transactionType={
             inputState == InputState.ENABLE
               ? CantoTransactionType.ENABLE
+              : inputState == InputState.INCREASE_ALLOWANCE
+              ? CantoTransactionType.INCREASE_ALLOWANCE
               : isWithdrawing
               ? CantoTransactionType.WITHDRAW
               : CantoTransactionType.SUPPLY
@@ -252,6 +266,14 @@ const SupplyModal = ({ position, onClose }: IProps) => {
           tokenName={token.data.underlying.symbol}
           txHash={transaction.transaction?.hash}
           onClose={onClose}
+          mixPanelEventInfo={{
+            tokenName: token.data.underlying.symbol,
+            amount: userAmount,
+            tokenPrice: formatUnits(
+              token.price,
+              36 - token.data.underlying.decimals
+            ),
+          }}
         />
       )}
       <div className="title">

@@ -116,6 +116,33 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
               : removeLiquidityState.transaction?.hash
           }
           onClose={props.onClose}
+          mixPanelEventInfo={{
+            tokenName:
+              props.pair.basePairInfo.token1.symbol +
+              " / " +
+              props.pair.basePairInfo.token2.symbol +
+              " LP",
+            LPPrice: formatUnits(
+              props.pair.prices.LP,
+              36 - props.pair.basePairInfo.decimals
+            ),
+            token1Amount: formatUnits(
+              props.value1,
+              props.pair.basePairInfo.token1.decimals
+            ),
+            token1Price: formatUnits(
+              props.pair.prices.token1,
+              36 - props.pair.basePairInfo.token1.decimals
+            ),
+            token2Amount: formatUnits(
+              props.value2,
+              props.pair.basePairInfo.token2.decimals
+            ),
+            token2Price: formatUnits(
+              props.pair.prices.token2,
+              36 - props.pair.basePairInfo.token2.decimals
+            ),
+          }}
         />
       )}
       <div className="title">

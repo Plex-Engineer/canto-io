@@ -9,6 +9,7 @@ import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
 import { showAlerts } from "global/utils/alerts";
 import { pageList, PageObject } from "global/config/pageList";
+import { Mixpanel } from "mixpanel";
 
 export const CantoNav = () => {
   const networkInfo = useNetworkInfo();
@@ -17,7 +18,6 @@ export const CantoNav = () => {
   const balance = useEtherBalance(account);
   const location = useLocation();
   const [tokenName, setTokenName] = useState("");
-
   async function grabTokenName() {
     setTokenName(await getBaseTokenName(chainId?.toString() ?? ""));
   }
@@ -54,6 +54,7 @@ export const CantoNav = () => {
     if (account) {
       networkInfo.setAccount(account);
       networkInfo.setBalance(balance ?? BigNumber.from(0));
+      Mixpanel.people.registerWallet(account);
     }
     if (account == null) {
       networkInfo.setAccount("");
@@ -67,6 +68,13 @@ export const CantoNav = () => {
       window.location.reload();
     });
   }
+  useEffect(() => {
+    Mixpanel.events.pageOpened(
+      recursiveGetTitle(location.pathname, 1, pageList) != ""
+        ? recursiveGetTitle(location.pathname, 1, pageList)
+        : "landing page"
+    );
+  }, [location.pathname, networkInfo.account]);
 
   useEffect(() => {
     showAlerts(

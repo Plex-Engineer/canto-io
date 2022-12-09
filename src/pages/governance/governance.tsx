@@ -9,6 +9,7 @@ import { GovernanceContainer } from "./components/Styled";
 import HelmetSEO from "global/components/seo";
 import { useNavigate } from "react-router-dom";
 import { Text } from "global/packages/src";
+import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 const Governance = () => {
   //network info store
   const networkInfo = useNetworkInfo();
@@ -18,10 +19,6 @@ const Governance = () => {
   useEffect(() => {
     proposals.initProposals(Number(networkInfo.chainId));
   }, [networkInfo.chainId]);
-
-  useEffect(() => {
-    Mixpanel.events.pageOpened("governance", networkInfo.account);
-  });
 
   function AllGovBars() {
     return (
@@ -65,7 +62,7 @@ const Governance = () => {
                   />
                 );
               })
-              .sort((a: any, b: any) => {
+              .sort((a: ReactJSXElement, b: ReactJSXElement) => {
                 return b?.props.proposalID - a?.props.proposalID;
               })}
       </>
@@ -88,6 +85,11 @@ const Governance = () => {
             textDecoration: "underline",
           }}
           href="/staking"
+          onClick={() =>
+            Mixpanel.events.governanceActions.openedStakingPage(
+              networkInfo.account
+            )
+          }
         >
           stake
         </a>{" "}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TransactionStatus } from "@usedapp/core";
 import React from "react";
 

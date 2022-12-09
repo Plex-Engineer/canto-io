@@ -6,11 +6,14 @@ import { MasterValidatorProps } from "../config/interfaces";
 import Table from "./table";
 import FadeIn from "react-fade-in";
 import moment from "moment";
+import { useState } from "react";
+import { sortColumnsByType } from "pages/lending/components/LMTables";
 
 interface TableProps {
   validators: MasterValidatorProps[];
 }
 export const UndelegatingTable = (props: TableProps) => {
+  const [columnClicked, setColumnClicked] = useState(2);
   const allUndelegations = [];
   for (const validator of props.validators) {
     if (validator.undelagatingInfo?.lockouts) {
@@ -23,20 +26,22 @@ export const UndelegatingTable = (props: TableProps) => {
       }
     }
   }
-
   if (props.validators.length) {
     return (
-      <Table columns={["rank", "name", "undelegation", "completion date"]}>
+      <Table
+        columns={["name", "undelegation", "completion date"]}
+        onColumnClicked={(column) => setColumnClicked(column)}
+        columnClicked={columnClicked}
+      >
         <FadeIn>
           {allUndelegations
-            .sort((a, b) =>
-              new Date(a.completionDate) > new Date(b.completionDate) ? 1 : -1
-            )
+            // .sort((a, b) =>
+            //   new Date(a.completionDate) > new Date(b.completionDate) ? 1 : -1
+            // )
             .map((undelegation, idx) => {
               return (
                 <Row
                   key={idx}
-                  rank={idx + 1}
                   name={undelegation.name}
                   amount={undelegation.amount}
                   completionDate={moment
@@ -44,7 +49,20 @@ export const UndelegatingTable = (props: TableProps) => {
                     .local()
                     .format("L h:mma")
                     .toLowerCase()}
+                  sortableProps={[
+                    undelegation.name,
+                    Number(formatEther(undelegation.amount)),
+                  ]}
                 />
+              );
+            })
+            .sort((a, b) => {
+              if (columnClicked == 2) {
+                return -1;
+              }
+              return sortColumnsByType(
+                a.props.sortableProps?.[columnClicked],
+                b.props.sortableProps?.[columnClicked]
               );
             })}
         </FadeIn>
@@ -56,15 +74,14 @@ export const UndelegatingTable = (props: TableProps) => {
 };
 
 interface RowProps {
-  rank: number;
   name: string;
   amount: BigNumber;
   completionDate: string;
+  sortableProps?: unknown[];
 }
 const Row = (props: RowProps) => {
   return (
     <tr>
-      <td>{props.rank}</td>
       <td>{props.name}</td>
       <td>
         {commify(truncateNumber(formatEther(props.amount)))}{" "}

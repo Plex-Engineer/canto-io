@@ -1,4 +1,4 @@
-import { useCalls } from "@usedapp/core";
+import { CallResult, useCalls } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { NativeERC20Tokens, UserERC20Tokens } from "../config/interfaces";
 import { ERC20Abi } from "../../../global/config/abi";
@@ -31,10 +31,13 @@ export function useCantoERC20Balances(
     return { userTokens: [], fail: true };
   }
   const chuckSize = results.length / tokens.length;
-  let processedTokens: Array<any>;
-  const array_chunks = (array: any[], chunk_size: number) => {
+  let processedTokens: Array<Array<Array<BigNumber>>>;
+  const array_chunks = (
+    array: CallResult<Contract, string>[],
+    chunk_size: number
+  ) => {
     const rep = array.map((array) => array?.value);
-    const chunks: any[] = [];
+    const chunks: Array<Array<Array<BigNumber>>> = [];
 
     for (let i = 0; i < array.length; i += chunk_size) {
       chunks.push(rep.slice(i, i + chunk_size));

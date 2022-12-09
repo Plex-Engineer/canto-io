@@ -170,6 +170,27 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
     activePair.basePairInfo.token1.decimals,
     activePair.basePairInfo.token2.decimals
   );
+  const mixPanelInfoObject = {
+    tokenName:
+      activePair.basePairInfo.token1.symbol +
+      " / " +
+      activePair.basePairInfo.token2.symbol +
+      " LP",
+    LPPrice: formatUnits(
+      activePair.prices.LP,
+      36 - activePair.basePairInfo.decimals
+    ),
+    token1Amount: value1,
+    token1Price: formatUnits(
+      activePair.prices.token1,
+      36 - activePair.basePairInfo.token1.decimals
+    ),
+    token2Amount: value2,
+    token2Price: formatUnits(
+      activePair.prices.token2,
+      36 - activePair.basePairInfo.token2.decimals
+    ),
+  };
 
   return (
     <DexModalContainer>
@@ -187,6 +208,7 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
           }
           status={token1AllowanceStatus}
           onClose={onClose}
+          mixPanelEventInfo={mixPanelInfoObject}
         />
       </DexLoadingOverlay>
       <DexLoadingOverlay
@@ -203,6 +225,7 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
           }
           status={token2AllowanceStatus}
           onClose={onClose}
+          mixPanelEventInfo={mixPanelInfoObject}
         />
       </DexLoadingOverlay>
       <div className="title">

@@ -40,7 +40,7 @@ export interface UserLMTokenDetails extends LMTokenDetails {
   supplyBalance: BigNumber;
   supplyBalanceinNote: BigNumber;
   borrowBalanceinNote: BigNumber;
-  allowance: boolean;
+  allowance: BigNumber;
   inSupplyMarket: boolean;
   inBorrowMarket: boolean;
   collateral: boolean;
@@ -93,7 +93,7 @@ export const EmptyActiveLMToken: UserLMTokenDetails = {
   balanceOfC: BigNumber.from(0),
   borrowBalance: BigNumber.from(0),
   supplyBalance: BigNumber.from(0),
-  allowance: false,
+  allowance: BigNumber.from(0),
   inSupplyMarket: false,
   inBorrowMarket: false,
   supplyBalanceinNote: BigNumber.from(0),
@@ -107,7 +107,7 @@ export const EmptyUserLMDetails = {
   balanceOfC: BigNumber.from(0),
   borrowBalance: BigNumber.from(0),
   supplyBalance: BigNumber.from(0),
-  allowance: false,
+  allowance: BigNumber.from(0),
   inSupplyMarket: false,
   inBorrowMarket: false,
   supplyBalanceinNote: BigNumber.from(0),

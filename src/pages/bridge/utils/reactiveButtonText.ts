@@ -20,6 +20,10 @@ const enableActions = transactionStatusActions(CantoTransactionType.ENABLE);
 const sendTokenActions = transactionStatusActions(
   CantoTransactionType.SEND_TOKEN
 );
+
+const SELECT_A_TOKEN = "select a token";
+const INSUFFICIENT_BALANCE = "insufficient balance";
+const ENTER_AMOUNT = "enter amount";
 //returns button text and if it is disabled
 export function getReactiveButtonText(
   amount: BigNumber,
@@ -28,11 +32,11 @@ export function getReactiveButtonText(
   cosmosStatus: TransactionState
 ): [string, boolean] {
   if (token.allowance.eq(-1)) {
-    return ["select a token", true];
+    return [SELECT_A_TOKEN, true];
   } else if (amount.gt(token.balanceOf) && !token.allowance.isZero()) {
-    return ["insufficient balance", true];
+    return [INSUFFICIENT_BALANCE, true];
   } else if (amount.isZero() && !token.allowance.isZero()) {
-    return ["enter amount", true];
+    return [ENTER_AMOUNT, true];
   } else if (amount.gt(token.allowance) && !token.allowance.isZero()) {
     return [
       getTransactionStatusString(
@@ -73,11 +77,11 @@ export function getConvertButtonText(
   cantoToEVM: boolean
 ): [string, boolean] {
   if (token == EmptySelectedNativeToken || token == EmptySelectedConvertToken) {
-    return ["select a token", true];
+    return [SELECT_A_TOKEN, true];
   } else if (amount.isZero()) {
-    return ["enter amount", true];
+    return [ENTER_AMOUNT, true];
   } else if (amount.gt(maxAmount)) {
-    return ["insufficient balance", true];
+    return [INSUFFICIENT_BALANCE, true];
   } else {
     return [cantoToEVM ? "bridge in" : "bridge out", false];
   }

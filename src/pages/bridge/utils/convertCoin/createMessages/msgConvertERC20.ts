@@ -9,7 +9,7 @@ import {
   MSG_CONVERT_ERC20_TYPES,
 } from "@tharsis/eip712";
 import * as erc20 from "../prototypes/proto-tx";
-import { Chain, Fee, Sender } from "../../../config/networks";
+import { Chain, Fee, Sender } from "global/config/cosmosConstants";
 
 /* eslint-disable camelcase */
 export interface MessageMsgConvertERC20 {

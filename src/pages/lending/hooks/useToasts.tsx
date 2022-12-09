@@ -55,10 +55,7 @@ export const useToast = (
           Number(msg.amount) > 0
             ? `${Number(msg.amount).toFixed(2)} ${msg.name}`
             : msg.name;
-        const toastMsg = transactionStatusActions(
-          Number(msg.type),
-          msgName
-        ).postAction;
+        const toastMsg = transactionStatusActions(msg.type, msgName).postAction;
         const msged = `${isSuccesful ? "" : "un"}successfully ${toastMsg}`;
 
         toast(msged, {

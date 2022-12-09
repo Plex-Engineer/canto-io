@@ -2,7 +2,7 @@ import {
   getSenderObj,
   signAndBroadcastTxMsg,
 } from "global/utils/cantoTransactions/helpers";
-import { Chain, Fee } from "../../config/networks";
+import { Chain, Fee } from "global/config/cosmosConstants";
 import { createTxMsgConvertCoin } from "./createMessages/msgConvertCoin";
 import { createTxMsgConvertERC20 } from "./createMessages/msgConvertERC20";
 

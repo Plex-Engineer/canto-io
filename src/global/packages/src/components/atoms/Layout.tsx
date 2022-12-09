@@ -30,4 +30,4 @@ const Center = styled.div<Props>`
 const VSpace = styled.div<Props>`
   height: 20;
 `;
-export { Row, Column, Center };
+export { Row, Column, Center, Sizes, VSpace };

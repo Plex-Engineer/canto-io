@@ -10,13 +10,13 @@ import Governance from "pages/governance/governance";
 import Dex from "pages/dexLP/Dex";
 import LendingMarket from "pages/lending/LendingMarket";
 import { BalanceSheet } from "pages/lending/balanceSheet/BalanceSheet";
-import { useCoingeckoTokenPrice } from "@usedapp/coingecko";
 import Footer from "global/components/nFooter";
 import Staking from "pages/staking/Staking";
-import LandingPage from "pages/landing_page/LandingPage";
 import BridgingPage from "pages/bridge/Bridging";
 import { PAGES } from "global/config/pageList";
 import Proposal from "pages/governance/proposal";
+import Landing from "pages/landing/Landing";
+
 //Styling
 const Container = styled.div`
   display: flex;
@@ -26,21 +26,17 @@ const Container = styled.div`
 `;
 
 function App() {
-  // const CantoPrice = useCoingeckoTokenPrice(ADDRESSES.cantoMainnet.WCANTO, "usd", "canto");
   return (
     <React.Fragment>
       <ToastContainer />
-      {/* <StaticNoiseOverlay /> */}
-      {/* <ScanlinesOverlay /> */}
-      {/* <ScanLine /> */}
-      {/* <Overlay /> */}
+
       <GlobalStyle />
       <Router>
         <Container className="App">
           <CantoNav />
           <div className="main-body">
             <Routes>
-              <Route path="/" key={"home"} element={<LandingPage />} />
+              <Route path="/" key={"home"} element={<Landing />} />
               <Route
                 path={PAGES.bridge.link}
                 key={"bridge"}

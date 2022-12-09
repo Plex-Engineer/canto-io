@@ -122,7 +122,7 @@ const SupplyRow = (props: SupplyProps) => {
         <DualRow top={props.apy + " %"} bottom={props.distAPY + "%"}></DualRow>
       </td>
       {props.supplying ? (
-        <React.Fragment>
+        <>
           <td>
             {Number(props.rewards).toFixed(2)}{" "}
             <img
@@ -137,7 +137,7 @@ const SupplyRow = (props: SupplyProps) => {
               bottom={noteSymbol + props.amountInNote}
             ></DualRow>
           </td>
-        </React.Fragment>
+        </>
       ) : (
         <td>{props.amount}</td>
       )}

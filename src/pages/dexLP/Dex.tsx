@@ -2,7 +2,11 @@ import Table from "./components/table";
 import Row, { TransactionRow } from "./components/row";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useNotifications } from "@usedapp/core";
+import {
+  AddNotificationPayload,
+  Notification,
+  useNotifications,
+} from "@usedapp/core";
 import useModals, { ModalType } from "./hooks/useModals";
 import { ModalManager } from "./modals/ModalManager";
 import { ethers } from "ethers";
@@ -21,14 +25,14 @@ import FadeIn from "react-fade-in";
 import { Text } from "global/packages/src";
 import { Details } from "pages/lending/hooks/useTransaction";
 import HelmetSEO from "global/components/seo";
+import { sortColumnsByType } from "pages/lending/components/LMTables";
+import { Mixpanel } from "mixpanel";
 const Dex = () => {
-  // Mixpanel.events.pageOpened("Dex Market", '');
-
   //get network info from store
   const networkInfo = useNetworkInfo();
 
   const { notifications } = useNotifications();
-  const [notifs, setNotifs] = useState<any[]>([]);
+  const [notifs, setNotifs] = useState<Notification[]>([]);
 
   const [setModalType, setActivePair] = useModals((state) => [
     state.setModalType,
@@ -54,9 +58,11 @@ const Dex = () => {
         item.type == "transactionFailed"
       ) {
         setNotifs(
-          notifs.filter(
-            (localItem) => localItem.transaction.hash != item.transaction.hash
-          )
+          notifs.filter((localItem) => {
+            if (localItem.type == "transactionStarted")
+              return localItem.transaction.hash != item.transaction.hash;
+            return true;
+          })
         );
       }
     });
@@ -71,7 +77,7 @@ const Dex = () => {
         const isSuccesful = noti.type != "transactionFailed";
         //@ts-ignore
         const msg: Details = JSON.parse(noti?.transactionName);
-        const actionMsg = transactionStatusActions(Number(msg.type)).postAction;
+        const actionMsg = transactionStatusActions(msg.type).postAction;
         const msged = `${isSuccesful ? "" : "un"}successfully ${actionMsg}`;
 
         toast(msged, {
@@ -103,6 +109,9 @@ const Dex = () => {
     });
   }, [notifications]);
 
+  const [currentPoolsColumnClicked, setCurrentPoolsColumnClicked] = useState(0);
+  const [availablePoolsColumnClicked, setAvailablePoolsColumnCLicked] =
+    useState(0);
   return (
     <>
       <HelmetSEO
@@ -129,6 +138,11 @@ const Dex = () => {
           <Text type="title" color="white">
             to swap tokens, visit{" "}
             <a
+              onClick={() =>
+                Mixpanel.events.lpInterfaceActions.visitSlingshot(
+                  networkInfo.account
+                )
+              }
               style={{
                 color: "#a2fca3",
                 textDecoration: "underline",
@@ -155,9 +169,7 @@ const Dex = () => {
                 ) {
                   //@ts-ignore
                   const msg: Details = JSON.parse(item?.transactionName);
-                  const actionMsg = transactionStatusActions(
-                    Number(msg.type)
-                  ).inAction;
+                  const actionMsg = transactionStatusActions(msg.type).inAction;
                   return (
                     <TransactionRow
                       key={item.submittedAt}
@@ -183,65 +195,97 @@ const Dex = () => {
               current position
             </Text>
             <FadeIn>
-              <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-                {userPairs?.map((pair: UserLPPairInfo, idx) => {
-                  return !pair.userSupply.totalLP.isZero() ||
-                    pair.userSupply.percentOwned > 0 ? (
-                    <Row
-                      delay={0.2 * idx}
-                      key={pair.basePairInfo.address}
-                      iconLeft={pair.basePairInfo.token1.icon}
-                      iconRight={pair.basePairInfo.token2.icon}
-                      onClick={() => {
-                        setActivePair(pair);
-                        setModalType(
-                          !pair.userSupply.totalLP.isZero()
-                            ? ModalType.ADD_OR_REMOVE
-                            : ModalType.ADD
-                        );
-                      }}
-                      assetName={
-                        pair.basePairInfo.token1.symbol +
-                        "/" +
-                        pair.basePairInfo.token2.symbol
-                      }
-                      totalValueLocked={
-                        noteSymbol +
-                        ethers.utils.commify(
-                          truncateNumber(formatUnits(pair.totalSupply.tvl))
-                        )
-                      }
-                      apr={"23.2"}
-                      position={
-                        truncateNumber(
-                          formatUnits(
-                            pair.userSupply.totalLP,
-                            pair.basePairInfo.decimals
+              <Table
+                columns={["Asset", "TVL", "wallet", "% Share"]}
+                onColumnClicked={(column) =>
+                  setCurrentPoolsColumnClicked(column)
+                }
+                columnClicked={currentPoolsColumnClicked}
+              >
+                {userPairs
+                  ?.map((pair: UserLPPairInfo, idx) => {
+                    return !pair.userSupply.totalLP.isZero() ||
+                      pair.userSupply.percentOwned > 0 ? (
+                      <Row
+                        delay={0.2 * idx}
+                        key={pair.basePairInfo.address}
+                        iconLeft={pair.basePairInfo.token1.icon}
+                        iconRight={pair.basePairInfo.token2.icon}
+                        onClick={() => {
+                          setActivePair(pair);
+                          setModalType(
+                            !pair.userSupply.totalLP.isZero()
+                              ? ModalType.ADD_OR_REMOVE
+                              : ModalType.ADD
+                          );
+                        }}
+                        assetName={
+                          pair.basePairInfo.token1.symbol +
+                          "/" +
+                          pair.basePairInfo.token2.symbol
+                        }
+                        totalValueLocked={
+                          noteSymbol +
+                          ethers.utils.commify(
+                            truncateNumber(formatUnits(pair.totalSupply.tvl))
                           )
-                        ) + " LP Tokens"
-                      }
-                      share={truncateNumber(
-                        (pair.userSupply.percentOwned * 100).toString()
-                      )}
-                    />
-                  ) : null;
-                })}
+                        }
+                        apr={"23.2"}
+                        position={
+                          truncateNumber(
+                            formatUnits(
+                              pair.userSupply.totalLP,
+                              pair.basePairInfo.decimals
+                            )
+                          ) + " LP Tokens"
+                        }
+                        share={truncateNumber(
+                          (pair.userSupply.percentOwned * 100).toString()
+                        )}
+                        sortableProps={[
+                          pair.basePairInfo.token1.symbol +
+                            "/" +
+                            pair.basePairInfo.token2.symbol,
+                          Number(formatUnits(pair.totalSupply.tvl)),
+                          Number(
+                            formatUnits(
+                              pair.userSupply.totalLP,
+                              pair.basePairInfo.decimals
+                            )
+                          ),
+                          pair.userSupply.percentOwned,
+                        ]}
+                      />
+                    ) : null;
+                  })
+                  .sort((a, b) => {
+                    return sortColumnsByType(
+                      a?.props.sortableProps?.[currentPoolsColumnClicked],
+                      b?.props.sortableProps?.[currentPoolsColumnClicked]
+                    );
+                  })}
               </Table>
             </FadeIn>
           </div>
         ) : null}
-        {
-          userPairs?.filter(
-            (pair: UserLPPairInfo) =>
-              pair.userSupply.totalLP.isZero() &&
-              pair.userSupply.percentOwned == 0
-          ).length ? (
-            <div>
-              <Text type="title" align="left" className="tableName">
-                pools
-              </Text>
-              <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-                {userPairs?.map((pair: UserLPPairInfo, idx) => {
+        {userPairs?.filter(
+          (pair: UserLPPairInfo) =>
+            pair.userSupply.totalLP.isZero() &&
+            pair.userSupply.percentOwned == 0
+        ).length ? (
+          <div>
+            <Text type="title" align="left" className="tableName">
+              pools
+            </Text>
+            <Table
+              columns={["Asset", "TVL", "wallet", "% Share"]}
+              onColumnClicked={(column) =>
+                setAvailablePoolsColumnCLicked(column)
+              }
+              columnClicked={availablePoolsColumnClicked}
+            >
+              {userPairs
+                ?.map((pair: UserLPPairInfo, idx) => {
                   return !(
                     pair.userSupply.totalLP.isZero() &&
                     pair.userSupply.percentOwned == 0
@@ -278,19 +322,31 @@ const Dex = () => {
                       share={truncateNumber(
                         (pair.userSupply.percentOwned * 100).toString()
                       )}
+                      sortableProps={[
+                        pair.basePairInfo.token1.symbol +
+                          "/" +
+                          pair.basePairInfo.token2.symbol,
+                        Number(formatUnits(pair.totalSupply.tvl)),
+                        Number(
+                          formatUnits(
+                            pair.userSupply.totalLP,
+                            pair.basePairInfo.decimals
+                          )
+                        ),
+                        pair.userSupply.percentOwned,
+                      ]}
                     />
                   );
+                })
+                .sort((a, b) => {
+                  return sortColumnsByType(
+                    a?.props.sortableProps?.[availablePoolsColumnClicked],
+                    b?.props.sortableProps?.[availablePoolsColumnClicked]
+                  );
                 })}
-              </Table>
-            </div>
-          ) : null
-          // <Table columns={["Asset", "TVL", "wallet", "% Share"]}>
-          //   <LoadingRow colSpan={4} />
-          //   <LoadingRow colSpan={4} />
-          //   <LoadingRow colSpan={4} />
-          //   <LoadingRow colSpan={4} />
-          // </Table>
-        }
+            </Table>
+          </div>
+        ) : null}
       </DexContainer>
     </>
   );

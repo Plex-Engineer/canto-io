@@ -11,6 +11,7 @@ interface RowProps {
   share: string;
   onClick: () => void;
   delay?: number;
+  sortableProps?: unknown[];
 }
 
 const RowStyle = styled.tr<RowProps>`
