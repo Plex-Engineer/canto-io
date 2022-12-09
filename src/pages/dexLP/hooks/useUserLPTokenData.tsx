@@ -1,4 +1,4 @@
-import { useCalls, useEtherBalance } from "@usedapp/core";
+import { CallResult, useCalls, useEtherBalance } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { CantoTestnet, CantoMainnet } from "global/config/networks";
 import { cERC20Abi, ERC20Abi, routerAbi } from "global/config/abi";
@@ -91,8 +91,12 @@ const useUserLPTokenInfo = (
     useCalls(LPTokens && onCanto && account ? calls.flat() : []) ?? {};
 
   const chuckSize = !LPTokens ? 0 : results.length / LPTokens.length;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let processedTokens: Array<any>;
-  const array_chunks = (array: any[], chunk_size: number) => {
+  const array_chunks = (
+    array: CallResult<Contract, string>[],
+    chunk_size: number
+  ) => {
     const rep = array.map((array) => array?.value);
     const chunks = [];
 

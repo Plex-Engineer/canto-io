@@ -4,7 +4,7 @@ import { EventWithTime, PendingEvent } from "../utils/utils";
 interface AllTransactions {
   pendingBridgeTransactions: PendingEvent[];
   completedBridgeTransactions: EventWithTime[];
-  bridgeOutTransactions: any[];
+  bridgeOutTransactions: unknown[];
 }
 interface TransactionStore {
   account: string;
@@ -17,7 +17,7 @@ interface TransactionStore {
     account: string | undefined,
     pendingBridgeTransactions: PendingEvent[],
     completedBridgeTransactions: EventWithTime[],
-    bridgeOutTransactions: any[]
+    bridgeOutTransactions: unknown[]
   ) => void;
 }
 
@@ -52,7 +52,7 @@ export const useBridgeTransactionStore = create<TransactionStore>()(
           account: string | undefined,
           pendingBridgeTransactions: PendingEvent[],
           completedBridgeTransactions: EventWithTime[],
-          bridgeOutTransactions: any[]
+          bridgeOutTransactions: unknown[]
         ) => {
           //checking for new transactions
           //if previous length is not 0, then there are previous transactions

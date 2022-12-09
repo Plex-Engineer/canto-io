@@ -1,5 +1,5 @@
-import { useCalls } from "@usedapp/core";
-import { Contract } from "ethers";
+import { CallResult, useCalls } from "@usedapp/core";
+import { BigNumber, Contract } from "ethers";
 import { ERC20Abi } from "global/config/abi";
 import { ADDRESSES } from "global/config/addresses";
 import { Token } from "global/config/tokenInfo";
@@ -41,8 +41,11 @@ export function useEthGravityTokens(
     return { userEthGTokens: [], gravityAddress: undefined };
   }
   const chuckSize = results.length / tokens.length;
-  let processedTokens: Array<any>;
-  const array_chunks = (array: any[], chunk_size: number) => {
+  let processedTokens: Array<Array<Array<BigNumber>>>;
+  const array_chunks = (
+    array: CallResult<Contract, string>[],
+    chunk_size: number
+  ) => {
     const rep = array.map((array) => array?.value);
     const chunks = [];
 

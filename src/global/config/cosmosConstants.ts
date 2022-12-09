@@ -46,3 +46,12 @@ export interface Chain {
   chainId: number;
   cosmosChainId: string;
 }
+
+export interface CosmosMsg {
+  eipToSign: object;
+  legacyAmino: {
+    authInfo: object;
+    body: object;
+  };
+  signDirect: object;
+}

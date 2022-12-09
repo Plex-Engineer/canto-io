@@ -10,7 +10,8 @@ export async function addNetwork() {
         method: "wallet_switchEthereumChain",
         params: [{ chainId: "0x" + CantoMainnet.chainId.toString(16) }],
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      //@ts-ignore
       if (error.code === 4902) {
         //@ts-ignore
         window?.ethereum
@@ -30,8 +31,8 @@ export async function addNetwork() {
               },
             ],
           })
-          .catch((error: any) => {
-            // console.log(error);
+          .catch((error: unknown) => {
+            console.error(error);
           });
       }
     }

@@ -9,6 +9,7 @@ import { GovernanceContainer } from "./components/Styled";
 import HelmetSEO from "global/components/seo";
 import { useNavigate } from "react-router-dom";
 import { Text } from "global/packages/src";
+import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 const Governance = () => {
   //network info store
   const networkInfo = useNetworkInfo();
@@ -61,7 +62,7 @@ const Governance = () => {
                   />
                 );
               })
-              .sort((a: any, b: any) => {
+              .sort((a: ReactJSXElement, b: ReactJSXElement) => {
                 return b?.props.proposalID - a?.props.proposalID;
               })}
       </>

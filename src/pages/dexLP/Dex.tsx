@@ -2,7 +2,11 @@ import Table from "./components/table";
 import Row, { TransactionRow } from "./components/row";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useNotifications } from "@usedapp/core";
+import {
+  AddNotificationPayload,
+  Notification,
+  useNotifications,
+} from "@usedapp/core";
 import useModals, { ModalType } from "./hooks/useModals";
 import { ModalManager } from "./modals/ModalManager";
 import { ethers } from "ethers";
@@ -28,7 +32,7 @@ const Dex = () => {
   const networkInfo = useNetworkInfo();
 
   const { notifications } = useNotifications();
-  const [notifs, setNotifs] = useState<any[]>([]);
+  const [notifs, setNotifs] = useState<Notification[]>([]);
 
   const [setModalType, setActivePair] = useModals((state) => [
     state.setModalType,
@@ -54,9 +58,11 @@ const Dex = () => {
         item.type == "transactionFailed"
       ) {
         setNotifs(
-          notifs.filter(
-            (localItem) => localItem.transaction.hash != item.transaction.hash
-          )
+          notifs.filter((localItem) => {
+            if (localItem.type == "transactionStarted")
+              return localItem.transaction.hash != item.transaction.hash;
+            return true;
+          })
         );
       }
     });

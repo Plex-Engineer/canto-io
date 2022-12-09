@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-undef
 module.exports = {
   env: {
     browser: true,
@@ -24,19 +23,17 @@ module.exports = {
   rules: {
     // indent: ["error", "tab"],
     "@typescript-eslint/ban-ts-comment": "off",
-    "@typescript-eslint/no-explicit-any": ["warn", { ignoreRestArgs: true }],
+    "@typescript-eslint/no-explicit-any": ["error", { ignoreRestArgs: true }],
     "for-direction": "error",
     "linebreak-style": ["error", "unix"],
     "no-console": ["warn", { allow: ["warn", "error"] }],
     "no-unreachable": "error",
     "prettier/prettier": "error",
     quotes: ["error", "double"],
-    "react/react-in-jsx-scope": "off",
     "react-hooks/exhaustive-deps": "off",
     "react-hooks/rules-of-hooks": "error",
     semi: ["error", "always"],
-    "sonarjs/cognitive-complexity": "off",
-    "sonarjs/no-nested-switch": 1,
+    "sonarjs/cognitive-complexity": ["error", 100],
   },
   settings: {
     react: {

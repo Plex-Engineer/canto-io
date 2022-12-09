@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   generateEndpointAccount,
   generateEndpointBroadcast,
@@ -12,6 +13,7 @@ import { ethers } from "ethers";
 import { Buffer } from "buffer";
 import { CantoMainnet, CantoTestnet } from "global/config/networks";
 import { BigNumber } from "ethers";
+import { Chain, CosmosMsg, Sender } from "global/config/cosmosConstants";
 
 export const nodeURL = (chain: number | undefined) => {
   if (chain == CantoTestnet.chainId) {
@@ -30,9 +32,9 @@ const JSONHeader = "application/json";
  * @param {string} account eth hex address
  */
 export async function signAndBroadcastTxMsg(
-  msg: any,
-  senderObj: any,
-  chain: any,
+  msg: CosmosMsg,
+  senderObj: Sender,
+  chain: Chain,
   nodeAddress: string,
   account: string
 ) {
@@ -104,7 +106,7 @@ export async function ethToCanto(address: string, nodeAddress: string) {
       address = result.cosmos_address;
       return address;
     })
-    .catch((error) => console.log("error", error));
+    .catch((error) => console.error("error", error));
 }
 
 /**
