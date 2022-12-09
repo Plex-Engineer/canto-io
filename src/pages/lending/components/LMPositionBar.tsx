@@ -13,12 +13,14 @@ interface LMPositionBarProps {
   borrowLimit: BigNumber;
   supplyBalance: BigNumber;
   rewardBalance: string;
+  isMobile: boolean;
 }
 export const LMPositionBar = ({
   borrowBalance,
   borrowLimit,
   supplyBalance,
   rewardBalance,
+  isMobile,
 }: LMPositionBarProps) => {
   const borrowPercentage = !borrowLimit.isZero()
     ? borrowBalance.mul(100).div(borrowLimit)
@@ -31,7 +33,7 @@ export const LMPositionBar = ({
       <Hero>
         <div>
           <Text type="title" align="left" size="text1">
-            supply balance
+            supply {isMobile ? "" : "balance"}
           </Text>
           {/* <h1 className="balance">{noteSymbol}{stats?.totalSupply.toFixed(2)??"000.00000"}</h1> */}
           <h1 className="balance">
@@ -143,7 +145,7 @@ export const LMPositionBar = ({
           }}
         >
           <Text id="bor-bal" type="title" size="text1" align="right">
-            borrow balance
+            borrow {isMobile ? "" : "balance"}
           </Text>
           {/* <h1 className="balance">{noteSymbol}{stats?.totalBorrow.toFixed(2)??"000.00000"}</h1> */}
           <h1 className="balance">

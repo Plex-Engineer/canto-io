@@ -72,6 +72,7 @@ const LendingMarket = () => {
         </div> */}
 
         <LMPositionBar
+          isMobile={isMobile}
           rewardBalance={
             !rewards.accrued.isZero()
               ? truncateNumber(formatUnits(rewards.accrued))

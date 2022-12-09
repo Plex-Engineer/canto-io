@@ -23,10 +23,12 @@ const Styled = styled.div<Props>`
   transform: ${({ reverse }) => (reverse ? "rotateZ(180deg)" : "")};
   gap: 0.4rem;
   padding: 6px 32px;
-
+  @media (max-width: 1000px) {
+    padding: 6px 10px;
+  }
   img {
     opacity: 0.02;
-    animation: example 1.7s infinite ease-out;
+    animation: glow 1.7s infinite ease-out;
     &:nth-of-type(1) {
     }
     &:nth-of-type(2) {
@@ -40,7 +42,7 @@ const Styled = styled.div<Props>`
     }
   }
 
-  @keyframes example {
+  @keyframes glow {
     0% {
       opacity: 0.8;
     }

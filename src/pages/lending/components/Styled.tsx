@@ -24,7 +24,6 @@ export const Styled = styled.div`
   .balance {
     font-weight: 300;
     font-family: "SilkScreen";
-    font-size: 56px;
     color: var(--primary-color);
     text-shadow: 0px 14px 14px rgba(6, 252, 153, 0.2);
     & span {
@@ -65,9 +64,6 @@ export const Styled = styled.div`
     }
   }
   @media (max-width: 1000px) {
-    #bor-bal {
-      text-align: left !important;
-    }
     margin: 0;
     padding: 1rem;
     .balance {
@@ -117,13 +113,28 @@ export const Hero = styled.div`
     margin: 0;
     margin-top: 2rem;
     justify-content: center;
-    align-items: flex-start;
     gap: 0.3rem;
-    div {
-      text-align: left !important;
+    & > :nth-of-type(1) {
+      order: 2;
+      align-self: flex-start;
+      justify-content: start;
+    }
+    & > :nth-of-type(2) {
+      order: 1;
+    }
+    & > :nth-of-type(3) {
+      order: 3;
+      position: relative;
+
+      top: -4.2rem;
     }
     .balance {
       font-size: 26px;
+    }
+
+    .middle {
+      width: 100%;
+      margin: 0;
     }
   }
 `;
