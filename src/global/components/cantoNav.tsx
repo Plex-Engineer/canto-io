@@ -54,6 +54,7 @@ export const CantoNav = () => {
     if (account) {
       networkInfo.setAccount(account);
       networkInfo.setBalance(balance ?? BigNumber.from(0));
+      Mixpanel.people.registerWallet(account);
     }
     if (account == null) {
       networkInfo.setAccount("");
@@ -71,10 +72,10 @@ export const CantoNav = () => {
     Mixpanel.events.pageOpened(
       recursiveGetTitle(location.pathname, 1, pageList) != ""
         ? recursiveGetTitle(location.pathname, 1, pageList)
-        : "landing page",
-      networkInfo.account
+        : "landing page"
     );
   }, [location.pathname, networkInfo.account]);
+
   useEffect(() => {
     showAlerts(
       alert.show,

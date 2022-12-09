@@ -1,10 +1,10 @@
 import { CantoTransactionType } from "global/config/transactionTypes";
-import mixpanel from "mixpanel-browser";
+import mixpanel, { Dict } from "mixpanel-browser";
 
 mixpanel.init("f58419bff863911fa30164121332f571");
 
 const actions = {
-  track: (name: string, props: any) => {
+  track: (name: string, props: Dict | undefined) => {
     mixpanel.track(name, props);
   },
   identify: (id: string) => {
@@ -14,16 +14,17 @@ const actions = {
     mixpanel.alias(id);
   },
   people: {
-    set: (props: any) => {
+    set: (props: Dict) => {
       mixpanel.people.set(props);
+    },
+    registerWallet: (account: string) => {
+      mixpanel.register({ distinct_id: account, wallet: account });
     },
   },
   events: {
-    pageOpened: (pageName: string, account: string | undefined) => {
+    pageOpened: (pageName: string) => {
       mixpanel.track("Page Opened", {
-        distinct_id: account ?? 0,
         pageName: pageName,
-        wallet: account ?? 0,
       });
     },
     transactions: {
