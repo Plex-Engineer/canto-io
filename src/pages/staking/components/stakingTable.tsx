@@ -2,6 +2,7 @@ import { BigNumber } from "ethers";
 import { commify, formatEther } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
 import cantoIcon from "assets/logo.svg";
+import cantoJailedIcon from "assets/jailed/logo.svg";
 import { MasterValidatorProps } from "../config/interfaces";
 import useValidatorModalStore, {
   ValidatorModalType,
@@ -9,7 +10,7 @@ import useValidatorModalStore, {
 import Table from "./table";
 import FadeIn from "react-fade-in";
 import { levenshteinDistance } from "../utils/utils";
-import jailedSymbol from "assets/jailed.svg";
+import jailedSymbol from "assets/lock.svg";
 import { ToolTipL } from "pages/lending/components/Styled";
 import Popup from "reactjs-popup";
 import { formatLiquidity } from "pages/lending/utils/utils";
@@ -113,10 +114,15 @@ interface RowProps {
 }
 const Row = (props: RowProps) => {
   return (
-    <tr onClick={props.onClick}>
+    <tr
+      onClick={props.onClick}
+      className={`${props.jailed ? "jailed" : ""}`}
+      style={{
+        borderColor: props.jailed ? "#EF4444" : "var(--primary-color)",
+      }}
+    >
       <td>{props.rank}</td>
       <td>
-        {props.name}
         {props.jailed ? (
           <Popup
             trigger={<img style={{ height: "20px" }} src={jailedSymbol} />}
@@ -127,14 +133,23 @@ const Row = (props: RowProps) => {
             </ToolTipL>
           </Popup>
         ) : null}
+        {props.name}
       </td>
       <td>
         {formatLiquidity(Number(truncateNumber(formatEther(props.totalStake))))}{" "}
-        <img src={cantoIcon} alt="canto" height={14} />
+        <img
+          src={props.jailed ? cantoJailedIcon : cantoIcon}
+          alt="canto"
+          height={14}
+        />
       </td>
       <td>
         {commify(truncateNumber(formatEther(props.userStake)))}
-        <img src={cantoIcon} alt="canto" height={14} />
+        <img
+          src={props.jailed ? cantoJailedIcon : cantoIcon}
+          alt="canto"
+          height={14}
+        />
       </td>
 
       <td>{formatPercent(props.commission)}</td>
