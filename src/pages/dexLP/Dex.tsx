@@ -24,8 +24,6 @@ import HelmetSEO from "global/components/seo";
 import { sortColumnsByType } from "pages/lending/components/LMTables";
 import { Mixpanel } from "mixpanel";
 const Dex = () => {
-  // Mixpanel.events.pageOpened("Dex Market", '');
-
   //get network info from store
   const networkInfo = useNetworkInfo();
 

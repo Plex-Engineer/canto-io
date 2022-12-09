@@ -19,10 +19,6 @@ const Governance = () => {
     proposals.initProposals(Number(networkInfo.chainId));
   }, [networkInfo.chainId]);
 
-  useEffect(() => {
-    Mixpanel.events.pageOpened("governance", networkInfo.account);
-  });
-
   function AllGovBars() {
     return (
       <>
