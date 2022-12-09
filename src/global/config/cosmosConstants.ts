@@ -6,9 +6,15 @@ export const memo = "";
 
 //convert coin constants
 export const convertFee = {
-  amount: "25000000000000000",
+  amount: "300000000000000000",
   denom: "acanto",
-  gas: "250000",
+  gas: "3000000",
+};
+
+export const ibcFee = {
+  amount: "300000000000000000",
+  denom: "acanto",
+  gas: "3000000",
 };
 
 export const pubKeyFee = {

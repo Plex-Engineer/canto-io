@@ -37,6 +37,14 @@ export const PAGES = {
     link: "/lending",
     pageTitle: "lending",
     networks: [CantoMainnet.chainId, CantoTestnet.chainId],
+    subpages: {
+      balanceSheet: {
+        name: "balance sheet",
+        link: "/lending/balanceSheet",
+        pageTitle: "balance sheet",
+        networks: [CantoMainnet.chainId, CantoTestnet.chainId],
+      },
+    },
   },
   lp: {
     name: "lp interface",
@@ -99,20 +107,13 @@ export const pageList: PageObject[] = [
     link: PAGES.lending.link,
     pageTitle: PAGES.lending.pageTitle,
     networks: PAGES.lending.networks,
+    subpages: [PAGES.lending.subpages.balanceSheet],
   },
   {
     name: PAGES.governance.name,
     link: PAGES.governance.link,
     pageTitle: PAGES.governance.pageTitle,
     networks: PAGES.governance.networks,
-    subpages: [
-      {
-        name: PAGES.governance.subpages.proposal.name,
-        link: PAGES.governance.subpages.proposal.link,
-        pageTitle: PAGES.governance.subpages.proposal.pageTitle,
-        pageTitleFunction: PAGES.governance.subpages.proposal.pageTitleFunction,
-        networks: PAGES.governance.subpages.proposal.networks,
-      },
-    ],
+    subpages: [PAGES.governance.subpages.proposal],
   },
 ];

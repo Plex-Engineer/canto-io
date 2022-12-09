@@ -4,7 +4,7 @@ import { useBridgeStore } from "./stores/gravityStore";
 import { TokenWallet } from "./components/TokenSelect";
 import { useEthers } from "@usedapp/core";
 import { BigNumber } from "ethers";
-import { chain, fee, memo } from "./config/networks";
+import { chain, ibcFee, memo } from "global/config/cosmosConstants";
 import { txIBCTransfer } from "./utils/IBC/IBCTransfer";
 import { toastBridge } from "./utils/bridgeConfirmations";
 import { ConvertTransferBox } from "./components/convertTransferBox";
@@ -256,7 +256,7 @@ const BridgeOut = ({
                   selectedNativeToken.nativeName,
                   CantoMainnet.cosmosAPIEndpoint,
                   selectedBridgeOutNetwork.endpoint,
-                  fee,
+                  ibcFee,
                   chain,
                   memo
                 );

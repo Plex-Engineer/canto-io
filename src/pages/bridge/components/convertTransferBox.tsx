@@ -1,5 +1,4 @@
 import { CantoMainnet } from "global/config/networks";
-import { chain, fee, memo } from "../config/networks";
 import { BigNumber } from "ethers";
 import { useState } from "react";
 import {
@@ -21,6 +20,7 @@ import bridgeIcon from "assets/icons/canto-bridge.svg";
 import cantoIcon from "assets/icons/canto-evm.svg";
 import { Mixpanel } from "mixpanel";
 import { CantoTransactionType } from "global/config/transactionTypes";
+import { chain, convertFee, memo } from "global/config/cosmosConstants";
 
 interface ConvertTransferBoxProps {
   cantoToEVM: boolean;
@@ -127,7 +127,7 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
                   props.activeToken.decimals
                 ).toString(),
                 CantoMainnet.cosmosAPIEndpoint,
-                fee,
+                convertFee,
                 chain,
                 memo
               );
@@ -140,7 +140,7 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
                 ).toString(),
                 props.cantoAddress,
                 CantoMainnet.cosmosAPIEndpoint,
-                fee,
+                convertFee,
                 chain,
                 memo
               );
