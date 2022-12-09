@@ -1,7 +1,19 @@
 import styled from "@emotion/styled";
 import arrow from "assets/rightArrow.svg";
+import arrowError from "assets/jailed/arrow.svg";
 import { useState } from "react";
 const Container = styled.table`
+  .jailed {
+    color: #ef4444;
+    &::after {
+      content: url(${arrowError});
+    }
+
+    &:hover {
+      background-color: #341616;
+    }
+  }
+
   & {
     border: none;
     /* border: var(--primary-color) solid 1px; */
@@ -86,11 +98,12 @@ const Container = styled.table`
       transition: all 0.2s;
 
       &:hover {
-        background-color: #163428;
+        background-color: #163429;
         cursor: pointer;
         transform: scale(1.02);
       }
       position: relative;
+
       &::after {
         content: url(${arrow});
         position: absolute;
