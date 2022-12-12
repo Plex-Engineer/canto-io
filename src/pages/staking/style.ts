@@ -18,6 +18,7 @@ const Styled = styled.div`
     letter-spacing: -0.07em;
     color: var(--primary-color);
   }
+
   .tabs {
     width: 100%;
     display: flex;
@@ -33,7 +34,7 @@ const Styled = styled.div`
     height: 80px;
     color: var(--primary-color);
     outline: none;
-    width: 174px;
+    min-width: 174px;
     border-radius: 0%;
     border: 1px solid transparent;
     padding: 1.8rem 0;
@@ -83,11 +84,17 @@ const Styled = styled.div`
   @media (max-width: 1000px) {
     width: 100%;
     padding: 0 2rem;
+    .tab {
+      min-width: 50%;
+    }
     .tablist {
       justify-content: center;
     }
     .react-tabs__tab-panel {
       width: 100%;
+    }
+    .sort-search {
+      display: none !important;
     }
   }
 `;
