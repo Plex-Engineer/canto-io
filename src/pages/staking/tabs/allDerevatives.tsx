@@ -1,5 +1,5 @@
 import { Text } from "global/packages/src";
-import { CInput } from "global/packages/src/components/atoms/Input";
+import { CInput, CSearch } from "global/packages/src/components/atoms/Input";
 
 import { useState } from "react";
 import Select from "react-select";
@@ -69,7 +69,8 @@ const AllDerevatives = (props: AllDerevativesProps) => {
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "flex-end",
+          gap: "2rem",
           marginTop: "1.4rem",
         }}
       >
@@ -85,18 +86,23 @@ const AllDerevatives = (props: AllDerevativesProps) => {
             onChange={(val) => {
               setValidatorDisplaySwitch(val?.value);
             }}
+            isSearchable={false}
+            defaultValue={{
+              label: "active",
+              value: 1,
+            }}
             placeholder="active"
           ></Select>
         </Selected>
-        <CInput
+        <CSearch
+          //   type={"search"}
           style={{
-            maxWidth: "10rem",
-            textAlign: "right",
+            textAlign: "left",
             paddingRight: "1rem",
           }}
           value={userSearch}
           onChange={(e) => setUserSearch(e.target.value)}
-          placeholder="search.."
+          placeholder="search..."
         />
       </div>
 

@@ -48,7 +48,7 @@ const Styled = styled.div`
 
   .tablist {
     display: flex;
-    justify-content: center;
+    justify-content: start;
   }
   .react-tabs__tab--selected {
     border: none;
@@ -83,7 +83,9 @@ const Styled = styled.div`
   @media (max-width: 1000px) {
     width: 100%;
     padding: 0 2rem;
-
+    .tablist {
+      justify-content: center;
+    }
     .react-tabs__tab-panel {
       width: 100%;
     }
