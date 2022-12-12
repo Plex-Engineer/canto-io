@@ -245,17 +245,18 @@ export const Selected = styled.div`
     opacity: 0.4;
   }
   .react-select__control {
-    background-color: #222222 !important;
+    background-color: transparent !important;
     color: var(--primary-color) !important;
-    border: none;
+    border: 1px solid var(--primary-color);
     border-radius: 4px;
     font-size: 16px;
     letter-spacing: -0.03em;
     height: 56px;
 
-    &:focus,
-    &:hover {
+    &:focus {
       outline: none;
+    }
+    &:hover {
     }
   }
 
