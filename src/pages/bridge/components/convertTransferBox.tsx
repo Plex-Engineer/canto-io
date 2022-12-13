@@ -21,6 +21,7 @@ import { Mixpanel } from "mixpanel";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { chain, convertFee, memo } from "global/config/cosmosConstants";
 import {
+  BridgeInStatus,
   BridgeOutStatus,
   useTransactionChecklistStore,
 } from "../stores/transactionChecklistStore";
@@ -60,6 +61,10 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
   function updateChecklist() {
     //checklist must be on this step, so we can update the checklist here
     if (props.cantoToEVM) {
+      checklistStore.updateCurrentBridgeInStatus(
+        BridgeInStatus.COMPLETE,
+        undefined
+      );
     } else {
       checklistStore.updateCurrentBridgeOutStatus(
         BridgeOutStatus.SELECT_BRIDGE,

@@ -32,12 +32,12 @@ import {
   BridgeInStatus,
   useTransactionChecklistStore,
 } from "./stores/transactionChecklistStore";
-import { updateLastBridgeInTransactionStatus } from "./utils/transactionChecklist";
 import { useBridgeTransactionStore } from "./stores/transactionStore";
 import {
   getConvertButtonText,
   getReactiveButtonText,
 } from "./utils/reactiveButtonText";
+import { updateLastBridgeInTransactionStatus } from "./utils/checklistFunctions";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];

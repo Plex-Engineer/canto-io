@@ -39,7 +39,7 @@ import {
   BridgeOutStatus,
   useTransactionChecklistStore,
 } from "./stores/transactionChecklistStore";
-import { updateLastBridgeOutTransactionStatus } from "./utils/transactionChecklist";
+import { updateLastBridgeOutTransactionStatus } from "./utils/checklistFunctions";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -167,9 +167,13 @@ const BridgeOut = ({
             "no transaction"}
         </div>
         <div>
-          Transaction Step:{" "}
+          Transaction Hash:{" "}
           {transactionChecklistStore.getCurrentBridgeOutTx()?.txHash ??
             "no transaction hash"}
+        </div>
+        <div>
+          Transaction length:{" "}
+          {transactionChecklistStore.bridgeOut.transactions.length}
         </div>
 
         <Text
