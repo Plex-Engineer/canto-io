@@ -40,6 +40,8 @@ import {
   useTransactionChecklistStore,
 } from "./stores/transactionChecklistStore";
 import { updateLastBridgeOutTransactionStatus } from "./utils/checklistFunctions";
+import { BridgeOutChecklistFunctionTracker } from "./config/transactionChecklist";
+import { BridgeChecklistBox } from "./components/BridgeChecklistBox";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -143,6 +145,15 @@ const BridgeOut = ({
   return (
     <FadeIn wrapperTag={BridgeStyled}>
       <div className="title">
+        <BridgeChecklistBox
+          trackerList={BridgeOutChecklistFunctionTracker}
+          totalTxs={transactionChecklistStore.bridgeOut.transactions.length}
+          currentStep={
+            transactionChecklistStore.getCurrentBridgeOutTx()?.currentStep ?? 0
+          }
+          addTx={transactionChecklistStore.addBridgeOutTx}
+          removeTx={transactionChecklistStore.removeBridgeOutTx}
+        />
         <Text
           type="title"
           size="title2"
@@ -154,31 +165,6 @@ const BridgeOut = ({
         >
           send funds from canto
         </Text>
-        <div>
-          Last Account to bridge:{" "}
-          {transactionChecklistStore.lastAccount ?? "none"}
-        </div>
-        <div>
-          Transaction Step:{" "}
-          {transactionChecklistStore.getCurrentBridgeOutTx()?.currentStep ??
-            "no transaction"}
-        </div>
-        <div>
-          Transaction Hash:{" "}
-          {transactionChecklistStore.getCurrentBridgeOutTx()?.txHash ??
-            "no transaction hash"}
-        </div>
-        <div>
-          Transaction length:{" "}
-          {transactionChecklistStore.bridgeOut.transactions.length}
-        </div>
-        <button onClick={() => transactionChecklistStore.addBridgeOutTx()}>
-          New Transaction
-        </button>
-        <button onClick={() => transactionChecklistStore.removeBridgeOutTx()}>
-          Finished Transaction
-        </button>
-
         <Text
           type="text"
           color="primary"

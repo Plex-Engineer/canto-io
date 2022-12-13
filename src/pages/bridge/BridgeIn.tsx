@@ -38,6 +38,8 @@ import {
   getReactiveButtonText,
 } from "./utils/reactiveButtonText";
 import { updateLastBridgeInTransactionStatus } from "./utils/checklistFunctions";
+import { BridgeChecklistBox } from "./components/BridgeChecklistBox";
+import { BridgeInChecklistFunctionTracker } from "./config/transactionChecklist";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];
@@ -195,30 +197,15 @@ const BridgeIn = ({
   return (
     <FadeIn wrapperTag={BridgeStyled}>
       <div className="title">
-        <div>
-          Last Account to bridge:{" "}
-          {transactionChecklistStore.lastAccount ?? "none"}
-        </div>
-        <div>
-          Transaction Step:{" "}
-          {transactionChecklistStore.getCurrentBridgeInTx()?.currentStep ??
-            "no transaction"}
-        </div>
-        <div>
-          Transaction hash:{" "}
-          {transactionChecklistStore.getCurrentBridgeInTx()?.txHash ??
-            "no transaction hash"}
-        </div>
-        <div>
-          Transaction length:{" "}
-          {transactionChecklistStore.bridgeIn.transactions.length}
-        </div>
-        <button onClick={() => transactionChecklistStore.addBridgeInTx()}>
-          New Transaction
-        </button>
-        <button onClick={() => transactionChecklistStore.removeBridgeInTx()}>
-          Finished Transaction
-        </button>
+        <BridgeChecklistBox
+          trackerList={BridgeInChecklistFunctionTracker}
+          totalTxs={transactionChecklistStore.bridgeIn.transactions.length}
+          currentStep={
+            transactionChecklistStore.getCurrentBridgeInTx()?.currentStep ?? 0
+          }
+          addTx={transactionChecklistStore.addBridgeInTx}
+          removeTx={transactionChecklistStore.removeBridgeInTx}
+        />
         <Text
           type="title"
           size="title2"
