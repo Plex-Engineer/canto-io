@@ -180,10 +180,7 @@ const BridgeIn = ({
 
   useEffect(() => {
     if (!transactionChecklistStore.getCurrentBridgeInTx()) {
-      transactionChecklistStore.addBridgeInTx({
-        txHash: undefined,
-        currentStep: BridgeInStatus.SELECT_ETH,
-      });
+      transactionChecklistStore.addBridgeInTx();
     }
     updateLastTransaction();
   }, [
@@ -212,6 +209,16 @@ const BridgeIn = ({
           {transactionChecklistStore.getCurrentBridgeInTx()?.txHash ??
             "no transaction hash"}
         </div>
+        <div>
+          Transaction length:{" "}
+          {transactionChecklistStore.bridgeIn.transactions.length}
+        </div>
+        <button onClick={() => transactionChecklistStore.addBridgeInTx()}>
+          New Transaction
+        </button>
+        <button onClick={() => transactionChecklistStore.removeBridgeInTx()}>
+          Finished Transaction
+        </button>
         <Text
           type="title"
           size="title2"

@@ -129,10 +129,7 @@ const BridgeOut = ({
   }
   useEffect(() => {
     if (!transactionChecklistStore.getCurrentBridgeOutTx()) {
-      transactionChecklistStore.addBridgeOutTx({
-        txHash: undefined,
-        currentStep: BridgeOutStatus.SELECT_CONVERT,
-      });
+      transactionChecklistStore.addBridgeOutTx();
     }
     updateLastBridgeOutChecklist();
   }, [
@@ -175,6 +172,12 @@ const BridgeOut = ({
           Transaction length:{" "}
           {transactionChecklistStore.bridgeOut.transactions.length}
         </div>
+        <button onClick={() => transactionChecklistStore.addBridgeOutTx()}>
+          New Transaction
+        </button>
+        <button onClick={() => transactionChecklistStore.removeBridgeOutTx()}>
+          Finished Transaction
+        </button>
 
         <Text
           type="text"

@@ -23,7 +23,7 @@ interface LastTransactionProps {
     status: BridgeInStatus,
     txHash: string | undefined
   ) => void;
-  addBridgeInTx: (tx: BridgeInTransactionChecklistStatus) => void;
+  addBridgeInTx: () => void;
   removeBridgeInTx: () => void;
   getCurrentBridgeInTx: () => BridgeInTransactionChecklistStatus | undefined;
   //bridge out
@@ -34,7 +34,7 @@ interface LastTransactionProps {
     status: BridgeOutStatus,
     txHash: string | undefined
   ) => void;
-  addBridgeOutTx: (tx: BridgeOutTransactionChecklistStatus) => void;
+  addBridgeOutTx: () => void;
   removeBridgeOutTx: () => void;
   getCurrentBridgeOutTx: () => BridgeOutTransactionChecklistStatus | undefined;
   resetState: () => void;
@@ -97,9 +97,12 @@ export const useTransactionChecklistStore = create<LastTransactionProps>()(
           lastTxTime: new Date().getTime(),
         });
       },
-      addBridgeInTx: (tx) => {
+      addBridgeInTx: () => {
         const newTxList = get().bridgeIn.transactions;
-        newTxList.push(tx);
+        newTxList.push({
+          txHash: undefined,
+          currentStep: BridgeInStatus.SELECT_ETH,
+        });
         set({
           bridgeIn: {
             transactions: newTxList,
@@ -137,9 +140,12 @@ export const useTransactionChecklistStore = create<LastTransactionProps>()(
           lastTxTime: new Date().getTime(),
         });
       },
-      addBridgeOutTx: (tx) => {
+      addBridgeOutTx: () => {
         const newTxList = get().bridgeOut.transactions;
-        newTxList.push(tx);
+        newTxList.push({
+          txHash: undefined,
+          currentStep: BridgeOutStatus.SELECT_CONVERT,
+        });
         set({
           bridgeOut: {
             transactions: newTxList,
