@@ -24,7 +24,10 @@ import { SelectedTokens, useTokenStore } from "./stores/tokenStore";
 import { GeneralTransferBox } from "./components/generalTransferBox";
 import { formatUnits } from "ethers/lib/utils";
 import { convertStringToBigNumber } from "./utils/stringToBigNumber";
-import { getBridgeOutButtonText } from "./utils/reactiveButtonText";
+import {
+  getBridgeOutButtonText,
+  getConvertButtonText,
+} from "./utils/reactiveButtonText";
 import FadeIn from "react-fade-in";
 import { PrimaryButton } from "global/packages/src";
 import { Text } from "global/packages/src/components/atoms/Text";
@@ -32,6 +35,11 @@ import { BridgeStyled } from "./BridgeIn";
 import { allBridgeOutNetworks } from "./config/gravityBridgeTokens";
 import { Mixpanel } from "mixpanel";
 import { CantoTransactionType } from "global/config/transactionTypes";
+import {
+  BridgeOutStatus,
+  useTransactionChecklistStore,
+} from "./stores/transactionChecklistStore";
+import { updateLastBridgeOutTransactionStatus } from "./utils/transactionChecklist";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -53,6 +61,9 @@ const BridgeOut = ({
   const bridgeStore = useBridgeStore();
   const { activateBrowserWallet } = useEthers();
 
+  //store for transactionchecklist
+  const transactionChecklistStore = useTransactionChecklistStore();
+
   //BRIDGE OUT STATES
   const [userCosmosAddress, setUserCosmosAddress] = useState("");
   //bridging to gravity bridge status
@@ -63,13 +74,18 @@ const BridgeOut = ({
   const [prevBridgeBalance, setPrevBridgeBalance] = useState(BigNumber.from(0));
   const [amount, setAmount] = useState("");
 
-  const [buttonText, disabled] = getBridgeOutButtonText(
+  const [bridgeButtonText, bridgeDisabled] = getBridgeOutButtonText(
     convertStringToBigNumber(amount, selectedNativeToken.decimals),
     selectedNativeToken,
     selectedNativeToken.nativeBalance,
     selectedBridgeOutNetwork.checkAddress(userCosmosAddress)
   );
-
+  const [convertButtonText, convertDisabled] = getConvertButtonText(
+    convertStringToBigNumber(amount, selectedConvertToken.decimals),
+    selectedConvertToken,
+    selectedConvertToken.erc20Balance,
+    false
+  );
   //Useffect for calling data per block
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -85,10 +101,47 @@ const BridgeOut = ({
         );
         setInBridgeTransaction(false);
         toastBridge(true);
+        transactionChecklistStore.updateCurrentBridgeOutStatus(
+          BridgeOutStatus.COMPLETE,
+          undefined
+        );
       }
     }, 6000);
     return () => clearInterval(interval);
   }, [userCantoNativeGTokens]);
+
+  function updateLastBridgeOutChecklist() {
+    const currentTx = transactionChecklistStore.getCurrentBridgeOutTx();
+    if (currentTx) {
+      updateLastBridgeOutTransactionStatus(
+        (status, txHash) =>
+          transactionChecklistStore.updateCurrentBridgeOutStatus(
+            status,
+            txHash
+          ),
+        currentTx,
+        bridgeStore.transactionType,
+        Number(networkInfo.chainId),
+        convertDisabled,
+        bridgeDisabled
+      );
+    }
+  }
+  useEffect(() => {
+    if (!transactionChecklistStore.getCurrentBridgeOutTx()) {
+      transactionChecklistStore.addBridgeOutTx({
+        txHash: undefined,
+        currentStep: BridgeOutStatus.SELECT_CONVERT,
+      });
+    }
+    updateLastBridgeOutChecklist();
+  }, [
+    transactionChecklistStore.getCurrentBridgeOutTx()?.currentStep,
+    bridgeStore.transactionType,
+    convertDisabled,
+    bridgeDisabled,
+    networkInfo.chainId,
+  ]);
 
   return (
     <FadeIn wrapperTag={BridgeStyled}>
@@ -104,6 +157,20 @@ const BridgeOut = ({
         >
           send funds from canto
         </Text>
+        <div>
+          Last Account to bridge:{" "}
+          {transactionChecklistStore.lastAccount ?? "none"}
+        </div>
+        <div>
+          Transaction Step:{" "}
+          {transactionChecklistStore.getCurrentBridgeOutTx()?.currentStep ??
+            "no transaction"}
+        </div>
+        <div>
+          Transaction Step:{" "}
+          {transactionChecklistStore.getCurrentBridgeOutTx()?.txHash ??
+            "no transaction hash"}
+        </div>
 
         <Text
           type="text"
@@ -172,12 +239,13 @@ const BridgeOut = ({
           ETHAddress={networkInfo.account ?? ""}
           chainId={Number(networkInfo.chainId)}
           amount={amount}
-          max={selectedConvertToken.erc20Balance}
           onChange={(amount: string) => setAmount(amount)}
           onSwitch={() => {
             activateBrowserWallet();
             addNetwork();
           }}
+          convertButtonText={convertButtonText}
+          convertDisabled={convertDisabled}
         />
       )}
 
@@ -230,7 +298,7 @@ const BridgeOut = ({
             <PrimaryButton
               height="big"
               weight="bold"
-              disabled={disabled}
+              disabled={bridgeDisabled}
               onClick={async () => {
                 Mixpanel.events.transactions.transactionStarted(
                   CantoTransactionType.BRIDGE_OUT,
@@ -265,7 +333,7 @@ const BridgeOut = ({
                 );
               }}
             >
-              {inBridgeTransaction ? bridgeConfirmation : buttonText}
+              {inBridgeTransaction ? bridgeConfirmation : bridgeButtonText}
             </PrimaryButton>
           }
         />

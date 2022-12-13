@@ -28,6 +28,16 @@ import { Text } from "global/packages/src";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
 import { Mixpanel } from "mixpanel";
 import { CantoTransactionType } from "global/config/transactionTypes";
+import {
+  BridgeInStatus,
+  useTransactionChecklistStore,
+} from "./stores/transactionChecklistStore";
+import { updateLastBridgeInTransactionStatus } from "./utils/transactionChecklist";
+import { useBridgeTransactionStore } from "./stores/transactionStore";
+import {
+  getConvertButtonText,
+  getReactiveButtonText,
+} from "./utils/reactiveButtonText";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];
@@ -43,8 +53,17 @@ const BridgeIn = ({
   const { switchNetwork, activateBrowserWallet } = useEthers();
   const tokenStore = useTokenStore();
   const selectedETHToken = tokenStore.selectedTokens[SelectedTokens.ETHTOKEN];
+  const selectedConvertToken =
+    tokenStore.selectedTokens[SelectedTokens.CONVERTIN];
   const bridgeStore = useBridgeStore();
+
+  //store for transactionchecklist
+  const transactionChecklistStore = useTransactionChecklistStore();
+  const completedTransactions =
+    useBridgeTransactionStore().transactions.completedBridgeTransactions;
+
   const [amount, setAmount] = useState("");
+
   //function states for approving/bridging
   const {
     state: stateApprove,
@@ -56,6 +75,19 @@ const BridgeIn = ({
     send: sendCosmos,
     resetState: resetCosmos,
   } = useCosmos(gravityAddress ?? ADDRESSES.ETHMainnet.GravityBridge);
+
+  const [bridgeButtonText, bridgeDisabled] = getReactiveButtonText(
+    convertStringToBigNumber(amount, selectedETHToken?.decimals ?? 18),
+    selectedETHToken,
+    stateApprove.status,
+    stateCosmos.status
+  );
+  const [convertButtonText, convertDisabled] = getConvertButtonText(
+    convertStringToBigNumber(amount, selectedConvertToken.decimals),
+    selectedConvertToken,
+    selectedConvertToken.nativeBalance,
+    true
+  );
 
   //event tracker
   useEffect(() => {
@@ -76,6 +108,18 @@ const BridgeIn = ({
 
   useEffect(() => {
     bridgeStore.setCosmosStatus(stateCosmos.status);
+    //check checklist to see if we need to update
+    const currentStep =
+      transactionChecklistStore.getCurrentBridgeInTx()?.currentStep;
+    currentStep
+      ? transactionChecklistStore.updateCurrentBridgeInStatus(
+          currentStep,
+          stateCosmos.transaction?.hash
+        )
+      : () => {
+          return;
+        };
+    updateLastTransaction();
   }, [stateCosmos.status]);
 
   const send = (amount: string) => {
@@ -118,9 +162,56 @@ const BridgeIn = ({
     );
   }
 
+  function updateLastTransaction() {
+    const currentTx = transactionChecklistStore.getCurrentBridgeInTx();
+    if (currentTx) {
+      updateLastBridgeInTransactionStatus(
+        (status, txHash) =>
+          transactionChecklistStore.updateCurrentBridgeInStatus(status, txHash),
+        currentTx,
+        bridgeStore.transactionType,
+        Number(networkInfo.chainId),
+        bridgeDisabled,
+        completedTransactions,
+        convertDisabled
+      );
+    }
+  }
+
+  useEffect(() => {
+    if (!transactionChecklistStore.getCurrentBridgeInTx()) {
+      transactionChecklistStore.addBridgeInTx({
+        txHash: undefined,
+        currentStep: BridgeInStatus.SELECT_ETH,
+      });
+    }
+    updateLastTransaction();
+  }, [
+    transactionChecklistStore.getCurrentBridgeInTx()?.currentStep,
+    bridgeStore.transactionType,
+    convertDisabled,
+    bridgeDisabled,
+    completedTransactions,
+    networkInfo.chainId,
+  ]);
+
   return (
     <FadeIn wrapperTag={BridgeStyled}>
       <div className="title">
+        <div>
+          Last Account to bridge:{" "}
+          {transactionChecklistStore.lastAccount ?? "none"}
+        </div>
+        <div>
+          Transaction Step:{" "}
+          {transactionChecklistStore.getCurrentBridgeInTx()?.currentStep ??
+            "no transaction"}
+        </div>
+        <div>
+          Transaction hash:{" "}
+          {transactionChecklistStore.getCurrentBridgeInTx()?.txHash ??
+            "no transaction hash"}
+        </div>
         <Text
           type="title"
           size="title2"
@@ -218,11 +309,13 @@ const BridgeIn = ({
           button={
             <ReactiveButton
               destination={networkInfo.cantoAddress}
-              amount={amount}
               account={networkInfo.account}
-              token={selectedETHToken}
               gravityAddress={gravityAddress}
               onClick={() => send(amount)}
+              approveStatus={stateApprove.status}
+              cosmosStatus={stateCosmos.status}
+              buttonText={bridgeButtonText}
+              buttonDisabled={bridgeDisabled}
             />
           }
         />
@@ -234,7 +327,7 @@ const BridgeIn = ({
             <TokenWallet
               tokens={userConvertCoinNativeTokens}
               balance="nativeBalance"
-              activeToken={tokenStore.selectedTokens[SelectedTokens.CONVERTIN]}
+              activeToken={selectedConvertToken}
               onSelect={(value) => {
                 tokenStore.setSelectedToken(
                   value ?? EmptySelectedNativeToken,
@@ -245,20 +338,19 @@ const BridgeIn = ({
               }}
             />
           }
-          activeToken={tokenStore.selectedTokens[SelectedTokens.CONVERTIN]}
+          activeToken={selectedConvertToken}
           cantoToEVM={true}
           cantoAddress={networkInfo.cantoAddress}
           ETHAddress={networkInfo.account ?? ""}
           chainId={Number(networkInfo.chainId)}
           amount={amount}
-          max={
-            tokenStore.selectedTokens[SelectedTokens.CONVERTIN].nativeBalance
-          }
           onChange={(amount: string) => setAmount(amount)}
           onSwitch={() => {
             activateBrowserWallet();
             addNetwork();
           }}
+          convertButtonText={convertButtonText}
+          convertDisabled={convertDisabled}
         />
       )}
     </FadeIn>
