@@ -144,16 +144,16 @@ const BridgeOut = ({
 
   return (
     <FadeIn wrapperTag={BridgeStyled}>
+      <BridgeChecklistBox
+        trackerList={BridgeOutChecklistFunctionTracker}
+        totalTxs={transactionChecklistStore.bridgeOut.transactions.length}
+        currentStep={
+          transactionChecklistStore.getCurrentBridgeOutTx()?.currentStep ?? 0
+        }
+        addTx={transactionChecklistStore.addBridgeOutTx}
+        removeTx={transactionChecklistStore.removeBridgeOutTx}
+      />
       <div className="title">
-        <BridgeChecklistBox
-          trackerList={BridgeOutChecklistFunctionTracker}
-          totalTxs={transactionChecklistStore.bridgeOut.transactions.length}
-          currentStep={
-            transactionChecklistStore.getCurrentBridgeOutTx()?.currentStep ?? 0
-          }
-          addTx={transactionChecklistStore.addBridgeOutTx}
-          removeTx={transactionChecklistStore.removeBridgeOutTx}
-        />
         <Text
           type="title"
           size="title2"

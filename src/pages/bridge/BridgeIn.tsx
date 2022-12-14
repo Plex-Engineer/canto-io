@@ -358,7 +358,8 @@ export const BridgeStyled = styled.div`
   justify-content: start;
   padding: 60px 0;
   flex-grow: 1;
-
+  width: 100%;
+  position: relative;
   @media (max-width: 1000px) {
     br {
       display: none;

@@ -1,6 +1,9 @@
 import styled from "@emotion/styled";
+import ImageButton from "global/components/ImageButton";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
+import { useState } from "react";
 import { ChecklistTracker } from "../config/transactionChecklist";
+import closeImg from "assets/icons/close.svg";
 
 interface ChecklistBoxProps {
   trackerList: ChecklistTracker;
@@ -10,24 +13,51 @@ interface ChecklistBoxProps {
   removeTx: () => void;
 }
 export const BridgeChecklistBox = (props: ChecklistBoxProps) => {
+  const [showChecklist, setShowChecklist] = useState(false);
+
   const fullList = Object.keys(props.trackerList).map((keyName, i) => (
     <Text
       type="text"
-      size="text2"
+      size="text3"
       key={i}
       align="left"
+      className={props.currentStep == i ? "active" : ""}
       style={{
         color: i > props.currentStep ? "#414141" : "var(--primary-color)",
       }}
     >
-      {props.currentStep == i ? "•" : ""}
+      {/* {props.currentStep == i ? "‣ " : ""} */}
       {i + 1}
       {". "}
       {props.trackerList[Number(keyName)].label}
     </Text>
   ));
+  if (!showChecklist) {
+    return (
+      <ClosedCheckbox
+        onClick={() => {
+          setShowChecklist(true);
+        }}
+      >
+        {" "}
+        <Text type="text" size="text2">
+          Help
+        </Text>
+      </ClosedCheckbox>
+    );
+  }
   return (
     <Styled>
+      <div className="close">
+        <ImageButton
+          onClick={() => {
+            setShowChecklist(false);
+          }}
+          src={closeImg}
+          alt="close"
+          height={16}
+        />
+      </div>
       <Text type="title" size="title2">
         Checklist
       </Text>
@@ -36,13 +66,13 @@ export const BridgeChecklistBox = (props: ChecklistBoxProps) => {
         {"transactions tracked: " + props.totalTxs}
       </Text>
       <div className="btns">
-        <PrimaryButton onClick={props.addTx}>
-          <Text type="text" color="dark" bold>
+        <PrimaryButton onClick={props.addTx} height="small">
+          <Text type="text" size="text4" color="dark" bold>
             Add Txn
           </Text>
         </PrimaryButton>
-        <OutlinedButton onClick={props.removeTx}>
-          <Text type="text" bold>
+        <OutlinedButton onClick={props.removeTx} height="small">
+          <Text type="text" size="text4" bold>
             Remove Txn
           </Text>
         </OutlinedButton>
@@ -51,17 +81,56 @@ export const BridgeChecklistBox = (props: ChecklistBoxProps) => {
   );
 };
 
+const ClosedCheckbox = styled.div`
+  width: 4rem;
+  height: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: 0;
+  background-color: #303030;
+  padding-left: 6px;
+  border-radius: 2rem 0 0 2rem;
+  cursor: pointer;
+  opacity: 0;
+  animation: fadeIn 0.5s forwards 0.6s;
+`;
+
 const Styled = styled.div`
+  position: absolute;
+  right: 1.3rem;
   background-color: #151515;
-  width: 22rem;
+  width: 18rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 1rem 2rem;
+  padding: 1rem 1rem;
+  animation: fadeIn 0.5s forwards;
+
+  .close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
   .list {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    p {
+      transition: all 0.5s;
+    }
+  }
+
+  .active {
+    color: white !important;
+
+    &:before {
+      content: "‣";
+      position: absolute;
+      left: 5px;
+    }
   }
 
   .btns {
