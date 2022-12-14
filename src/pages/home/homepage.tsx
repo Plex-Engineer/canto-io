@@ -6,6 +6,7 @@ import { useNetworkInfo } from "global/stores/networkInfo";
 import { Mixpanel } from "mixpanel";
 import { NavLink } from "react-router-dom";
 import bg from "assets/bg.jpg";
+
 const Homepage = () => {
   const account = useNetworkInfo().account;
 
@@ -47,8 +48,9 @@ const Styled = styled.div`
   display: grid;
   align-content: center;
   height: 100%;
+  z-index: 0;
   .options {
-    z-index: 10;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -59,39 +61,40 @@ const Styled = styled.div`
     position: absolute;
     height: 100vh;
     width: 100vw;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    opacity: 0.4;
-
     background: url(${bg}),
-      linear-gradient(
-        270deg,
-        rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0) 0.01%,
-        rgba(255, 255, 255, 0.0086472) 6.67%,
-        rgba(255, 255, 255, 0.03551) 13.33%,
-        rgba(255, 255, 255, 0.051374) 15.62%,
-        rgba(255, 255, 255, 0.0816599) 20%,
-        rgba(255, 255, 255, 0.147411) 26.67%,
-        rgba(255, 255, 255, 0.231775) 33.33%,
-        rgba(255, 255, 255, 0.286522) 36.98%,
-        rgba(255, 255, 255, 0.331884) 40%,
-        rgba(255, 255, 255, 0.442691) 46.67%,
-        rgba(255, 255, 255, 0.557309) 53.33%,
-        rgba(255, 255, 255, 0.649071) 59.99%,
-        rgba(255, 255, 255, 0.668116) 60%,
-        rgba(255, 255, 255, 0.768225) 66.67%,
-        rgba(255, 255, 255, 0.852589) 73.33%,
-        rgba(255, 255, 255, 0.889574) 77.6%,
-        rgba(255, 255, 255, 0.91834) 80%,
-        rgba(255, 255, 255, 0.96449) 86.67%,
-        rgba(255, 255, 255, 0.972045) 86.68%,
-        rgba(255, 255, 255, 0.991353) 93.33%,
-        #ffffff 100%
+      linear-gradient(90deg, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 60%),
+      linear-gradient(180deg, #06fc99 0%, #06fc99 50%, rgba(0, 0, 0, 1) 100%);
+    background-position: 100%;
+    background-size: contain;
+    top: 0;
+    background-repeat: no-repeat;
+
+    &::after {
+      content: " ";
+      position: absolute;
+      height: 100vh;
+      width: 100vw;
+      background: linear-gradient(
+        90deg,
+        #00000015,
+        #000000b9,
+        #00000013,
+        #000000c0
       );
-    background-size: cover;
-    background-position: 40%;
+      background-size: 200% 200%;
+      animation: movingFade 10s ease infinite;
+      @keyframes movingFade {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+    }
   }
 
   a {
@@ -104,7 +107,8 @@ const Styled = styled.div`
     width: 100%;
     padding-left: 1rem;
     border-radius: 4px;
-    transition: background-color 0.5s;
+    transition: background-color 0.6s ease-in;
+    transition: transform 0.3s ease-in-out;
     background-color: transparent;
     background-size: 0% 100%;
     &:hover {
@@ -117,7 +121,8 @@ const Styled = styled.div`
       );
       background-repeat: no-repeat;
       background-size: 200% 100%;
-      transition: background-size 1s, background-color 1s;
+      transition: background-size 0.7s, background-color 0.7s;
+      transform: scale(1.1);
     }
   }
 `;

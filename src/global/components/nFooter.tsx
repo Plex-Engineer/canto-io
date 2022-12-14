@@ -69,6 +69,7 @@ const Styled = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 1rem 0;
+  z-index: 2;
   .links {
     display: flex;
     align-items: center;
