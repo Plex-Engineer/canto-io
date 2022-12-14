@@ -163,13 +163,8 @@ const actions = {
           wallet: account,
         });
       },
-      proposalOpened: (
-        account: string | undefined,
-        proposalId: string | undefined
-      ) => {
+      proposalOpened: (proposalId: string | undefined) => {
         mixpanel.track("Proposal Opened", {
-          distinct_id: account,
-          wallet: account,
           proposalId: proposalId,
         });
       },
