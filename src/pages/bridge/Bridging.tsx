@@ -28,12 +28,16 @@ import {
 } from "./utils/utils";
 import { useBridgeTransactionStore } from "./stores/transactionStore";
 import HelmetSEO from "global/components/seo";
+import { useTransactionChecklistStore } from "./stores/transactionChecklistStore";
 
 const BridgingPage = () => {
   const tokenStore = useTokenStore();
   const transactionStore = useBridgeTransactionStore();
   const networkInfo = useNetworkInfo();
   const { account, activateBrowserWallet } = useEthers();
+
+  //for setting up transaction checklist on both pages using the current account
+  const transactionChecklistStore = useTransactionChecklistStore();
 
   //setting the bridging transactions into local storage
   async function setBridgingTransactions() {
@@ -109,6 +113,7 @@ const BridgingPage = () => {
       setBridgingTransactions();
       transactionStore.checkAccount(networkInfo.account);
       tokenStore.checkTimeAndResetTokens();
+      transactionChecklistStore.checkPreviousAccount(networkInfo.account);
     }
   }, [networkInfo.account, networkInfo.cantoAddress]);
 

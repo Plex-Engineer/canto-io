@@ -74,9 +74,7 @@ export async function getBridgeInEventsWithStatus(
       (bridgeTx: DepositEvent) =>
         Number(bridgeTx.block_height) == event.blockNumber
     );
-    if (!matchedTx) {
-      completedEvents.push(event);
-    } else {
+    if (matchedTx) {
       if (matchedTx.confirmed) {
         completedEvents.push(event);
       } else {
@@ -84,6 +82,19 @@ export async function getBridgeInEventsWithStatus(
           ...event,
           secondsUntilConfirmed: matchedTx.seconds_until_confirmed,
         });
+      }
+    } else {
+      //if within 5 minutes, the event might not be seen by the gbridge contract yet, so it cannot be completed yet
+      if (
+        event.timestamp * 1000 + 60000 * 5 >
+        new Date(new Date().toUTCString()).getTime()
+      ) {
+        pendingEvents.push({
+          ...event,
+          secondsUntilConfirmed: "0",
+        });
+      } else {
+        completedEvents.push(event);
       }
     }
   });
@@ -187,8 +198,11 @@ export function findGravityToken(tokenAddress: string) {
   );
 }
 export function convertSecondsToString(seconds: string) {
+  if (Number(seconds) == 0) {
+    return "waiting for verification...";
+  }
   if (Number(seconds) <= 60) {
-    return seconds + "seconds";
+    return seconds + " seconds";
   }
   const minutes = Math.ceil(Number(seconds) / 60);
   return minutes + " min";

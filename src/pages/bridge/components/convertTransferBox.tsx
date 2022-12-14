@@ -11,7 +11,6 @@ import {
   EmptySelectedNativeToken,
   UserConvertToken,
 } from "../config/interfaces";
-import { getConvertButtonText } from "../utils/reactiveButtonText";
 import { convertStringToBigNumber } from "../utils/stringToBigNumber";
 import { formatUnits } from "ethers/lib/utils";
 import { GeneralTransferBox } from "./generalTransferBox";
@@ -21,6 +20,11 @@ import cantoIcon from "assets/icons/canto-evm.svg";
 import { Mixpanel } from "mixpanel";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { chain, convertFee, memo } from "global/config/cosmosConstants";
+import {
+  BridgeInStatus,
+  BridgeOutStatus,
+  useTransactionChecklistStore,
+} from "../stores/transactionChecklistStore";
 
 interface ConvertTransferBoxProps {
   cantoToEVM: boolean;
@@ -30,11 +34,13 @@ interface ConvertTransferBoxProps {
   tokenSelector: React.ReactNode;
   amount: string;
   onChange: (value: string) => void;
-  max: BigNumber;
   onSwitch: () => void;
   activeToken: UserConvertToken;
+  convertButtonText: string;
+  convertDisabled: boolean;
 }
 export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
+  const checklistStore = useTransactionChecklistStore();
   //convert states to update the user
   const [convertConfirmation, setConvertConfirmation] =
     useState("select a token");
@@ -52,12 +58,20 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
     ? props.activeToken.nativeBalance
     : props.activeToken.erc20Balance;
 
-  const [buttonText, disabled] = getConvertButtonText(
-    convertStringToBigNumber(props.amount, props.activeToken.decimals),
-    props.activeToken,
-    props.max,
-    props.cantoToEVM
-  );
+  function updateChecklist() {
+    //checklist must be on this step, so we can update the checklist here
+    if (props.cantoToEVM) {
+      checklistStore.updateCurrentBridgeInStatus(
+        BridgeInStatus.COMPLETE,
+        undefined
+      );
+    } else {
+      checklistStore.updateCurrentBridgeOutStatus(
+        BridgeOutStatus.SELECT_BRIDGE,
+        undefined
+      );
+    }
+  }
 
   if (inConvertTransaction) {
     if (currentToken.address == props.activeToken.address) {
@@ -70,9 +84,11 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
         );
         setInConvertTransaction(false);
         toastBridge(true);
+        updateChecklist();
       }
     } else {
       setInConvertTransaction(false);
+      updateChecklist();
     }
   }
 
@@ -101,7 +117,7 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
       amount={props.amount}
       button={
         <PrimaryButton
-          disabled={disabled}
+          disabled={props.convertDisabled}
           height="big"
           weight="bold"
           onClick={async () => {
@@ -150,7 +166,7 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
             );
           }}
         >
-          {inConvertTransaction ? convertConfirmation : buttonText}
+          {inConvertTransaction ? convertConfirmation : props.convertButtonText}
         </PrimaryButton>
       }
     />
