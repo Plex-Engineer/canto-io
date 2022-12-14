@@ -108,6 +108,7 @@ const Styled = styled.div`
   gap: 1rem;
   padding: 1rem 1rem;
   animation: fadeIn 0.5s forwards;
+  z-index: 20;
 
   .close {
     position: absolute;
@@ -138,5 +139,24 @@ const Styled = styled.div`
     justify-content: center;
     gap: 2rem;
     flex-direction: row-reverse;
+  }
+
+  @media (max-width: 1000px) {
+    top: 50%;
+    right: 50%;
+    transform: translateX(50%) translateY(-50%);
+    z-index: 20;
+
+    /* &::after {
+      content: "";
+      display: block;
+      position: absolute;
+      height: 100vmax;
+      width: 100vmin;
+      top: -68%;
+      left: -22%;
+      background-color: #0080002a;
+      z-index: 18; */
+    /* } */
   }
 `;
