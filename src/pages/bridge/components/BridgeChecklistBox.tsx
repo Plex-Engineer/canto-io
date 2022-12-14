@@ -4,6 +4,7 @@ import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { useState } from "react";
 import { ChecklistTracker } from "../config/transactionChecklist";
 import closeImg from "assets/icons/close.svg";
+import { Mixpanel } from "mixpanel";
 
 interface ChecklistBoxProps {
   trackerList: ChecklistTracker;
@@ -36,6 +37,7 @@ export const BridgeChecklistBox = (props: ChecklistBoxProps) => {
     return (
       <ClosedCheckbox
         onClick={() => {
+          Mixpanel.events.bridgeActions.checklistActions.checklistOpened();
           setShowChecklist(true);
         }}
       >
@@ -51,6 +53,7 @@ export const BridgeChecklistBox = (props: ChecklistBoxProps) => {
       <div className="close">
         <ImageButton
           onClick={() => {
+            Mixpanel.events.bridgeActions.checklistActions.checklistClosed();
             setShowChecklist(false);
           }}
           src={closeImg}
@@ -66,12 +69,24 @@ export const BridgeChecklistBox = (props: ChecklistBoxProps) => {
         {"transactions tracked: " + props.totalTxs}
       </Text>
       <div className="btns">
-        <PrimaryButton onClick={props.addTx} height="small">
+        <PrimaryButton
+          onClick={() => {
+            Mixpanel.events.bridgeActions.checklistActions.transactionAdded();
+            props.addTx();
+          }}
+          height="small"
+        >
           <Text type="text" size="text4" color="dark" bold>
             Add Txn
           </Text>
         </PrimaryButton>
-        <OutlinedButton onClick={props.removeTx} height="small">
+        <OutlinedButton
+          onClick={() => {
+            Mixpanel.events.bridgeActions.checklistActions.transactionRemoved();
+            props.removeTx();
+          }}
+          height="small"
+        >
           <Text type="text" size="text4" bold>
             Remove Txn
           </Text>

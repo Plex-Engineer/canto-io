@@ -208,6 +208,20 @@ const actions = {
           status: status,
         });
       },
+      checklistActions: {
+        checklistOpened: () => {
+          mixpanel.track("Bridge Checklist Opened");
+        },
+        checklistClosed: () => {
+          mixpanel.track("Bridge Checklist Closed");
+        },
+        transactionAdded: () => {
+          mixpanel.track("Bridge Checklist Transaction Added");
+        },
+        transactionRemoved: () => {
+          mixpanel.track("Bridge Checklist Transaction Removed");
+        },
+      },
     },
   },
 };
