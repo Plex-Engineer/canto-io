@@ -223,7 +223,7 @@ const LendingMarket = () => {
                 visible={!isMobile || !onLeftTab}
                 borrowing={false}
                 userLMTokens={userLMTokens.filter(
-                  (token) => !token.inBorrowMarket
+                  (token) => !token.inBorrowMarket && !token.borrowCap.eq(1)
                 )}
                 position={position}
                 onClick={(token) => {
