@@ -61,6 +61,7 @@ const Styled = styled.div`
     position: absolute;
     height: 100vh;
     width: 100vw;
+    background-color: black;
     background: url(${bg}),
       linear-gradient(90deg, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 60%),
       linear-gradient(180deg, #06fc99 0%, #06fc99 50%, rgba(0, 0, 0, 1) 100%);
