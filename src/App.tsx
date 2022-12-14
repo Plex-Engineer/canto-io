@@ -33,6 +33,7 @@ const Landing = lazy(() => import("./pages/landing/Landing"));
 const LendingMarket = lazy(() => import("./pages/lending/LendingMarket"));
 const Governance = lazy(() => import("./pages/governance/governance"));
 const Proposal = lazy(() => import("./pages/governance/proposal"));
+const HomePage = lazy(() => import("./pages/home/homepage"));
 const BalanceSheet = lazy(() =>
   import("pages/lending/balanceSheet/BalanceSheet").then((module) => {
     return {
@@ -53,7 +54,7 @@ function App() {
           <div className="main-body">
             <Suspense fallback={<Loading />}>
               <Routes>
-                <Route path="/" key={"home"} element={<Landing />} />
+                <Route path="/" key={"home"} element={<HomePage />} />
                 <Route
                   path={PAGES.bridge.link}
                   key={"bridge"}
