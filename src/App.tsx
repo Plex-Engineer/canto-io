@@ -15,6 +15,7 @@ import Footer from "global/components/nFooter";
 // import BridgingPage from "pages/bridge/Bridging";
 import { PAGES } from "global/config/pageList";
 import Loading from "global/components/Loading";
+import PageNotFound from "global/components/pageNotFound";
 // import Proposal from "pages/governance/proposal";
 // import Landing from "pages/landing/Landing";
 
@@ -88,6 +89,15 @@ function App() {
                   path="/lending/balanceSheet"
                   key={"balanceSheet"}
                   element={<BalanceSheet />}
+                />
+                <Route
+                  path="*"
+                  key={"404"}
+                  element={
+                    <div>
+                      <PageNotFound />
+                    </div>
+                  }
                 />
               </Routes>
             </Suspense>
