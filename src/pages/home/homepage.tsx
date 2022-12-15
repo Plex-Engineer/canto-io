@@ -56,6 +56,9 @@ const Styled = styled.div`
     justify-content: center;
     flex-grow: 2;
     margin-left: 6rem;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
   }
   .bg {
     position: absolute;
@@ -106,13 +109,15 @@ const Styled = styled.div`
     height: 68px;
     transition: all 0.3s ease;
     width: 100%;
-    padding-left: 1rem;
+    /* padding-left: 1rem; */
     border-radius: 4px;
     transition: background-color 0.6s ease-in;
     transition: transform 0.3s ease-in-out;
     background-color: transparent;
     background-size: 0% 100%;
     &:hover {
+      padding-left: 1rem;
+
       color: black;
       background-image: linear-gradient(
         to right,
