@@ -6,18 +6,10 @@ import { GlobalStyle } from "./global/packages/src";
 import { CantoNav } from "global/components/cantoNav";
 import React, { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-// import Governance from "pages/governance/governance";
-// import Dex from "pages/dexLP/Dex";
-// import LendingMarket from "pages/lending/LendingMarket";
-// import { BalanceSheet } from "pages/lending/balanceSheet/BalanceSheet";
 import Footer from "global/components/nFooter";
-// import Staking from "pages/staking/Staking";
-// import BridgingPage from "pages/bridge/Bridging";
 import { PAGES } from "global/config/pageList";
 import Loading from "global/components/Loading";
 import PageNotFound from "global/components/pageNotFound";
-// import Proposal from "pages/governance/proposal";
-// import Landing from "pages/landing/Landing";
 
 //Styling
 const Container = styled.div`
@@ -30,7 +22,6 @@ const Container = styled.div`
 const Bridging = lazy(() => import("pages/bridge/Bridging"));
 const Dex = lazy(() => import("./pages/dexLP/Dex"));
 const Staking = lazy(() => import("./pages/staking/Staking"));
-const Landing = lazy(() => import("./pages/landing/Landing"));
 const LendingMarket = lazy(() => import("./pages/lending/LendingMarket"));
 const Governance = lazy(() => import("./pages/governance/governance"));
 const Proposal = lazy(() => import("./pages/governance/proposal"));
