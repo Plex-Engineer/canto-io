@@ -112,7 +112,7 @@ const Transactions = () => {
           );
         })
         .sort((a: JSX.Element, b: JSX.Element) =>
-          a.props.id > b.props.id ? -1 : 1
+          new Date(a.props.timestamp) > new Date(b.props.timestamp) ? -1 : 1
         )}
       <Text type="title" color="primary" size="title2">
         {completedBridgeTransactions.length + bridgeOutTransactions.length != 0

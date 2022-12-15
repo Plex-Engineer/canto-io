@@ -11,6 +11,10 @@ const SuccessStyle = styled.div`
   color: var(--primary-color);
   transition: all;
   overflow-x: hidden;
+  p {
+    width: 100%;
+    text-align: center;
+  }
 `;
 
 const ErrorStyle = styled(SuccessStyle)`
@@ -26,7 +30,7 @@ const WarningStyle = styled(SuccessStyle)`
 `;
 
 const Container = styled.div`
-  height: 6rem;
+  height: 2rem;
   transition: all 0.3s;
 `;
 
@@ -35,7 +39,7 @@ const Alert = () => {
   return (
     <Container
       style={{
-        height: open ? "6rem" : "0",
+        height: open ? "4rem" : "0",
       }}
     >
       {type == "Success" ? (

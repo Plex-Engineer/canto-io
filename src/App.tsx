@@ -4,18 +4,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import { GlobalStyle } from "./global/packages/src";
 import { CantoNav } from "global/components/cantoNav";
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Governance from "pages/governance/governance";
-import Dex from "pages/dexLP/Dex";
-import LendingMarket from "pages/lending/LendingMarket";
-import { BalanceSheet } from "pages/lending/balanceSheet/BalanceSheet";
 import Footer from "global/components/nFooter";
-import Staking from "pages/staking/Staking";
-import BridgingPage from "pages/bridge/Bridging";
 import { PAGES } from "global/config/pageList";
-import Proposal from "pages/governance/proposal";
-import Landing from "pages/landing/Landing";
+import Loading from "global/components/Loading";
+import PageNotFound from "global/components/pageNotFound";
 
 //Styling
 const Container = styled.div`
@@ -24,6 +18,21 @@ const Container = styled.div`
   min-height: calc(100vh - 5rem);
   background-color: #111;
 `;
+//Lazy loading pages. will load in the required pages
+const Bridging = lazy(() => import("pages/bridge/Bridging"));
+const Dex = lazy(() => import("./pages/dexLP/Dex"));
+const Staking = lazy(() => import("./pages/staking/Staking"));
+const LendingMarket = lazy(() => import("./pages/lending/LendingMarket"));
+const Governance = lazy(() => import("./pages/governance/governance"));
+const Proposal = lazy(() => import("./pages/governance/proposal"));
+const HomePage = lazy(() => import("./pages/home/homepage"));
+const BalanceSheet = lazy(() =>
+  import("pages/lending/balanceSheet/BalanceSheet").then((module) => {
+    return {
+      default: module.BalanceSheet,
+    };
+  })
+);
 
 function App() {
   return (
@@ -35,44 +44,55 @@ function App() {
         <Container className="App">
           <CantoNav />
           <div className="main-body">
-            <Routes>
-              <Route path="/" key={"home"} element={<Landing />} />
-              <Route
-                path={PAGES.bridge.link}
-                key={"bridge"}
-                element={<BridgingPage />}
-              />
-              <Route
-                path={PAGES.governance.link}
-                key="governance"
-                element={<Governance />}
-              />
-              <Route
-                path={PAGES.governance.subpages.proposal.link}
-                key="governance-proposal"
-                element={<Proposal />}
-              />
-              <Route
-                path={PAGES.lp.link}
-                key="lp interface"
-                element={<Dex />}
-              />
-              <Route
-                path={PAGES.lending.link}
-                key="lending"
-                element={<LendingMarket />}
-              />
-              <Route
-                path={PAGES.staking.link}
-                key={"staking"}
-                element={<Staking />}
-              />
-              <Route
-                path="/lending/balanceSheet"
-                key={"balanceSheet"}
-                element={<BalanceSheet />}
-              />
-            </Routes>
+            <Suspense fallback={<Loading />}>
+              <Routes>
+                <Route path="/" key={"home"} element={<HomePage />} />
+                <Route
+                  path={PAGES.bridge.link}
+                  key={"bridge"}
+                  element={<Bridging />}
+                />
+                <Route
+                  path={PAGES.governance.link}
+                  key="governance"
+                  element={<Governance />}
+                />
+                <Route
+                  path={PAGES.governance.subpages.proposal.link}
+                  key="governance-proposal"
+                  element={<Proposal />}
+                />
+                <Route
+                  path={PAGES.lp.link}
+                  key="lp interface"
+                  element={<Dex />}
+                />
+                <Route
+                  path={PAGES.lending.link}
+                  key="lending"
+                  element={<LendingMarket />}
+                />
+                <Route
+                  path={PAGES.staking.link}
+                  key={"staking"}
+                  element={<Staking />}
+                />
+                <Route
+                  path="/lending/balanceSheet"
+                  key={"balanceSheet"}
+                  element={<BalanceSheet />}
+                />
+                <Route
+                  path="*"
+                  key={"404"}
+                  element={
+                    <div>
+                      <PageNotFound />
+                    </div>
+                  }
+                />
+              </Routes>
+            </Suspense>
           </div>
           <Footer />
         </Container>

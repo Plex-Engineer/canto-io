@@ -94,3 +94,13 @@ input[type="number"] {
     flex-grow: 2;
   }
 }
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
