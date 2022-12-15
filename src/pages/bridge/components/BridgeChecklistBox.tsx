@@ -61,7 +61,7 @@ export const BridgeChecklistBox = (props: ChecklistBoxProps) => {
           height={16}
         />
       </div>
-      <Text type="title" size="title2">
+      <Text type="title" size="title3">
         Checklist
       </Text>
       <div className="list">{fullList}</div>
@@ -129,6 +129,11 @@ const Styled = styled.div`
     position: absolute;
     top: 1rem;
     right: 1rem;
+    transition: transform 0.3s;
+
+    &:hover {
+      transform: rotateZ(90deg);
+    }
   }
   .list {
     display: flex;
