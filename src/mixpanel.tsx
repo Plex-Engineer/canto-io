@@ -163,13 +163,8 @@ const actions = {
           wallet: account,
         });
       },
-      proposalOpened: (
-        account: string | undefined,
-        proposalId: string | undefined
-      ) => {
+      proposalOpened: (proposalId: string | undefined) => {
         mixpanel.track("Proposal Opened", {
-          distinct_id: account,
-          wallet: account,
           proposalId: proposalId,
         });
       },
@@ -207,6 +202,20 @@ const actions = {
           txType: txType,
           status: status,
         });
+      },
+      checklistActions: {
+        checklistOpened: () => {
+          mixpanel.track("Bridge Checklist Opened");
+        },
+        checklistClosed: () => {
+          mixpanel.track("Bridge Checklist Closed");
+        },
+        transactionAdded: () => {
+          mixpanel.track("Bridge Checklist Transaction Added");
+        },
+        transactionRemoved: () => {
+          mixpanel.track("Bridge Checklist Transaction Removed");
+        },
       },
     },
   },
