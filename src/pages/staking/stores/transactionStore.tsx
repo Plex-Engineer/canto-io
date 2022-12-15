@@ -37,7 +37,6 @@ function showToast(msg: string) {
   toast(msg, {
     position: "top-right",
     autoClose: 4000,
-
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,

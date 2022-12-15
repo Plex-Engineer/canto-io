@@ -9,7 +9,7 @@ const Footer = () => {
   return (
     <Styled>
       <div className="links">
-        <a href="https://forms.gle/gkr5pDZYX8ZRWYWJ8">
+        <a href="https://canto.canny.io/">
           <Text type="text">report bug</Text>
         </a>
         <a href="https://docs.canto.io/">
@@ -69,6 +69,7 @@ const Styled = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 1rem 0;
+  z-index: 2;
   .links {
     display: flex;
     align-items: center;

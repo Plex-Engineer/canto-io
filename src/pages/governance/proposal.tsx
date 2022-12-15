@@ -63,11 +63,16 @@ const Proposal = () => {
   const [showPercentVote, setShowPercentVote] = useState(true);
   //this will contain the proposal id
   const { id } = useParams();
+  const [proposalFound, setProposalFound] = useState(true);
   const [currentVotes, setCurrentVotes] = useState<Tally>(emptyTally);
   const [proposal, setProposal] = useState<ProposalData>(emptyProposal);
   async function getProposalData() {
-    setProposal(await getSingleProposalData(id ?? "0", chainId));
+    const singleProposal = await getSingleProposalData(id ?? "0", chainId);
+    setProposal(singleProposal);
     setCurrentVotes(await queryTally(id ?? "0", chainId));
+    if (singleProposal == emptyProposal) {
+      setProposalFound(false);
+    }
   }
 
   const yes = Number(formatUnits(currentVotes.tally.yes));
@@ -88,8 +93,10 @@ const Proposal = () => {
     getProposalData();
   }, []);
   useEffect(() => {
-    Mixpanel.events.governanceActions.proposalOpened(account, id);
-  }, [account]);
+    if (id) {
+      Mixpanel.events.governanceActions.proposalOpened(id);
+    }
+  }, [id]);
   const chain = {
     chainId: chainId ?? 0,
     cosmosChainId: `canto_${chainId}-1`,
@@ -101,6 +108,14 @@ const Proposal = () => {
     VotingOption.NONE
   );
   const [voteStatus, setVoteStatus] = useState<TransactionState>("None");
+
+  if (!proposalFound) {
+    return (
+      <ProposalContainer>
+        <div>{`proposal id "${id}" not found`}</div>
+      </ProposalContainer>
+    );
+  }
 
   return (
     <ProposalContainer>

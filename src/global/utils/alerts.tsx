@@ -34,14 +34,14 @@ export function showAlerts(
       "Failure",
       <p>
         this network is not supported on the {currentPageObj.pageTitle}, please{" "}
-        <p
+        <span
           role="button"
           tabIndex={0}
           onClick={addNetwork}
           style={{ cursor: "pointer", textDecoration: "underline" }}
         >
           switch networks
-        </p>
+        </span>
       </p>
     );
     return;

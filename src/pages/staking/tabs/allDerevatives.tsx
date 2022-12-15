@@ -1,5 +1,5 @@
 import { Text } from "global/packages/src";
-import { CInput } from "global/packages/src/components/atoms/Input";
+import { CInput, CSearch } from "global/packages/src/components/atoms/Input";
 
 import { useEffect, useState } from "react";
 import Select from "react-select";
@@ -10,6 +10,7 @@ import { Selected } from "../modals/redelgationModal";
 import { levenshteinDistance } from "../utils/utils";
 import warningImg from "assets/warning.svg";
 import styled from "@emotion/styled";
+import useStakingStore from "../stores/stakingStore";
 import { Mixpanel } from "mixpanel";
 interface AllDerevativesProps {
   validators: MasterValidatorProps[];
@@ -29,42 +30,41 @@ const ToggleDisplayOptions = [
   },
 ];
 const AllDerevatives = (props: AllDerevativesProps) => {
-  const [userSearch, setUserSearch] = useState("");
+  const stakingStore = useStakingStore();
+
   const [loggedSearch, setLoggedSearch] = useState(false);
-  const [validatorDisplaySwitch, setValidatorDisplaySwitch] = useState<
-    number | undefined
-  >(1);
+
   const searchedValidators = () => {
     const validators = props.validators.filter((validator) => {
-      if (validatorDisplaySwitch == 1) {
+      if (stakingStore.validatorSort == 1) {
         return !validator.validator.jailed;
-      } else if (validatorDisplaySwitch == 2) {
+      } else if (stakingStore.validatorSort == 2) {
         return validator.validator.jailed;
       }
       return true;
     });
-    if (userSearch === "") {
+    if (stakingStore.searchQuery === "") {
       return validators;
     }
     return validators.filter((validator) => {
       return (
         levenshteinDistance(
-          userSearch,
+          stakingStore.searchQuery,
           validator.validator.description.moniker.toLowerCase()
         ) < 6 ||
         validator.validator.description.moniker
           .toLowerCase()
-          .includes(userSearch)
+          .includes(stakingStore.searchQuery)
       );
     });
   };
 
   useEffect(() => {
-    if (!loggedSearch && userSearch !== "") {
+    if (!loggedSearch && stakingStore.searchQuery !== "") {
       Mixpanel.events.stakingActions.userSearch();
       setLoggedSearch(true);
     }
-  }, [userSearch]);
+  }, [stakingStore.searchQuery]);
 
   return (
     <Styled
@@ -75,37 +75,42 @@ const AllDerevatives = (props: AllDerevativesProps) => {
         backgroundColor: searchedValidators().length == 0 ? "black" : "none",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginTop: "1.4rem",
-        }}
-      >
+      <div className="sort-search-local">
         <Selected
           style={{
-            width: "10rem",
+            width: "18rem",
           }}
         >
           <Select
             className="react-select-container"
+            styles={{
+              dropdownIndicator: (baseStyles, state) => ({
+                ...baseStyles,
+                color: "var(--primary-color)",
+              }),
+            }}
             classNamePrefix="react-select"
             options={ToggleDisplayOptions}
             onChange={(val) => {
-              setValidatorDisplaySwitch(val?.value);
+              stakingStore.setValidatorSort(val?.value ?? 1);
+            }}
+            isSearchable={false}
+            defaultValue={{
+              label: "active",
+              value: 1,
             }}
             placeholder="active"
           ></Select>
         </Selected>
-        <CInput
+        <CSearch
+          //   type={"search"}
           style={{
-            maxWidth: "10rem",
-            textAlign: "right",
+            textAlign: "left",
             paddingRight: "1rem",
           }}
-          value={userSearch}
-          onChange={(e) => setUserSearch(e.target.value)}
-          placeholder="search.."
+          value={stakingStore.searchQuery}
+          onChange={(e) => stakingStore.setSearchQuery(e.target.value)}
+          placeholder="search..."
         />
       </div>
 
@@ -137,7 +142,7 @@ const AllDerevatives = (props: AllDerevativesProps) => {
           <ValidatorTable
             validators={searchedValidators()}
             sortBy="validatorTotal"
-            searched={userSearch}
+            searched={stakingStore.searchQuery}
           />
           <div
             style={{
@@ -154,6 +159,21 @@ const Styled = styled.div`
   justify-content: center;
   width: 100vmax;
   max-width: 1200px;
+
+  .sort-search-local {
+    display: none;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1.4rem;
+  }
+
+  @media (max-width: 1000px) {
+    .sort-search-local {
+      display: flex;
+      gap: 1rem;
+      flex-direction: row-reverse;
+    }
+  }
 `;
 
 export default AllDerevatives;
