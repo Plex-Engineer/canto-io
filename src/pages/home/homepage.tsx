@@ -69,9 +69,9 @@ const Styled = styled.div`
       linear-gradient(90deg, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 60%),
       linear-gradient(180deg, #06fc99 0%, #06fc99 50%, rgba(0, 0, 0, 1) 100%);
     background-position: 100%;
-    background-size: contain;
+    background-size: auto 100%;
     top: 0;
-    background-repeat: no-repeat;
+    background-repeat: no-repeat, repeat;
 
     &::after {
       content: " ";
@@ -129,6 +129,16 @@ const Styled = styled.div`
       background-size: 200% 100%;
       transition: background-size 0.7s, background-color 0.7s;
       transform: scale(1.1);
+    }
+  }
+  @media (max-width: 1000px) {
+    a {
+      width: 80%;
+      margin: 0 auto;
+    }
+
+    p {
+      font-size: 24px;
     }
   }
 `;
