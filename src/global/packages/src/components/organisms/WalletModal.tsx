@@ -72,7 +72,12 @@ const WalletModal = () => {
       </div>
 
       <div className="row">
-        <Text type="text">canto balance</Text>
+        <Text type="text">
+          {networkInfo.chainId == ETHMainnet.chainId.toString()
+            ? "eth "
+            : "canto "}{" "}
+          balance
+        </Text>
         <div className="balance">
           <Text type="text">
             <span className="center">
@@ -96,7 +101,7 @@ const WalletModal = () => {
       <div className="row">
         <Text type="text">support</Text>
         <div className="balance">
-          <a href="">help center</a>
+          <a href="https://docs.canto.io/">help center</a>
         </div>
       </div>
 
