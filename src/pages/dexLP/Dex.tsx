@@ -149,6 +149,8 @@ const Dex = () => {
                 fontFamily: "Silkscreen",
               }}
               href="https://app.slingshot.finance/trade/"
+              target="_blank"
+              rel="noreferrer"
             >
               Slingshot
             </a>

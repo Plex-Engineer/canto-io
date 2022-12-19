@@ -101,7 +101,9 @@ const WalletModal = () => {
       <div className="row">
         <Text type="text">support</Text>
         <div className="balance">
-          <a href="https://docs.canto.io/">help center</a>
+          <a href="https://docs.canto.io/" target="_blank" rel="noreferrer">
+            help center
+          </a>
         </div>
       </div>
 
