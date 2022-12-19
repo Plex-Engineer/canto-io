@@ -1,12 +1,7 @@
 import Table from "./components/table";
 import Row, { TransactionRow } from "./components/row";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import {
-  AddNotificationPayload,
-  Notification,
-  useNotifications,
-} from "@usedapp/core";
+import { Notification, useNotifications } from "@usedapp/core";
 import useModals, { ModalType } from "./hooks/useModals";
 import { ModalManager } from "./modals/ModalManager";
 import { ethers } from "ethers";
@@ -27,6 +22,7 @@ import { Details } from "pages/lending/hooks/useTransaction";
 import HelmetSEO from "global/components/seo";
 import { sortColumnsByType } from "pages/lending/components/LMTables";
 import { Mixpanel } from "mixpanel";
+import { toastHandler } from "global/utils/toastHandler";
 const Dex = () => {
   //get network info from store
   const networkInfo = useNetworkInfo();
@@ -79,32 +75,7 @@ const Dex = () => {
         const msg: Details = JSON.parse(noti?.transactionName);
         const actionMsg = transactionStatusActions(msg.type).postAction;
         const msged = `${isSuccesful ? "" : "un"}successfully ${actionMsg}`;
-
-        toast(msged, {
-          position: "top-right",
-          autoClose: 5000,
-          toastId: noti.submittedAt,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progressStyle: {
-            color: `${
-              isSuccesful ? "var(--primary-color)" : "var(--error-color"
-            }`,
-          },
-          style: {
-            border: "1px solid var(--primary-color)",
-            borderRadius: "0px",
-            paddingBottom: "3px",
-            background: "black",
-            color: `${
-              isSuccesful ? "var(--primary-color)" : "var(--error-color"
-            }`,
-            height: "100px",
-            fontSize: "20px",
-          },
-        });
+        toastHandler(msged, !isSuccesful, noti.id);
       }
     });
   }, [notifications]);
