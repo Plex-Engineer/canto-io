@@ -3,7 +3,6 @@
   --primary-color-dark: #05de87;
   --off-white-color: #efefef;
   //   --error-color: #fe4256;
-  --toastify-color-progress-light: var(--primary-color) !important;
 }
 @import url("https://fonts.googleapis.com/css2?family=Silkscreen&display=swap");
 
@@ -30,7 +29,6 @@
   --off-white-color: #efefef;
   //   --error-color: #fe4256;
 
-  --toastify-color-progress-light: var(--primary-color) !important;
   scrollbar-color: var(--primary-color);
   scroll-behavior: smooth;
 }
@@ -103,4 +101,11 @@ input[type="number"] {
   100% {
     opacity: 1;
   }
+}
+
+.toast-error {
+  --toastify-color-progress-light: var(--error-color);
+}
+.toast-success {
+  --toastify-color-progress-light: var(--primary-color);
 }

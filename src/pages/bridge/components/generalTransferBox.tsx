@@ -1,12 +1,12 @@
 import styled from "@emotion/styled";
 import FadeIn from "react-fade-in";
-import { toast } from "react-toastify";
 import arrow from "../../../assets/next.svg";
 import CopyIcon from "../../../assets/copy.svg";
 import { truncateNumber } from "global/utils/utils";
 import { PrimaryButton, Text } from "global/packages/src";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { CInput } from "global/packages/src/components/atoms/Input";
+import { toastHandler } from "global/utils/toastHandler";
 
 interface Props {
   connected: boolean;
@@ -35,29 +35,7 @@ interface Props {
 
 export const GeneralTransferBox = (props: Props) => {
   function copyAddress() {
-    toast("copied address", {
-      position: "top-right",
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progressStyle: {
-        color: `
-            var(--primary-color)
-          `,
-      },
-      style: {
-        border: "1px solid var(--primary-color)",
-        borderRadius: "0px",
-        paddingBottom: "3px",
-        background: "black",
-        color: `var(--primary-color)
-        `,
-        height: "100px",
-        fontSize: "20px",
-      },
-      autoClose: 300,
-    });
+    toastHandler("copied address", true, "0", 300);
   }
   return (
     <FadeIn>
