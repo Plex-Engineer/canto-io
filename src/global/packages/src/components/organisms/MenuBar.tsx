@@ -123,7 +123,7 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
             add to keplr
           </OutlinedButton>
           <div className="links">
-            <a href="https://docs.canto.io/" target="_blank" rel="noreferrer">
+            <a href="https://v1.canto.io" target="_blank" rel="noreferrer">
               switch to canto.io v1
             </a>
             <a href="https://canto.canny.io/" target="_blank" rel="noreferrer">
