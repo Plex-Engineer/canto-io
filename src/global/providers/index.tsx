@@ -64,7 +64,7 @@ const config: Config = {
     [CantoMainnet.chainId]: CantoMain.rpcUrl,
     [CantoTestnet.chainId]: CantoTest.rpcUrl,
   },
-  noMetamaskDeactivate: true,
+  noMetamaskDeactivate: false,
 };
 
 //All the providers are wrapped in this provider function
