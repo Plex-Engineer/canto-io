@@ -208,11 +208,10 @@ export const LimitBar = styled.div`
   } */
 `;
 export const ToolTipL = styled.div`
-  /* border: 1px solid var(--primary-color); */
-  background-color: #111;
+  background: rgba(217, 217, 217, 0.2);
+  backdrop-filter: blur(35px);
   border-radius: 4px;
-  padding: 1rem;
-  width: 20rem;
+  padding: 8px 12px;
   color: white;
 `;
 
