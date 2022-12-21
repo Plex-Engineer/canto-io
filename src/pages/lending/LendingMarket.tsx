@@ -70,7 +70,7 @@ const LendingMarket = () => {
           rewardBalance={
             !rewards.accrued.isZero()
               ? truncateNumber(formatUnits(rewards.accrued))
-              : "000.000"
+              : "000.00"
           }
           borrowBalance={position.totalBorrow}
           borrowLimit={position.totalBorrowLimit}

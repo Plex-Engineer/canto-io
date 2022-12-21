@@ -15,7 +15,7 @@ const Footer = () => {
         <a href="https://docs.canto.io/" target="_blank" rel="noreferrer">
           <Text type="text">docs</Text>
         </a>
-        <a href="https://docs.canto.io/" target="_blank" rel="noreferrer">
+        <a href="https://canto.mirror.xyz/" target="_blank" rel="noreferrer">
           <Text type="text">about canto</Text>
         </a>
       </div>
