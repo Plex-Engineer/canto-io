@@ -1,4 +1,7 @@
 import styled from "@emotion/styled";
+import { Text } from "global/packages/src";
+import Popup from "reactjs-popup";
+import { ToolTipL } from "./Styled";
 import { ToolTip } from "./Tooltip";
 const Wrapper = styled.label`
   /* The switch - the box around the slider */
@@ -123,13 +126,29 @@ const DisabledWrapper = styled(Wrapper)`
 const LendingSwitch = (props: Props) => {
   if (props.disabled) {
     return (
-      <ToolTip data-tooltip="this asset cannot be collateralized">
-        <DisabledWrapper className="switch" data-for="foo">
-          <input type="checkbox" checked={props.checked} />
+      <Popup
+        trigger={
+          <DisabledWrapper className="switch" data-for="foo">
+            <input type="checkbox" checked={props.checked} />
 
-          <span className="slider"></span>
-        </DisabledWrapper>
-      </ToolTip>
+            <span className="slider"></span>
+          </DisabledWrapper>
+        }
+        position="bottom center"
+        on={["hover", "focus"]}
+        arrow={true}
+        arrowStyle={{
+          color: "rgba(217, 217, 217, 0.25)",
+          backdropFilter: "blur(35px)",
+        }}
+      >
+        <ToolTipL>
+          <Text type="text" size="text4">
+            this asset cannot
+            <br /> be collateralised
+          </Text>
+        </ToolTipL>
+      </Popup>
     );
   }
   return (

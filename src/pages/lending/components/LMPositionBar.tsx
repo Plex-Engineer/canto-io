@@ -7,6 +7,7 @@ import { formatUnits } from "ethers/lib/utils";
 import Popup from "reactjs-popup";
 import RewardsBox from "./RewardsBox";
 import useModalStore, { ModalType } from "../stores/useModals";
+import infoImg from "assets/icons/info.svg";
 
 interface LMPositionBarProps {
   borrowBalance: BigNumber;
@@ -73,71 +74,94 @@ export const LMPositionBar = ({
           >
             <Text type="text">claim</Text>
           </OutlinedButton>
-          <Popup
-            trigger={
-              <LimitBar>
-                <div className="bar">
-                  {borrowPercentage.lte(80) ? (
-                    <div
-                      className="green"
-                      style={{ width: borrowPercentage.toNumber() + "%" }}
-                    ></div>
-                  ) : (
-                    <div
-                      className="red"
-                      style={{ width: borrowPercentage.toNumber() + "%" }}
-                    ></div>
-                  )}
-                  {/* <div
+
+          <LimitBar>
+            <div className="bar">
+              {borrowPercentage.lte(80) ? (
+                <div
+                  className="green"
+                  style={{ width: borrowPercentage.toNumber() + "%" }}
+                ></div>
+              ) : (
+                <div
+                  className="red"
+                  style={{ width: borrowPercentage.toNumber() + "%" }}
+                ></div>
+              )}
+              {/* <div
                     className="gray"
                     style={{
                       width: 100 - borrowPercentage.toNumber() + "%",
                     }}
                   ></div> */}
-                </div>
-                <div
-                  className="row"
-                  style={{
-                    padding: "6px 0",
+            </div>
+            <div
+              className="row"
+              style={{
+                padding: "6px 0",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  gap: "6px",
+                }}
+              >
+                <Text
+                  type="text"
+                  size="text4"
+                  bold
+                  style={{ color: "#007245" }}
+                >
+                  limit
+                </Text>
+                <Popup
+                  trigger={
+                    <img
+                      style={{
+                        cursor: "pointer",
+                      }}
+                      src={infoImg}
+                    />
+                  }
+                  position="bottom right"
+                  on={["hover", "focus"]}
+                  arrow={true}
+                  arrowStyle={{
+                    color: "rgba(217, 217, 217, 0.25)",
+                    backdropFilter: "blur(35px)",
                   }}
                 >
-                  <Text
-                    type="text"
-                    size="text4"
-                    bold
-                    style={{ color: "#007245" }}
-                  >
-                    limit ?
-                  </Text>
-                  <Text type="text" size="text4">
-                    {noteSymbol + formatUnits(borrowLimit)} ·{" "}
-                    {borrowPercentage.toNumber()}%
-                  </Text>
-                </div>
-              </LimitBar>
-            }
-            position="top center"
-            on={["hover", "focus"]}
-            arrow={true}
-          >
-            <ToolTipL>
-              {borrowPercentage.lt(80) ? (
-                <p>
-                  you will be liquidated if you go above your borrow limit{" "}
-                  <br></br>
-                  Liquidity Cushion:{" "}
-                  {noteSymbol +
-                    truncateNumber(formatUnits(borrowLimit.sub(borrowBalance)))}
-                </p>
-              ) : (
-                <p>
-                  you will be liquidated soon<br></br> Liquidity Cushion:{" "}
-                  {noteSymbol +
-                    truncateNumber(formatUnits(borrowLimit.sub(borrowBalance)))}
-                </p>
-              )}
-            </ToolTipL>
-          </Popup>
+                  <ToolTipL>
+                    {borrowPercentage.lt(80) ? (
+                      <Text type="text" size="text4">
+                        you will be liquidated if you <br /> go above your
+                        borrow limit
+                        <br />
+                        Liquidity Cushion:{" "}
+                        {noteSymbol +
+                          truncateNumber(
+                            formatUnits(borrowLimit.sub(borrowBalance))
+                          )}
+                      </Text>
+                    ) : (
+                      <p>
+                        you will be liquidated soon<br></br> Liquidity Cushion:{" "}
+                        {noteSymbol +
+                          truncateNumber(
+                            formatUnits(borrowLimit.sub(borrowBalance))
+                          )}
+                      </p>
+                    )}
+                  </ToolTipL>
+                </Popup>
+              </div>
+              <Text type="text" size="text4">
+                {noteSymbol + formatUnits(borrowLimit)} ·{" "}
+                {borrowPercentage.toNumber()}%
+              </Text>
+            </div>
+          </LimitBar>
         </div>
         <div
           style={{

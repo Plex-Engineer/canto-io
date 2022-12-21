@@ -11,7 +11,7 @@ const RewardsBox = ({ rewards }: Props) => {
       <RewardAnimation reverse />
       <div>
         <Text type="title" size="text1">
-          Rewards
+          Wcanto Rewards
         </Text>
 
         <Text type="title" size="title1">
