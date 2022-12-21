@@ -75,7 +75,7 @@ const Dex = () => {
         const msg: Details = JSON.parse(noti?.transactionName);
         const actionMsg = transactionStatusActions(msg.type).postAction;
         const msged = `${isSuccesful ? "" : "un"}successfully ${actionMsg}`;
-        toastHandler(msged, !isSuccesful, noti.id);
+        toastHandler(msged, isSuccesful, noti.id);
       }
     });
   }, [notifications]);
