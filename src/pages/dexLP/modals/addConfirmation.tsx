@@ -191,6 +191,9 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
             }
             onClose={props.onClose}
             mixPanelEventInfo={mixPanelInfoObject}
+            additionalMessage={
+              "please stay on this screen until the second Metamask transaction appears on your screen"
+            }
           />
         )}
       {supplyLP.status != "None" && (
