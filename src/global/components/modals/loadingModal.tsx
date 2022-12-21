@@ -21,6 +21,7 @@ interface GlobalLoadingProps {
   status: TransactionState;
   tokenName?: string;
   customMessage?: string | ReactNode;
+  additionalMessage?: string | ReactNode;
   txHash?: string;
   onClose: () => void;
   mixPanelEventInfo?: object;
@@ -109,6 +110,10 @@ const GlobalLoadingModal = (props: GlobalLoadingProps) => {
       </Text>
       <Text size="text1" type="text">
         {props.customMessage ?? currentStatus}
+      </Text>
+      <br />
+      <Text size="text1" type="text">
+        {props.additionalMessage}
       </Text>
       {props.txHash ? (
         <OutlinedButton
