@@ -7,7 +7,9 @@ import { addNetwork } from "./walletConnect/addCantoToWallet";
 export function showAlerts(
   openAlert: (
     type: "Failure" | "Warning" | "Success",
-    child: ReactNode
+    child: ReactNode,
+    floating?: boolean,
+    closeAfter?: number
   ) => void,
   closeAlert: () => void,
   chainId: number | undefined,
