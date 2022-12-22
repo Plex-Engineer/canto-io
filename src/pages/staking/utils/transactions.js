@@ -305,7 +305,7 @@ export async function getUndelegationsForAddress(nodeAddressIP, address) {
  */
 export async function getValidators(nodeAddressIP) {
   const url =
-    nodeAddressIP + "/cosmos/staking/v1beta1/validators?pagination.limit=150";
+    nodeAddressIP + "/cosmos/staking/v1beta1/validators?pagination.limit=300";
 
   const options = {
     method: "GET",
