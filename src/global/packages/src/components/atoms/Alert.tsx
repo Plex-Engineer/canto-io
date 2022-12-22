@@ -1,54 +1,67 @@
 import { useAlert } from "../../stores/index";
 import styled from "@emotion/styled";
 
-const SuccessStyle = styled.div`
-  background-color: #09271b;
-  border-bottom: 1px solid var(--primary-color);
-  height: 100%;
+const ColorMapping = {
+  Success: "var(--primary-color)",
+  Failure: "#ff4141",
+  Warning: "#ffda58",
+  None: "transparent",
+};
+
+const BGMapping = {
+  Success: "#09271b",
+  Failure: "#1d0a0a",
+  Warning: "#2a230b",
+  None: "transparent",
+};
+
+const BGFMapping = {
+  Success: "#0A2D21",
+  Failure: "#3a1b1b",
+  Warning: "#2A2913",
+  None: "transparent",
+};
+interface Props {
+  open: boolean;
+  floating: boolean;
+  type: "None" | "Success" | "Failure" | "Warning";
+}
+const Container = styled.div<Props>`
+  transition: all 0.3s;
+  padding: 0 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: var(--primary-color);
-  transition: all;
   overflow-x: hidden;
+  z-index: 10;
+
   p {
     width: 100%;
+    font-size: 14px;
     text-align: center;
   }
-`;
 
-const ErrorStyle = styled(SuccessStyle)`
-  background-color: #1d0a0a;
-  border-bottom: 1px solid #ff4141;
-  color: #ff4141;
-`;
+  height: ${({ open, floating }) =>
+    open ? "4rem" : floating ? "4rem" : "0rem"};
+  position: ${({ floating }) => (floating ? "absolute" : "relative")};
+  left: 50%;
+  top: ${({ open, floating }) => (open && floating ? "1rem" : "0rem")};
+  border-radius: ${({ floating }) => (floating ? "4px" : "0")};
 
-const WarningStyle = styled(SuccessStyle)`
-  background-color: #3b310e;
-  border-bottom: 1px solid #ffda58;
-  color: #ffda58;
-`;
-
-const Container = styled.div`
-  height: 2rem;
-  transition: all 0.3s;
+  transform: translateX(-50%);
+  border: 1px solid ${({ type }) => ColorMapping[type]};
+  border: ${({ floating }) => (floating ? "" : "none")};
+  border-bottom: 1px solid ${({ type }) => ColorMapping[type]};
+  background-color: ${({ type, floating }) =>
+    floating ? BGFMapping[type] : BGMapping[type]};
+  color: ${({ type }) => ColorMapping[type]};
 `;
 
 const Alert = () => {
-  const { type, open, child } = useAlert();
+  const { type, open, child, floating } = useAlert();
   return (
-    <Container
-      style={{
-        height: open ? "4rem" : "0",
-      }}
-    >
-      {type == "Success" ? (
-        <SuccessStyle>{child}</SuccessStyle>
-      ) : type == "Failure" ? (
-        <ErrorStyle>{child}</ErrorStyle>
-      ) : type == "Warning" ? (
-        <WarningStyle>{child}</WarningStyle>
-      ) : null}
+    <Container type={type} open={open} floating={floating}>
+      {child}
     </Container>
   );
 };

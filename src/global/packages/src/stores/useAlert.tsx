@@ -3,9 +3,11 @@ import create from "zustand";
 interface AlertProps {
   id: string;
   type: "Success" | "Failure" | "Warning" | "None";
+  floating: boolean;
   show: (
     type: "Success" | "Failure" | "Warning",
     child: React.ReactNode,
+    floating?: boolean,
     closeAfter?: number
   ) => void;
   child: React.ReactNode;
@@ -16,11 +18,12 @@ interface AlertProps {
 export const useAlert = create<AlertProps>((set) => ({
   id: "1",
   type: "None",
-  show: (type, child, closeAfter) => {
+  floating: false,
+  show: (type, child, floating, closeAfter) => {
     if (type == "Success" && closeAfter != undefined) {
-      setTimeout(() => set({ open: false }), closeAfter);
+      setTimeout(() => set({ open: false, floating }), closeAfter);
     }
-    return set({ type, child, open: true });
+    return set({ type, child, open: true, floating });
   },
   open: false,
   child: null,

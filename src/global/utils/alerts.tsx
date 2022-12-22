@@ -38,7 +38,12 @@ export function showAlerts(
           role="button"
           tabIndex={0}
           onClick={addNetwork}
-          style={{ cursor: "pointer", textDecoration: "underline" }}
+          style={{
+            cursor: "pointer",
+            border: "1px solid",
+            padding: "6px 1rem",
+            borderRadius: "4px",
+          }}
         >
           switch networks
         </span>
