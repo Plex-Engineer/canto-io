@@ -20,7 +20,7 @@ import { ERC20Abi, routerAbi } from "global/config/abi";
 import { UserLPPairInfo } from "../config/interfaces";
 import { DexModalContainer } from "../components/Styled";
 import { ADDRESSES } from "global/config/addresses";
-import { PrimaryButton } from "global/packages/src";
+import { PrimaryButton, useAlert } from "global/packages/src";
 import CheckBox from "global/components/checkBox";
 import { useSupply } from "pages/lending/hooks/useTransaction";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
@@ -39,6 +39,8 @@ interface AddConfirmationProps {
 }
 
 const AddLiquidityButton = (props: AddConfirmationProps) => {
+  //alert is used to let the user know if supply LP in lending market failed (id they closed the tab too early)
+  const alert = useAlert();
   const [confirmSupply, setConfirmSupply] = useState(false);
   const { state: addLiquidityState, send: addLiquiditySend } = useAddLiquidity(
     props.chainId,
@@ -166,6 +168,28 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
     ),
   };
 
+  function checkIfSupplyLPClosedTooSoon() {
+    if (
+      confirmSupply &&
+      supplyLP.status == "None" &&
+      (addLiquidityCANTOState.status != "None" ||
+        addLiquidityState.status != "None")
+    ) {
+      alert.show(
+        "Failure",
+        <div
+          onClick={alert.close}
+          tabIndex={0}
+          role="button"
+          style={{ cursor: "pointer" }}
+        >
+          supply of LP tokens failed, please try again on the lending page
+        </div>,
+        true
+      );
+    }
+  }
+
   return (
     <DexModalContainer>
       {(addLiquidityState.status != "None" ||
@@ -189,7 +213,10 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
                 ? addLiquidityCANTOState.transaction?.hash
                 : addLiquidityState.transaction?.hash
             }
-            onClose={props.onClose}
+            onClose={() => {
+              checkIfSupplyLPClosedTooSoon();
+              props.onClose();
+            }}
             mixPanelEventInfo={mixPanelInfoObject}
             additionalMessage={
               "please stay on this screen until the second Metamask transaction appears on your screen"
@@ -206,7 +233,10 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
             props.pair.basePairInfo.token2.symbol
           }
           txHash={supplyLP.transaction?.hash}
-          onClose={props.onClose}
+          onClose={() => {
+            checkIfSupplyLPClosedTooSoon();
+            props.onClose();
+          }}
           mixPanelEventInfo={mixPanelInfoObject}
         />
       )}

@@ -94,7 +94,6 @@ export const CantoNav = () => {
     networkInfo.account,
     networkInfo.chainId,
     networkInfo.hasPubKey,
-    networkInfo.balance,
     location,
   ]);
   return (
