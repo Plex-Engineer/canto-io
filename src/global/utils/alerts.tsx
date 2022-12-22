@@ -7,7 +7,9 @@ import { addNetwork } from "./walletConnect/addCantoToWallet";
 export function showAlerts(
   openAlert: (
     type: "Failure" | "Warning" | "Success",
-    child: ReactNode
+    child: ReactNode,
+    floating?: boolean,
+    closeAfter?: number
   ) => void,
   closeAlert: () => void,
   chainId: number | undefined,
@@ -38,7 +40,12 @@ export function showAlerts(
           role="button"
           tabIndex={0}
           onClick={addNetwork}
-          style={{ cursor: "pointer", textDecoration: "underline" }}
+          style={{
+            cursor: "pointer",
+            border: "1px solid",
+            padding: "6px 1rem",
+            borderRadius: "4px",
+          }}
         >
           switch networks
         </span>
