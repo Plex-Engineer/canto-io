@@ -23,10 +23,12 @@ import HelmetSEO from "global/components/seo";
 import { sortColumnsByType } from "pages/lending/components/LMTables";
 import { Mixpanel } from "mixpanel";
 import { toastHandler } from "global/utils/toastHandler";
+import Popup from "reactjs-popup";
+import GettingStarted from "global/components/gettingStarted";
+import { StyledPopup } from "global/components/Styled";
 const Dex = () => {
   //get network info from store
   const networkInfo = useNetworkInfo();
-
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);
 
@@ -90,6 +92,9 @@ const Dex = () => {
         description="Canto Homepage serves De-fi applications"
         link="lp"
       />
+      <StyledPopup open>
+        <GettingStarted />
+      </StyledPopup>
       <DexContainer as={FadeIn}>
         <div>
           <ModalManager

@@ -10,6 +10,5 @@ export const StyledPopup = styled(Popup)`
   }
   &-content {
     background-color: black;
-    border: 1px solid #1f9364;
   }
 `;
