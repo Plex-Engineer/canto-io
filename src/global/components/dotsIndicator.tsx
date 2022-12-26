@@ -13,7 +13,7 @@ const DotsIndicator = ({ total, current }: Props) => {
           key={i}
           src={dotImg}
           height={10}
-          className={i == current ? undefined : "not-active"}
+          className={i == current ? "active" : "not-active"}
         />
       ))}
     </Styled>
@@ -24,12 +24,16 @@ const Styled = styled.div`
   display: flex;
   justify-content: center;
   gap: 10px;
-  transition: all 0.6s;
-  filter: grayscale(0%) opacity(100%);
+  .active {
+    transition: all 0.6s;
+
+    filter: grayscale(0%) opacity(100%);
+    transform: scale(1);
+  }
 
   .not-active {
     transition: all 0.6s;
-    transform: scale(0.8);
+    transform: scale(0.7);
     filter: grayscale(100%) opacity(24%);
   }
 `;

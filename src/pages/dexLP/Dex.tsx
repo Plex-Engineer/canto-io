@@ -6,6 +6,9 @@ import useModals, { ModalType } from "./hooks/useModals";
 import { ModalManager } from "./modals/ModalManager";
 import { ethers } from "ethers";
 import { useNetworkInfo } from "global/stores/networkInfo";
+import sampleGettingStarted from "assets/sample-getstart.jpg";
+import sampleGettingStarted2 from "assets/sample-getstart2.jpg";
+
 import {
   noteSymbol,
   transactionStatusActions,
@@ -92,9 +95,38 @@ const Dex = () => {
         description="Canto Homepage serves De-fi applications"
         link="lp"
       />
-      <StyledPopup open>
-        <GettingStarted />
-      </StyledPopup>
+
+      <GettingStarted
+        showHandle
+        pages={[
+          {
+            image: sampleGettingStarted,
+            text: "sample page 1",
+            handlePosition: { x: 48, y: 62 },
+          },
+          {
+            image: sampleGettingStarted2,
+            text: "sample page 2",
+            handlePosition: { x: 60, y: 30 },
+          },
+          {
+            image: sampleGettingStarted,
+            text: "sample page 3",
+            handlePosition: { x: 40, y: 33 },
+          },
+          {
+            image: sampleGettingStarted2,
+            text: "sample page 4",
+            handlePosition: { x: 56, y: 60 },
+          },
+          {
+            image: sampleGettingStarted,
+            text: "sample page 5",
+            handlePosition: { x: 85, y: 26 },
+          },
+        ]}
+      />
+
       <DexContainer as={FadeIn}>
         <div>
           <ModalManager
