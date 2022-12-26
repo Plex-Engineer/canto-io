@@ -10,6 +10,7 @@ import Footer from "global/components/nFooter";
 import { PAGES } from "global/config/pageList";
 import Loading from "global/components/Loading";
 import PageNotFound from "global/components/pageNotFound";
+import { WalkthroughHomeScreen } from "pages/bridge/walkthrough-dummy/dummySteps/walkthroughHome";
 
 //Styling
 const Container = styled.div`
@@ -48,6 +49,11 @@ function App() {
             <Suspense fallback={<Loading />}>
               <Routes>
                 <Route path="/" key={"home"} element={<HomePage />} />
+                <Route
+                  path="/bridge/walkthrough"
+                  key={"walkthrough"}
+                  element={<WalkthroughHomeScreen />}
+                />
                 <Route
                   path={PAGES.bridge.link}
                   key={"bridge"}
