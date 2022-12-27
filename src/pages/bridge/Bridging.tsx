@@ -184,10 +184,9 @@ const BridgingPage = () => {
         description="A test message written for Bridging in and out"
         link="bridge"
       />
-      <div>{bridgeTxStore.transactionStatus?.message ?? "NO MESSAGE"}</div>
       <StyledPopup
-        open={bridgeTxStore.inTransaction}
-        onClose={() => bridgeTxStore.setInTransaction(false)}
+        open={!!bridgeTxStore.transactionStatus}
+        onClose={() => bridgeTxStore.setTransactionStatus(undefined)}
         lockScroll
         modal
         position="center center"
@@ -196,7 +195,9 @@ const BridgingPage = () => {
           <GlobalLoadingModal
             transactionType={CantoTransactionType.BRIDGE}
             status={bridgeTxStore.transactionStatus?.status ?? "Fail"}
-            onClose={() => bridgeTxStore.setInTransaction(false)}
+            onClose={() => bridgeTxStore.setTransactionStatus(undefined)}
+            tokenName="bridge"
+            customMessage={bridgeTxStore.transactionStatus?.message}
           />
         </BridgeModalContainer>
       </StyledPopup>
