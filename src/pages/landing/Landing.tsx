@@ -51,7 +51,7 @@ const LandingPage = () => {
           <div className="dim">*** enter a command to continue ***</div>
           <ul className="options" id="routes">
             {pageList.map((page, idx) => {
-              return (
+              return page.showInMenu ? (
                 <NavLink
                   to={page.link}
                   key={page.name}
@@ -65,7 +65,7 @@ const LandingPage = () => {
                 >
                   <a>{"[" + idx + "] " + page.name}</a>
                 </NavLink>
-              );
+              ) : null;
             })}
           </ul>
           <div className="alert blink">
