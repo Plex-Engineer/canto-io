@@ -15,6 +15,7 @@ import {
 import { useCantoERC20Balances } from "pages/bridge/hooks/useERC20Balances";
 import { SelectedTokens, useTokenStore } from "pages/bridge/stores/tokenStore";
 import { getNativeCantoBalance } from "pages/bridge/utils/nativeBalances";
+import { convertStringToBigNumber } from "pages/bridge/utils/stringToBigNumber";
 import { useEffect, useState } from "react";
 import { useBridgeWalkthroughStore } from "../store/bridgeWalkthroughStore";
 import { didPassBridgeOutWalkthroughCheck } from "../walkthroughFunctions";
@@ -128,7 +129,11 @@ export const WalkthroughHomeScreen = () => {
         currentStep,
         Number(networkInfo.chainId),
         tokenStore.selectedTokens[SelectedTokens.CONVERTOUT],
-        false
+        convertStringToBigNumber(
+          amount,
+          tokenStore.selectedTokens[SelectedTokens.CONVERTOUT].decimals
+        ),
+        tokenStore.selectedTokens[SelectedTokens.CONVERTOUT].erc20Balance
       );
     }
   }

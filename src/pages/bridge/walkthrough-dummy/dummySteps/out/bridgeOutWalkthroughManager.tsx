@@ -10,8 +10,10 @@ import {
   UserNativeTokens,
 } from "pages/bridge/config/interfaces";
 import { SelectedTokens } from "pages/bridge/stores/tokenStore";
+import { convertStringToBigNumber } from "pages/bridge/utils/stringToBigNumber";
 import { BridgeOutStep } from "../../walkthroughTracker";
 import { AmountSelect } from "../amountSelect";
+import { ConfirmConvert } from "../confirmConvert";
 import { SelectToken } from "../selectToken";
 import { SwitchNetwork } from "../switchNetwork";
 
@@ -51,9 +53,19 @@ export const BridgeOutWalkthroughManager = (
           amount={props.amount}
           onChange={props.setAmount}
           max={formatUnits(
-            props.currentConvertToken.nativeBalance,
+            props.currentConvertToken.erc20Balance,
             props.currentConvertToken.decimals
           )}
+        />
+      )}
+      {props.currentStep === BridgeOutStep.CONVERT_COIN && (
+        <ConfirmConvert
+          amount={convertStringToBigNumber(
+            props.amount,
+            props.currentConvertToken.decimals
+          )}
+          token={props.currentConvertToken}
+          toERC20={false}
         />
       )}
     </div>

@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import { CantoMainnet } from "global/config/networks";
 import { UserConvertToken } from "../config/interfaces";
 
@@ -57,7 +58,13 @@ export const BridgeOutWalkthroughSteps: WalkthroughTracker = {
   },
   [BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT]: {
     prev: BridgeOutStep.SELECT_CONVERT_TOKEN,
+    next: BridgeOutStep.CONVERT_COIN,
+    checkFunction: (amount: BigNumber, max: BigNumber) =>
+      amount.gt(0) && amount.lte(max),
+  },
+  [BridgeOutStep.CONVERT_COIN]: {
+    prev: BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT,
     next: undefined,
-    checkFunction: () => true,
+    checkFunction: () => false,
   },
 };

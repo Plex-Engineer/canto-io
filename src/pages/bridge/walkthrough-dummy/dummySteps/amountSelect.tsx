@@ -7,6 +7,7 @@ interface AmountSelectProps {
   max: string;
 }
 export const AmountSelect = (props: AmountSelectProps) => {
+  console.log(props.max);
   return (
     <div className="amount">
       <div className="amount-input">
