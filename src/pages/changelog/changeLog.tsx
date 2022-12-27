@@ -57,11 +57,11 @@ const ChangeLog = () => {
 const Styled = styled.div`
   display: flex;
   flex-direction: column;
-  width: 1200px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 1rem 0;
-  overflow-y: scroll;
-  height: calc(100vh - 10rem);
+  /* overflow-y: scroll; */
+  /* height: calc(100vh - 10rem); */
   position: relative;
   &::-webkit-scrollbar {
     display: none;
@@ -74,11 +74,12 @@ const Styled = styled.div`
   .section {
     display: flex;
     gap: 2rem;
+
     .header {
       position: sticky;
       height: min-content;
       width: 50%;
-      top: 0;
+      top: 5.5rem;
     }
     .changes {
       display: flex;
@@ -98,6 +99,7 @@ const Styled = styled.div`
       flex-direction: column;
       .header {
         background: black;
+        position: relative;
         padding: 1rem;
         width: 100%;
         margin: 0;
