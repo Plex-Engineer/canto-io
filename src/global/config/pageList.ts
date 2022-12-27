@@ -9,6 +9,7 @@ export const PAGES = {
     pageTitle: "home",
     networks: [CantoMainnet.chainId, CantoTestnet.chainId, 1],
     showInMenu: false,
+    walletNotRequired: false,
   },
   bridge: {
     name: "bridge",
@@ -65,6 +66,7 @@ export const PAGES = {
     pageTitle: "change log",
     networks: [CantoMainnet.chainId, CantoTestnet.chainId, 0],
     showInMenu: false,
+    walletNotRequired: true,
   },
   staking: {
     name: "staking",
@@ -91,6 +93,7 @@ export interface PageObject {
   showInMenu: boolean;
   balanceLimits?: BalanceLimits[];
   subpages?: PageObject[];
+  walletNotRequired?: boolean;
 }
 interface BalanceLimits {
   minBalance: BigNumber;
@@ -143,5 +146,14 @@ export const pageList: PageObject[] = [
     pageTitle: PAGES.changelog.pageTitle,
     networks: PAGES.changelog.networks,
     showInMenu: PAGES.changelog.showInMenu,
+    walletNotRequired: true,
+  },
+  {
+    name: PAGES.landing_page.name,
+    link: PAGES.landing_page.link,
+    pageTitle: "",
+    networks: PAGES.landing_page.networks,
+    showInMenu: false,
+    walletNotRequired: true,
   },
 ];
