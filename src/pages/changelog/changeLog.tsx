@@ -1,271 +1,55 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
+import LogSection from "./components/logSection";
 
 const ChangeLog = () => {
   return (
     <Styled>
-      <Text type="title" size="title1">
-        Changelog
-      </Text>
+      <LogSection
+        date="Dec 27th 2022"
+        title="Fixes & Enhancements"
+        content={`- An issue where notifications for successful transactions were displayed in red instead of green is now fixed\n
+        - Minor updates have been made to the UI styling on various pages.\n
+        - The rewards counter on the lending page now specifies accrued rewards as wCanto\n
+        - The Slingshot link on the LP interface page now opens in a new tab when clicked.\n
+        - Closing the modal on the LP interface page before the second transaction populates will now trigger an alert notifying users they will need to supply LP tokens to the lending market manually.\n
+        - A link to the previous version of the site has been added to the menu.\n
+        - The "about canto" link in the footer now correctly directs to the Canto Blog.\n`}
+      />
 
-      <div className="section">
-        <Text type="title" size="title3" className="header">
-          Dec 27th 2022
-        </Text>
-
-        <div className="changes">
-          <Text type="title" align="left" size="title2">
-            Fixes & Enhancements
-          </Text>
-          <Text type="text" align="left">
-            - We fixed an issue where notifications for successful transactions
-            were displayed in red instead of green.
-          </Text>
-          <Text type="text" align="left">
-            - We made minor improvements to the UI styling on various pages.
-          </Text>
-          <Text type="text" align="left">
-            - On the lending page, the rewards counter now specifies that
-            accrued rewards are in WCanto.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, clicking the Slingshot link now opens
-            the link in a new tab.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, if you close the modal before the second
-            transaction populates, you will now receive an alert to supply LP
-            tokens to the lending market.
-          </Text>
-          <Text type="text" align="left">
-            - We added a link to the previous version of the site in the menu. -
-            We fixed the about canto link in the footer to correctly route to
-            the Canto Blog.
-          </Text>
-          <Text type="text" align="left">
-            - We fixed an issue where notifications for successful transactions
-            were displayed in red instead of green.
-          </Text>
-          <Text type="text" align="left">
-            - We made minor improvements to the UI styling on various pages.
-          </Text>
-          <Text type="text" align="left">
-            - On the lending page, the rewards counter now specifies that
-            accrued rewards are in WCanto.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, clicking the Slingshot link now opens
-            the link in a new tab.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, if you close the modal before the second
-            transaction populates, you will now receive an alert to supply LP
-            tokens to the lending market.
-          </Text>
-          <Text type="text" align="left">
-            - We added a link to the previous version of the site in the menu. -
-            We fixed the about canto link in the footer to correctly route to
-            the Canto Blog.
-          </Text>
-          <Text type="text" align="left">
-            - We fixed an issue where notifications for successful transactions
-            were displayed in red instead of green.
-          </Text>
-          <Text type="text" align="left">
-            - We made minor improvements to the UI styling on various pages.
-          </Text>
-          <Text type="text" align="left">
-            - On the lending page, the rewards counter now specifies that
-            accrued rewards are in WCanto.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, clicking the Slingshot link now opens
-            the link in a new tab.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, if you close the modal before the second
-            transaction populates, you will now receive an alert to supply LP
-            tokens to the lending market.
-          </Text>
-          <Text type="text" align="left">
-            - We added a link to the previous version of the site in the menu. -
-            We fixed the about canto link in the footer to correctly route to
-            the Canto Blog.
-          </Text>
-        </div>
-      </div>
-      <div className="section">
-        <Text type="title" size="title3" className="header">
-          Dec 22nd 2022
-        </Text>
-
-        <div className="changes">
-          <Text type="title" align="left" size="title2">
-            Publish and Overhaul
-          </Text>
-          <Text type="text" align="left">
-            - We fixed an issue where notifications for successful transactions
-            were displayed in red instead of green.
-          </Text>
-          <Text type="text" align="left">
-            - We made minor improvements to the UI styling on various pages.
-          </Text>
-          <Text type="text" align="left">
-            - On the lending page, the rewards counter now specifies that
-            accrued rewards are in WCanto.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, clicking the Slingshot link now opens
-            the link in a new tab.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, if you close the modal before the second
-            transaction populates, you will now receive an alert to supply LP
-            tokens to the lending market.
-          </Text>
-          <Text type="text" align="left">
-            - We added a link to the previous version of the site in the menu. -
-            We fixed the about canto link in the footer to correctly route to
-            the Canto Blog.
-          </Text>
-          <Text type="text" align="left">
-            - We fixed an issue where notifications for successful transactions
-            were displayed in red instead of green.
-          </Text>
-          <Text type="text" align="left">
-            - We made minor improvements to the UI styling on various pages.
-          </Text>
-          <Text type="text" align="left">
-            - On the lending page, the rewards counter now specifies that
-            accrued rewards are in WCanto.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, clicking the Slingshot link now opens
-            the link in a new tab.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, if you close the modal before the second
-            transaction populates, you will now receive an alert to supply LP
-            tokens to the lending market.
-          </Text>
-          <Text type="text" align="left">
-            - We added a link to the previous version of the site in the menu. -
-            We fixed the about canto link in the footer to correctly route to
-            the Canto Blog.
-          </Text>
-          <Text type="text" align="left">
-            - We fixed an issue where notifications for successful transactions
-            were displayed in red instead of green.
-          </Text>
-          <Text type="text" align="left">
-            - We made minor improvements to the UI styling on various pages.
-          </Text>
-          <Text type="text" align="left">
-            - On the lending page, the rewards counter now specifies that
-            accrued rewards are in WCanto.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, clicking the Slingshot link now opens
-            the link in a new tab.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, if you close the modal before the second
-            transaction populates, you will now receive an alert to supply LP
-            tokens to the lending market.
-          </Text>
-          <Text type="text" align="left">
-            - We added a link to the previous version of the site in the menu. -
-            We fixed the about canto link in the footer to correctly route to
-            the Canto Blog.
-          </Text>
-        </div>
-      </div>
-      <div className="section">
-        <Text type="title" size="title3" className="header">
-          Dec 16th 2022
-        </Text>
-
-        <div className="changes">
-          <Text type="title" align="left" size="title2">
-            Patch Notes
-          </Text>
-          <Text type="text" align="left">
-            - We fixed an issue where notifications for successful transactions
-            were displayed in red instead of green.
-          </Text>
-          <Text type="text" align="left">
-            - We made minor improvements to the UI styling on various pages.
-          </Text>
-          <Text type="text" align="left">
-            - On the lending page, the rewards counter now specifies that
-            accrued rewards are in WCanto.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, clicking the Slingshot link now opens
-            the link in a new tab.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, if you close the modal before the second
-            transaction populates, you will now receive an alert to supply LP
-            tokens to the lending market.
-          </Text>
-          <Text type="text" align="left">
-            - We added a link to the previous version of the site in the menu. -
-            We fixed the about canto link in the footer to correctly route to
-            the Canto Blog.
-          </Text>
-          <Text type="text" align="left">
-            - We fixed an issue where notifications for successful transactions
-            were displayed in red instead of green.
-          </Text>
-          <Text type="text" align="left">
-            - We made minor improvements to the UI styling on various pages.
-          </Text>
-          <Text type="text" align="left">
-            - On the lending page, the rewards counter now specifies that
-            accrued rewards are in WCanto.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, clicking the Slingshot link now opens
-            the link in a new tab.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, if you close the modal before the second
-            transaction populates, you will now receive an alert to supply LP
-            tokens to the lending market.
-          </Text>
-          <Text type="text" align="left">
-            - We added a link to the previous version of the site in the menu. -
-            We fixed the about canto link in the footer to correctly route to
-            the Canto Blog.
-          </Text>
-          <Text type="text" align="left">
-            - We fixed an issue where notifications for successful transactions
-            were displayed in red instead of green.
-          </Text>
-          <Text type="text" align="left">
-            - We made minor improvements to the UI styling on various pages.
-          </Text>
-          <Text type="text" align="left">
-            - On the lending page, the rewards counter now specifies that
-            accrued rewards are in WCanto.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, clicking the Slingshot link now opens
-            the link in a new tab.
-          </Text>
-          <Text type="text" align="left">
-            - On the LP interface page, if you close the modal before the second
-            transaction populates, you will now receive an alert to supply LP
-            tokens to the lending market.
-          </Text>
-          <Text type="text" align="left">
-            - We added a link to the previous version of the site in the menu. -
-            We fixed the about canto link in the footer to correctly route to
-            the Canto Blog.
-          </Text>
-        </div>
-      </div>
+      <LogSection
+        date="Dec 22nd 2022"
+        title="Publish and Overhaul"
+        content={`- An issue where notifications for successful transactions were displayed in red instead of green is now fixed\n
+        - Minor updates have been made to the UI styling on various pages.\n
+        - The rewards counter on the lending page now specifies accrued rewards as wCanto\n
+        - The Slingshot link on the LP interface page now opens in a new tab when clicked.\n
+        - Closing the modal on the LP interface page before the second transaction populates will now trigger an alert notifying users they will need to supply LP tokens to the lending market manually.\n
+        - A link to the previous version of the site has been added to the menu.\n
+        - Minor updates have been made to the UI styling on various pages.\n
+        - The rewards counter on the lending page now specifies accrued rewards as wCanto\n
+        - The Slingshot link on the LP interface page now opens in a new tab when clicked.\n
+        - Closing the modal on the LP interface page before the second transaction populates will now trigger an alert notifying users they will need to supply LP tokens to the lending market manually.\n
+        - A link to the previous version of the site has been added to the menu.\n
+        - Minor updates have been made to the UI styling on various pages.\n
+        - The rewards counter on the lending page now specifies accrued rewards as wCanto\n
+        - The Slingshot link on the LP interface page now opens in a new tab when clicked.\n
+        - Closing the modal on the LP interface page before the second transaction populates will now trigger an alert notifying users they will need to supply LP tokens to the lending market manually.\n
+        - A link to the previous version of the site has been added to the menu.\n
+        - The "about canto" link in the footer now correctly directs to the Canto Blog.\n`}
+      />
+      <LogSection
+        date="Dec 16th 2022"
+        title="Patch Notes"
+        content={`- An issue where notifications for successful transactions were displayed in red instead of green is now fixed\n
+        - Minor updates have been made to the UI styling on various pages.\n
+        - The rewards counter on the lending page now specifies accrued rewards as wCanto\n
+        - The Slingshot link on the LP interface page now opens in a new tab when clicked.\n
+        - Closing the modal on the LP interface page before the second transaction populates will now trigger an alert notifying users they will need to supply LP tokens to the lending market manually.\n
+        - A link to the previous version of the site has been added to the menu.\n
+        - A link to the previous version of the site has been added to the menu.\n
+        - The "about canto" link in the footer now correctly directs to the Canto Blog.\n`}
+      />
     </Styled>
   );
 };
@@ -279,10 +63,17 @@ const Styled = styled.div`
   overflow-y: scroll;
   height: calc(100vh - 10rem);
   position: relative;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  & {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
   .section {
     display: flex;
     gap: 2rem;
-    padding: 1rem 0;
     .header {
       position: sticky;
       height: min-content;
@@ -292,7 +83,25 @@ const Styled = styled.div`
     .changes {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.4rem;
+      margin-bottom: 6rem;
+      p {
+        line-height: 2rem;
+      }
+    }
+  }
+
+  @media (max-width: 1000px) {
+    width: 100%;
+    flex-direction: column;
+    .section {
+      flex-direction: column;
+      .header {
+        background: black;
+        padding: 1rem;
+        width: 100%;
+        margin: 0;
+      }
     }
   }
 `;
