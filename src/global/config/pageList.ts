@@ -146,7 +146,7 @@ export const pageList: PageObject[] = [
     pageTitle: PAGES.changelog.pageTitle,
     networks: PAGES.changelog.networks,
     showInMenu: PAGES.changelog.showInMenu,
-    walletNotRequired: true,
+    walletNotRequired: PAGES.changelog.walletNotRequired,
   },
   {
     name: PAGES.landing_page.name,
@@ -154,6 +154,6 @@ export const pageList: PageObject[] = [
     pageTitle: "",
     networks: PAGES.landing_page.networks,
     showInMenu: false,
-    walletNotRequired: true,
+    walletNotRequired: PAGES.landing_page.walletNotRequired,
   },
 ];
