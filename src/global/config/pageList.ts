@@ -122,4 +122,10 @@ export const pageList: PageObject[] = [
     networks: PAGES.governance.networks,
     subpages: [PAGES.governance.subpages.proposal],
   },
+  {
+    name: PAGES.changelog.name,
+    link: PAGES.changelog.link,
+    pageTitle: PAGES.changelog.pageTitle,
+    networks: PAGES.changelog.networks,
+  },
 ];
