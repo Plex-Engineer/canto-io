@@ -98,11 +98,17 @@ const Styled = styled.div`
     .section {
       flex-direction: column;
       .header {
-        background: black;
-        position: relative;
+        background-color: #014428;
+        border-bottom: 4px solid var(--primary-color);
+        position: sticky;
+        /* top: 0; */
+        top: 5rem;
         padding: 1rem;
         width: 100%;
         margin: 0;
+      }
+      .changes {
+        padding: 0 2rem;
       }
     }
   }
