@@ -52,6 +52,12 @@ export const PAGES = {
     pageTitle: "lp interface",
     networks: [CantoMainnet.chainId, CantoTestnet.chainId],
   },
+  changelog: {
+    name: "change log",
+    link: "/changelog",
+    pageTitle: "change log",
+    networks: [CantoMainnet.chainId, CantoTestnet.chainId, 0],
+  },
   staking: {
     name: "staking",
     link: "/staking",

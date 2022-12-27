@@ -10,6 +10,7 @@ import Footer from "global/components/nFooter";
 import { PAGES } from "global/config/pageList";
 import Loading from "global/components/Loading";
 import PageNotFound from "global/components/pageNotFound";
+import ChangeLog from "pages/changelog/changeLog";
 
 //Styling
 const Container = styled.div`
@@ -82,6 +83,11 @@ function App() {
                   path="/lending/balanceSheet"
                   key={"balanceSheet"}
                   element={<BalanceSheet />}
+                />
+                <Route
+                  path={PAGES.changelog.link}
+                  key={"changelog   "}
+                  element={<ChangeLog />}
                 />
                 <Route
                   path="*"
