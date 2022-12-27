@@ -25,19 +25,24 @@ import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import {
   getBridgeInEventsWithStatus,
   getBridgeOutTransactions,
-} from "./utils/utils";
-import { useBridgeTransactionStore } from "./stores/transactionStore";
+} from "./utils/bridgeTxPageUtils";
+import { useBridgeTransactionPageStore } from "./stores/transactionPageStore";
 import HelmetSEO from "global/components/seo";
 import { useTransactionChecklistStore } from "./stores/transactionChecklistStore";
+import useBridgeTxStore from "./stores/transactionStore";
+import { StyledPopup } from "global/components/Styled";
+import GlobalLoadingModal from "global/components/modals/loadingModal";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 const BridgingPage = () => {
+  //all stores needed
   const tokenStore = useTokenStore();
-  const transactionStore = useBridgeTransactionStore();
+  const bridgeTxStore = useBridgeTxStore();
+  const transactionStore = useBridgeTransactionPageStore();
   const networkInfo = useNetworkInfo();
-  const { account, activateBrowserWallet } = useEthers();
-
   //for setting up transaction checklist on both pages using the current account
   const transactionChecklistStore = useTransactionChecklistStore();
+  const { account, activateBrowserWallet } = useEthers();
 
   //setting the bridging transactions into local storage
   async function setBridgingTransactions() {
@@ -179,6 +184,22 @@ const BridgingPage = () => {
         description="A test message written for Bridging in and out"
         link="bridge"
       />
+      <div>{bridgeTxStore.transactionStatus?.message ?? "NO MESSAGE"}</div>
+      <StyledPopup
+        open={bridgeTxStore.inTransaction}
+        onClose={() => bridgeTxStore.setInTransaction(false)}
+        lockScroll
+        modal
+        position="center center"
+      >
+        <BridgeModalContainer>
+          <GlobalLoadingModal
+            transactionType={CantoTransactionType.BRIDGE}
+            status={bridgeTxStore.transactionStatus?.status ?? "Fail"}
+            onClose={() => bridgeTxStore.setInTransaction(false)}
+          />
+        </BridgeModalContainer>
+      </StyledPopup>
       <Styled>
         <Tabs className="tabs">
           <TabList className="tablist">
@@ -351,6 +372,21 @@ const Styled = styled.div`
     .react-tabs__tab-panel--selected {
       width: 100%;
     }
+  }
+`;
+const BridgeModalContainer = styled.div`
+  background-color: #040404;
+  height: 70vh;
+  max-height: 90vh;
+  padding-bottom: 40px;
+  width: 33rem;
+  display: flex;
+  flex-direction: column;
+  border-radius: 4px;
+  align-items: center;
+
+  @media (max-width: 1000px) {
+    width: 100%;
   }
 `;
 

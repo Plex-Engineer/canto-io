@@ -32,7 +32,7 @@ import {
   BridgeInStatus,
   useTransactionChecklistStore,
 } from "./stores/transactionChecklistStore";
-import { useBridgeTransactionStore } from "./stores/transactionStore";
+import { useBridgeTransactionPageStore } from "./stores/transactionPageStore";
 import {
   getConvertButtonText,
   getReactiveButtonText,
@@ -62,7 +62,7 @@ const BridgeIn = ({
   //store for transactionchecklist
   const transactionChecklistStore = useTransactionChecklistStore();
   const completedTransactions =
-    useBridgeTransactionStore().transactions.completedBridgeTransactions;
+    useBridgeTransactionPageStore().transactions.completedBridgeTransactions;
 
   const [amount, setAmount] = useState("");
 
