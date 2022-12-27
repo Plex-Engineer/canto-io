@@ -8,12 +8,13 @@ import {
 } from "pages/bridge/config/gravityBridgeTokens";
 import {
   BaseToken,
-  EmptySelectedConvertToken,
+  BridgeTransactionType,
   UserConvertToken,
   UserNativeTokens,
 } from "pages/bridge/config/interfaces";
 import { useCantoERC20Balances } from "pages/bridge/hooks/useERC20Balances";
 import { SelectedTokens, useTokenStore } from "pages/bridge/stores/tokenStore";
+import useBridgeTxStore from "pages/bridge/stores/transactionStore";
 import { getNativeCantoBalance } from "pages/bridge/utils/nativeBalances";
 import { convertStringToBigNumber } from "pages/bridge/utils/stringToBigNumber";
 import { useEffect, useState } from "react";
@@ -36,6 +37,11 @@ export const WalkthroughHomeScreen = () => {
   const walkthroughStore = useBridgeWalkthroughStore();
   const networkInfo = useNetworkInfo();
   const tokenStore = useTokenStore();
+  const bridgeTxStore = useBridgeTxStore();
+
+  //constants to stop reference repetition
+  const bridgeOutToken = tokenStore.selectedTokens[SelectedTokens.BRIDGEOUT];
+  const convertOutToken = tokenStore.selectedTokens[SelectedTokens.CONVERTOUT];
 
   const [amount, setAmount] = useState("");
 
@@ -94,6 +100,9 @@ export const WalkthroughHomeScreen = () => {
   useEffect(() => {
     getConvertCoinTokens();
   }, [cantoERC20Fail]);
+  useEffect(() => {
+    getBridgeOutTokens();
+  }, [tokenStore.bridgeOutNetwork]);
 
   //Useffect for calling data per block
   useEffect(() => {
@@ -128,12 +137,21 @@ export const WalkthroughHomeScreen = () => {
       return didPassBridgeOutWalkthroughCheck(
         currentStep,
         Number(networkInfo.chainId),
-        tokenStore.selectedTokens[SelectedTokens.CONVERTOUT],
-        convertStringToBigNumber(
-          amount,
-          tokenStore.selectedTokens[SelectedTokens.CONVERTOUT].decimals
-        ),
-        tokenStore.selectedTokens[SelectedTokens.CONVERTOUT].erc20Balance
+        convertOutToken,
+        convertStringToBigNumber(amount, convertOutToken.decimals),
+        convertOutToken.erc20Balance,
+        bridgeTxStore.transactionStatus?.type ===
+          BridgeTransactionType.CONVERT_OUT
+          ? bridgeTxStore.transactionStatus.status
+          : "None",
+        allBridgeOutNetworks[tokenStore.bridgeOutNetwork],
+        bridgeOutToken,
+        convertStringToBigNumber(amount, bridgeOutToken.decimals),
+        bridgeOutToken.nativeBalance,
+        bridgeTxStore.transactionStatus?.type ===
+          BridgeTransactionType.BRIDGE_OUT
+          ? bridgeTxStore.transactionStatus.status
+          : "None"
       );
     }
   }
@@ -187,21 +205,20 @@ export const WalkthroughHomeScreen = () => {
       {pathSelected === Paths.BRIDGE_IN && <BridgeInStart />}
       {pathSelected === Paths.BRIDGE_OUT && (
         <BridgeOutWalkthroughManager
+          cantoAddress={networkInfo.cantoAddress}
           currentStep={walkthroughStore.bridgeOutStep}
           convertTokens={userConvertTokens}
-          currentConvertToken={
-            tokenStore.selectedTokens[SelectedTokens.CONVERTOUT]
-          }
-          bridgeOutNetwork={tokenStore.bridgeOutNetwork}
+          currentConvertToken={convertOutToken}
+          bridgeOutNetwork={allBridgeOutNetworks[tokenStore.bridgeOutNetwork]}
           bridgeOutTokens={userBridgeOutTokens}
-          currentBridgeOutToken={
-            tokenStore.selectedTokens[SelectedTokens.BRIDGEOUT]
-          }
+          currentBridgeOutToken={bridgeOutToken}
           selectToken={(token: BaseToken, from: SelectedTokens) =>
             tokenStore.setSelectedToken(token, from)
           }
           amount={amount}
           setAmount={(amount) => setAmount(amount)}
+          setTxStatus={bridgeTxStore.setTransactionStatus}
+          txMessage={bridgeTxStore.transactionStatus?.message}
         />
       )}
       {pathSelected !== Paths.NONE && (

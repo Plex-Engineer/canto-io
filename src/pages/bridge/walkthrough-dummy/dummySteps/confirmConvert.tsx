@@ -1,12 +1,14 @@
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { PrimaryButton } from "global/packages/src";
-import { UserConvertToken } from "pages/bridge/config/interfaces";
+import { BaseToken } from "pages/bridge/config/interfaces";
 
 interface ConfirmConvertProps {
   amount: BigNumber;
-  token: UserConvertToken;
+  token: BaseToken;
   toERC20: boolean;
+  txMessage: React.ReactNode;
+  convertTx: () => Promise<void>;
 }
 export const ConfirmConvert = (props: ConfirmConvertProps) => {
   return (
@@ -14,13 +16,8 @@ export const ConfirmConvert = (props: ConfirmConvertProps) => {
       <h1>Confirm Convert</h1>
       <p>Token: {props.token.name}</p>
       <p>Amount: {formatUnits(props.amount, props.token.decimals)}</p>
-      <PrimaryButton
-        onClick={() => {
-          console.log("clicked");
-        }}
-      >
-        Bridge In Here
-      </PrimaryButton>
+      <PrimaryButton onClick={props.convertTx}>Bridge In Here</PrimaryButton>
+      <p>{props.txMessage}</p>
     </div>
   );
 };
