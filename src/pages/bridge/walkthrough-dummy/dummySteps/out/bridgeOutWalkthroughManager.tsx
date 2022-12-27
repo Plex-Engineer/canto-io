@@ -1,3 +1,4 @@
+import { formatUnits } from "ethers/lib/utils";
 import { CantoMainnet } from "global/config/networks";
 import {
   allBridgeOutNetworks,
@@ -10,6 +11,7 @@ import {
 } from "pages/bridge/config/interfaces";
 import { SelectedTokens } from "pages/bridge/stores/tokenStore";
 import { BridgeOutStep } from "../../walkthroughTracker";
+import { AmountSelect } from "../amountSelect";
 import { SelectToken } from "../selectToken";
 import { SwitchNetwork } from "../switchNetwork";
 
@@ -21,6 +23,8 @@ interface BridgeOutWalkthroughProps {
   bridgeOutTokens: UserNativeTokens[];
   currentBridgeOutToken: UserNativeTokens;
   selectToken: (token: BaseToken, from: SelectedTokens) => void;
+  amount: string;
+  setAmount: (amount: string) => void;
 }
 export const BridgeOutWalkthroughManager = (
   props: BridgeOutWalkthroughProps
@@ -40,6 +44,16 @@ export const BridgeOutWalkthroughManager = (
             props.selectToken(token, SelectedTokens.CONVERTOUT)
           }
           tokenBalance="erc20Balance"
+        />
+      )}
+      {props.currentStep === BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT && (
+        <AmountSelect
+          amount={props.amount}
+          onChange={props.setAmount}
+          max={formatUnits(
+            props.currentConvertToken.nativeBalance,
+            props.currentConvertToken.decimals
+          )}
         />
       )}
     </div>

@@ -1,5 +1,5 @@
 import { CantoMainnet } from "global/config/networks";
-import { BaseToken, EmptySelectedConvertToken } from "../config/interfaces";
+import { UserConvertToken } from "../config/interfaces";
 
 interface WalkthroughStep {
   prev: number | undefined;
@@ -53,7 +53,7 @@ export const BridgeOutWalkthroughSteps: WalkthroughTracker = {
   [BridgeOutStep.SELECT_CONVERT_TOKEN]: {
     prev: BridgeOutStep.SWITCH_TO_CANTO,
     next: BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT,
-    checkFunction: (token: BaseToken) => token != EmptySelectedConvertToken,
+    checkFunction: (token: UserConvertToken) => !token.erc20Balance.lt(0),
   },
   [BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT]: {
     prev: BridgeOutStep.SELECT_CONVERT_TOKEN,

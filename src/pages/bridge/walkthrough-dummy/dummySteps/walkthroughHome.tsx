@@ -8,6 +8,7 @@ import {
 } from "pages/bridge/config/gravityBridgeTokens";
 import {
   BaseToken,
+  EmptySelectedConvertToken,
   UserConvertToken,
   UserNativeTokens,
 } from "pages/bridge/config/interfaces";
@@ -34,6 +35,8 @@ export const WalkthroughHomeScreen = () => {
   const walkthroughStore = useBridgeWalkthroughStore();
   const networkInfo = useNetworkInfo();
   const tokenStore = useTokenStore();
+
+  const [amount, setAmount] = useState("");
 
   const [pathSelected, setPathSelected] = useState(Paths.NONE);
   const [userConvertTokens, setUserConvertTokens] = useState<
@@ -192,6 +195,8 @@ export const WalkthroughHomeScreen = () => {
           selectToken={(token: BaseToken, from: SelectedTokens) =>
             tokenStore.setSelectedToken(token, from)
           }
+          amount={amount}
+          setAmount={(amount) => setAmount(amount)}
         />
       )}
       {pathSelected !== Paths.NONE && (
