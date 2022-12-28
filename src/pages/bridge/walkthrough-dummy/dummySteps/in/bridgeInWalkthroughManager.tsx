@@ -1,3 +1,4 @@
+import { TransactionStatus } from "@usedapp/core";
 import { formatUnits } from "ethers/lib/utils";
 import { chain, convertFee, memo } from "global/config/cosmosConstants";
 import { CantoMainnet } from "global/config/networks";
@@ -26,6 +27,10 @@ interface BridgeInWalkthroughProps {
   currentStep: BridgeInStep;
   bridgeInTokens: UserGravityBridgeTokens[];
   currentBridgeToken: UserGravityBridgeTokens;
+  sendApprove: () => void;
+  stateApprove: TransactionStatus;
+  sendCosmos: () => void;
+  stateCosmos: TransactionStatus;
   convertTokens: UserConvertToken[];
   currentConvertToken: UserConvertToken;
   selectToken: (token: BaseToken, from: SelectedTokens) => void;
@@ -58,7 +63,7 @@ export const BridgeInWalkthroughManager = (props: BridgeInWalkthroughProps) => {
           }
           token={props.currentBridgeToken}
           txMessage={props.currentBridgeToken.name}
-          allowTx={() => {}}
+          allowTx={props.sendApprove}
         />
       )}
       {props.currentStep === BridgeInStep.SELECT_ERC20_AMOUNT && (
@@ -78,7 +83,7 @@ export const BridgeInWalkthroughManager = (props: BridgeInWalkthroughProps) => {
             props.currentBridgeToken.decimals
           )}
           token={props.currentBridgeToken}
-          convertTx={() => {}}
+          convertTx={props.sendCosmos}
         />
       )}
       {props.currentStep === BridgeInStep.WAIT_FOR_GRBIDGE && (

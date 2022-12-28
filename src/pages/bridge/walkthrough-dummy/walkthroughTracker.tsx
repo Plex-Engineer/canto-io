@@ -33,7 +33,6 @@ export enum BridgeInStep {
   COMPLETE,
 }
 export enum BridgeOutStep {
-  //   CHECK_NATIVE_TOKEN_BALANCE,
   SWITCH_TO_CANTO,
   SELECT_CONVERT_TOKEN,
   SELECT_CONVERT_TOKEN_AMOUNT,
@@ -58,7 +57,8 @@ export const BridgeInWalkthroughSteps: WalkthroughTracker = {
   [BridgeInStep.NEED_ALLOWANCE]: {
     prev: BridgeInStep.SELECT_ERC20_TOKEN,
     next: BridgeInStep.SELECT_ERC20_AMOUNT,
-    checkFunction: (token: UserGravityBridgeTokens, max: BigNumber) => !token.allowance.lte(max),
+    checkFunction: (token: UserGravityBridgeTokens, max: BigNumber) =>
+      !token.allowance.lte(max),
   },
   [BridgeInStep.SELECT_ERC20_AMOUNT]: {
     prev: BridgeInStep.SELECT_ERC20_TOKEN,
@@ -114,7 +114,7 @@ export const BridgeInWalkthroughSteps: WalkthroughTracker = {
 export const BridgeOutWalkthroughSteps: WalkthroughTracker = {
   [BridgeOutStep.SWITCH_TO_CANTO]: {
     prev: undefined,
-    next: BridgeOutStep.SWITCH_TO_CANTO,
+    next: BridgeOutStep.SELECT_CONVERT_TOKEN,
     checkFunction: (chainId: number | undefined) =>
       chainId == CantoMainnet.chainId,
   },

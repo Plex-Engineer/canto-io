@@ -1,7 +1,11 @@
-import { BaseToken } from "pages/bridge/config/interfaces";
 import { devtools, persist } from "zustand/middleware";
 import create from "zustand";
-import { BridgeInStep, BridgeOutStep } from "../walkthroughTracker";
+import {
+  BridgeInStep,
+  BridgeInWalkthroughSteps,
+  BridgeOutStep,
+  BridgeOutWalkthroughSteps,
+} from "../walkthroughTracker";
 
 interface BridgeWalkthroughStoreProps {
   bridgeInStep: BridgeInStep;
@@ -22,22 +26,22 @@ export const useBridgeWalkthroughStore = create<BridgeWalkthroughStoreProps>()(
       nextStep: (bridgeIn) => {
         if (bridgeIn) {
           set({
-            bridgeInStep: get().bridgeInStep + 1,
+            bridgeInStep: BridgeInWalkthroughSteps[get().bridgeInStep].next,
           });
         } else {
           set({
-            bridgeOutStep: get().bridgeOutStep + 1,
+            bridgeOutStep: BridgeOutWalkthroughSteps[get().bridgeOutStep].next,
           });
         }
       },
       previousStep(bridgeIn) {
         if (bridgeIn) {
           set({
-            bridgeInStep: get().bridgeInStep - 1,
+            bridgeInStep: BridgeInWalkthroughSteps[get().bridgeInStep].prev,
           });
         } else {
           set({
-            bridgeOutStep: get().bridgeOutStep - 1,
+            bridgeOutStep: BridgeOutWalkthroughSteps[get().bridgeOutStep].prev,
           });
         }
       },

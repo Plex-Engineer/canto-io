@@ -21,8 +21,10 @@ import { ConfirmConvert } from "../confirmConvert";
 import { SelectToken } from "../selectToken";
 import { SwitchNetwork } from "../switchNetwork";
 import { txIBCTransfer } from "pages/bridge/utils/IBC/IBCTransfer";
+import { AskToSkipAhead } from "../askToSkipAhead";
 
 interface BridgeOutWalkthroughProps {
+  skipToStep: (step: BridgeOutStep) => void;
   cantoAddress: string;
   currentStep: BridgeOutStep;
   convertTokens: UserConvertToken[];

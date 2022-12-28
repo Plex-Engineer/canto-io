@@ -7,7 +7,7 @@ interface NeedAllowanceProps {
   token: UserGravityBridgeTokens;
 
   txMessage: React.ReactNode;
-  allowTx: () => Promise<void>;
+  allowTx: () => void;
 }
 export const NeedAllowancePage = (props: NeedAllowanceProps) => {
   useEffect(() => {

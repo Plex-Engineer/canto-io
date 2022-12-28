@@ -1,4 +1,5 @@
 import { BigNumber } from "ethers";
+import { ADDRESSES } from "global/config/addresses";
 import { CantoMainnet } from "global/config/networks";
 import { PrimaryButton } from "global/packages/src";
 import { useNetworkInfo } from "global/stores/networkInfo";
@@ -15,6 +16,7 @@ import {
 } from "pages/bridge/config/interfaces";
 import { useCantoERC20Balances } from "pages/bridge/hooks/useERC20Balances";
 import { useEthGravityTokens } from "pages/bridge/hooks/useEthGravityTokens";
+import { useApprove, useCosmos } from "pages/bridge/hooks/useTransactions";
 import { SelectedTokens, useTokenStore } from "pages/bridge/stores/tokenStore";
 import { useBridgeTransactionPageStore } from "pages/bridge/stores/transactionPageStore";
 import useBridgeTxStore from "pages/bridge/stores/transactionStore";
@@ -27,9 +29,12 @@ import {
   didPassBridgeOutWalkthroughCheck,
 } from "../walkthroughFunctions";
 import {
+  BridgeInStep,
   BridgeInWalkthroughSteps,
+  BridgeOutStep,
   BridgeOutWalkthroughSteps,
 } from "../walkthroughTracker";
+import { AskToSkipAhead } from "./askToSkipAhead";
 import { BridgeInWalkthroughManager } from "./in/bridgeInWalkthroughManager";
 import { BridgeOutWalkthroughManager } from "./out/bridgeOutWalkthroughManager";
 
@@ -53,9 +58,10 @@ export const WalkthroughHomeScreen = () => {
   const bridgeOutToken = tokenStore.selectedTokens[SelectedTokens.BRIDGEOUT];
   const convertOutToken = tokenStore.selectedTokens[SelectedTokens.CONVERTOUT];
 
+  //amount will be the same value across the walkthrough
   const [amount, setAmount] = useState("");
 
-  const [pathSelected, setPathSelected] = useState(Paths.NONE);
+  //states for all of the bridging tokens
   const [userConvertTokens, setUserConvertTokens] = useState<
     UserConvertToken[]
   >([]);
@@ -142,6 +148,19 @@ export const WalkthroughHomeScreen = () => {
     }
   }, [userBridgeOutTokens, userConvertTokens]);
 
+  //function states for approval of ETH tokens and bridging to gBridge
+  const {
+    state: stateApprove,
+    send: sendApprove,
+    resetState: resetApprove,
+  } = useApprove(bridgeInToken.address);
+  const {
+    state: stateCosmos,
+    send: sendCosmos,
+    resetState: resetCosmos,
+  } = useCosmos(gravityAddress ?? ADDRESSES.ETHMainnet.GravityBridge);
+
+  //check if the current step is complete
   function checkIfCanContinue() {
     const bridgeIn = pathSelected === Paths.BRIDGE_IN;
     if (bridgeIn) {
@@ -183,6 +202,7 @@ export const WalkthroughHomeScreen = () => {
       );
     }
   }
+  //check if step 0, then we go back to home page
   function checkIfPrevIsHome() {
     const currentStep =
       pathSelected === Paths.BRIDGE_IN
@@ -190,10 +210,12 @@ export const WalkthroughHomeScreen = () => {
         : walkthroughStore.bridgeOutStep;
     if (currentStep === 0) {
       setPathSelected(Paths.NONE);
+      setUserSkipped(false);
     } else {
       walkthroughStore.previousStep(pathSelected === Paths.BRIDGE_IN);
     }
   }
+  //check if the step is the last step, then we go back to home page
   function checkIfNextIsComplete() {
     const currentWalkthroughStep =
       pathSelected === Paths.BRIDGE_IN
@@ -201,11 +223,25 @@ export const WalkthroughHomeScreen = () => {
         : BridgeOutWalkthroughSteps[walkthroughStore.bridgeOutStep];
     if (currentWalkthroughStep.next == undefined) {
       setPathSelected(Paths.NONE);
+      setUserSkipped(false);
       walkthroughStore.resetState(pathSelected === Paths.BRIDGE_IN);
     } else {
       walkthroughStore.nextStep(pathSelected === Paths.BRIDGE_IN);
     }
   }
+
+  //check if user has native balance to skip ahead
+  function checkIfCanSkip(convertTokens: UserConvertToken[]) {
+    for (const token in convertTokens) {
+      if (convertTokens[token].nativeBalance.gt(0)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  //track if user skip part of the walkthrough and which path they selected
+  const [userSkipped, setUserSkipped] = useState(false);
+  const [pathSelected, setPathSelected] = useState(Paths.NONE);
   return (
     <div>
       {"bridge in step: " + walkthroughStore.bridgeInStep}
@@ -233,57 +269,94 @@ export const WalkthroughHomeScreen = () => {
           </button>
         </>
       )}
-      {pathSelected === Paths.BRIDGE_IN && (
-        <BridgeInWalkthroughManager
-          skipToWalkthroughStep={(step: number) =>
-            walkthroughStore.setBridgeInStep(step)
-          }
-          cantoAddress={networkInfo.cantoAddress}
-          currentStep={walkthroughStore.bridgeInStep}
-          bridgeInTokens={userEthGTokens}
-          currentBridgeToken={bridgeInToken}
-          convertTokens={userConvertTokens}
-          currentConvertToken={convertInToken}
-          selectToken={(token: BaseToken, from: SelectedTokens) =>
-            tokenStore.setSelectedToken(token, from)
-          }
-          amount={amount}
-          setAmount={(amount) => setAmount(amount)}
-          txMessage={bridgeTxStore.transactionStatus?.message}
-          setTxStatus={bridgeTxStore.setTransactionStatus}
-        />
-      )}
-      {pathSelected === Paths.BRIDGE_OUT && (
-        <BridgeOutWalkthroughManager
-          cantoAddress={networkInfo.cantoAddress}
-          currentStep={walkthroughStore.bridgeOutStep}
-          convertTokens={userConvertTokens}
-          currentConvertToken={convertOutToken}
-          bridgeOutNetwork={allBridgeOutNetworks[tokenStore.bridgeOutNetwork]}
-          bridgeOutTokens={userBridgeOutTokens}
-          currentBridgeOutToken={bridgeOutToken}
-          selectToken={(token: BaseToken, from: SelectedTokens) =>
-            tokenStore.setSelectedToken(token, from)
-          }
-          amount={amount}
-          setAmount={(amount) => setAmount(amount)}
-          setTxStatus={bridgeTxStore.setTransactionStatus}
-          txMessage={bridgeTxStore.transactionStatus?.message}
-        />
-      )}
-      {pathSelected !== Paths.NONE && (
-        <>
-          <PrimaryButton onClick={() => checkIfPrevIsHome()}>
-            prev
-          </PrimaryButton>
-          <PrimaryButton
-            disabled={!checkIfCanContinue()}
-            onClick={() => checkIfNextIsComplete()}
-          >
-            next
-          </PrimaryButton>
-        </>
-      )}
+      {pathSelected !== Paths.NONE ? (
+        checkIfCanSkip(userConvertTokens) && !userSkipped ? (
+          <AskToSkipAhead
+            convertTokens={userConvertTokens}
+            skipStep={() =>
+              pathSelected === Paths.BRIDGE_IN
+                ? walkthroughStore.setBridgeInStep(
+                    BridgeInStep.SELECT_CONVERT_TOKEN
+                  )
+                : walkthroughStore.setBridgeOutStep(
+                    BridgeOutStep.SELECT_BRIDGE_OUT_NETWORK
+                  )
+            }
+            setUserSkipped={() => setUserSkipped(true)}
+          />
+        ) : pathSelected === Paths.BRIDGE_IN ? (
+          <BridgeInWalkthroughManager
+            skipToWalkthroughStep={(step: BridgeInStep) =>
+              walkthroughStore.setBridgeInStep(step)
+            }
+            cantoAddress={networkInfo.cantoAddress}
+            currentStep={walkthroughStore.bridgeInStep}
+            bridgeInTokens={userEthGTokens}
+            currentBridgeToken={bridgeInToken}
+            sendApprove={() =>
+              sendApprove(
+                gravityAddress,
+                BigNumber.from(
+                  "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+                )
+              )
+            }
+            stateApprove={stateApprove}
+            sendCosmos={() =>
+              sendCosmos(
+                bridgeInToken,
+                networkInfo.cantoAddress,
+                convertStringToBigNumber(amount, bridgeInToken.decimals)
+              )
+            }
+            stateCosmos={stateCosmos}
+            convertTokens={userConvertTokens}
+            currentConvertToken={convertInToken}
+            selectToken={(token: BaseToken, from: SelectedTokens) =>
+              tokenStore.setSelectedToken(token, from)
+            }
+            amount={amount}
+            setAmount={(amount) => setAmount(amount)}
+            txMessage={bridgeTxStore.transactionStatus?.message}
+            setTxStatus={bridgeTxStore.setTransactionStatus}
+          />
+        ) : (
+          <BridgeOutWalkthroughManager
+            skipToStep={(step: BridgeOutStep) =>
+              walkthroughStore.setBridgeOutStep(step)
+            }
+            cantoAddress={networkInfo.cantoAddress}
+            currentStep={walkthroughStore.bridgeOutStep}
+            convertTokens={userConvertTokens}
+            currentConvertToken={convertOutToken}
+            bridgeOutNetwork={allBridgeOutNetworks[tokenStore.bridgeOutNetwork]}
+            bridgeOutTokens={userBridgeOutTokens}
+            currentBridgeOutToken={bridgeOutToken}
+            selectToken={(token: BaseToken, from: SelectedTokens) =>
+              tokenStore.setSelectedToken(token, from)
+            }
+            amount={amount}
+            setAmount={(amount) => setAmount(amount)}
+            setTxStatus={bridgeTxStore.setTransactionStatus}
+            txMessage={bridgeTxStore.transactionStatus?.message}
+          />
+        )
+      ) : null}
+
+      {pathSelected !== Paths.NONE &&
+        (userSkipped || !checkIfCanSkip(userConvertTokens)) && (
+          <>
+            <PrimaryButton onClick={() => checkIfPrevIsHome()}>
+              prev
+            </PrimaryButton>
+            <PrimaryButton
+              disabled={!checkIfCanContinue()}
+              onClick={() => checkIfNextIsComplete()}
+            >
+              next
+            </PrimaryButton>
+          </>
+        )}
     </div>
   );
 };
