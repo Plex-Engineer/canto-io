@@ -6,7 +6,6 @@ import { BaseToken } from "pages/bridge/config/interfaces";
 interface ConfirmConvertProps {
   amount: BigNumber;
   token: BaseToken;
-  toERC20: boolean;
   txMessage: React.ReactNode;
   convertTx: () => Promise<void>;
 }

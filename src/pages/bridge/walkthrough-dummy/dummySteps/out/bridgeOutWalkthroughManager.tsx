@@ -42,7 +42,6 @@ export const BridgeOutWalkthroughManager = (
   return (
     <div>
       <h1>Bridge Out Start</h1>
-      <p>current step: {props.currentStep}</p>
       {props.currentStep === BridgeOutStep.SWITCH_TO_CANTO && (
         <SwitchNetwork chainId={CantoMainnet.chainId} />
       )}
@@ -73,7 +72,6 @@ export const BridgeOutWalkthroughManager = (
             props.currentConvertToken.decimals
           )}
           token={props.currentConvertToken}
-          toERC20={false}
           convertTx={async () =>
             await performBridgeCosmosTxAndSetStatus(
               async () =>
@@ -138,7 +136,6 @@ export const BridgeOutWalkthroughManager = (
             props.currentBridgeOutToken.decimals
           )}
           token={props.currentBridgeOutToken}
-          toERC20={false}
           convertTx={async () =>
             await performBridgeCosmosTxAndSetStatus(
               async () =>

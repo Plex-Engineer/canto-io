@@ -6,7 +6,9 @@ import { BridgeInStep, BridgeOutStep } from "../walkthroughTracker";
 interface BridgeWalkthroughStoreProps {
   bridgeInStep: BridgeInStep;
   bridgeOutStep: BridgeOutStep;
-  nextStep: (bridgeIn: boolean, token?: BaseToken) => void;
+  setBridgeInStep: (step: BridgeInStep) => void;
+  setBridgeOutStep: (step: BridgeOutStep) => void;
+  nextStep: (bridgeIn: boolean) => void;
   previousStep: (bridgeIn: boolean) => void;
   resetState: (bridgeIn: boolean) => void;
 }
@@ -15,6 +17,8 @@ export const useBridgeWalkthroughStore = create<BridgeWalkthroughStoreProps>()(
     persist((set, get) => ({
       bridgeInStep: 0,
       bridgeOutStep: 0,
+      setBridgeInStep: (step) => set({ bridgeInStep: step }),
+      setBridgeOutStep: (step) => set({ bridgeOutStep: step }),
       nextStep: (bridgeIn) => {
         if (bridgeIn) {
           set({

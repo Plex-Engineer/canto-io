@@ -22,6 +22,7 @@ export enum BridgeInStep {
   // CHECK_NATIVE_TOKEN_BALANCE,
   SWTICH_TO_ETH,
   SELECT_ERC20_TOKEN,
+  NEED_ALLOWANCE,
   SELECT_ERC20_AMOUNT,
   SEND_FUNDS_TO_GBRIDGE,
   WAIT_FOR_GRBIDGE,
@@ -51,8 +52,13 @@ export const BridgeInWalkthroughSteps: WalkthroughTracker = {
   },
   [BridgeInStep.SELECT_ERC20_TOKEN]: {
     prev: BridgeInStep.SWTICH_TO_ETH,
-    next: BridgeInStep.SELECT_ERC20_AMOUNT,
+    next: BridgeInStep.NEED_ALLOWANCE,
     checkFunction: (token: UserGravityBridgeTokens) => !token.balanceOf.lte(0),
+  },
+  [BridgeInStep.NEED_ALLOWANCE]: {
+    prev: BridgeInStep.SELECT_ERC20_TOKEN,
+    next: BridgeInStep.SELECT_ERC20_AMOUNT,
+    checkFunction: (token: UserGravityBridgeTokens, max: BigNumber) => !token.allowance.lte(max),
   },
   [BridgeInStep.SELECT_ERC20_AMOUNT]: {
     prev: BridgeInStep.SELECT_ERC20_TOKEN,

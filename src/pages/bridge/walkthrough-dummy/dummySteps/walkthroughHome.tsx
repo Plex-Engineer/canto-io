@@ -16,12 +16,16 @@ import {
 import { useCantoERC20Balances } from "pages/bridge/hooks/useERC20Balances";
 import { useEthGravityTokens } from "pages/bridge/hooks/useEthGravityTokens";
 import { SelectedTokens, useTokenStore } from "pages/bridge/stores/tokenStore";
+import { useBridgeTransactionPageStore } from "pages/bridge/stores/transactionPageStore";
 import useBridgeTxStore from "pages/bridge/stores/transactionStore";
 import { getNativeCantoBalance } from "pages/bridge/utils/nativeBalances";
 import { convertStringToBigNumber } from "pages/bridge/utils/stringToBigNumber";
 import { useEffect, useState } from "react";
 import { useBridgeWalkthroughStore } from "../store/bridgeWalkthroughStore";
-import { didPassBridgeOutWalkthroughCheck } from "../walkthroughFunctions";
+import {
+  didPassBridgeInWalkthroughCheck,
+  didPassBridgeOutWalkthroughCheck,
+} from "../walkthroughFunctions";
 import {
   BridgeInWalkthroughSteps,
   BridgeOutWalkthroughSteps,
@@ -36,12 +40,16 @@ enum Paths {
 }
 export const WalkthroughHomeScreen = () => {
   //all stores we needed here:
+  const completedBridgeInTxs =
+    useBridgeTransactionPageStore().transactions.completedBridgeTransactions;
   const walkthroughStore = useBridgeWalkthroughStore();
   const networkInfo = useNetworkInfo();
   const tokenStore = useTokenStore();
   const bridgeTxStore = useBridgeTxStore();
 
   //constants to stop reference repetition
+  const bridgeInToken = tokenStore.selectedTokens[SelectedTokens.ETHTOKEN];
+  const convertInToken = tokenStore.selectedTokens[SelectedTokens.CONVERTIN];
   const bridgeOutToken = tokenStore.selectedTokens[SelectedTokens.BRIDGEOUT];
   const convertOutToken = tokenStore.selectedTokens[SelectedTokens.CONVERTOUT];
 
@@ -137,11 +145,25 @@ export const WalkthroughHomeScreen = () => {
   function checkIfCanContinue() {
     const bridgeIn = pathSelected === Paths.BRIDGE_IN;
     if (bridgeIn) {
-      return false;
+      return didPassBridgeInWalkthroughCheck(
+        walkthroughStore.bridgeInStep,
+        Number(networkInfo.chainId),
+        bridgeInToken,
+        convertStringToBigNumber(amount, bridgeInToken.decimals),
+        bridgeInToken.balanceOf,
+        "",
+        completedBridgeInTxs,
+        convertInToken,
+        convertStringToBigNumber(amount, convertInToken.decimals),
+        convertInToken.nativeBalance,
+        bridgeTxStore.transactionStatus?.type ===
+          BridgeTransactionType.CONVERT_IN
+          ? bridgeTxStore.transactionStatus.status
+          : "None"
+      );
     } else {
-      const currentStep = walkthroughStore.bridgeOutStep;
       return didPassBridgeOutWalkthroughCheck(
-        currentStep,
+        walkthroughStore.bridgeOutStep,
         Number(networkInfo.chainId),
         convertOutToken,
         convertStringToBigNumber(amount, convertOutToken.decimals),
@@ -179,13 +201,16 @@ export const WalkthroughHomeScreen = () => {
         : BridgeOutWalkthroughSteps[walkthroughStore.bridgeOutStep];
     if (currentWalkthroughStep.next == undefined) {
       setPathSelected(Paths.NONE);
-      walkthroughStore.resetState(false);
+      walkthroughStore.resetState(pathSelected === Paths.BRIDGE_IN);
     } else {
       walkthroughStore.nextStep(pathSelected === Paths.BRIDGE_IN);
     }
   }
   return (
     <div>
+      {"bridge in step: " + walkthroughStore.bridgeInStep}
+      <br />
+      {"bridge out step: " + walkthroughStore.bridgeOutStep}
       {pathSelected === Paths.NONE && (
         <>
           <h1>Walkthrough Home Screen</h1>
@@ -210,9 +235,22 @@ export const WalkthroughHomeScreen = () => {
       )}
       {pathSelected === Paths.BRIDGE_IN && (
         <BridgeInWalkthroughManager
+          skipToWalkthroughStep={(step: number) =>
+            walkthroughStore.setBridgeInStep(step)
+          }
           cantoAddress={networkInfo.cantoAddress}
           currentStep={walkthroughStore.bridgeInStep}
           bridgeInTokens={userEthGTokens}
+          currentBridgeToken={bridgeInToken}
+          convertTokens={userConvertTokens}
+          currentConvertToken={convertInToken}
+          selectToken={(token: BaseToken, from: SelectedTokens) =>
+            tokenStore.setSelectedToken(token, from)
+          }
+          amount={amount}
+          setAmount={(amount) => setAmount(amount)}
+          txMessage={bridgeTxStore.transactionStatus?.message}
+          setTxStatus={bridgeTxStore.setTransactionStatus}
         />
       )}
       {pathSelected === Paths.BRIDGE_OUT && (
