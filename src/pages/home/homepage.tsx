@@ -20,7 +20,7 @@ const Homepage = () => {
       <Styled>
         <ul className="options" id="routes">
           {pageList.map((page, idx) => {
-            return (
+            return page.showInMenu ? (
               <NavLink
                 to={page.link}
                 key={page.name}
@@ -36,7 +36,7 @@ const Homepage = () => {
                   {"0" + (idx + 1) + " " + page.name}
                 </Text>
               </NavLink>
-            );
+            ) : null;
           })}
         </ul>
         <div className="bg"> </div>

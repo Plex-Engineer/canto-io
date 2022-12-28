@@ -22,15 +22,15 @@ export function showAlerts(
   const currentPageObj = pageList.find((page) => page.link === currentPath);
   if (!currentPageObj) {
     return;
-  } else if (!account) {
+  } else if (!account && !currentPageObj.walletNotRequired) {
     openAlert("Warning", <p> please connect your wallet to use canto</p>);
     return;
   } else if (!hasPubKey) {
     openAlert("Failure", <GenPubKey />);
     return;
   } else if (
-    chainId == undefined ||
-    !currentPageObj.networks.includes(chainId)
+    (chainId == undefined || !currentPageObj.networks.includes(chainId)) &&
+    !currentPageObj.walletNotRequired
   ) {
     openAlert(
       "Failure",
