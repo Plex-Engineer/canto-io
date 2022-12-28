@@ -76,6 +76,7 @@ const ModalManager = (props: Props) => {
       modal
       position="center center"
       nested
+      closeOnDocumentClick={false}
     >
       <div role="button" tabIndex={0} onClick={props.onClose}>
         <img
