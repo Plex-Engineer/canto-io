@@ -5,6 +5,7 @@ import { useNetworkInfo } from "global/stores/networkInfo";
 import {
   allBridgeOutNetworks,
   convertCoinTokens,
+  ETHGravityTokens,
 } from "pages/bridge/config/gravityBridgeTokens";
 import {
   BaseToken,
@@ -13,6 +14,7 @@ import {
   UserNativeTokens,
 } from "pages/bridge/config/interfaces";
 import { useCantoERC20Balances } from "pages/bridge/hooks/useERC20Balances";
+import { useEthGravityTokens } from "pages/bridge/hooks/useEthGravityTokens";
 import { SelectedTokens, useTokenStore } from "pages/bridge/stores/tokenStore";
 import useBridgeTxStore from "pages/bridge/stores/transactionStore";
 import { getNativeCantoBalance } from "pages/bridge/utils/nativeBalances";
@@ -24,7 +26,7 @@ import {
   BridgeInWalkthroughSteps,
   BridgeOutWalkthroughSteps,
 } from "../walkthroughTracker";
-import { BridgeInStart } from "./in/bridgeInStart";
+import { BridgeInWalkthroughManager } from "./in/bridgeInWalkthroughManager";
 import { BridgeOutWalkthroughManager } from "./out/bridgeOutWalkthroughManager";
 
 enum Paths {
@@ -52,6 +54,10 @@ export const WalkthroughHomeScreen = () => {
   const [userBridgeOutTokens, setUserBridgeOutTokens] = useState<
     UserNativeTokens[]
   >([]);
+  const { userEthGTokens, gravityAddress } = useEthGravityTokens(
+    networkInfo.account,
+    ETHGravityTokens
+  );
 
   //set the convert erc20 tokens
   const { userTokens: userConvertERC20Tokens, fail: cantoERC20Fail } =
@@ -202,7 +208,13 @@ export const WalkthroughHomeScreen = () => {
           </button>
         </>
       )}
-      {pathSelected === Paths.BRIDGE_IN && <BridgeInStart />}
+      {pathSelected === Paths.BRIDGE_IN && (
+        <BridgeInWalkthroughManager
+          cantoAddress={networkInfo.cantoAddress}
+          currentStep={walkthroughStore.bridgeInStep}
+          bridgeInTokens={userEthGTokens}
+        />
+      )}
       {pathSelected === Paths.BRIDGE_OUT && (
         <BridgeOutWalkthroughManager
           cantoAddress={networkInfo.cantoAddress}

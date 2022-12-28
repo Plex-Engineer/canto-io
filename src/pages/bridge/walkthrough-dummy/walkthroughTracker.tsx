@@ -1,7 +1,13 @@
 import { BigNumber } from "ethers";
 import { CantoMainnet } from "global/config/networks";
 import { TransactionState } from "global/config/transactionTypes";
-import { UserConvertToken, UserNativeTokens } from "../config/interfaces";
+import {
+  UserConvertToken,
+  UserGravityBridgeTokens,
+  UserNativeTokens,
+} from "../config/interfaces";
+import { ETHMainnet } from "../config/networks";
+import { EventWithTime } from "../utils/bridgeTxPageUtils";
 
 interface WalkthroughStep {
   prev: number | undefined;
@@ -13,15 +19,15 @@ interface WalkthroughTracker {
   [key: number]: WalkthroughStep;
 }
 export enum BridgeInStep {
-  CHECK_NATIVE_TOKEN_BALANCE,
+  // CHECK_NATIVE_TOKEN_BALANCE,
   SWTICH_TO_ETH,
   SELECT_ERC20_TOKEN,
   SELECT_ERC20_AMOUNT,
   SEND_FUNDS_TO_GBRIDGE,
   WAIT_FOR_GRBIDGE,
   SWITCH_TO_CANTO,
-  SELECT_NATIVE_TOKEN,
-  SELECT_NATIVE_TOKEN_AMOUNT,
+  SELECT_CONVERT_TOKEN,
+  SELECT_CONVERT_TOKEN_AMOUNT,
   CONVERT,
   COMPLETE,
 }
@@ -38,12 +44,65 @@ export enum BridgeOutStep {
   COMPLETE,
 }
 export const BridgeInWalkthroughSteps: WalkthroughTracker = {
-  //   [BridgeInSteps.START]: {
-  //     prev: -1,
-  //     next: () => BridgeInSteps.SWTICH_TO_ETH,
-  //     component: BridgeInStart(),
-  //     checkFunction: () => true,
-  //   },
+  [BridgeInStep.SWTICH_TO_ETH]: {
+    prev: undefined,
+    next: BridgeInStep.SELECT_ERC20_TOKEN,
+    checkFunction: (chainId: number) => chainId == ETHMainnet.chainId,
+  },
+  [BridgeInStep.SELECT_ERC20_TOKEN]: {
+    prev: BridgeInStep.SWTICH_TO_ETH,
+    next: BridgeInStep.SELECT_ERC20_AMOUNT,
+    checkFunction: (token: UserGravityBridgeTokens) => !token.balanceOf.lte(0),
+  },
+  [BridgeInStep.SELECT_ERC20_AMOUNT]: {
+    prev: BridgeInStep.SELECT_ERC20_TOKEN,
+    next: BridgeInStep.SEND_FUNDS_TO_GBRIDGE,
+    checkFunction: (amount: BigNumber, max: BigNumber) =>
+      amount.gt(0) && amount.lte(max),
+  },
+  [BridgeInStep.SEND_FUNDS_TO_GBRIDGE]: {
+    prev: BridgeInStep.SELECT_ERC20_AMOUNT,
+    next: BridgeInStep.WAIT_FOR_GRBIDGE,
+    checkFunction: (txHash: string | undefined) => !!txHash,
+  },
+  [BridgeInStep.WAIT_FOR_GRBIDGE]: {
+    prev: BridgeInStep.SEND_FUNDS_TO_GBRIDGE,
+    next: BridgeInStep.SWITCH_TO_CANTO,
+    checkFunction: (completedTxs: EventWithTime[], currentTxHash: string) => {
+      for (const tx of completedTxs) {
+        if (tx.transactionHash == currentTxHash) {
+          return true;
+        }
+      }
+      return false;
+    },
+  },
+  [BridgeInStep.SWITCH_TO_CANTO]: {
+    prev: BridgeInStep.WAIT_FOR_GRBIDGE,
+    next: BridgeInStep.SELECT_CONVERT_TOKEN,
+    checkFunction: (chainId: number) => chainId == CantoMainnet.chainId,
+  },
+  [BridgeInStep.SELECT_CONVERT_TOKEN]: {
+    prev: BridgeInStep.SWITCH_TO_CANTO,
+    next: BridgeInStep.SELECT_CONVERT_TOKEN_AMOUNT,
+    checkFunction: (token: UserConvertToken) => !token.nativeBalance.lte(0),
+  },
+  [BridgeInStep.SELECT_CONVERT_TOKEN_AMOUNT]: {
+    prev: BridgeInStep.SELECT_CONVERT_TOKEN,
+    next: BridgeInStep.CONVERT,
+    checkFunction: (amount: BigNumber, max: BigNumber) =>
+      amount.gt(0) && amount.lte(max),
+  },
+  [BridgeInStep.CONVERT]: {
+    prev: BridgeInStep.SELECT_CONVERT_TOKEN_AMOUNT,
+    next: BridgeInStep.COMPLETE,
+    checkFunction: (txStatus: TransactionState) => txStatus === "Success",
+  },
+  [BridgeInStep.COMPLETE]: {
+    prev: BridgeInStep.CONVERT,
+    next: undefined,
+    checkFunction: () => true,
+  },
 };
 
 export const BridgeOutWalkthroughSteps: WalkthroughTracker = {

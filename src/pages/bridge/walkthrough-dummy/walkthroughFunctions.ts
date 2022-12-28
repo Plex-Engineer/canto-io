@@ -1,8 +1,18 @@
 import { BigNumber } from "ethers";
 import { TransactionState } from "global/config/transactionTypes";
 import { BridgeOutNetworkInfo } from "../config/gravityBridgeTokens";
-import { BaseToken, UserNativeTokens } from "../config/interfaces";
-import { BridgeOutStep, BridgeOutWalkthroughSteps } from "./walkthroughTracker";
+import {
+  BaseToken,
+  UserGravityBridgeTokens,
+  UserNativeTokens,
+} from "../config/interfaces";
+import { EventWithTime } from "../utils/bridgeTxPageUtils";
+import {
+  BridgeInStep,
+  BridgeInWalkthroughSteps,
+  BridgeOutStep,
+  BridgeOutWalkthroughSteps,
+} from "./walkthroughTracker";
 
 export function didPassBridgeOutWalkthroughCheck(
   currentStep: BridgeOutStep,
@@ -43,6 +53,53 @@ export function didPassBridgeOutWalkthroughCheck(
     }
     case BridgeOutStep.SEND_TO_GRBIDGE: {
       return currentCheckFunction(bridgeOutStatus);
+    }
+    default:
+      return true;
+  }
+}
+export function didPassBridgeInWalkthroughCheck(
+  currentStep: BridgeInStep,
+  chainId: number,
+  ethGToken: UserGravityBridgeTokens,
+  bridgeInAmount: BigNumber,
+  maxBridgeInAmount: BigNumber,
+  bridgeInTxHash: string | undefined,
+  completedBridgeInTxs: EventWithTime[],
+  convertToken: BaseToken,
+  convertInAmount: BigNumber,
+  maxConvertInAmount: BigNumber,
+  convertTxState: TransactionState
+): boolean {
+  const currentCheckFunction =
+    BridgeInWalkthroughSteps[currentStep].checkFunction;
+  switch (currentStep) {
+    case BridgeInStep.SWTICH_TO_ETH: {
+      return currentCheckFunction(chainId);
+    }
+    case BridgeInStep.SELECT_ERC20_TOKEN: {
+      return currentCheckFunction(ethGToken);
+    }
+    case BridgeInStep.SELECT_ERC20_AMOUNT: {
+      return currentCheckFunction(bridgeInAmount, maxBridgeInAmount);
+    }
+    case BridgeInStep.SEND_FUNDS_TO_GBRIDGE: {
+      return currentCheckFunction(bridgeInTxHash);
+    }
+    case BridgeInStep.WAIT_FOR_GRBIDGE: {
+      return currentCheckFunction(completedBridgeInTxs, bridgeInTxHash);
+    }
+    case BridgeInStep.SWITCH_TO_CANTO: {
+      return currentCheckFunction(chainId);
+    }
+    case BridgeInStep.SELECT_CONVERT_TOKEN: {
+      return currentCheckFunction(convertToken);
+    }
+    case BridgeInStep.SELECT_CONVERT_TOKEN_AMOUNT: {
+      return currentCheckFunction(convertInAmount, maxConvertInAmount);
+    }
+    case BridgeInStep.CONVERT: {
+      return currentCheckFunction(convertTxState);
     }
     default:
       return true;
