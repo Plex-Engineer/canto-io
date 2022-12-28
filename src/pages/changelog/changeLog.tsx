@@ -7,9 +7,9 @@ const ChangeLog = () => {
       <LogSection
         date="Dec 27th 2022"
         title="Fixes & Enhancements"
-        content={`- An issue where notifications for successful transactions were displayed in red instead of green is now fixed
+        content={`- An issue where notifications for successful transactions were displayed in red instead of green is now fixed.
         - Minor updates have been made to the UI styling on various pages.
-        - The rewards counter on the lending page now specifies accrued rewards as wCanto
+        - The rewards counter on the lending page now specifies accrued rewards as wCanto.
         - The Slingshot link on the LP interface page now opens in a new tab when clicked.
         - Closing the modal on the LP interface page before the second transaction populates will now trigger an alert notifying users they will need to supply LP tokens to the lending market manually.
         - A link to the previous version of the site has been added to the menu.
