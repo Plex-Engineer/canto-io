@@ -54,7 +54,10 @@ export const CantoNav = () => {
     if (account) {
       networkInfo.setAccount(account);
       networkInfo.setBalance(balance ?? BigNumber.from(0));
+      //mixpanel id
       Mixpanel.people.registerWallet(account);
+      Mixpanel.identify(account);
+      Mixpanel.people.set({ name: account });
     }
     if (account == null) {
       networkInfo.setAccount("");

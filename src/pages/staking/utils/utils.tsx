@@ -112,7 +112,12 @@ export async function getActiveTransactionMessage(
         {`your ${transactionName} was unsuccessful. this may be an issue related to
               gas. read more about why in the docs (toggle the menu in the
               corner) or in the canto discord here `}
-        <a style={{ color: "white" }} href="https://discord.gg/yVvkr9RE">
+        <a
+          style={{ color: "white" }}
+          href="https://discord.gg/yVvkr9RE"
+          target="_blank"
+          rel="noreferrer"
+        >
           here
         </a>
       </>

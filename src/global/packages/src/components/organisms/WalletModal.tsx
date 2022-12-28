@@ -5,7 +5,6 @@ import CopyToClipboard from "react-copy-to-clipboard";
 import { OutlinedButton } from "../atoms/Button";
 import CopyIcon from "assets/copy.svg";
 import { Text } from "../atoms/Text";
-import { toast } from "react-toastify";
 import { formatBigNumber } from "../../utils/formatNumbers";
 import cantoIMG from "assets/logo.svg";
 import ethIMG from "assets/icons/ETH.svg";
@@ -13,42 +12,20 @@ import { formatEther } from "ethers/lib/utils";
 import { CantoMainnet } from "global/providers";
 import { ETHMainnet } from "pages/bridge/config/networks";
 import { Mixpanel } from "mixpanel";
+import { toastHandler } from "global/utils/toastHandler";
 
 const WalletModal = () => {
   const { deactivate } = useEthers();
   const networkInfo = useNetworkInfo();
   const account = networkInfo.account ?? "0";
 
-  function copyAddress() {
-    toast("copied address", {
-      position: "top-right",
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progressStyle: {
-        color: `
-            var(--primary-color)
-          `,
-      },
-      style: {
-        border: "1px solid var(--primary-color)",
-        borderRadius: "0px",
-        paddingBottom: "3px",
-        background: "black",
-        color: `var(--primary-color)
-        `,
-        height: "100px",
-        fontSize: "20px",
-      },
-      autoClose: 300,
-    });
-  }
-
   return (
     <Styled>
       <div className="address">
-        <CopyToClipboard text={account} onCopy={copyAddress}>
+        <CopyToClipboard
+          text={account}
+          onCopy={() => toastHandler("copied address", true, "0", 300)}
+        >
           <Text
             type="text"
             color="primary"
@@ -72,7 +49,12 @@ const WalletModal = () => {
       </div>
 
       <div className="row">
-        <Text type="text">canto balance</Text>
+        <Text type="text">
+          {networkInfo.chainId == ETHMainnet.chainId.toString()
+            ? "eth "
+            : "canto "}{" "}
+          balance
+        </Text>
         <div className="balance">
           <Text type="text">
             <span className="center">
@@ -96,7 +78,9 @@ const WalletModal = () => {
       <div className="row">
         <Text type="text">support</Text>
         <div className="balance">
-          <a href="">help center</a>
+          <a href="https://docs.canto.io/" target="_blank" rel="noreferrer">
+            help center
+          </a>
         </div>
       </div>
 

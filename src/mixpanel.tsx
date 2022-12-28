@@ -15,7 +15,7 @@ const actions = {
   },
   people: {
     set: (props: Dict) => {
-      mixpanel.people.set(props);
+      mixpanel.people.set_once(props);
     },
     registerWallet: (account: string) => {
       mixpanel.register({ distinct_id: account, wallet: account });

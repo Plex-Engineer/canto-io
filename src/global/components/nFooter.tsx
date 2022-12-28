@@ -9,13 +9,13 @@ const Footer = () => {
   return (
     <Styled>
       <div className="links">
-        <a href="https://canto.canny.io/">
+        <a href="https://canto.canny.io/" target="_blank" rel="noreferrer">
           <Text type="text">report bug</Text>
         </a>
-        <a href="https://docs.canto.io/">
+        <a href="https://docs.canto.io/" target="_blank" rel="noreferrer">
           <Text type="text">docs</Text>
         </a>
-        <a href="https://docs.canto.io/">
+        <a href="https://canto.mirror.xyz/" target="_blank" rel="noreferrer">
           <Text type="text">about canto</Text>
         </a>
       </div>

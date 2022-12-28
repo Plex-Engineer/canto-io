@@ -16,7 +16,6 @@ import { formatUnits } from "ethers/lib/utils";
 import { BorrowingTable, SupplyTable } from "./components/LMTables";
 import { useToast } from "./hooks/useToasts";
 import { SpecialTabs } from "./components/SpecialTabs";
-import { OutlinedButton } from "global/packages/src";
 import FadeIn from "react-fade-in";
 import HelmetSEO from "global/components/seo";
 import { LMPositionBar } from "./components/LMPositionBar";
@@ -71,7 +70,7 @@ const LendingMarket = () => {
           rewardBalance={
             !rewards.accrued.isZero()
               ? truncateNumber(formatUnits(rewards.accrued))
-              : "000.000"
+              : "000.00"
           }
           borrowBalance={position.totalBorrow}
           borrowLimit={position.totalBorrowLimit}
