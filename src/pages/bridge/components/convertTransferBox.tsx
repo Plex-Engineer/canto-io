@@ -125,7 +125,6 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
               props.cantoToEVM
                 ? CantoTransactionType.CONVERT_TO_EVM
                 : CantoTransactionType.CONVERT_TO_COSMOS,
-              props.ETHAddress,
               { tokenName: props.activeToken.symbol, amount: props.amount }
             );
             setInConvertTransaction(true);

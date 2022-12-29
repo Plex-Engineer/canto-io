@@ -30,25 +30,19 @@ const actions = {
     transactions: {
       transactionStarted: (
         txType: CantoTransactionType,
-        account: string | undefined,
         info: object | undefined
       ) => {
         mixpanel.track("Transaction Started", {
-          distinct_id: account,
-          wallet: account,
           txType: txType,
           ...info,
         });
       },
       transactionSuccess: (
         txType: CantoTransactionType,
-        account: string | undefined,
         txHash: string | undefined,
         info: object | undefined
       ) => {
         mixpanel.track("Transaction Success", {
-          distinct_id: account,
-          wallet: account,
           txType: txType,
           txHash: txHash,
           ...info,
@@ -56,14 +50,11 @@ const actions = {
       },
       transactionFailed: (
         txType: CantoTransactionType,
-        account: string | undefined,
         txHash: string | undefined,
         errorReason: string,
         info: object | undefined
       ) => {
         mixpanel.track("Transaction Fail", {
-          distinct_id: account,
-          wallet: account,
           txType: txType,
           txHash: txHash,
           errorReason: errorReason,
@@ -72,17 +63,11 @@ const actions = {
       },
     },
     connections: {
-      walletConnect: (account: string | undefined, connected: boolean) => {
+      walletConnect: (connected: boolean) => {
         if (connected) {
-          mixpanel.track("Wallet Connected", {
-            distinct_id: account,
-            wallet: account,
-          });
+          mixpanel.track("Wallet Connected");
         } else {
-          mixpanel.track("Wallet Disconnected", {
-            distinct_id: account,
-            wallet: account,
-          });
+          mixpanel.track("Wallet Disconnected");
         }
       },
     },
@@ -94,74 +79,56 @@ const actions = {
       },
     },
     landingPageActions: {
-      navigatedTo: (pageName: string, account: string | undefined) => {
+      navigatedTo: (pageName: string) => {
         mixpanel.track("Landing Page Navigated To", {
-          distinct_id: account,
           pageName: pageName,
-          wallet: account,
         });
       },
     },
     lendingMarketActions: {
       modalInteraction: (
-        account: string,
         modalType: string,
         tokenName: string,
         opened: boolean
       ) => {
         if (opened) {
           mixpanel.track("Lending Modal Opened", {
-            distinct_id: account,
             tokenName: tokenName,
             modalType: modalType,
-            wallet: account,
           });
         } else {
           mixpanel.track("Lending Modal Closed", {
-            distinct_id: account,
             tokenName: tokenName,
             modalType: modalType,
-            wallet: account,
           });
         }
       },
     },
     lpInterfaceActions: {
       modalInteraction: (
-        account: string | undefined,
         modalType: string,
         tokenName: string,
         opened: boolean
       ) => {
         if (opened) {
           mixpanel.track("LP Interface Modal Opened", {
-            distinct_id: account,
             tokenName: tokenName,
             modalType: modalType,
-            wallet: account,
           });
         } else {
           mixpanel.track("LP Interface Modal Closed", {
-            distinct_id: account,
             tokenName: tokenName,
             modalType: modalType,
-            wallet: account,
           });
         }
       },
-      visitSlingshot: (account: string | undefined) => {
-        mixpanel.track("Visit Slingshot", {
-          distinct_id: account,
-          wallet: account,
-        });
+      visitSlingshot: () => {
+        mixpanel.track("Visit Slingshot");
       },
     },
     governanceActions: {
-      openedStakingPage: (account: string | undefined) => {
-        mixpanel.track("Visit Staking Page From Governance Page", {
-          distinct_id: account,
-          wallet: account,
-        });
+      openedStakingPage: () => {
+        mixpanel.track("Visit Staking Page From Governance Page");
       },
       proposalOpened: (proposalId: string | undefined) => {
         mixpanel.track("Proposal Opened", {
@@ -170,21 +137,13 @@ const actions = {
       },
     },
     stakingActions: {
-      modalInteraction: (
-        account: string | undefined,
-        validatorName: string,
-        opened: boolean
-      ) => {
+      modalInteraction: (validatorName: string, opened: boolean) => {
         if (opened) {
           mixpanel.track("Staking Modal Opened", {
-            distinct_id: account,
-            wallet: account,
             validatorName: validatorName,
           });
         } else {
           mixpanel.track("Staking Modal Closed", {
-            distinct_id: account,
-            wallet: account,
             validatorName: validatorName,
           });
         }

@@ -28,11 +28,7 @@ import { Text } from "global/packages/src";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
 import { Mixpanel } from "mixpanel";
 import { CantoTransactionType } from "global/config/transactionTypes";
-import {
-  BridgeInStatus,
-  useTransactionChecklistStore,
-} from "./stores/transactionChecklistStore";
-import { useBridgeTransactionStore } from "./stores/transactionStore";
+import { useTransactionChecklistStore } from "./stores/transactionChecklistStore";
 import {
   getConvertButtonText,
   getReactiveButtonText,
@@ -40,6 +36,7 @@ import {
 import { updateLastBridgeInTransactionStatus } from "./utils/checklistFunctions";
 import { BridgeChecklistBox } from "./components/BridgeChecklistBox";
 import { BridgeInChecklistFunctionTracker } from "./config/transactionChecklist";
+import { useBridgeTransactionStore } from "./stores/transactionStore";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];
@@ -154,14 +151,10 @@ const BridgeIn = ({
   };
 
   function mixpanelTrack(txType: CantoTransactionType) {
-    Mixpanel.events.transactions.transactionStarted(
-      txType,
-      networkInfo.account,
-      {
-        tokenName: selectedETHToken.symbol,
-        amount: amount,
-      }
-    );
+    Mixpanel.events.transactions.transactionStarted(txType, {
+      tokenName: selectedETHToken.symbol,
+      amount: amount,
+    });
   }
 
   function updateLastTransaction() {

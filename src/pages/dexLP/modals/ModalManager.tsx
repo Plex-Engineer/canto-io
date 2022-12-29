@@ -49,7 +49,6 @@ const ModalManager = (props: Props) => {
   useEffect(() => {
     if (modalType !== ModalType.NONE) {
       Mixpanel.events.lpInterfaceActions.modalInteraction(
-        props.account,
         modalType,
         activePair.basePairInfo.token1.symbol +
           " / " +
@@ -63,7 +62,6 @@ const ModalManager = (props: Props) => {
       open={modalType != ModalType.NONE}
       onClose={() => {
         Mixpanel.events.lpInterfaceActions.modalInteraction(
-          props.account,
           modalType,
           activePair.basePairInfo.token1.symbol +
             " / " +
