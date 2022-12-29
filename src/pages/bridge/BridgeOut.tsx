@@ -3,10 +3,8 @@ import { useEffect, useState } from "react";
 import { useBridgeStore } from "./stores/gravityStore";
 import { TokenWallet } from "./components/TokenSelect";
 import { useEthers } from "@usedapp/core";
-import { BigNumber } from "ethers";
 import { chain, ibcFee, memo } from "global/config/cosmosConstants";
 import { txIBCTransfer } from "./utils/IBC/IBCTransfer";
-import { toastBridge } from "./utils/bridgeConfirmations";
 import { ConvertTransferBox } from "./components/convertTransferBox";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
@@ -15,6 +13,7 @@ import SwitchBridging from "./components/SwitchBridging";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
 
 import {
+  BridgeTransactionType,
   EmptySelectedConvertToken,
   EmptySelectedNativeToken,
   UserConvertToken,
@@ -35,13 +34,12 @@ import { BridgeStyled } from "./BridgeIn";
 import { allBridgeOutNetworks } from "./config/gravityBridgeTokens";
 import { Mixpanel } from "mixpanel";
 import { CantoTransactionType } from "global/config/transactionTypes";
-import {
-  BridgeOutStatus,
-  useTransactionChecklistStore,
-} from "./stores/transactionChecklistStore";
+import { useTransactionChecklistStore } from "./stores/transactionChecklistStore";
 import { updateLastBridgeOutTransactionStatus } from "./utils/checklistFunctions";
 import { BridgeOutChecklistFunctionTracker } from "./config/transactionChecklist";
 import { BridgeChecklistBox } from "./components/BridgeChecklistBox";
+import useBridgeTxStore from "./stores/transactionStore";
+import { performBridgeCosmosTxAndSetStatus } from "./utils/bridgeCosmosTxUtils";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -52,6 +50,7 @@ const BridgeOut = ({
   userConvertERC20Tokens,
 }: BridgeOutProps) => {
   const networkInfo = useNetworkInfo();
+  const bridgeTxStore = useBridgeTxStore();
   const tokenStore = useTokenStore();
   const selectedBridgeOutNetwork =
     allBridgeOutNetworks[tokenStore.bridgeOutNetwork];
@@ -68,12 +67,6 @@ const BridgeOut = ({
 
   //BRIDGE OUT STATES
   const [userCosmosAddress, setUserCosmosAddress] = useState("");
-  //bridging to gravity bridge status
-  const [bridgeConfirmation, setBridgeConfirmation] =
-    useState("select a token");
-  const [inBridgeTransaction, setInBridgeTransaction] =
-    useState<boolean>(false);
-  const [prevBridgeBalance, setPrevBridgeBalance] = useState(BigNumber.from(0));
   const [amount, setAmount] = useState("");
 
   const [bridgeButtonText, bridgeDisabled] = getBridgeOutButtonText(
@@ -88,29 +81,6 @@ const BridgeOut = ({
     selectedConvertToken.erc20Balance,
     false
   );
-  //Useffect for calling data per block
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      //check if bridging
-      if (
-        inBridgeTransaction &&
-        !selectedNativeToken.nativeBalance.eq(prevBridgeBalance)
-      ) {
-        setBridgeConfirmation(
-          "you have successfully bridged " +
-            selectedNativeToken.symbol +
-            " from canto to gravity bridge"
-        );
-        setInBridgeTransaction(false);
-        toastBridge(true);
-        transactionChecklistStore.updateCurrentBridgeOutStatus(
-          BridgeOutStatus.COMPLETE,
-          undefined
-        );
-      }
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [userCantoNativeGTokens]);
 
   function updateLastBridgeOutChecklist() {
     const currentTx = transactionChecklistStore.getCurrentBridgeOutTx();
@@ -222,7 +192,6 @@ const BridgeOut = ({
                   value ?? EmptySelectedConvertToken,
                   SelectedTokens.CONVERTOUT
                 );
-                setInBridgeTransaction(false);
               }}
             />
           }
@@ -254,7 +223,6 @@ const BridgeOut = ({
                   value ?? EmptySelectedNativeToken,
                   SelectedTokens.BRIDGEOUT
                 );
-                setInBridgeTransaction(false);
               }}
             />
           }
@@ -301,31 +269,32 @@ const BridgeOut = ({
                     bridgeOutNetwork: selectedBridgeOutNetwork.name,
                   }
                 );
-                setInBridgeTransaction(true);
-                setBridgeConfirmation(
-                  "waiting for the metamask transaction to be signed..."
-                );
-                setPrevBridgeBalance(selectedNativeToken.nativeBalance);
-                await txIBCTransfer(
-                  userCosmosAddress,
-                  selectedBridgeOutNetwork.channel,
-                  convertStringToBigNumber(
-                    amount,
-                    selectedNativeToken.decimals
-                  ).toString(),
-                  selectedNativeToken.nativeName,
-                  CantoMainnet.cosmosAPIEndpoint,
-                  selectedBridgeOutNetwork.endpoint,
-                  ibcFee,
-                  chain,
-                  memo
-                );
-                setBridgeConfirmation(
-                  "waiting for the transaction to be verified..."
+                performBridgeCosmosTxAndSetStatus(
+                  async () =>
+                    await txIBCTransfer(
+                      userCosmosAddress,
+                      selectedBridgeOutNetwork.channel,
+                      convertStringToBigNumber(
+                        amount,
+                        selectedNativeToken.decimals
+                      ).toString(),
+                      selectedNativeToken.nativeName,
+                      CantoMainnet.cosmosAPIEndpoint,
+                      selectedBridgeOutNetwork.endpoint,
+                      ibcFee,
+                      chain,
+                      memo
+                    ),
+                  BridgeTransactionType.BRIDGE_OUT,
+                  bridgeTxStore.setTransactionStatus,
+                  selectedNativeToken.name,
+                  amount,
+                  "canto bridge",
+                  selectedBridgeOutNetwork.name
                 );
               }}
             >
-              {inBridgeTransaction ? bridgeConfirmation : bridgeButtonText}
+              {bridgeButtonText}
             </PrimaryButton>
           }
         />

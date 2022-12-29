@@ -1,16 +1,9 @@
 import { CantoMainnet } from "global/config/networks";
-import { BigNumber } from "ethers";
-import { useState } from "react";
 import {
   txConvertCoin,
   txConvertERC20,
 } from "../utils/convertCoin/convertTransactions";
-import { toastBridge } from "../utils/bridgeConfirmations";
-import {
-  EmptySelectedConvertToken,
-  EmptySelectedNativeToken,
-  UserConvertToken,
-} from "../config/interfaces";
+import { BridgeTransactionType, UserConvertToken } from "../config/interfaces";
 import { convertStringToBigNumber } from "../utils/stringToBigNumber";
 import { formatUnits } from "ethers/lib/utils";
 import { GeneralTransferBox } from "./generalTransferBox";
@@ -25,6 +18,9 @@ import {
   BridgeOutStatus,
   useTransactionChecklistStore,
 } from "../stores/transactionChecklistStore";
+import { performBridgeCosmosTxAndSetStatus } from "../utils/bridgeCosmosTxUtils";
+import useBridgeTxStore from "../stores/transactionStore";
+import { useEffect } from "react";
 
 interface ConvertTransferBoxProps {
   cantoToEVM: boolean;
@@ -41,18 +37,7 @@ interface ConvertTransferBoxProps {
 }
 export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
   const checklistStore = useTransactionChecklistStore();
-  //convert states to update the user
-  const [convertConfirmation, setConvertConfirmation] =
-    useState("select a token");
-  const [inConvertTransaction, setInConvertTransaction] =
-    useState<boolean>(false);
-  //used to check if convert coin ws successful
-  const [prevConvertBalance, setPrevConvertBalance] = useState(
-    BigNumber.from(0)
-  );
-  const [currentToken, setCurrentToken] = useState(
-    props.cantoToEVM ? EmptySelectedNativeToken : EmptySelectedConvertToken
-  );
+  const bridgeTxStore = useBridgeTxStore();
 
   const maxAmount = props.cantoToEVM
     ? props.activeToken.nativeBalance
@@ -72,25 +57,11 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
       );
     }
   }
-
-  if (inConvertTransaction) {
-    if (currentToken.address == props.activeToken.address) {
-      if (!props.activeToken.nativeBalance.eq(prevConvertBalance)) {
-        const msg = props.cantoToEVM
-          ? " from canto to evm"
-          : " from evm to canto";
-        setConvertConfirmation(
-          "you have successfully bridged " + props.activeToken.symbol + msg
-        );
-        setInConvertTransaction(false);
-        toastBridge(true);
-        updateChecklist();
-      }
-    } else {
-      setInConvertTransaction(false);
+  useEffect(() => {
+    if (bridgeTxStore.transactionStatus?.status === "Success") {
       updateChecklist();
     }
-  }
+  }, [bridgeTxStore.transactionStatus?.status]);
 
   return (
     <GeneralTransferBox
@@ -111,7 +82,6 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
       connected={CantoMainnet.chainId == props.chainId}
       onChange={(amount: string) => {
         props.onChange(amount);
-        setInConvertTransaction(false);
       }}
       max={formatUnits(maxAmount, props.activeToken.decimals)}
       amount={props.amount}
@@ -127,45 +97,45 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
                 : CantoTransactionType.CONVERT_TO_COSMOS,
               { tokenName: props.activeToken.symbol, amount: props.amount }
             );
-            setInConvertTransaction(true);
-            setConvertConfirmation(
-              "waiting for the metamask transaction to be signed..."
-            );
-            setPrevConvertBalance(props.activeToken.nativeBalance);
-            setCurrentToken(props.activeToken);
-            if (props.cantoToEVM) {
-              await txConvertCoin(
-                props.cantoAddress,
-                props.activeToken.nativeName,
-                convertStringToBigNumber(
-                  props.amount,
-                  props.activeToken.decimals
-                ).toString(),
-                CantoMainnet.cosmosAPIEndpoint,
-                convertFee,
-                chain,
-                memo
-              );
-            } else {
-              await txConvertERC20(
-                props.activeToken.address,
-                convertStringToBigNumber(
-                  props.amount,
-                  props.activeToken.decimals
-                ).toString(),
-                props.cantoAddress,
-                CantoMainnet.cosmosAPIEndpoint,
-                convertFee,
-                chain,
-                memo
-              );
-            }
-            setConvertConfirmation(
-              "waiting for the transaction to be verified..."
+            await performBridgeCosmosTxAndSetStatus(
+              async () =>
+                props.cantoToEVM
+                  ? await txConvertCoin(
+                      props.cantoAddress,
+                      props.activeToken.nativeName,
+                      convertStringToBigNumber(
+                        props.amount,
+                        props.activeToken.decimals
+                      ).toString(),
+                      CantoMainnet.cosmosAPIEndpoint,
+                      convertFee,
+                      chain,
+                      memo
+                    )
+                  : await txConvertERC20(
+                      props.activeToken.address,
+                      convertStringToBigNumber(
+                        props.amount,
+                        props.activeToken.decimals
+                      ).toString(),
+                      props.cantoAddress,
+                      CantoMainnet.cosmosAPIEndpoint,
+                      convertFee,
+                      chain,
+                      memo
+                    ),
+              props.cantoToEVM
+                ? BridgeTransactionType.CONVERT_IN
+                : BridgeTransactionType.CONVERT_OUT,
+              bridgeTxStore.setTransactionStatus,
+              props.activeToken.name,
+              props.amount,
+              props.cantoToEVM ? "canto bridge" : "canto EVM",
+              props.cantoToEVM ? "canto EVM" : "canto bridge"
             );
           }}
         >
-          {inConvertTransaction ? convertConfirmation : props.convertButtonText}
+          {props.convertButtonText}
         </PrimaryButton>
       }
     />

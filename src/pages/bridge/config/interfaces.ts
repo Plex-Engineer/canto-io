@@ -2,6 +2,13 @@ import { BigNumber } from "ethers";
 import emptyToken from "assets/empty.svg";
 import { Token } from "global/config/tokenInfo";
 
+export enum BridgeTransactionType {
+  NONE = "NONE",
+  BRIDGE_IN = "BRIDGE_IN",
+  BRIDGE_OUT = "BRIDGE_OUT",
+  CONVERT_IN = "CONVERT_IN",
+  CONVERT_OUT = "CONVERT_OUT",
+}
 export interface BaseToken extends Token {
   [x: string | number | symbol]: unknown;
 }

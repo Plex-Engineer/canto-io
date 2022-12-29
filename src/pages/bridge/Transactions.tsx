@@ -5,12 +5,12 @@ import NotConnected from "global/packages/src/components/molecules/NotConnected"
 import { useEffect } from "react";
 import TransactionBox from "./components/TransactionBox";
 import warningIcon from "assets/warning.svg";
-import { findGravityToken } from "./utils/utils";
-import { useBridgeTransactionStore } from "./stores/transactionStore";
+import { findGravityToken } from "./utils/bridgeTxPageUtils";
+import { useBridgeTransactionPageStore } from "./stores/transactionPageStore";
 import { Mixpanel } from "mixpanel";
 
 const Transactions = () => {
-  const transactionStore = useBridgeTransactionStore();
+  const transactionStore = useBridgeTransactionPageStore();
   const pendingBridgeTransactions =
     transactionStore.transactions.pendingBridgeTransactions;
   const completedBridgeTransactions =

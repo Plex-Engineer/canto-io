@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import loadingIcon from "assets/loading.gif";
 import bridgeInIcon from "assets/bridge-in.svg";
 import bridgeOutIcon from "assets/bridge-out.svg";
-import { convertSecondsToString } from "../utils/utils";
+import { convertSecondsToString } from "../utils/bridgeTxPageUtils";
 import { Mixpanel } from "mixpanel";
 
 interface Props {
