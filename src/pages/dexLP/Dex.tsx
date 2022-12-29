@@ -23,12 +23,15 @@ import HelmetSEO from "global/components/seo";
 import { sortColumnsByType } from "pages/lending/components/LMTables";
 import { Mixpanel } from "mixpanel";
 import { toastHandler } from "global/utils/toastHandler";
+
+type NotificationShow = Notification & { show: boolean };
+
 const Dex = () => {
   //get network info from store
   const networkInfo = useNetworkInfo();
 
   const { notifications } = useNotifications();
-  const [notifs, setNotifs] = useState<Notification[]>([]);
+  const [notifs, setNotifs] = useState<NotificationShow[]>([]);
 
   const [setModalType, setActivePair] = useModals((state) => [
     state.setModalType,
@@ -40,28 +43,30 @@ const Dex = () => {
     networkInfo.account,
     Number(networkInfo.chainId)
   );
-
   useEffect(() => {
-    notifications.forEach((item) => {
+    let currentNotifs = notifs;
+    for (const notification of notifications) {
       if (
-        item.type == "transactionStarted" &&
-        !notifs.find((it) => it.id == item.id)
+        notification.type == "transactionStarted" &&
+        !currentNotifs.find((it) => it.id == notification.id)
       ) {
-        setNotifs([...notifs, item]);
-      }
-      if (
-        item.type == "transactionSucceed" ||
-        item.type == "transactionFailed"
+        currentNotifs.push({ ...notification, show: true });
+      } else if (
+        notification.type == "transactionSucceed" ||
+        notification.type == "transactionFailed"
       ) {
-        setNotifs(
-          notifs.filter((localItem) => {
-            if (localItem.type == "transactionStarted")
-              return localItem.transaction.hash != item.transaction.hash;
-            return true;
-          })
-        );
+        currentNotifs = currentNotifs.map((localItem) => {
+          if (
+            localItem.type == "transactionStarted" &&
+            localItem.transaction.hash == notification.transaction.hash
+          ) {
+            return { ...localItem, show: false };
+          }
+          return localItem;
+        });
       }
-    });
+      setNotifs(currentNotifs);
+    }
 
     notifications.map((noti) => {
       if (
@@ -127,8 +132,10 @@ const Dex = () => {
         </div>
 
         {/* Transactions table will be shown here */}
-        {notifs.filter((filterItem) => filterItem.type == "transactionStarted")
-          .length > 0 ? (
+        {notifs.filter(
+          (filterItem) =>
+            filterItem.type == "transactionStarted" && filterItem.show
+        ).length > 0 ? (
           <div>
             <p className="tableName">ongoing transaction</p>
             <Table columns={["name", "transaction", "time"]}>
@@ -136,7 +143,8 @@ const Dex = () => {
                 if (
                   //@ts-ignore
                   item?.transactionName?.includes("type") &&
-                  item.type == "transactionStarted"
+                  item.type == "transactionStarted" &&
+                  item.show
                 ) {
                   //@ts-ignore
                   const msg: Details = JSON.parse(item?.transactionName);
