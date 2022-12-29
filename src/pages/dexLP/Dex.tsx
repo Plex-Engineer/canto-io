@@ -110,9 +110,7 @@ const Dex = () => {
             to swap tokens, visit{" "}
             <a
               onClick={() =>
-                Mixpanel.events.lpInterfaceActions.visitSlingshot(
-                  networkInfo.account
-                )
+                Mixpanel.events.lpInterfaceActions.visitSlingshot()
               }
               style={{
                 color: "#a2fca3",

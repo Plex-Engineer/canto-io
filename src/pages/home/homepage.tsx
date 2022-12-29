@@ -2,14 +2,11 @@ import styled from "@emotion/styled";
 import HelmetSEO from "global/components/seo";
 import { pageList } from "global/config/pageList";
 import { Text } from "global/packages/src";
-import { useNetworkInfo } from "global/stores/networkInfo";
 import { Mixpanel } from "mixpanel";
 import { NavLink } from "react-router-dom";
 import bg from "assets/bg.jpg";
 
 const Homepage = () => {
-  const account = useNetworkInfo().account;
-
   return (
     <>
       <HelmetSEO
@@ -26,10 +23,7 @@ const Homepage = () => {
                 key={page.name}
                 id={page.name}
                 onClick={() =>
-                  Mixpanel.events.landingPageActions.navigatedTo(
-                    page.name,
-                    account
-                  )
+                  Mixpanel.events.landingPageActions.navigatedTo(page.name)
                 }
               >
                 <Text type="title" size="title1" align="left">

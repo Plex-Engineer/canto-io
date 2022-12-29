@@ -57,10 +57,7 @@ const LandingPage = () => {
                   key={page.name}
                   id={page.name}
                   onClick={() =>
-                    Mixpanel.events.landingPageActions.navigatedTo(
-                      page.name,
-                      account
-                    )
+                    Mixpanel.events.landingPageActions.navigatedTo(page.name)
                   }
                 >
                   <a>{"[" + idx + "] " + page.name}</a>
