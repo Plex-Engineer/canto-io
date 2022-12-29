@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useNotifications, Notification } from "@usedapp/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LendingTable from "./components/table";
 import { TransactionRow } from "./components/lendingRow";
 import { ModalType, ModalManager } from "./modals/modalManager";
@@ -14,19 +13,18 @@ import { LMTokenDetails } from "./config/interfaces";
 import { useUserLMTokenData } from "./hooks/useUserLMTokenData";
 import { formatUnits } from "ethers/lib/utils";
 import { BorrowingTable, SupplyTable } from "./components/LMTables";
-import { useToast } from "./hooks/useToasts";
 import { SpecialTabs } from "./components/SpecialTabs";
 import FadeIn from "react-fade-in";
 import HelmetSEO from "global/components/seo";
 import { LMPositionBar } from "./components/LMPositionBar";
+import { useOngoingTransactions } from "global/utils/handleOnGoingTransactions";
 const LendingMarket = () => {
   const networkInfo = useNetworkInfo();
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);
+  useOngoingTransactions(notifications, notifs, setNotifs);
   const modalStore = useModalStore();
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 1000);
-
-  useToast(setIsMobile, notifications, notifs, setNotifs);
 
   const lmTokenData: LMTokenDetails[] = useLMTokenData(networkInfo.chainId);
   const { userLMTokens, position, rewards } = useUserLMTokenData(
@@ -36,6 +34,15 @@ const LendingMarket = () => {
   );
 
   const [onLeftTab, setOnLeftTab] = useState(true);
+  function handleWindowSizeChange() {
+    setIsMobile(window.innerWidth <= 1000);
+  }
+  useEffect(() => {
+    window.addEventListener("resize", handleWindowSizeChange);
+    return () => {
+      window.removeEventListener("resize", handleWindowSizeChange);
+    };
+  }, []);
 
   return (
     <>

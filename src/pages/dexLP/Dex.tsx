@@ -1,6 +1,6 @@
 import Table from "./components/table";
 import Row, { TransactionRow } from "./components/row";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Notification, useNotifications } from "@usedapp/core";
 import useModals, { ModalType } from "./hooks/useModals";
 import { ModalManager } from "./modals/ModalManager";
@@ -22,16 +22,15 @@ import { Details } from "pages/lending/hooks/useTransaction";
 import HelmetSEO from "global/components/seo";
 import { sortColumnsByType } from "pages/lending/components/LMTables";
 import { Mixpanel } from "mixpanel";
-import { toastHandler } from "global/utils/toastHandler";
-
-type NotificationShow = Notification & { show: boolean };
+import { useOngoingTransactions } from "global/utils/handleOnGoingTransactions";
 
 const Dex = () => {
   //get network info from store
   const networkInfo = useNetworkInfo();
 
   const { notifications } = useNotifications();
-  const [notifs, setNotifs] = useState<NotificationShow[]>([]);
+  const [notifs, setNotifs] = useState<Notification[]>([]);
+  useOngoingTransactions(notifications, notifs, setNotifs);
 
   const [setModalType, setActivePair] = useModals((state) => [
     state.setModalType,
@@ -43,47 +42,6 @@ const Dex = () => {
     networkInfo.account,
     Number(networkInfo.chainId)
   );
-  useEffect(() => {
-    let currentNotifs = notifs;
-    for (const notification of notifications) {
-      if (
-        notification.type == "transactionStarted" &&
-        !currentNotifs.find((it) => it.id == notification.id)
-      ) {
-        currentNotifs.push({ ...notification, show: true });
-      } else if (
-        notification.type == "transactionSucceed" ||
-        notification.type == "transactionFailed"
-      ) {
-        currentNotifs = currentNotifs.map((localItem) => {
-          if (
-            localItem.type == "transactionStarted" &&
-            localItem.transaction.hash == notification.transaction.hash
-          ) {
-            return { ...localItem, show: false };
-          }
-          return localItem;
-        });
-      }
-      setNotifs(currentNotifs);
-    }
-
-    notifications.map((noti) => {
-      if (
-        //@ts-ignore
-        (noti?.transactionName?.includes("type") &&
-          noti.type == "transactionSucceed") ||
-        noti.type == "transactionFailed"
-      ) {
-        const isSuccesful = noti.type != "transactionFailed";
-        //@ts-ignore
-        const msg: Details = JSON.parse(noti?.transactionName);
-        const actionMsg = transactionStatusActions(msg.type).postAction;
-        const msged = `${isSuccesful ? "" : "un"}successfully ${actionMsg}`;
-        toastHandler(msged, isSuccesful, noti.id);
-      }
-    });
-  }, [notifications]);
 
   const [currentPoolsColumnClicked, setCurrentPoolsColumnClicked] = useState(0);
   const [availablePoolsColumnClicked, setAvailablePoolsColumnCLicked] =
@@ -132,10 +90,8 @@ const Dex = () => {
         </div>
 
         {/* Transactions table will be shown here */}
-        {notifs.filter(
-          (filterItem) =>
-            filterItem.type == "transactionStarted" && filterItem.show
-        ).length > 0 ? (
+        {notifs.filter((filterItem) => filterItem.type == "transactionStarted")
+          .length > 0 ? (
           <div>
             <p className="tableName">ongoing transaction</p>
             <Table columns={["name", "transaction", "time"]}>
@@ -143,8 +99,7 @@ const Dex = () => {
                 if (
                   //@ts-ignore
                   item?.transactionName?.includes("type") &&
-                  item.type == "transactionStarted" &&
-                  item.show
+                  item.type == "transactionStarted"
                 ) {
                   //@ts-ignore
                   const msg: Details = JSON.parse(item?.transactionName);
