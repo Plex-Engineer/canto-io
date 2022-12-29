@@ -5,7 +5,8 @@ import { truncateNumber } from "global/utils/utils";
 import React from "react";
 import { StakingTransactionType } from "../config/interfaces";
 import { TransactionStatus } from "../stores/transactionStore";
-import { userTxMessages } from "../config/messages";
+import { userTxMessages } from "global/config/transactionTypes";
+import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/checkCosmosConfirmation";
 
 interface Error {
   code: number;
@@ -66,44 +67,28 @@ export async function getActiveTransactionMessage(
   newValidatorName?: string
 ): Promise<React.ReactNode> {
   if (transactionType != StakingTransactionType.NONE) {
-    const fetchOptions = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    let numberOfBlocksChecked = 0;
-    while (numberOfBlocksChecked < 5) {
-      const tx = await (
-        await fetch(
-          CantoMainnet.cosmosAPIEndpoint + "/cosmos/tx/v1beta1/txs/" + txHash,
-          fetchOptions
-        )
-      ).json();
-      if (tx.tx_response) {
-        if (
-          transactionType === StakingTransactionType.DELEGATE ||
-          transactionType === StakingTransactionType.CLAIM_REWARDS
-        ) {
-          return `you have successfully ${
-            transactionType == StakingTransactionType.DELEGATE
-              ? "delegated"
-              : "claimed"
-          } ${truncateNumber(formatEther(amount))} CANTO ${
-            validatorName ? `to ${validatorName}` : "in rewards"
-          }`;
-        } else if (transactionType === StakingTransactionType.UNDELEGATE) {
-          return `you have successfully undelegated ${truncateNumber(
-            formatEther(amount)
-          )} CANTO from ${validatorName}`;
-        } else if (transactionType === StakingTransactionType.REDELEGATE) {
-          return `you have successfully redelegated ${truncateNumber(
-            formatEther(amount)
-          )} CANTO from ${validatorName} to ${newValidatorName}`;
-        }
+    const txSuccess = await checkCosmosTxConfirmation(txHash);
+    if (txSuccess) {
+      if (
+        transactionType === StakingTransactionType.DELEGATE ||
+        transactionType === StakingTransactionType.CLAIM_REWARDS
+      ) {
+        return `you have successfully ${
+          transactionType == StakingTransactionType.DELEGATE
+            ? "delegated"
+            : "claimed"
+        } ${truncateNumber(formatEther(amount))} CANTO ${
+          validatorName ? `to ${validatorName}` : "in rewards"
+        }`;
+      } else if (transactionType === StakingTransactionType.UNDELEGATE) {
+        return `you have successfully undelegated ${truncateNumber(
+          formatEther(amount)
+        )} CANTO from ${validatorName}`;
+      } else if (transactionType === StakingTransactionType.REDELEGATE) {
+        return `you have successfully redelegated ${truncateNumber(
+          formatEther(amount)
+        )} CANTO from ${validatorName} to ${newValidatorName}`;
       }
-      numberOfBlocksChecked++;
-      await sleep(4000);
     }
     //since we have checked multiple blocks, the transaction must have failed
     const transactionName = getTransactionName(transactionType);
@@ -126,9 +111,6 @@ export async function getActiveTransactionMessage(
   return "";
 }
 
-export async function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 function getTransactionName(transactionType: StakingTransactionType) {
   switch (transactionType) {
     case StakingTransactionType.DELEGATE:
