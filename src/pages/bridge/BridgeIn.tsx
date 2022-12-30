@@ -37,7 +37,7 @@ import {
 import { updateLastBridgeInTransactionStatus } from "./utils/checklistFunctions";
 import { BridgeChecklistBox } from "./components/BridgeChecklistBox";
 import { BridgeInChecklistFunctionTracker } from "./config/transactionChecklist";
-import { useBridgeTransactionStore } from "./stores/transactionStore";
+import useBridgeTxStore from "./stores/transactionStore";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];
@@ -56,6 +56,7 @@ const BridgeIn = ({
   const selectedConvertToken =
     tokenStore.selectedTokens[SelectedTokens.CONVERTIN];
   const bridgeStore = useBridgeStore();
+  const bridgeTxStore = useBridgeTxStore();
 
   //store for transactionchecklist
   const transactionChecklistStore = useTransactionChecklistStore();
@@ -89,6 +90,12 @@ const BridgeIn = ({
     true
   );
 
+  //reset the status of the tx when the loading modal is closed to keep the reactive button from being stuck
+  useEffect(() => {
+    if (!bridgeTxStore.transactionStatus) {
+      resetCosmos();
+    }
+  }, [bridgeTxStore.transactionStatus?.status]);
   //event tracker
   useEffect(() => {
     bridgeStore.setApproveStatus(stateApprove.status);

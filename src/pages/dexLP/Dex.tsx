@@ -1,6 +1,6 @@
 import Table from "./components/table";
 import Row, { TransactionRow } from "./components/row";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Notification, useNotifications } from "@usedapp/core";
 import useModals, { ModalType } from "./hooks/useModals";
 import { ModalManager } from "./modals/ModalManager";
@@ -22,13 +22,15 @@ import { Details } from "pages/lending/hooks/useTransaction";
 import HelmetSEO from "global/components/seo";
 import { sortColumnsByType } from "pages/lending/components/LMTables";
 import { Mixpanel } from "mixpanel";
-import { toastHandler } from "global/utils/toastHandler";
+import { useOngoingTransactions } from "global/utils/handleOnGoingTransactions";
+
 const Dex = () => {
   //get network info from store
   const networkInfo = useNetworkInfo();
 
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);
+  useOngoingTransactions(notifications, notifs, setNotifs);
 
   const [setModalType, setActivePair] = useModals((state) => [
     state.setModalType,
@@ -40,45 +42,6 @@ const Dex = () => {
     networkInfo.account,
     Number(networkInfo.chainId)
   );
-
-  useEffect(() => {
-    notifications.forEach((item) => {
-      if (
-        item.type == "transactionStarted" &&
-        !notifs.find((it) => it.id == item.id)
-      ) {
-        setNotifs([...notifs, item]);
-      }
-      if (
-        item.type == "transactionSucceed" ||
-        item.type == "transactionFailed"
-      ) {
-        setNotifs(
-          notifs.filter((localItem) => {
-            if (localItem.type == "transactionStarted")
-              return localItem.transaction.hash != item.transaction.hash;
-            return true;
-          })
-        );
-      }
-    });
-
-    notifications.map((noti) => {
-      if (
-        //@ts-ignore
-        (noti?.transactionName?.includes("type") &&
-          noti.type == "transactionSucceed") ||
-        noti.type == "transactionFailed"
-      ) {
-        const isSuccesful = noti.type != "transactionFailed";
-        //@ts-ignore
-        const msg: Details = JSON.parse(noti?.transactionName);
-        const actionMsg = transactionStatusActions(msg.type).postAction;
-        const msged = `${isSuccesful ? "" : "un"}successfully ${actionMsg}`;
-        toastHandler(msged, isSuccesful, noti.id);
-      }
-    });
-  }, [notifications]);
 
   const [currentPoolsColumnClicked, setCurrentPoolsColumnClicked] = useState(0);
   const [availablePoolsColumnClicked, setAvailablePoolsColumnCLicked] =
