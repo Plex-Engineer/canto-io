@@ -46,6 +46,7 @@ const Dex = () => {
   const [currentPoolsColumnClicked, setCurrentPoolsColumnClicked] = useState(0);
   const [availablePoolsColumnClicked, setAvailablePoolsColumnCLicked] =
     useState(0);
+
   return (
     <>
       <HelmetSEO
