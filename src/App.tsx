@@ -11,6 +11,7 @@ import { PAGES } from "global/config/pageList";
 import Loading from "global/components/Loading";
 import PageNotFound from "global/components/pageNotFound";
 import { WalkthroughHomeScreen } from "pages/bridge/walkthrough-dummy/dummySteps/walkthroughHome";
+import IntroPage from "pages/bridge/walkthrough-dummy/pages/intro";
 
 //Styling
 const Container = styled.div`
@@ -52,7 +53,7 @@ function App() {
                 <Route
                   path="/bridge/walkthrough"
                   key={"walkthrough"}
-                  element={<WalkthroughHomeScreen />}
+                  element={<IntroPage />}
                 />
                 <Route
                   path={PAGES.bridge.link}
