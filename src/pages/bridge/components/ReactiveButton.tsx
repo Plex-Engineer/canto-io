@@ -3,6 +3,8 @@ import loading from "assets/loading.svg";
 import { PrimaryButton } from "global/packages/src";
 import styled from "@emotion/styled";
 import { TransactionState } from "global/config/transactionTypes";
+import useBridgeTxStore from "../stores/transactionStore";
+import { BridgeTransactionType } from "../config/interfaces";
 
 interface RBProps {
   account: string | undefined;
@@ -21,13 +23,17 @@ export const ReactiveButton = ({
   buttonDisabled,
   buttonText,
 }: RBProps) => {
+  const bridgeTxStore = useBridgeTxStore();
+
   useEffect(() => {
-    if (approveStatus == "Success") {
-      setTimeout(() => {
-        // resetApprove();
-      }, 1000);
+    if (approveStatus != "None" || cosmosStatus != "None") {
+      bridgeTxStore.setTransactionStatus({
+        status: approveStatus != "None" ? approveStatus : cosmosStatus,
+        message: buttonText,
+        type: BridgeTransactionType.BRIDGE_IN,
+      });
     }
-  }, [approveStatus]);
+  }, [approveStatus, cosmosStatus]);
 
   return (
     <Styled

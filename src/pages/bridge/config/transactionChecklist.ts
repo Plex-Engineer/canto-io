@@ -4,7 +4,7 @@ import {
   BridgeInStatus,
   BridgeOutStatus,
 } from "../stores/transactionChecklistStore";
-import { EventWithTime } from "../utils/utils";
+import { EventWithTime } from "../utils/bridgeTxPageUtils";
 
 const selectTokenString = "select token and amount";
 export interface ChecklistTracker {

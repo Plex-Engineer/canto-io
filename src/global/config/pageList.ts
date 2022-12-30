@@ -8,18 +8,22 @@ export const PAGES = {
     link: "/",
     pageTitle: "home",
     networks: [CantoMainnet.chainId, CantoTestnet.chainId, 1],
+    showInMenu: false,
+    walletNotRequired: false,
   },
   bridge: {
     name: "bridge",
     link: "/bridge",
     pageTitle: "bridge",
     networks: [CantoMainnet.chainId, CantoTestnet.chainId, 1],
+    showInMenu: true,
   },
   governance: {
     name: "governance",
     link: "/governance",
     pageTitle: "governance",
     networks: [CantoMainnet.chainId, CantoTestnet.chainId],
+    showInMenu: true,
     subpages: {
       proposal: {
         name: "proposal",
@@ -29,6 +33,7 @@ export const PAGES = {
           return "proposal #" + link.split("/")[3];
         },
         networks: [CantoMainnet.chainId, CantoTestnet.chainId],
+        showInMenu: false,
       },
     },
   },
@@ -37,12 +42,14 @@ export const PAGES = {
     link: "/lending",
     pageTitle: "lending",
     networks: [CantoMainnet.chainId, CantoTestnet.chainId],
+    showInMenu: true,
     subpages: {
       balanceSheet: {
         name: "balance sheet",
         link: "/lending/balanceSheet",
         pageTitle: "balance sheet",
         networks: [CantoMainnet.chainId, CantoTestnet.chainId],
+        showInMenu: true,
       },
     },
   },
@@ -51,12 +58,22 @@ export const PAGES = {
     link: "/lp",
     pageTitle: "lp interface",
     networks: [CantoMainnet.chainId, CantoTestnet.chainId],
+    showInMenu: true,
+  },
+  changelog: {
+    name: "change log",
+    link: "/changelog",
+    pageTitle: "change log",
+    networks: [CantoMainnet.chainId, CantoTestnet.chainId, 0],
+    showInMenu: false,
+    walletNotRequired: true,
   },
   staking: {
     name: "staking",
     link: "/staking",
     pageTitle: "staking",
     networks: [CantoMainnet.chainId, CantoTestnet.chainId],
+    showInMenu: true,
     balanceLimits: [
       {
         minBalance: parseUnits("3.5", 18),
@@ -73,8 +90,10 @@ export interface PageObject {
   pageTitle: string;
   pageTitleFunction?: (link: string) => string;
   networks: number[];
+  showInMenu: boolean;
   balanceLimits?: BalanceLimits[];
   subpages?: PageObject[];
+  walletNotRequired?: boolean;
 }
 interface BalanceLimits {
   minBalance: BigNumber;
@@ -88,12 +107,14 @@ export const pageList: PageObject[] = [
     link: PAGES.bridge.link,
     pageTitle: PAGES.bridge.pageTitle,
     networks: PAGES.bridge.networks,
+    showInMenu: PAGES.bridge.showInMenu,
   },
   {
     name: PAGES.staking.name,
     link: PAGES.staking.link,
     pageTitle: PAGES.staking.pageTitle,
     networks: PAGES.staking.networks,
+    showInMenu: PAGES.staking.showInMenu,
     balanceLimits: PAGES.staking.balanceLimits,
   },
   {
@@ -101,12 +122,14 @@ export const pageList: PageObject[] = [
     link: PAGES.lp.link,
     pageTitle: PAGES.lp.pageTitle,
     networks: PAGES.lp.networks,
+    showInMenu: PAGES.lp.showInMenu,
   },
   {
     name: PAGES.lending.name,
     link: PAGES.lending.link,
     pageTitle: PAGES.lending.pageTitle,
     networks: PAGES.lending.networks,
+    showInMenu: PAGES.lending.showInMenu,
     subpages: [PAGES.lending.subpages.balanceSheet],
   },
   {
@@ -114,6 +137,23 @@ export const pageList: PageObject[] = [
     link: PAGES.governance.link,
     pageTitle: PAGES.governance.pageTitle,
     networks: PAGES.governance.networks,
+    showInMenu: PAGES.governance.showInMenu,
     subpages: [PAGES.governance.subpages.proposal],
+  },
+  {
+    name: PAGES.changelog.name,
+    link: PAGES.changelog.link,
+    pageTitle: PAGES.changelog.pageTitle,
+    networks: PAGES.changelog.networks,
+    showInMenu: PAGES.changelog.showInMenu,
+    walletNotRequired: PAGES.changelog.walletNotRequired,
+  },
+  {
+    name: PAGES.landing_page.name,
+    link: PAGES.landing_page.link,
+    pageTitle: "",
+    networks: PAGES.landing_page.networks,
+    showInMenu: false,
+    walletNotRequired: PAGES.landing_page.walletNotRequired,
   },
 ];

@@ -1,5 +1,4 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import { Page } from "./Navbar";
 import menuImg from "assets/icons/menu.svg";
 import closeImg from "assets/icons/close.svg";
 import ImageButton from "global/components/ImageButton";
@@ -11,9 +10,10 @@ import { OutlinedButton } from "../atoms/Button";
 import { addCantoToKeplr } from "../../utils/walletFunctionality";
 import useGlobalModals, { ModalType } from "../../stores/useModals";
 import { Text } from "../atoms/Text";
+import { PageObject } from "global/config/pageList";
 interface BurgerMenuProps {
   chainId: number;
-  pageList?: Page[];
+  pageList?: PageObject[];
   currentPage?: string;
 }
 
@@ -72,7 +72,7 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
             }}
           >
             {pageList?.map((page, idx) => {
-              return (
+              return page.showInMenu ? (
                 <Navlink
                   id={page.name}
                   className={`menu-item ${
@@ -90,7 +90,7 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
                     {"0" + (idx + 1) + " " + page.name}
                   </Text>
                 </Navlink>
-              );
+              ) : null;
             })}
           </div>
         </div>
