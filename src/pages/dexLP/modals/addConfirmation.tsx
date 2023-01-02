@@ -11,6 +11,7 @@ import {
 } from "../hooks/useTransactions";
 import { truncateNumber } from "global/utils/utils";
 import {
+  calculateExpectedShareIfSupplying,
   calculateExpectedShareofLP,
   checkForCantoInPair,
   getCurrentBlockTimestamp,
@@ -322,9 +323,9 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
           type="share of pool : "
           value={
             truncateNumber(
-              calculateExpectedShareofLP(
+              calculateExpectedShareIfSupplying(
+                props.pair.userSupply.percentOwned,
                 props.expectedLP,
-                props.pair.userSupply.totalLP,
                 props.pair.totalSupply.totalLP
               ).toString()
             ) + "%"
