@@ -14,7 +14,6 @@ import {
 import { ReactNode, useEffect, useState } from "react";
 import close from "assets/close.svg";
 import { Mixpanel } from "mixpanel";
-import { useNetworkInfo } from "global/stores/networkInfo";
 
 interface GlobalLoadingProps {
   transactionType: CantoTransactionType;
@@ -30,7 +29,6 @@ interface GlobalLoadingProps {
 const GlobalLoadingModal = (props: GlobalLoadingProps) => {
   const [txLogged, setTxLogged] = useState(false);
   const [txConfirmed, setTxConfirmed] = useState(false);
-  const account = useNetworkInfo().account;
   const actionObj = transactionStatusActions(
     props.transactionType,
     props.tokenName
@@ -46,7 +44,6 @@ const GlobalLoadingModal = (props: GlobalLoadingProps) => {
       setTxLogged(true);
       Mixpanel.events.transactions.transactionStarted(
         props.transactionType,
-        account,
         props.mixPanelEventInfo
       );
     }
@@ -54,7 +51,6 @@ const GlobalLoadingModal = (props: GlobalLoadingProps) => {
       setTxConfirmed(true);
       Mixpanel.events.transactions.transactionSuccess(
         props.transactionType,
-        account,
         props.txHash,
         props.mixPanelEventInfo
       );
@@ -66,7 +62,6 @@ const GlobalLoadingModal = (props: GlobalLoadingProps) => {
       setTxConfirmed(true);
       Mixpanel.events.transactions.transactionFailed(
         props.transactionType,
-        account,
         props.txHash,
         currentStatus,
         props.mixPanelEventInfo

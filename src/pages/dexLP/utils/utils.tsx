@@ -1,6 +1,6 @@
 import { CantoMainnet, CantoTestnet } from "global/config/networks";
 import { BigNumber, ethers } from "ethers";
-import { formatUnits } from "ethers/lib/utils";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { PAIR } from "../config/pairs";
 import { TOKENS } from "global/config/tokenInfo";
 
@@ -69,6 +69,20 @@ export function calculateExpectedShareofLP(
         .mul(BigNumber.from(10).pow(18))
         .div(totalLP.add(expectedLPOut))
     )
+  );
+}
+
+export function calculateExpectedShareIfSupplying(
+  currentShare: number,
+  expectedLPOut: BigNumber,
+  totalLP: BigNumber
+) {
+  return formatUnits(
+    totalLP
+      .mul(parseUnits(currentShare.toString()))
+      .add(expectedLPOut.mul(BigNumber.from(10).pow(18)))
+      .div(totalLP.add(expectedLPOut))
+      .mul(100)
   );
 }
 

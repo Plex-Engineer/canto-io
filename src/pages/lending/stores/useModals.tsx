@@ -28,7 +28,6 @@ const useModalStore = create<ModalState>((set, get) => ({
     set({ currentModal: modal });
     const activeToken = get().activeToken;
     Mixpanel.events.lendingMarketActions.modalInteraction(
-      activeToken.wallet ?? "",
       modal,
       activeToken.data.symbol,
       true
@@ -37,7 +36,6 @@ const useModalStore = create<ModalState>((set, get) => ({
   close: () => {
     const activeToken = get().activeToken;
     Mixpanel.events.lendingMarketActions.modalInteraction(
-      activeToken.wallet ?? "",
       get().currentModal,
       activeToken.data.symbol,
       false

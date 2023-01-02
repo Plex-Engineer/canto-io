@@ -23,7 +23,6 @@ export const ModalManager = (props: ModalManagerProps) => {
   useEffect(() => {
     if (validatorModals.currentModal != ValidatorModalType.NONE) {
       Mixpanel.events.stakingActions.modalInteraction(
-        networkInfo.account,
         validatorModals.activeValidator.validator.description.moniker,
         true
       );
@@ -38,7 +37,6 @@ export const ModalManager = (props: ModalManagerProps) => {
           transactionStore.setTransactionStatus(undefined)
         );
         Mixpanel.events.stakingActions.modalInteraction(
-          networkInfo.account,
           validatorModals.activeValidator.validator.description.moniker,
           false
         );

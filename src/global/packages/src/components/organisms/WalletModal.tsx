@@ -87,7 +87,7 @@ const WalletModal = () => {
       <OutlinedButton
         height="small"
         onClick={() => {
-          Mixpanel.events.connections.walletConnect(account, false);
+          Mixpanel.events.connections.walletConnect(false);
           deactivate();
           window.location.reload();
         }}

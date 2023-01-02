@@ -73,7 +73,7 @@ const ConnectWallet = ({ balance, currency, onClick }: Props) => {
       ) : (
         <OutlinedButton
           onClick={() => {
-            Mixpanel.events.connections.walletConnect(undefined, true);
+            Mixpanel.events.connections.walletConnect(true);
             onClick();
           }}
           style={{

@@ -263,7 +263,6 @@ const BridgeOut = ({
               onClick={async () => {
                 Mixpanel.events.transactions.transactionStarted(
                   CantoTransactionType.BRIDGE_OUT,
-                  networkInfo.account,
                   {
                     tokenName: selectedNativeToken.symbol,
                     amount: amount,
