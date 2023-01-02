@@ -9,7 +9,7 @@ import {
   BridgeOutStatus,
   BridgeOutTransactionChecklistStatus,
 } from "../stores/transactionChecklistStore";
-import { EventWithTime } from "./utils";
+import { EventWithTime } from "./bridgeTxPageUtils";
 
 function getLastCheckpoint(tracker: ChecklistTracker, currentStep: number) {
   let lastCheckpoint = currentStep;

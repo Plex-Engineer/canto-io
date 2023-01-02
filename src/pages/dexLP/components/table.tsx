@@ -14,15 +14,16 @@ const Container = styled.table`
 
   thead {
     text-transform: lowercase;
-    border-radius: 4px;
     font-size: 14px;
+  }
+  td {
+    display: table-cell;
   }
   th {
     padding: 8px;
     font-weight: 400;
     line-height: 1rem;
     &:hover {
-      background-color: #14392a;
       cursor: pointer;
     }
   }
@@ -32,34 +33,57 @@ const Container = styled.table`
     font-weight: 400;
     line-height: 4rem;
     background-color: black;
+    transition: all 0.2s ease;
+    position: relative;
   }
 
+  td:first-of-type,
+  th:first-of-type {
+    padding-left: 2rem;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-transform: uppercase;
+  }
+  th:first-of-type {
+    text-transform: lowercase;
+    border-left: 4px solid black;
+    border-radius: 4px;
+  }
+
+  th:last-of-type {
+    border-right: 4px solid black;
+    border-radius: 4px;
+  }
+  img {
+    height: 30px;
+  }
   tbody {
-    tr {
+    td:first-of-type {
+      border-left: 4px solid var(--primary-color);
       border-radius: 4px;
-      border-left: 3px solid var(--primary-color);
-      border-right: 3px solid var(--primary-color);
-      transition: all 0.2s;
+      height: 90px;
+    }
+    td:last-of-type {
+      border-right: 4px solid var(--primary-color);
+      border-radius: 4px;
+    }
+    tr {
+      height: 90px;
+      border: 2px solid green;
 
       &:hover {
-        background-color: #163428;
+        background-color: #09291c;
         cursor: pointer;
         transform: scale(1.02);
       }
       position: relative;
     }
-    tr:hover {
-      background-color: #09291c;
-      cursor: pointer;
-    }
   }
   @media (max-width: 1000px) {
     width: 100%;
     padding: 0 1rem;
-    /* td,
-    th {
-      display: none;
-    } */
 
     th:nth-of-type(3) {
       display: none;

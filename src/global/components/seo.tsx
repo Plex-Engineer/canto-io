@@ -8,6 +8,7 @@ interface Props {
   link: string;
 }
 const HelmetSEO = (props: Props) => {
+  const baseUrl = "https://canto.io/";
   return (
     <>
       <Helmet prioritizeSeoTags>
@@ -17,22 +18,22 @@ const HelmetSEO = (props: Props) => {
         <link rel="canonical" href={"/" + props.link} />
 
         <meta property="og:type" content="website" />
-        <meta
-          property="og:url"
-          content={"https://cantomaster.pages.dev/" + props.link}
-        />
+        <meta property="og:url" content={baseUrl + props.link} />
         <meta property="og:title" content={props.title} />
         <meta property="og:description" content={props.description} />
-        <meta property="og:image" content={props.image ?? SocialBG} />
+        <meta
+          property="og:image"
+          content={baseUrl + (props.image ?? SocialBG)}
+        />
 
         <meta property="twitter:card" content={props.image ?? SocialBG} />
-        <meta
-          property="twitter:url"
-          content={"https://cantomaster.pages.dev/" + props.link}
-        />
+        <meta property="twitter:url" content={baseUrl + props.link} />
         <meta property="twitter:title" content={props.title} />
         <meta property="twitter:description" content={props.description} />
-        <meta property="twitter:image" content={props.image ?? SocialBG} />
+        <meta
+          property="twitter:image"
+          content={baseUrl + (props.image ?? SocialBG)}
+        />
       </Helmet>
     </>
   );

@@ -17,6 +17,7 @@ export enum CantoTransactionType {
   BRIDGE_OUT = "Bridge Out",
   CONVERT_TO_EVM = "Convert to EVM",
   CONVERT_TO_COSMOS = "Convert to Cosmos",
+  BRIDGE = "Bridge",
 }
 
 //Do not change, same as useTransaction, but need for compatability with cosmos transactions
@@ -32,4 +33,9 @@ export type TransactionActionObject = {
   action: string;
   inAction: string;
   postAction: string;
+};
+export const userTxMessages = {
+  waitSign: "waiting for the metamask transaction to be signed...",
+  waitVerify: "waiting for the transaction to be verified...",
+  deniedTx: "user denied transaction",
 };

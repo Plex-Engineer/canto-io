@@ -6,11 +6,8 @@ import styled from "@emotion/styled";
 import ConnectWallet from "./ConnectWallet";
 import MenuBar from "./MenuBar";
 import ModalManager from "../molecules/ModalManager";
+import { PageObject } from "global/config/pageList";
 
-export interface Page {
-  name: string;
-  link: string;
-}
 interface Props {
   onClick: () => void;
   chainId: number;
@@ -19,7 +16,7 @@ interface Props {
   isConnected: boolean;
   currency: string;
   logo: string;
-  pageList: Page[];
+  pageList: PageObject[];
   currentPage?: string;
 }
 

@@ -18,7 +18,7 @@ export async function txConvertERC20(
   // get metamask account address
   //@ts-ignore
   if (!window.ethereum) {
-    return;
+    return null;
   }
   //@ts-ignore
   const accounts = await window.ethereum.request({
@@ -37,7 +37,13 @@ export async function txConvertERC20(
   };
 
   const msg = createTxMsgConvertERC20(chain, senderObj, fee, memo, params);
-  await signAndBroadcastTxMsg(msg, senderObj, chain, nodeAddressIP, account);
+  return await signAndBroadcastTxMsg(
+    msg,
+    senderObj,
+    chain,
+    nodeAddressIP,
+    account
+  );
 }
 
 export async function txConvertCoin(
@@ -52,7 +58,7 @@ export async function txConvertCoin(
   // get metamask account address
   //@ts-ignore
   if (!window.ethereum) {
-    return;
+    return null;
   }
   //@ts-ignore
   const accounts = await window.ethereum.request({
@@ -69,5 +75,11 @@ export async function txConvertCoin(
     senderEvmosFormatted: cantoAddress,
   };
   const msg = createTxMsgConvertCoin(chain, senderObj, fee, memo, params);
-  await signAndBroadcastTxMsg(msg, senderObj, chain, nodeAddressIP, account);
+  return await signAndBroadcastTxMsg(
+    msg,
+    senderObj,
+    chain,
+    nodeAddressIP,
+    account
+  );
 }

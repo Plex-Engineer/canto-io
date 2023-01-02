@@ -28,11 +28,8 @@ import { Text } from "global/packages/src";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
 import { Mixpanel } from "mixpanel";
 import { CantoTransactionType } from "global/config/transactionTypes";
-import {
-  BridgeInStatus,
-  useTransactionChecklistStore,
-} from "./stores/transactionChecklistStore";
-import { useBridgeTransactionStore } from "./stores/transactionStore";
+import { useTransactionChecklistStore } from "./stores/transactionChecklistStore";
+import { useBridgeTransactionPageStore } from "./stores/transactionPageStore";
 import {
   getConvertButtonText,
   getReactiveButtonText,
@@ -40,6 +37,7 @@ import {
 import { updateLastBridgeInTransactionStatus } from "./utils/checklistFunctions";
 import { BridgeChecklistBox } from "./components/BridgeChecklistBox";
 import { BridgeInChecklistFunctionTracker } from "./config/transactionChecklist";
+import useBridgeTxStore from "./stores/transactionStore";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];
@@ -58,11 +56,12 @@ const BridgeIn = ({
   const selectedConvertToken =
     tokenStore.selectedTokens[SelectedTokens.CONVERTIN];
   const bridgeStore = useBridgeStore();
+  const bridgeTxStore = useBridgeTxStore();
 
   //store for transactionchecklist
   const transactionChecklistStore = useTransactionChecklistStore();
   const completedTransactions =
-    useBridgeTransactionStore().transactions.completedBridgeTransactions;
+    useBridgeTransactionPageStore().transactions.completedBridgeTransactions;
 
   const [amount, setAmount] = useState("");
 
@@ -91,6 +90,12 @@ const BridgeIn = ({
     true
   );
 
+  //reset the status of the tx when the loading modal is closed to keep the reactive button from being stuck
+  useEffect(() => {
+    if (!bridgeTxStore.transactionStatus) {
+      resetCosmos();
+    }
+  }, [bridgeTxStore.transactionStatus?.status]);
   //event tracker
   useEffect(() => {
     bridgeStore.setApproveStatus(stateApprove.status);
@@ -143,7 +148,7 @@ const BridgeIn = ({
           "115792089237316195423570985008687907853269984665640564039457584007913129639935"
         )
       );
-    } else if (parsedAmount.gt(0) && stateCosmos.status == "None") {
+    } else if (parsedAmount.gt(0)) {
       mixpanelTrack(CantoTransactionType.BRIDGE_IN);
       sendCosmos(
         selectedETHToken.address,
@@ -154,14 +159,10 @@ const BridgeIn = ({
   };
 
   function mixpanelTrack(txType: CantoTransactionType) {
-    Mixpanel.events.transactions.transactionStarted(
-      txType,
-      networkInfo.account,
-      {
-        tokenName: selectedETHToken.symbol,
-        amount: amount,
-      }
-    );
+    Mixpanel.events.transactions.transactionStarted(txType, {
+      tokenName: selectedETHToken.symbol,
+      amount: amount,
+    });
   }
 
   function updateLastTransaction() {
