@@ -13,6 +13,7 @@ import PageNotFound from "global/components/pageNotFound";
 import { WalkthroughHomeScreen } from "pages/bridge/walkthrough-dummy/dummySteps/walkthroughHome";
 import IntroPage from "pages/bridge/walkthrough-dummy/pages/intro";
 import ChangeLog from "pages/changelog/changeLog";
+import SelectTokenPage from "pages/bridge/walkthrough-dummy/pages/selectToken";
 
 //Styling
 const Container = styled.div`
