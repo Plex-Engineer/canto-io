@@ -78,6 +78,7 @@ const BridgeIn = ({
   } = useCosmos(gravityAddress ?? ADDRESSES.ETHMainnet.GravityBridge);
 
   const [bridgeButtonText, bridgeDisabled] = getReactiveButtonText(
+    networkInfo.hasPubKey,
     convertStringToBigNumber(amount, selectedETHToken?.decimals ?? 18),
     selectedETHToken,
     stateApprove.status,
