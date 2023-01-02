@@ -35,7 +35,10 @@ export function useEthGravityTokens(
       ];
     }) ?? [];
   const results =
-    useCalls(tokens && account ? calls.flat() : [], { chainId: 1 }) ?? {};
+    useCalls(tokens && account ? calls.flat() : [], {
+      chainId: 1,
+      refresh: "everyBlock",
+    }) ?? {};
 
   if (tokens == undefined) {
     return { userEthGTokens: [], gravityAddress: undefined };
