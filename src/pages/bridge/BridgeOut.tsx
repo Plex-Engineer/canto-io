@@ -1,5 +1,5 @@
 import { CantoMainnet } from "global/config/networks";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useBridgeStore } from "./stores/gravityStore";
 import { TokenWallet } from "./components/TokenSelect";
 import { useEthers } from "@usedapp/core";
@@ -11,76 +11,67 @@ import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import cantoIcon from "assets/icons/canto-evm.svg";
 import SwitchBridging from "./components/SwitchBridging";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
-
 import {
+  BaseToken,
   BridgeTransactionType,
   EmptySelectedConvertToken,
   EmptySelectedNativeToken,
   UserConvertToken,
   UserNativeTokens,
 } from "./config/interfaces";
-import { SelectedTokens, useTokenStore } from "./stores/tokenStore";
+import { SelectedTokens, TokenStore } from "./stores/tokenStore";
 import { GeneralTransferBox } from "./components/generalTransferBox";
 import { formatUnits } from "ethers/lib/utils";
 import { convertStringToBigNumber } from "./utils/stringToBigNumber";
-import {
-  getBridgeOutButtonText,
-  getConvertButtonText,
-} from "./utils/reactiveButtonText";
 import FadeIn from "react-fade-in";
 import { PrimaryButton } from "global/packages/src";
 import { Text } from "global/packages/src/components/atoms/Text";
 import { BridgeStyled } from "./BridgeIn";
-import { allBridgeOutNetworks } from "./config/gravityBridgeTokens";
 import { Mixpanel } from "mixpanel";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { useTransactionChecklistStore } from "./stores/transactionChecklistStore";
 import { updateLastBridgeOutTransactionStatus } from "./utils/checklistFunctions";
-import { BridgeOutChecklistFunctionTracker } from "./config/transactionChecklist";
 import { BridgeChecklistBox } from "./components/BridgeChecklistBox";
 import useBridgeTxStore from "./stores/transactionStore";
 import { performBridgeCosmosTxAndSetStatus } from "./utils/bridgeCosmosTxUtils";
+import { useCustomCantoToCosmosInfo } from "./hooks/customBridgeOutInfo";
+import { BridgeOutChecklistFunctionTracker } from "./config/transactionChecklist";
+import { useCustomConvertInfo } from "./hooks/customConvertInfo";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
   userCantoNativeGTokens: UserNativeTokens[];
+  selectedTokens: TokenStore["selectedTokens"];
+  setToken: (token: BaseToken, selectedFrom: SelectedTokens) => void;
 }
-const BridgeOut = ({
-  userCantoNativeGTokens,
-  userConvertERC20Tokens,
-}: BridgeOutProps) => {
+const BridgeOut = (props: BridgeOutProps) => {
   const networkInfo = useNetworkInfo();
   const bridgeTxStore = useBridgeTxStore();
-  const tokenStore = useTokenStore();
-  const selectedBridgeOutNetwork =
-    allBridgeOutNetworks[tokenStore.bridgeOutNetwork];
-  const selectedConvertToken =
-    tokenStore.selectedTokens[SelectedTokens.CONVERTOUT];
-  const selectedNativeToken =
-    tokenStore.selectedTokens[SelectedTokens.BRIDGEOUT];
+
+  const selectedConvertToken = props.selectedTokens[SelectedTokens.CONVERTOUT];
+  const selectedNativeToken = props.selectedTokens[SelectedTokens.BRIDGEOUT];
+  const {
+    bridgeOutNetwork,
+    amount: bridgeOutAmount,
+    setAmount: setBridgeOutAmount,
+    userCosmosAddress,
+    setUserCosmosAddress,
+    bridgeDisabled,
+    bridgeButtonText,
+  } = useCustomCantoToCosmosInfo(selectedNativeToken);
+
+  const {
+    amount: convertAmount,
+    setAmount: setConvertAmount,
+    convertButtonText,
+    convertDisabled,
+  } = useCustomConvertInfo(false, selectedConvertToken);
 
   const bridgeStore = useBridgeStore();
   const { activateBrowserWallet } = useEthers();
 
   //store for transactionchecklist
   const transactionChecklistStore = useTransactionChecklistStore();
-
-  //BRIDGE OUT STATES
-  const [userCosmosAddress, setUserCosmosAddress] = useState("");
-  const [amount, setAmount] = useState("");
-
-  const [bridgeButtonText, bridgeDisabled] = getBridgeOutButtonText(
-    convertStringToBigNumber(amount, selectedNativeToken.decimals),
-    selectedNativeToken,
-    selectedNativeToken.nativeBalance,
-    selectedBridgeOutNetwork.checkAddress(userCosmosAddress)
-  );
-  const [convertButtonText, convertDisabled] = getConvertButtonText(
-    convertStringToBigNumber(amount, selectedConvertToken.decimals),
-    selectedConvertToken,
-    selectedConvertToken.erc20Balance,
-    false
-  );
 
   function updateLastBridgeOutChecklist() {
     const currentTx = transactionChecklistStore.getCurrentBridgeOutTx();
@@ -173,8 +164,8 @@ const BridgeOut = ({
           name: "EVM",
         }}
         right={{
-          icon: selectedBridgeOutNetwork.icon,
-          name: selectedBridgeOutNetwork.name,
+          icon: bridgeOutNetwork.icon,
+          name: bridgeOutNetwork.name,
           height: 48,
           selectable: true,
         }}
@@ -184,11 +175,11 @@ const BridgeOut = ({
         <ConvertTransferBox
           tokenSelector={
             <TokenWallet
-              tokens={userConvertERC20Tokens}
+              tokens={props.userConvertERC20Tokens}
               balance="erc20Balance"
               activeToken={selectedConvertToken}
               onSelect={(value) => {
-                tokenStore.setSelectedToken(
+                props.setToken(
                   value ?? EmptySelectedConvertToken,
                   SelectedTokens.CONVERTOUT
                 );
@@ -200,8 +191,8 @@ const BridgeOut = ({
           cantoAddress={networkInfo.cantoAddress}
           ETHAddress={networkInfo.account ?? ""}
           chainId={Number(networkInfo.chainId)}
-          amount={amount}
-          onChange={(amount: string) => setAmount(amount)}
+          amount={convertAmount}
+          onChange={(amount: string) => setConvertAmount(amount)}
           onSwitch={() => {
             activateBrowserWallet();
             addNetwork();
@@ -215,11 +206,11 @@ const BridgeOut = ({
         <GeneralTransferBox
           tokenSelector={
             <TokenWallet
-              tokens={userCantoNativeGTokens}
+              tokens={props.userCantoNativeGTokens}
               balance="nativeBalance"
               activeToken={selectedNativeToken}
               onSelect={(value) => {
-                tokenStore.setSelectedToken(
+                props.setToken(
                   value ?? EmptySelectedNativeToken,
                   SelectedTokens.BRIDGEOUT
                 );
@@ -230,7 +221,7 @@ const BridgeOut = ({
           onAddressChange={(value: string) => {
             setUserCosmosAddress(value);
           }}
-          AddressBoxPlaceholder={`${selectedBridgeOutNetwork.name} address (${selectedBridgeOutNetwork.addressBeginning}...)`}
+          AddressBoxPlaceholder={`${bridgeOutNetwork.name} address (${bridgeOutNetwork.addressBeginning}...)`}
           from={{
             address: networkInfo.cantoAddress,
             name: "canto (bridge)",
@@ -238,8 +229,8 @@ const BridgeOut = ({
           }}
           to={{
             address: userCosmosAddress,
-            name: selectedBridgeOutNetwork.name,
-            icon: selectedBridgeOutNetwork.icon,
+            name: bridgeOutNetwork.name,
+            icon: bridgeOutNetwork.icon,
           }}
           networkName="canto"
           onSwitch={() => {
@@ -248,13 +239,13 @@ const BridgeOut = ({
           }}
           connected={CantoMainnet.chainId == Number(networkInfo.chainId)}
           onChange={(amount: string) => {
-            setAmount(amount);
+            setBridgeOutAmount(amount);
           }}
           max={formatUnits(
             selectedNativeToken.nativeBalance,
             selectedNativeToken.decimals
           )}
-          amount={amount}
+          amount={bridgeOutAmount}
           button={
             <PrimaryButton
               height="big"
@@ -265,22 +256,22 @@ const BridgeOut = ({
                   CantoTransactionType.BRIDGE_OUT,
                   {
                     tokenName: selectedNativeToken.symbol,
-                    amount: amount,
-                    bridgeOutNetwork: selectedBridgeOutNetwork.name,
+                    amount: bridgeOutAmount,
+                    bridgeOutNetwork: bridgeOutNetwork.name,
                   }
                 );
                 performBridgeCosmosTxAndSetStatus(
                   async () =>
                     await txIBCTransfer(
                       userCosmosAddress,
-                      selectedBridgeOutNetwork.channel,
+                      bridgeOutNetwork.channel,
                       convertStringToBigNumber(
-                        amount,
+                        bridgeOutAmount,
                         selectedNativeToken.decimals
                       ).toString(),
                       selectedNativeToken.nativeName,
                       CantoMainnet.cosmosAPIEndpoint,
-                      selectedBridgeOutNetwork.endpoint,
+                      bridgeOutNetwork.endpoint,
                       ibcFee,
                       chain,
                       memo
@@ -288,9 +279,9 @@ const BridgeOut = ({
                   BridgeTransactionType.BRIDGE_OUT,
                   bridgeTxStore.setTransactionStatus,
                   selectedNativeToken.name,
-                  amount,
+                  bridgeOutAmount,
                   "canto bridge",
-                  selectedBridgeOutNetwork.name
+                  bridgeOutNetwork.name
                 );
               }}
             >

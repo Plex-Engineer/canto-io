@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useBridgeStore } from "./stores/gravityStore";
 import styled from "@emotion/styled";
-import { useApprove, useCosmos } from "./hooks/useTransactions";
 import { useEthers } from "@usedapp/core";
-import { BigNumber, ethers } from "ethers";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import SwitchBridging from "./components/SwitchBridging";
 import cantoIcon from "assets/icons/canto-evm.svg";
@@ -16,155 +14,64 @@ import {
   EmptySelectedETHToken,
   EmptySelectedNativeToken,
   UserConvertToken,
+  BaseToken,
 } from "./config/interfaces";
-import { SelectedTokens, useTokenStore } from "./stores/tokenStore";
+import { SelectedTokens, TokenStore } from "./stores/tokenStore";
 import { formatUnits } from "ethers/lib/utils";
-import { convertStringToBigNumber } from "./utils/stringToBigNumber";
 import { GeneralTransferBox } from "./components/generalTransferBox";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import FadeIn from "react-fade-in";
-import { ADDRESSES } from "global/config/addresses";
 import { Text } from "global/packages/src";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
-import { Mixpanel } from "mixpanel";
-import { CantoTransactionType } from "global/config/transactionTypes";
 import { useTransactionChecklistStore } from "./stores/transactionChecklistStore";
 import { useBridgeTransactionPageStore } from "./stores/transactionPageStore";
-import {
-  getConvertButtonText,
-  getReactiveButtonText,
-} from "./utils/reactiveButtonText";
 import { updateLastBridgeInTransactionStatus } from "./utils/checklistFunctions";
 import { BridgeChecklistBox } from "./components/BridgeChecklistBox";
 import { BridgeInChecklistFunctionTracker } from "./config/transactionChecklist";
-import useBridgeTxStore from "./stores/transactionStore";
+import { useBridgeEthToCantoInfo } from "./hooks/customBridgeInInfo";
+import { useCustomConvertInfo } from "./hooks/customConvertInfo";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];
   gravityAddress: string | undefined;
   userConvertCoinNativeTokens: UserConvertToken[];
+  selectedTokens: TokenStore["selectedTokens"];
+  setToken: (token: BaseToken, selectedFrom: SelectedTokens) => void;
 }
-const BridgeIn = ({
-  userEthTokens,
-  gravityAddress,
-  userConvertCoinNativeTokens,
-}: BridgeInProps) => {
+const BridgeIn = (props: BridgeInProps) => {
   const networkInfo = useNetworkInfo();
   const { switchNetwork, activateBrowserWallet } = useEthers();
-  const tokenStore = useTokenStore();
-  const selectedETHToken = tokenStore.selectedTokens[SelectedTokens.ETHTOKEN];
-  const selectedConvertToken =
-    tokenStore.selectedTokens[SelectedTokens.CONVERTIN];
+  const selectedETHToken = props.selectedTokens[SelectedTokens.ETHTOKEN];
+  const selectedConvertToken = props.selectedTokens[SelectedTokens.CONVERTIN];
   const bridgeStore = useBridgeStore();
-  const bridgeTxStore = useBridgeTxStore();
+
+  const {
+    amount: ethToGBridgeAmount,
+    setAmount: setEthToGBridgeAmount,
+    bridgeButtonText,
+    bridgeDisabled,
+    sendEthToGBridge,
+    stateApprove,
+    stateCosmos,
+    resetApprove,
+    resetCosmos,
+  } = useBridgeEthToCantoInfo(
+    selectedETHToken,
+    props.setToken,
+    props.gravityAddress
+  );
+
+  const {
+    amount: convertAmount,
+    setAmount: setConvertAmount,
+    convertButtonText,
+    convertDisabled,
+  } = useCustomConvertInfo(true, selectedConvertToken);
 
   //store for transactionchecklist
   const transactionChecklistStore = useTransactionChecklistStore();
   const completedTransactions =
     useBridgeTransactionPageStore().transactions.completedBridgeTransactions;
-
-  const [amount, setAmount] = useState("");
-
-  //function states for approving/bridging
-  const {
-    state: stateApprove,
-    send: sendApprove,
-    resetState: resetApprove,
-  } = useApprove(selectedETHToken.address);
-  const {
-    state: stateCosmos,
-    send: sendCosmos,
-    resetState: resetCosmos,
-  } = useCosmos(gravityAddress ?? ADDRESSES.ETHMainnet.GravityBridge);
-
-  const [bridgeButtonText, bridgeDisabled] = getReactiveButtonText(
-    networkInfo.hasPubKey,
-    convertStringToBigNumber(amount, selectedETHToken?.decimals ?? 18),
-    selectedETHToken,
-    stateApprove.status,
-    stateCosmos.status
-  );
-  const [convertButtonText, convertDisabled] = getConvertButtonText(
-    convertStringToBigNumber(amount, selectedConvertToken.decimals),
-    selectedConvertToken,
-    selectedConvertToken.nativeBalance,
-    true
-  );
-
-  //reset the status of the tx when the loading modal is closed to keep the reactive button from being stuck
-  useEffect(() => {
-    if (!bridgeTxStore.transactionStatus) {
-      resetCosmos();
-    }
-  }, [bridgeTxStore.transactionStatus?.status]);
-  //event tracker
-  useEffect(() => {
-    bridgeStore.setApproveStatus(stateApprove.status);
-    if (stateApprove.status == "Success") {
-      tokenStore.setSelectedToken(
-        {
-          ...selectedETHToken,
-          allowance: BigNumber.from(ethers.constants.MaxUint256),
-        },
-        SelectedTokens.ETHTOKEN
-      );
-      setTimeout(() => {
-        resetApprove();
-      }, 1000);
-    }
-  }, [stateApprove.status]);
-
-  useEffect(() => {
-    bridgeStore.setCosmosStatus(stateCosmos.status);
-    //check checklist to see if we need to update
-    const currentStep =
-      transactionChecklistStore.getCurrentBridgeInTx()?.currentStep;
-    currentStep
-      ? transactionChecklistStore.updateCurrentBridgeInStatus(
-          currentStep,
-          stateCosmos.transaction?.hash
-        )
-      : () => {
-          return;
-        };
-    updateLastTransaction();
-  }, [stateCosmos.status]);
-
-  const send = (amount: string) => {
-    //Checking if amount enter is greater than balance available in wallet and token has been approved.
-    const parsedAmount = convertStringToBigNumber(
-      amount,
-      selectedETHToken.decimals
-    );
-    if (!networkInfo.cantoAddress) return;
-    if (
-      (parsedAmount.gte(selectedETHToken.allowance) ||
-        selectedETHToken.allowance.lte(0)) &&
-      stateApprove.status == "None"
-    ) {
-      mixpanelTrack(CantoTransactionType.ENABLE);
-      sendApprove(
-        gravityAddress,
-        BigNumber.from(
-          "115792089237316195423570985008687907853269984665640564039457584007913129639935"
-        )
-      );
-    } else if (parsedAmount.gt(0)) {
-      mixpanelTrack(CantoTransactionType.BRIDGE_IN);
-      sendCosmos(
-        selectedETHToken.address,
-        networkInfo.cantoAddress,
-        parsedAmount
-      );
-    }
-  };
-
-  function mixpanelTrack(txType: CantoTransactionType) {
-    Mixpanel.events.transactions.transactionStarted(txType, {
-      tokenName: selectedETHToken.symbol,
-      amount: amount,
-    });
-  }
 
   function updateLastTransaction() {
     const currentTx = transactionChecklistStore.getCurrentBridgeInTx();
@@ -266,11 +173,11 @@ const BridgeIn = ({
         <GeneralTransferBox
           tokenSelector={
             <TokenWallet
-              tokens={userEthTokens}
+              tokens={props.userEthTokens}
               balance={"balanceOf"}
               activeToken={selectedETHToken}
               onSelect={(value) => {
-                tokenStore.setSelectedToken(
+                props.setToken(
                   value ?? EmptySelectedETHToken,
                   SelectedTokens.ETHTOKEN
                 );
@@ -296,20 +203,20 @@ const BridgeIn = ({
             switchNetwork(1);
           }}
           connected={1 == Number(networkInfo.chainId)}
-          onChange={(amount: string) => setAmount(amount)}
+          onChange={(amount: string) => setEthToGBridgeAmount(amount)}
           max={formatUnits(
             selectedETHToken.balanceOf,
             selectedETHToken.decimals
           )}
-          amount={amount}
+          amount={ethToGBridgeAmount}
           button={
             <ReactiveButton
               destination={networkInfo.cantoAddress}
               account={networkInfo.account}
-              gravityAddress={gravityAddress}
-              onClick={() => send(amount)}
-              approveStatus={stateApprove.status}
-              cosmosStatus={stateCosmos.status}
+              gravityAddress={props.gravityAddress}
+              onClick={() => sendEthToGBridge(ethToGBridgeAmount)}
+              approveStatus={stateApprove}
+              cosmosStatus={stateCosmos}
               buttonText={bridgeButtonText}
               buttonDisabled={bridgeDisabled}
             />
@@ -321,11 +228,11 @@ const BridgeIn = ({
         <ConvertTransferBox
           tokenSelector={
             <TokenWallet
-              tokens={userConvertCoinNativeTokens}
+              tokens={props.userConvertCoinNativeTokens}
               balance="nativeBalance"
               activeToken={selectedConvertToken}
               onSelect={(value) => {
-                tokenStore.setSelectedToken(
+                props.setToken(
                   value ?? EmptySelectedNativeToken,
                   SelectedTokens.CONVERTIN
                 );
@@ -339,8 +246,8 @@ const BridgeIn = ({
           cantoAddress={networkInfo.cantoAddress}
           ETHAddress={networkInfo.account ?? ""}
           chainId={Number(networkInfo.chainId)}
-          amount={amount}
-          onChange={(amount: string) => setAmount(amount)}
+          amount={convertAmount}
+          onChange={(amount: string) => setConvertAmount(amount)}
           onSwitch={() => {
             activateBrowserWallet();
             addNetwork();
