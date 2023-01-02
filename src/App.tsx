@@ -54,7 +54,7 @@ function App() {
                 <Route
                   path="/bridge/walkthrough"
                   key={"walkthrough"}
-                  element={<IntroPage />}
+                  element={<SelectTokenPage PageNumber={0} />}
                 />
                 <Route
                   path={PAGES.bridge.link}
