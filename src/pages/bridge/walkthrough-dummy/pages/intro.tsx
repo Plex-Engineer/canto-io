@@ -1,16 +1,23 @@
 import styled from "@emotion/styled";
-import { Text } from "global/packages/src";
+import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { useState } from "react";
 import TextSwitch from "../components/TextSwitch";
 import BaseStyled from "./layout";
 
-const IntroPage = () => {
+interface Props {
+  PageNumber: number;
+}
+
+const IntroPage = (props: Props) => {
   const [bridgingType, setBridgingType] = useState<"in" | "out" | undefined>();
 
   const [bridgingDone, setBridgingDone] = useState<"yes" | "no" | undefined>();
   return (
     <Styled>
-      <Text type="text" size="title2">
+      <Text type="title" size="title2">
+        Getting Started
+      </Text>
+      <Text type="text" size="title3">
         What would you like to do ?
       </Text>
       <div className="row">
@@ -28,7 +35,7 @@ const IntroPage = () => {
         />
       </div>
 
-      <Text type="text" size="title2">
+      <Text type="text" size="title3">
         Has your gravity Bridge transaction completed ?
       </Text>
       <div className="row">
@@ -44,6 +51,11 @@ const IntroPage = () => {
           active={bridgingDone == "no"}
           onClick={() => setBridgingDone("no")}
         />
+      </div>
+
+      <div className="row">
+        <OutlinedButton>Prev</OutlinedButton>
+        <PrimaryButton>Next</PrimaryButton>
       </div>
     </Styled>
   );
