@@ -11,6 +11,7 @@ import { PAGES } from "global/config/pageList";
 import Loading from "global/components/Loading";
 import PageNotFound from "global/components/pageNotFound";
 import ChangeLog from "pages/changelog/changeLog";
+import { NoPubKey } from "global/components/modals/noPubKey";
 
 //Styling
 const Container = styled.div`
@@ -45,6 +46,7 @@ function App() {
       <Router>
         <Container className="App">
           <CantoNav />
+          <NoPubKey />
           <div className="main-body">
             <Suspense fallback={<Loading />}>
               <Routes>
