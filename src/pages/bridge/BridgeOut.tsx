@@ -1,5 +1,4 @@
 import { CantoMainnet } from "global/config/networks";
-import { useEffect } from "react";
 import { useBridgeStore } from "./stores/gravityStore";
 import { TokenWallet } from "./components/TokenSelect";
 import { useEthers } from "@usedapp/core";
@@ -29,14 +28,13 @@ import { Text } from "global/packages/src/components/atoms/Text";
 import { BridgeStyled } from "./BridgeIn";
 import { Mixpanel } from "mixpanel";
 import { CantoTransactionType } from "global/config/transactionTypes";
-import { useTransactionChecklistStore } from "./stores/transactionChecklistStore";
-import { updateLastBridgeOutTransactionStatus } from "./utils/checklistFunctions";
 import { BridgeChecklistBox } from "./components/BridgeChecklistBox";
 import useBridgeTxStore from "./stores/transactionStore";
 import { performBridgeCosmosTxAndSetStatus } from "./utils/bridgeCosmosTxUtils";
 import { useCustomCantoToCosmosInfo } from "./hooks/customBridgeOutInfo";
 import { BridgeOutChecklistFunctionTracker } from "./config/transactionChecklist";
 import { useCustomConvertInfo } from "./hooks/customConvertInfo";
+import { useBridgeOutChecklistSetter } from "./hooks/useBridgeOutChecklistSetter";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -45,11 +43,12 @@ interface BridgeOutProps {
   setToken: (token: BaseToken, selectedFrom: SelectedTokens) => void;
 }
 const BridgeOut = (props: BridgeOutProps) => {
-  const networkInfo = useNetworkInfo();
+  const { account, cantoAddress, chainId } = useNetworkInfo();
   const bridgeTxStore = useBridgeTxStore();
-
+  const { transactionType: currentTxType } = useBridgeStore();
   const selectedConvertToken = props.selectedTokens[SelectedTokens.CONVERTOUT];
   const selectedNativeToken = props.selectedTokens[SelectedTokens.BRIDGEOUT];
+
   const {
     bridgeOutNetwork,
     amount: bridgeOutAmount,
@@ -67,52 +66,23 @@ const BridgeOut = (props: BridgeOutProps) => {
     convertDisabled,
   } = useCustomConvertInfo(false, selectedConvertToken);
 
-  const bridgeStore = useBridgeStore();
   const { activateBrowserWallet } = useEthers();
-
-  //store for transactionchecklist
-  const transactionChecklistStore = useTransactionChecklistStore();
-
-  function updateLastBridgeOutChecklist() {
-    const currentTx = transactionChecklistStore.getCurrentBridgeOutTx();
-    if (currentTx) {
-      updateLastBridgeOutTransactionStatus(
-        (status, txHash) =>
-          transactionChecklistStore.updateCurrentBridgeOutStatus(
-            status,
-            txHash
-          ),
-        currentTx,
-        bridgeStore.transactionType,
-        Number(networkInfo.chainId),
-        convertDisabled,
-        bridgeDisabled
-      );
-    }
-  }
-  useEffect(() => {
-    if (!transactionChecklistStore.getCurrentBridgeOutTx()) {
-      transactionChecklistStore.addBridgeOutTx();
-    }
-    updateLastBridgeOutChecklist();
-  }, [
-    transactionChecklistStore.getCurrentBridgeOutTx()?.currentStep,
-    bridgeStore.transactionType,
-    convertDisabled,
-    bridgeDisabled,
-    networkInfo.chainId,
-  ]);
+  const { addTx, removeTx, currentStep, totalTxs } =
+    useBridgeOutChecklistSetter(
+      currentTxType,
+      Number(chainId),
+      bridgeDisabled,
+      convertDisabled
+    );
 
   return (
     <FadeIn wrapperTag={BridgeStyled}>
       <BridgeChecklistBox
         trackerList={BridgeOutChecklistFunctionTracker}
-        totalTxs={transactionChecklistStore.bridgeOut.transactions.length}
-        currentStep={
-          transactionChecklistStore.getCurrentBridgeOutTx()?.currentStep ?? 0
-        }
-        addTx={transactionChecklistStore.addBridgeOutTx}
-        removeTx={transactionChecklistStore.removeBridgeOutTx}
+        totalTxs={totalTxs}
+        currentStep={currentStep}
+        addTx={addTx}
+        removeTx={removeTx}
       />
       <div className="title">
         <Text
@@ -171,7 +141,7 @@ const BridgeOut = (props: BridgeOutProps) => {
         }}
       />
 
-      {bridgeStore.transactionType == "Bridge" && (
+      {currentTxType == "Bridge" && (
         <ConvertTransferBox
           tokenSelector={
             <TokenWallet
@@ -188,9 +158,9 @@ const BridgeOut = (props: BridgeOutProps) => {
           }
           activeToken={selectedConvertToken}
           cantoToEVM={false}
-          cantoAddress={networkInfo.cantoAddress}
-          ETHAddress={networkInfo.account ?? ""}
-          chainId={Number(networkInfo.chainId)}
+          cantoAddress={cantoAddress}
+          ETHAddress={account ?? ""}
+          chainId={Number(chainId)}
           amount={convertAmount}
           onChange={(amount: string) => setConvertAmount(amount)}
           onSwitch={() => {
@@ -202,7 +172,7 @@ const BridgeOut = (props: BridgeOutProps) => {
         />
       )}
 
-      {bridgeStore.transactionType == "Convert" && (
+      {currentTxType == "Convert" && (
         <GeneralTransferBox
           tokenSelector={
             <TokenWallet
@@ -223,7 +193,7 @@ const BridgeOut = (props: BridgeOutProps) => {
           }}
           AddressBoxPlaceholder={`${bridgeOutNetwork.name} address (${bridgeOutNetwork.addressBeginning}...)`}
           from={{
-            address: networkInfo.cantoAddress,
+            address: cantoAddress,
             name: "canto (bridge)",
             icon: bridgeIcon,
           }}
@@ -237,7 +207,7 @@ const BridgeOut = (props: BridgeOutProps) => {
             activateBrowserWallet();
             addNetwork();
           }}
-          connected={CantoMainnet.chainId == Number(networkInfo.chainId)}
+          connected={CantoMainnet.chainId == Number(chainId)}
           onChange={(amount: string) => {
             setBridgeOutAmount(amount);
           }}

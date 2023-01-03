@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useBridgeStore } from "./stores/gravityStore";
 import styled from "@emotion/styled";
 import { useEthers } from "@usedapp/core";
@@ -23,13 +22,11 @@ import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import FadeIn from "react-fade-in";
 import { Text } from "global/packages/src";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
-import { useTransactionChecklistStore } from "./stores/transactionChecklistStore";
-import { useBridgeTransactionPageStore } from "./stores/transactionPageStore";
-import { updateLastBridgeInTransactionStatus } from "./utils/checklistFunctions";
 import { BridgeChecklistBox } from "./components/BridgeChecklistBox";
 import { BridgeInChecklistFunctionTracker } from "./config/transactionChecklist";
 import { useBridgeEthToCantoInfo } from "./hooks/customBridgeInInfo";
 import { useCustomConvertInfo } from "./hooks/customConvertInfo";
+import { useBridgeInChecklistSetter } from "./hooks/useBridgeInChecklistSetter";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];
@@ -39,11 +36,11 @@ interface BridgeInProps {
   setToken: (token: BaseToken, selectedFrom: SelectedTokens) => void;
 }
 const BridgeIn = (props: BridgeInProps) => {
-  const networkInfo = useNetworkInfo();
+  const { account, cantoAddress, chainId } = useNetworkInfo();
   const { switchNetwork, activateBrowserWallet } = useEthers();
   const selectedETHToken = props.selectedTokens[SelectedTokens.ETHTOKEN];
   const selectedConvertToken = props.selectedTokens[SelectedTokens.CONVERTIN];
-  const bridgeStore = useBridgeStore();
+  const { transactionType: currentTxType } = useBridgeStore();
 
   const {
     amount: ethToGBridgeAmount,
@@ -68,52 +65,22 @@ const BridgeIn = (props: BridgeInProps) => {
     convertDisabled,
   } = useCustomConvertInfo(true, selectedConvertToken);
 
-  //store for transactionchecklist
-  const transactionChecklistStore = useTransactionChecklistStore();
-  const completedTransactions =
-    useBridgeTransactionPageStore().transactions.completedBridgeTransactions;
-
-  function updateLastTransaction() {
-    const currentTx = transactionChecklistStore.getCurrentBridgeInTx();
-    if (currentTx) {
-      updateLastBridgeInTransactionStatus(
-        (status, txHash) =>
-          transactionChecklistStore.updateCurrentBridgeInStatus(status, txHash),
-        currentTx,
-        bridgeStore.transactionType,
-        Number(networkInfo.chainId),
-        bridgeDisabled,
-        completedTransactions,
-        convertDisabled
-      );
-    }
-  }
-
-  useEffect(() => {
-    if (!transactionChecklistStore.getCurrentBridgeInTx()) {
-      transactionChecklistStore.addBridgeInTx();
-    }
-    updateLastTransaction();
-  }, [
-    transactionChecklistStore.getCurrentBridgeInTx()?.currentStep,
-    bridgeStore.transactionType,
-    convertDisabled,
+  const { addTx, removeTx, currentStep, totalTxs } = useBridgeInChecklistSetter(
+    currentTxType,
+    Number(chainId),
     bridgeDisabled,
-    completedTransactions,
-    networkInfo.chainId,
-  ]);
+    convertDisabled
+  );
 
   return (
     <FadeIn wrapperTag={BridgeStyled}>
       <div className="title">
         <BridgeChecklistBox
           trackerList={BridgeInChecklistFunctionTracker}
-          totalTxs={transactionChecklistStore.bridgeIn.transactions.length}
-          currentStep={
-            transactionChecklistStore.getCurrentBridgeInTx()?.currentStep ?? 0
-          }
-          addTx={transactionChecklistStore.addBridgeInTx}
-          removeTx={transactionChecklistStore.removeBridgeInTx}
+          totalTxs={totalTxs}
+          currentStep={currentStep}
+          addTx={addTx}
+          removeTx={removeTx}
         />
         <Text
           type="title"
@@ -169,7 +136,7 @@ const BridgeIn = (props: BridgeInProps) => {
         }}
       />
 
-      {bridgeStore.transactionType == "Bridge" && (
+      {currentTxType == "Bridge" && (
         <GeneralTransferBox
           tokenSelector={
             <TokenWallet
@@ -188,12 +155,12 @@ const BridgeIn = (props: BridgeInProps) => {
           }
           needAddressBox={false}
           from={{
-            address: networkInfo.account,
+            address: account,
             name: "ethereum",
             icon: ethIcon,
           }}
           to={{
-            address: networkInfo.cantoAddress,
+            address: cantoAddress,
             name: "canto (bridge)",
             icon: bridgeIcon,
           }}
@@ -202,7 +169,7 @@ const BridgeIn = (props: BridgeInProps) => {
             activateBrowserWallet();
             switchNetwork(1);
           }}
-          connected={1 == Number(networkInfo.chainId)}
+          connected={1 == Number(chainId)}
           onChange={(amount: string) => setEthToGBridgeAmount(amount)}
           max={formatUnits(
             selectedETHToken.balanceOf,
@@ -211,8 +178,8 @@ const BridgeIn = (props: BridgeInProps) => {
           amount={ethToGBridgeAmount}
           button={
             <ReactiveButton
-              destination={networkInfo.cantoAddress}
-              account={networkInfo.account}
+              destination={cantoAddress}
+              account={account}
               gravityAddress={props.gravityAddress}
               onClick={() => sendEthToGBridge(ethToGBridgeAmount)}
               approveStatus={stateApprove}
@@ -224,7 +191,7 @@ const BridgeIn = (props: BridgeInProps) => {
         />
       )}
 
-      {bridgeStore.transactionType == "Convert" && (
+      {currentTxType == "Convert" && (
         <ConvertTransferBox
           tokenSelector={
             <TokenWallet
@@ -243,9 +210,9 @@ const BridgeIn = (props: BridgeInProps) => {
           }
           activeToken={selectedConvertToken}
           cantoToEVM={true}
-          cantoAddress={networkInfo.cantoAddress}
-          ETHAddress={networkInfo.account ?? ""}
-          chainId={Number(networkInfo.chainId)}
+          cantoAddress={cantoAddress}
+          ETHAddress={account ?? ""}
+          chainId={Number(chainId)}
           amount={convertAmount}
           onChange={(amount: string) => setConvertAmount(amount)}
           onSwitch={() => {
