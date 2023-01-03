@@ -8,11 +8,16 @@ import {
   ETHGravityTokens,
 } from "../config/gravityBridgeTokens";
 import {
+  BaseToken,
   UserConvertToken,
   UserGravityBridgeTokens,
   UserNativeTokens,
 } from "../config/interfaces";
-import { SelectedTokens, useTokenStore } from "../stores/tokenStore";
+import {
+  SelectedTokens,
+  TokenStore,
+  useTokenStore,
+} from "../stores/tokenStore";
 import { useTransactionChecklistStore } from "../stores/transactionChecklistStore";
 import { useBridgeTransactionPageStore } from "../stores/transactionPageStore";
 import {
@@ -29,6 +34,8 @@ interface AllBridgeInfo {
   userBridgeInTokens: UserGravityBridgeTokens[];
   userBridgeOutTokens: UserNativeTokens[];
   gravityAddress: string | undefined;
+  selectedTokens: TokenStore["selectedTokens"];
+  setSelectedToken: (selectedToken: BaseToken, type: SelectedTokens) => void;
 }
 export function useCustomBridgeInfo(): AllBridgeInfo {
   const networkInfo = useNetworkInfo();
@@ -154,5 +161,7 @@ export function useCustomBridgeInfo(): AllBridgeInfo {
     userBridgeInTokens,
     userBridgeOutTokens,
     gravityAddress,
+    selectedTokens: tokenStore.selectedTokens,
+    setSelectedToken: tokenStore.setSelectedToken,
   };
 }
