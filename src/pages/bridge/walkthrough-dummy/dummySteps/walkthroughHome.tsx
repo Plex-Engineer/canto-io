@@ -1,28 +1,20 @@
 import { BigNumber } from "ethers";
 import { ADDRESSES } from "global/config/addresses";
-import { CantoMainnet } from "global/config/networks";
 import { PrimaryButton } from "global/packages/src";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import {
-  allBridgeOutNetworks,
-  convertCoinTokens,
-  ETHGravityTokens,
-} from "pages/bridge/config/gravityBridgeTokens";
+import { allBridgeOutNetworks } from "pages/bridge/config/gravityBridgeTokens";
 import {
   BaseToken,
   BridgeTransactionType,
   UserConvertToken,
-  UserNativeTokens,
 } from "pages/bridge/config/interfaces";
-import { useCantoERC20Balances } from "pages/bridge/hooks/useERC20Balances";
-import { useEthGravityTokens } from "pages/bridge/hooks/useEthGravityTokens";
+import { useCustomBridgeInfo } from "pages/bridge/hooks/useCustomBridgeInfo";
 import { useApprove, useCosmos } from "pages/bridge/hooks/useTransactions";
 import { SelectedTokens, useTokenStore } from "pages/bridge/stores/tokenStore";
 import { useBridgeTransactionPageStore } from "pages/bridge/stores/transactionPageStore";
 import useBridgeTxStore from "pages/bridge/stores/transactionStore";
-import { getNativeCantoBalance } from "pages/bridge/utils/nativeBalances";
 import { convertStringToBigNumber } from "pages/bridge/utils/stringToBigNumber";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useBridgeWalkthroughStore } from "../store/bridgeWalkthroughStore";
 import {
   didPassBridgeInWalkthroughCheck,
@@ -52,6 +44,13 @@ export const WalkthroughHomeScreen = () => {
   const tokenStore = useTokenStore();
   const bridgeTxStore = useBridgeTxStore();
 
+  const {
+    userConvertTokens,
+    userBridgeInTokens,
+    userBridgeOutTokens,
+    gravityAddress,
+  } = useCustomBridgeInfo();
+
   //constants to stop reference repetition
   const bridgeInToken = tokenStore.selectedTokens[SelectedTokens.ETHTOKEN];
   const convertInToken = tokenStore.selectedTokens[SelectedTokens.CONVERTIN];
@@ -60,93 +59,6 @@ export const WalkthroughHomeScreen = () => {
 
   //amount will be the same value across the walkthrough
   const [amount, setAmount] = useState("");
-
-  //states for all of the bridging tokens
-  const [userConvertTokens, setUserConvertTokens] = useState<
-    UserConvertToken[]
-  >([]);
-  const [userBridgeOutTokens, setUserBridgeOutTokens] = useState<
-    UserNativeTokens[]
-  >([]);
-  const { userEthGTokens, gravityAddress } = useEthGravityTokens(
-    networkInfo.account,
-    ETHGravityTokens
-  );
-
-  //set the convert erc20 tokens
-  const { userTokens: userConvertERC20Tokens, fail: cantoERC20Fail } =
-    useCantoERC20Balances(
-      networkInfo.account,
-      convertCoinTokens,
-      CantoMainnet.chainId
-    );
-  async function getConvertCoinTokens() {
-    const convertNativeWithBalance = await getNativeCantoBalance(
-      CantoMainnet.cosmosAPIEndpoint,
-      networkInfo.cantoAddress,
-      convertCoinTokens
-    );
-    if (!cantoERC20Fail) {
-      setUserConvertTokens(
-        userConvertERC20Tokens.map((token) => {
-          return {
-            ...token,
-            nativeBalance:
-              convertNativeWithBalance.find(
-                (nativeToken) => nativeToken.nativeName === token.nativeName
-              )?.nativeBalance ?? BigNumber.from(0),
-          };
-        })
-      );
-    }
-  }
-  async function getBridgeOutTokens() {
-    const bridgeOutTokens = await getNativeCantoBalance(
-      CantoMainnet.cosmosAPIEndpoint,
-      networkInfo.cantoAddress,
-      allBridgeOutNetworks[tokenStore.bridgeOutNetwork].tokens
-    );
-    setUserBridgeOutTokens(bridgeOutTokens);
-  }
-  async function getAllBalances() {
-    await getConvertCoinTokens();
-    await getBridgeOutTokens();
-  }
-  useEffect(() => {
-    if (networkInfo.account && networkInfo.cantoAddress) {
-      getAllBalances();
-    }
-  }, [networkInfo.account, networkInfo.cantoAddress]);
-  useEffect(() => {
-    getConvertCoinTokens();
-  }, [cantoERC20Fail]);
-  useEffect(() => {
-    getBridgeOutTokens();
-  }, [tokenStore.bridgeOutNetwork]);
-
-  //Useffect for calling data per block
-  useEffect(() => {
-    if (networkInfo.account && networkInfo.cantoAddress) {
-      const interval = setInterval(async () => {
-        await getAllBalances();
-        //reselecting the tokens so it is the most updated version
-        // tokenStore.resetSelectedToken(SelectedTokens.ETHTOKEN, userEthGTokens);
-        tokenStore.resetSelectedToken(
-          SelectedTokens.CONVERTIN,
-          userConvertTokens
-        );
-        tokenStore.resetSelectedToken(
-          SelectedTokens.CONVERTOUT,
-          userConvertTokens
-        );
-        tokenStore.resetSelectedToken(
-          SelectedTokens.BRIDGEOUT,
-          userBridgeOutTokens
-        );
-      }, 6000);
-      return () => clearInterval(interval);
-    }
-  }, [userBridgeOutTokens, userConvertTokens]);
 
   //function states for approval of ETH tokens and bridging to gBridge
   const {
@@ -291,7 +203,7 @@ export const WalkthroughHomeScreen = () => {
             }
             cantoAddress={networkInfo.cantoAddress}
             currentStep={walkthroughStore.bridgeInStep}
-            bridgeInTokens={userEthGTokens}
+            bridgeInTokens={userBridgeInTokens}
             currentBridgeToken={bridgeInToken}
             sendApprove={() =>
               sendApprove(
