@@ -81,8 +81,8 @@ export function didPassBridgeInWalkthroughCheck(
       return currentCheckFunction(ethGToken);
     }
     case BridgeInStep.NEED_ALLOWANCE: {
-        return currentCheckFunction(ethGToken, maxBridgeInAmount);
-      }
+      return currentCheckFunction(ethGToken, maxBridgeInAmount);
+    }
     case BridgeInStep.SELECT_ERC20_AMOUNT: {
       return currentCheckFunction(bridgeInAmount, maxBridgeInAmount);
     }
