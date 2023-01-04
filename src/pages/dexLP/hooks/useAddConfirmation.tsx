@@ -1,7 +1,6 @@
 import { TransactionStatus } from "@usedapp/core";
-import { Contract, ethers } from "ethers";
-import { cERC20Abi, ERC20Abi } from "global/config/abi";
-import { CantoMainnet, CantoTestnet } from "global/config/networks";
+import { Contract } from "ethers";
+import { ERC20Abi } from "global/config/abi";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { useAlert } from "global/packages/src";
 import { getProvider } from "global/utils/walletConnect/addCantoToWallet";
@@ -62,7 +61,7 @@ export function useAddConfirmation(props: AddConfirmationProps): ReturnProps {
   });
   const { state: approveSupply, send: approveSupplySend } = useEnableToken({
     name: tokenNameIconObject.name,
-    address: props.pair.basePairInfo.cLPaddress,
+    address: props.pair.basePairInfo.address,
     icon: props.pair.basePairInfo.token1.icon,
     amount: "-1",
     type: CantoTransactionType.ENABLE,
