@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { useEthers } from "@usedapp/core";
 import { CantoMainnet } from "global/config/networks";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { useNetworkInfo } from "global/stores/networkInfo";
@@ -18,6 +19,7 @@ const SwitchNetworkPage = () => {
   const currentChainID = useNetworkInfo((state) => state.chainId);
 
   const requriedChainID = getRequiredNetworkChainID();
+  const { switchNetwork } = useEthers();
 
   function getRequiredNetworkChainID() {
     if (bridgeType == "IN" && bridgeStep == "FIRST") {
@@ -59,7 +61,13 @@ const SwitchNetworkPage = () => {
           Network&quot; for this transaction to be possible.
         </Text>
       </div>
-      <PrimaryButton disabled={rightNetwork} weight="bold">
+      <PrimaryButton
+        disabled={rightNetwork}
+        weight="bold"
+        onClick={() => {
+          if (requriedChainID != undefined) switchNetwork(requriedChainID);
+        }}
+      >
         {!rightNetwork
           ? "Switch to " +
             (requriedChainID == ETHMainnet.chainId ? "Ethereum" : "Canto")
@@ -67,7 +75,10 @@ const SwitchNetworkPage = () => {
       </PrimaryButton>
       <div className="row">
         <OutlinedButton onClick={() => popPage()}>Prev</OutlinedButton>
-        <PrimaryButton onClick={() => pushPage(BridgeStep.CHOOSE_TOKEN)}>
+        <PrimaryButton
+          onClick={() => pushPage(BridgeStep.CHOOSE_TOKEN)}
+          disabled={!rightNetwork}
+        >
           Next
         </PrimaryButton>
       </div>

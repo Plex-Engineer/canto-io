@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { useState } from "react";
+import { useBridgeStore } from "../stores/gravityStore";
 import AmountPage from "./pages/amount";
 import IntroPage from "./pages/intro";
 import SelectTokenPage from "./pages/selectToken";
@@ -9,7 +10,7 @@ import { BridgeStep, useBridgeWalkthroughStore } from "./store/useWalkthough";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
-
+  const bridging = useBridgeStore();
   return (
     <Styled>
       <Text type="title">Walkthrough</Text>

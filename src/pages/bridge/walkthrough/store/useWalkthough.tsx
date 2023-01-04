@@ -1,4 +1,3 @@
-import { persist } from "zustand/middleware";
 import create from "zustand";
 import { Token } from "global/config/tokenInfo";
 
