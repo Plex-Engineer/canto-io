@@ -18,7 +18,7 @@ export enum SelectedTokens {
   CONVERTOUT,
   BRIDGEOUT,
 }
-interface TokenStore {
+export interface TokenStore {
   selectedTokens: {
     [SelectedTokens.ETHTOKEN]: UserGravityBridgeTokens;
     [SelectedTokens.CONVERTIN]: UserConvertToken;

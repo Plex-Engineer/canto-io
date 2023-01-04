@@ -76,6 +76,7 @@ test("correct reactive button test (just bridge-in)", () => {
 
   const testCases = [
     {
+      hasPubKey: true,
       amount: parseUnits("10"), //amount doesn't matter since allowance is -1
       token: EmptySelectedETHToken,
       expected: {
@@ -84,6 +85,7 @@ test("correct reactive button test (just bridge-in)", () => {
       },
     },
     {
+      hasPubKey: true,
       amount: zero, //amount doesn't matter since allowance is -1
       token: EmptySelectedETHToken,
       expected: {
@@ -92,6 +94,7 @@ test("correct reactive button test (just bridge-in)", () => {
       },
     },
     {
+      hasPubKey: true,
       amount: testTokenBalance.add(1), //amount is more than balance and allowance is non-zero
       token: testTokenWithAllowance,
       expected: {
@@ -100,6 +103,7 @@ test("correct reactive button test (just bridge-in)", () => {
       },
     },
     {
+      hasPubKey: true,
       amount: zero, //amount is zero and allowance is non-zero
       token: testTokenWithAllowance,
       expected: {
@@ -108,6 +112,7 @@ test("correct reactive button test (just bridge-in)", () => {
       },
     },
     {
+      hasPubKey: true,
       amount: testTokenBalance.add(1), //amount is more than balance and allowance is non-zero
       token: testTokenWithAllowance,
       expected: {
@@ -116,6 +121,7 @@ test("correct reactive button test (just bridge-in)", () => {
       },
     },
     {
+      hasPubKey: true,
       amount: testTokenBalance.add(1), //allowance is zero so approve status shown
       token: testTokenNoAllowance,
       expected: {
@@ -124,6 +130,7 @@ test("correct reactive button test (just bridge-in)", () => {
       },
     },
     {
+      hasPubKey: true,
       amount: zero, //allowance is zero so approve status shown
       token: testTokenNoAllowance,
       expected: {
@@ -132,6 +139,7 @@ test("correct reactive button test (just bridge-in)", () => {
       },
     },
     {
+      hasPubKey: true,
       amount: testTokenBalance, //allowance is non-zero so increase allowance needed
       token: testTokenLowAllowance,
       expected: {
@@ -139,10 +147,20 @@ test("correct reactive button test (just bridge-in)", () => {
         disabled: false,
       },
     },
+    {
+      hasPubKey: false,
+      amount: parseUnits("10"), //amount doesn't matter since no pub key
+      token: testTokenWithAllowance,
+      expected: {
+        text: "please create public key",
+        disabled: true,
+      },
+    },
   ];
   for (let i = 0; i < testCases.length; i++) {
     expect(
       getReactiveButtonText(
+        testCases[i].hasPubKey,
         testCases[i].amount,
         testCases[i].token,
         "None",
