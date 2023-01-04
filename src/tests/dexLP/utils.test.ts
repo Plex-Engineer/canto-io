@@ -1,7 +1,7 @@
 import { parseUnits } from "ethers/lib/utils";
 import { MAINPAIRS } from "pages/dexLP/config/pairs";
 import {
-  calculateExpectedShareofLP,
+  calculateExpectedShareIfSupplying,
   checkForCantoInPair,
   getLPPairRatio,
   getToken1Limit,
@@ -146,28 +146,28 @@ test("calculating amount from LP ratio", () => {
 test("calculating expected share of LP", () => {
   const testCases = [
     {
+      currentShare: 0,
       expectedLPOut: parseUnits("1"),
-      currentLP: parseUnits("0"),
       totalLP: parseUnits("99"),
-      expected: 0.01,
+      expected: 1,
     },
     {
-      expectedLPOut: parseUnits("5"),
-      currentLP: parseUnits("5"),
-      totalLP: parseUnits("95"),
-      expected: 0.1,
+      currentShare: 0.1,
+      expectedLPOut: parseUnits("10"),
+      totalLP: parseUnits("10"),
+      expected: 55,
     },
   ];
 
   const testReturns = testCases.map((testCase) =>
-    calculateExpectedShareofLP(
+    calculateExpectedShareIfSupplying(
+      testCase.currentShare,
       testCase.expectedLPOut,
-      testCase.currentLP,
       testCase.totalLP
     )
   );
   for (let i = 0; i < testCases.length; i++) {
-    expect(testReturns[i]).toBe(testCases[i].expected);
+    expect(Number(testReturns[i])).toBe(Number(testCases[i].expected));
   }
 });
 

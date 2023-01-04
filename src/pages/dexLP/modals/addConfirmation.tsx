@@ -5,29 +5,21 @@ import { RowCell } from "./removeModal";
 import { useEffect, useState } from "react";
 import useModals from "../hooks/useModals";
 import { CantoMainnet, CantoTestnet } from "global/config/networks";
-import {
-  useAddLiquidity,
-  useAddLiquidityCANTO,
-} from "../hooks/useTransactions";
 import { truncateNumber } from "global/utils/utils";
 import {
   calculateExpectedShareIfSupplying,
-  calculateExpectedShareofLP,
-  checkForCantoInPair,
-  getCurrentBlockTimestamp,
   getReserveRatioAtoB,
 } from "../utils/utils";
-import { ERC20Abi, routerAbi } from "global/config/abi";
+import { routerAbi } from "global/config/abi";
 import { UserLPPairInfo } from "../config/interfaces";
 import { DexModalContainer } from "../components/Styled";
 import { ADDRESSES } from "global/config/addresses";
-import { PrimaryButton, useAlert } from "global/packages/src";
+import { PrimaryButton } from "global/packages/src";
 import CheckBox from "global/components/checkBox";
-import { useSupply } from "pages/lending/hooks/useTransaction";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { useAddConfirmation } from "../hooks/useAddConfirmation";
 
-interface AddConfirmationProps {
+export interface AddConfirmationProps {
   pair: UserLPPairInfo;
   value1: BigNumber;
   value2: BigNumber;
@@ -40,57 +32,13 @@ interface AddConfirmationProps {
 }
 
 const AddLiquidityButton = (props: AddConfirmationProps) => {
-  //alert is used to let the user know if supply LP in lending market failed (id they closed the tab too early)
-  const alert = useAlert();
-  const [confirmSupply, setConfirmSupply] = useState(false);
-  const { state: addLiquidityState, send: addLiquiditySend } = useAddLiquidity(
-    props.chainId,
-    {
-      type: CantoTransactionType.ADD_LIQUIDITY,
-      address: "",
-      amount: "-1",
-      icon: {
-        icon1: props.pair.basePairInfo.token1.icon,
-        icon2: props.pair.basePairInfo.token2.icon,
-      },
-      name:
-        props.pair.basePairInfo.token1.symbol +
-        "/" +
-        props.pair.basePairInfo.token2.symbol,
-    }
-  );
-  const { state: addLiquidityCANTOState, send: addLiquidityCANTOSend } =
-    useAddLiquidityCANTO(props.chainId, {
-      type: CantoTransactionType.ADD_LIQUIDITY,
-      address: "",
-      amount: "-1",
-      icon: {
-        icon1: props.pair.basePairInfo.token1.icon,
-        icon2: props.pair.basePairInfo.token2.icon,
-      },
-      name:
-        props.pair.basePairInfo.token1.symbol +
-        "/" +
-        props.pair.basePairInfo.token2.symbol,
-    });
-  const { state: supplyLP, send: supplyLPSend } = useSupply({
-    name:
-      props.pair.basePairInfo.token1.symbol +
-      "/" +
-      props.pair.basePairInfo.token2.symbol,
-    address: props.pair.basePairInfo.cLPaddress,
-    icon: props.pair.basePairInfo.token1.icon,
-    amount: "-1",
-    type: CantoTransactionType.SUPPLY,
-  });
-
-  const [isToken1Canto, isToken2Canto] = checkForCantoInPair(
-    props.pair.basePairInfo,
-    props.chainId
-  );
-
-  const amountMinOut1 = props.value1.mul(Number(props.slippage)).div(100);
-  const amountMinOut2 = props.value2.mul(Number(props.slippage)).div(100);
+  const {
+    confirmSupply,
+    setConfirmSupply,
+    addLiquidity,
+    currentTransactionState,
+    checkSupplyClose,
+  } = useAddConfirmation(props);
 
   const displayReserveRatio = getReserveRatioAtoB(
     props.pair.totalSupply.ratio.ratio,
@@ -98,47 +46,6 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
     props.pair.basePairInfo.token1.decimals,
     props.pair.basePairInfo.token2.decimals
   );
-
-  const [currentBlockTimeStamp, setCurrentBlockTimeStamp] = useState(0);
-
-  async function blockTimeStamp() {
-    setCurrentBlockTimeStamp(await getCurrentBlockTimestamp(props.chainId));
-  }
-  async function supplyLPInLending() {
-    const providerURL =
-      CantoTestnet.chainId == props.chainId
-        ? CantoTestnet.rpcUrl
-        : CantoMainnet.rpcUrl;
-    const provider = new ethers.providers.JsonRpcProvider(providerURL);
-    const LPToken = new Contract(
-      props.pair.basePairInfo.address,
-      ERC20Abi,
-      provider
-    );
-    const lpToSupply = (await LPToken.balanceOf(props.account)).sub(
-      props.pair.userSupply.totalLP
-    );
-    supplyLPSend(lpToSupply);
-  }
-
-  useEffect(() => {
-    blockTimeStamp();
-  }, []);
-
-  useEffect(() => {
-    if (
-      (addLiquidityState.status == "Success" ||
-        addLiquidityCANTOState.status == "Success") &&
-      confirmSupply &&
-      supplyLP.status == "None"
-    ) {
-      supplyLPInLending();
-    }
-  }, [
-    addLiquidityState.status,
-    addLiquidityCANTOState.status,
-    supplyLP.status,
-  ]);
 
   const mixPanelInfoObject = {
     tokenName:
@@ -169,76 +76,29 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
     ),
   };
 
-  function checkIfSupplyLPClosedTooSoon() {
-    if (
-      confirmSupply &&
-      supplyLP.status == "None" &&
-      (addLiquidityCANTOState.status != "None" ||
-        addLiquidityState.status != "None")
-    ) {
-      alert.show(
-        "Failure",
-        <div
-          onClick={alert.close}
-          tabIndex={0}
-          role="button"
-          style={{ cursor: "pointer" }}
-        >
-          supply of LP tokens failed, please try again on the lending page
-        </div>,
-        true
-      );
-    }
-  }
-
   return (
     <DexModalContainer>
-      {(addLiquidityState.status != "None" ||
-        addLiquidityCANTOState.status != "None") &&
-        supplyLP.status == "None" && (
-          <GlobalLoadingModal
-            transactionType={CantoTransactionType.ADD_LIQUIDITY}
-            status={
-              isToken1Canto || isToken2Canto
-                ? addLiquidityCANTOState.status
-                : addLiquidityState.status
-            }
-            tokenName={
-              props.pair.basePairInfo.token1.symbol +
-              " / " +
-              props.pair.basePairInfo.token2.symbol +
-              " LP"
-            }
-            txHash={
-              isToken1Canto || isToken2Canto
-                ? addLiquidityCANTOState.transaction?.hash
-                : addLiquidityState.transaction?.hash
-            }
-            onClose={() => {
-              checkIfSupplyLPClosedTooSoon();
-              props.onClose();
-            }}
-            mixPanelEventInfo={mixPanelInfoObject}
-            additionalMessage={
-              "please stay on this screen until the second Metamask transaction appears on your screen"
-            }
-          />
-        )}
-      {supplyLP.status != "None" && (
+      {currentTransactionState.state.status != "None" && (
         <GlobalLoadingModal
-          transactionType={CantoTransactionType.SUPPLY}
-          status={supplyLP.status}
+          transactionType={currentTransactionState.type}
+          status={currentTransactionState.state.status}
           tokenName={
             props.pair.basePairInfo.token1.symbol +
             " / " +
-            props.pair.basePairInfo.token2.symbol
+            props.pair.basePairInfo.token2.symbol +
+            " LP"
           }
-          txHash={supplyLP.transaction?.hash}
+          txHash={currentTransactionState.state.transaction?.hash}
           onClose={() => {
-            checkIfSupplyLPClosedTooSoon();
+            checkSupplyClose();
             props.onClose();
           }}
           mixPanelEventInfo={mixPanelInfoObject}
+          additionalMessage={
+            confirmSupply
+              ? "please stay on this screen until all transactions are completed"
+              : null
+          }
         />
       )}
       <div className="title">
@@ -334,50 +194,9 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
       </div>
 
       <PrimaryButton
-        disabled={currentBlockTimeStamp == 0}
         style={{ marginTop: "1.5rem" }}
         size="lg"
-        onClick={() => {
-          if (isToken1Canto) {
-            addLiquidityCANTOSend(
-              props.pair.basePairInfo.token2.address,
-              props.pair.basePairInfo.stable,
-              props.value2,
-              amountMinOut2,
-              amountMinOut1,
-              props.account,
-              currentBlockTimeStamp + Number(props.deadline) * 60,
-              {
-                value: props.value1,
-              }
-            );
-          } else if (isToken2Canto) {
-            addLiquidityCANTOSend(
-              props.pair.basePairInfo.token1.address,
-              props.pair.basePairInfo.stable,
-              props.value1,
-              amountMinOut1,
-              amountMinOut2,
-              props.account,
-              currentBlockTimeStamp + Number(props.deadline) * 60,
-              {
-                value: props.value2,
-              }
-            );
-          } else {
-            addLiquiditySend(
-              props.pair.basePairInfo.token1.address,
-              props.pair.basePairInfo.token2.address,
-              props.pair.basePairInfo.stable,
-              props.value1,
-              props.value2,
-              amountMinOut1,
-              amountMinOut2,
-              props.account,
-              currentBlockTimeStamp + Number(props.deadline) * 60
-            );
-          }
-        }}
+        onClick={addLiquidity}
       >
         confirm
       </PrimaryButton>

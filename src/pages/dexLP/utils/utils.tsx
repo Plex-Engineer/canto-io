@@ -57,21 +57,6 @@ export async function getCurrentBlockTimestamp(chainId: number | undefined) {
   return blockData.timestamp;
 }
 
-export function calculateExpectedShareofLP(
-  expectedLPOut: BigNumber,
-  currentLP: BigNumber,
-  totalLP: BigNumber
-) {
-  return Number(
-    formatUnits(
-      expectedLPOut
-        .add(currentLP)
-        .mul(BigNumber.from(10).pow(18))
-        .div(totalLP.add(expectedLPOut))
-    )
-  );
-}
-
 export function calculateExpectedShareIfSupplying(
   currentShare: number,
   expectedLPOut: BigNumber,
