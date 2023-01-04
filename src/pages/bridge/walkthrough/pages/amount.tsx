@@ -1,28 +1,23 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
-
 import BaseStyled from "./layout";
 
-interface Props {
-  PageNumber: number;
-}
-
-const SelectTokenPage = (props: Props) => {
+const AmountPage = () => {
   return (
     <Styled>
       <Text type="title" size="title2">
-        Bridgin Token
+        CHOOSE THE AMOUNT
       </Text>
       <div>
         <Text type="text" size="title3" bold>
-          Selec the token you'd like to bridge in
+          Please set the amount
         </Text>
         <Text type="text" size="text3">
-          Now that you are on the right network. Please select the token you'd
-          like to bridge in.
+          You need to switch to &quot;Ethereum&quot; for this transaction to be
+          possible.
         </Text>
       </div>
-
+      <PrimaryButton>Switch to &quot;Ethereum Network&quot;</PrimaryButton>
       <div className="row">
         <OutlinedButton>Prev</OutlinedButton>
         <PrimaryButton>Next</PrimaryButton>
@@ -36,4 +31,4 @@ const Styled = styled(BaseStyled)`
   justify-content: center;
 `;
 
-export default SelectTokenPage;
+export default AmountPage;

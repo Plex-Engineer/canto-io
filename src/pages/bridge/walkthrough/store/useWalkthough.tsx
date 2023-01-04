@@ -1,8 +1,19 @@
-import { devtools, persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import create from "zustand";
-import { Token, TOKENS } from "global/config/tokenInfo";
+import { Token } from "global/config/tokenInfo";
 
-interface BridgeWalkthroughStoreProps {
+export enum BridgeStep {
+  CHOICE,
+  SWITCH_NETWORK,
+  CHOOSE_TOKEN,
+  CHOOSE_AMOUNT,
+  APPROVAL,
+  CONFIRMATION,
+  PROCESSING,
+  SUCCESSFUL,
+}
+
+interface Props {
   BridgeType: "IN" | "OUT" | "NONE";
   BridgeStep: "FIRST" | "LAST" | "NONE";
   SelectedToken: Token | "NONE";
@@ -11,30 +22,41 @@ interface BridgeWalkthroughStoreProps {
   setBridgeStep: (step: "FIRST" | "LAST" | "NONE") => void;
   setSelectedToken: (token: Token) => void;
   setAmount: (amount: string) => void;
+  currentStep: BridgeStep;
+  stepTracker: BridgeStep[];
+  setCurrentStep: (step: BridgeStep) => void;
+  pushStepTracker: (step: BridgeStep) => void;
+  popStepTracker: () => BridgeStep | undefined;
   reset: () => void;
 }
 
-const BridgeFlow = {
-  bridge: {
-    in: ["network", "select", "amount", "approval", "confirmation"],
+export const useBridgeWalkthroughStore = create<Props>()((set, get) => ({
+  BridgeType: "NONE",
+  BridgeStep: "NONE",
+  SelectedToken: "NONE",
+  Amount: "",
+  setBridgeType: (type) => set({ BridgeType: type }),
+  setBridgeStep: (step) => set({ BridgeStep: step }),
+  setAmount: (amount) => set({ Amount: amount }),
+  setSelectedToken: (token) => set({ SelectedToken: token }),
+  currentStep: BridgeStep.CHOICE,
+  setCurrentStep: (step) => set({ currentStep: step }),
+  pushStepTracker: (step) =>
+    set({ stepTracker: [...get().stepTracker, step], currentStep: step }),
+  popStepTracker: () => {
+    const pop = get().stepTracker.pop();
+    set({
+      stepTracker: [...get().stepTracker],
+      currentStep: get().stepTracker[get().stepTracker.length - 1],
+    });
+    return pop;
   },
-};
-export const useBridgeWalkthroughStore = create<BridgeWalkthroughStoreProps>()(
-  persist((set, get) => ({
-    BridgeType: "NONE",
-    BridgeStep: "NONE",
-    SelectedToken: "NONE",
-    Amount: "",
-    setBridgeType: (type) => set({ BridgeType: type }),
-    setBridgeStep: (step) => set({ BridgeStep: step }),
-    setAmount: (amount) => set({ Amount: amount }),
-    setSelectedToken: (token) => set({ SelectedToken: token }),
-    reset: () =>
-      set({
-        BridgeType: "NONE",
-        BridgeStep: "NONE",
-        Amount: "",
-        SelectedToken: "NONE",
-      }),
-  }))
-);
+  stepTracker: [BridgeStep.CHOICE],
+  reset: () =>
+    set({
+      BridgeType: "NONE",
+      BridgeStep: "NONE",
+      Amount: "",
+      SelectedToken: "NONE",
+    }),
+}));

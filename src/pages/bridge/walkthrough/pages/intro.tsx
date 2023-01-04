@@ -1,17 +1,12 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { useState } from "react";
-import TextSwitch from "../components/TextSwitch";
+import TextSwitch from "../../walkthrough-dummy/components/TextSwitch";
+import { BridgeStep, useBridgeWalkthroughStore } from "../store/useWalkthough";
 import BaseStyled from "./layout";
 
-interface Props {
-  PageNumber: number;
-}
-
-const IntroPage = (props: Props) => {
-  const [bridgingType, setBridgingType] = useState<"in" | "out" | undefined>();
-
-  const [bridgingDone, setBridgingDone] = useState<"yes" | "no" | undefined>();
+const IntroPage = () => {
+  const walkthrough = useBridgeWalkthroughStore();
   return (
     <Styled>
       <Text type="title" size="title2">
@@ -23,15 +18,15 @@ const IntroPage = (props: Props) => {
       <div className="row">
         <TextSwitch
           text="get funds into canto"
-          active={bridgingType == "in"}
+          active={walkthrough.BridgeType == "IN"}
           onClick={() => {
-            setBridgingType("in");
+            walkthrough.setBridgeType("IN");
           }}
         />
         <TextSwitch
           text="get funds out of canto"
-          active={bridgingType == "out"}
-          onClick={() => setBridgingType("out")}
+          active={walkthrough.BridgeType == "OUT"}
+          onClick={() => walkthrough.setBridgeType("OUT")}
         />
       </div>
 
@@ -41,21 +36,28 @@ const IntroPage = (props: Props) => {
       <div className="row">
         <TextSwitch
           text="mainnet to gBridge"
-          active={bridgingDone == "yes"}
+          active={walkthrough.BridgeStep == "FIRST"}
           onClick={() => {
-            setBridgingDone("yes");
+            walkthrough.setBridgeStep("FIRST");
           }}
         />
         <TextSwitch
           text="gBridge to canto(EVM)"
-          active={bridgingDone == "no"}
-          onClick={() => setBridgingDone("no")}
+          active={walkthrough.BridgeStep == "LAST"}
+          onClick={() => walkthrough.setBridgeStep("LAST")}
         />
       </div>
 
       <div className="row">
-        <OutlinedButton>Prev</OutlinedButton>
-        <PrimaryButton>Next</PrimaryButton>
+        <OutlinedButton disabled>Prev</OutlinedButton>
+        <PrimaryButton
+          onClick={() => walkthrough.pushStepTracker(BridgeStep.SWITCH_NETWORK)}
+          disabled={
+            walkthrough.BridgeStep == "NONE" || walkthrough.BridgeType == "NONE"
+          }
+        >
+          Next
+        </PrimaryButton>
       </div>
     </Styled>
   );

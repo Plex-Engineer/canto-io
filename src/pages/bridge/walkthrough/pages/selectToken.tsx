@@ -1,29 +1,24 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
-import { useState } from "react";
-import TextSwitch from "../components/TextSwitch";
+
 import BaseStyled from "./layout";
 
-interface Props {
-  PageNumber: number;
-}
-
-const SwitchNetworkPage = (props: Props) => {
+const SelectTokenPage = () => {
   return (
     <Styled>
       <Text type="title" size="title2">
-        Switch Network
+        Bridgin Token
       </Text>
       <div>
         <Text type="text" size="title3" bold>
-          Looks like you are not on the right network
+          Selec the token you'd like to bridge in
         </Text>
         <Text type="text" size="text3">
-          You need to switch to &quot;Ethereum&quot; for this transaction to be
-          possible.
+          Now that you are on the right network. Please select the token you'd
+          like to bridge in.
         </Text>
       </div>
-      <PrimaryButton>Switch to &quot;Ethereum Network&quot;</PrimaryButton>
+
       <div className="row">
         <OutlinedButton>Prev</OutlinedButton>
         <PrimaryButton>Next</PrimaryButton>
@@ -37,4 +32,4 @@ const Styled = styled(BaseStyled)`
   justify-content: center;
 `;
 
-export default SwitchNetworkPage;
+export default SelectTokenPage;

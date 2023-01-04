@@ -54,7 +54,7 @@ const config: Config = {
   },
   connectors: {
     metamask: new MetamaskConnector(),
-    coinbase: new CoinbaseWalletConnector(),
+    // coinbase: new CoinbaseWalletConnector(),
   },
   autoConnect: true,
   fastMulticallEncoding: true,
