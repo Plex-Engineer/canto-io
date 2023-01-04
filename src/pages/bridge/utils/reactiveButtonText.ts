@@ -26,11 +26,15 @@ const INSUFFICIENT_BALANCE = "insufficient balance";
 const ENTER_AMOUNT = "enter amount";
 //returns button text and if it is disabled
 export function getReactiveButtonText(
+  hasPubKey: boolean,
   amount: BigNumber,
   token: UserGravityBridgeTokens,
   approveStatus: TransactionState,
   cosmosStatus: TransactionState
 ): [string, boolean] {
+  if (!hasPubKey) {
+    return ["please create public key", true];
+  }
   if (token.allowance.eq(-1)) {
     return [SELECT_A_TOKEN, true];
   } else if (amount.gt(token.balanceOf) && !token.allowance.isZero()) {

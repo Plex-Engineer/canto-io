@@ -1,159 +1,33 @@
 import styled from "@emotion/styled";
-import { CantoMainnet } from "global/config/networks";
-import { useNetworkInfo } from "global/stores/networkInfo";
-import { useEffect, useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import BridgeIn from "./BridgeIn";
 import BridgeOut from "./BridgeOut";
 import walletIcon from "assets/wallet.svg";
-import { UserConvertToken, UserNativeTokens } from "./config/interfaces";
-import { useEthGravityTokens } from "./hooks/useEthGravityTokens";
-import { SelectedTokens, useTokenStore } from "./stores/tokenStore";
-import { getNativeCantoBalance } from "./utils/nativeBalances";
-import { useCantoERC20Balances } from "./hooks/useERC20Balances";
-import {
-  allBridgeOutNetworks,
-  convertCoinTokens,
-} from "./config/gravityBridgeTokens";
-import { ETHGravityTokens } from "./config/gravityBridgeTokens";
-import { BigNumber } from "ethers";
 import Transactions from "./Transactions";
 import { useEthers } from "@usedapp/core";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
-import {
-  getBridgeInEventsWithStatus,
-  getBridgeOutTransactions,
-} from "./utils/bridgeTxPageUtils";
 import { useBridgeTransactionPageStore } from "./stores/transactionPageStore";
 import HelmetSEO from "global/components/seo";
-import { useTransactionChecklistStore } from "./stores/transactionChecklistStore";
 import useBridgeTxStore from "./stores/transactionStore";
 import { StyledPopup } from "global/components/Styled";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
+import { useCustomBridgeInfo } from "./hooks/useCustomBridgeInfo";
 
 const BridgingPage = () => {
   //all stores needed
-  const tokenStore = useTokenStore();
   const bridgeTxStore = useBridgeTxStore();
   const transactionStore = useBridgeTransactionPageStore();
-  const networkInfo = useNetworkInfo();
-  //for setting up transaction checklist on both pages using the current account
-  const transactionChecklistStore = useTransactionChecklistStore();
-  const { account, activateBrowserWallet } = useEthers();
-
-  //setting the bridging transactions into local storage
-  async function setBridgingTransactions() {
-    if (networkInfo.account && networkInfo.cantoAddress) {
-      const [completedBridgeIn, pendingBridgeIn] =
-        await getBridgeInEventsWithStatus(networkInfo.account);
-      const bridgeOutTransactions = await getBridgeOutTransactions(
-        networkInfo.cantoAddress
-      );
-      transactionStore.setTransactions(
-        networkInfo.account,
-        pendingBridgeIn,
-        completedBridgeIn,
-        bridgeOutTransactions
-      );
-    }
-  }
-  //set the convert erc20 tokens
-  const { userTokens: userConvertERC20Tokens, fail: cantoERC20Fail } =
-    useCantoERC20Balances(
-      networkInfo.account,
-      convertCoinTokens,
-      CantoMainnet.chainId
-    );
-  const [userConvertTokens, setUserConvertTokens] = useState<
-    UserConvertToken[]
-  >([]);
-  //set the gravity token info from ethMainnet
-  const { userEthGTokens, gravityAddress } = useEthGravityTokens(
-    networkInfo.account,
-    ETHGravityTokens
-  );
-  const [userBridgeOutTokens, setUserBridgeOutTokens] = useState<
-    UserNativeTokens[]
-  >([]);
-
-  async function getConvertCoinBalance() {
-    const convertNativeWithBalance = await getNativeCantoBalance(
-      CantoMainnet.cosmosAPIEndpoint,
-      networkInfo.cantoAddress,
-      convertCoinTokens
-    );
-    if (!cantoERC20Fail) {
-      setUserConvertTokens(
-        userConvertERC20Tokens.map((token) => {
-          return {
-            ...token,
-            nativeBalance:
-              convertNativeWithBalance.find(
-                (nativeToken) => nativeToken.nativeName === token.nativeName
-              )?.nativeBalance ?? BigNumber.from(0),
-          };
-        })
-      );
-    }
-  }
-  async function getBridgeOutTokens() {
-    const bridgeOutTokens = await getNativeCantoBalance(
-      CantoMainnet.cosmosAPIEndpoint,
-      networkInfo.cantoAddress,
-      allBridgeOutNetworks[tokenStore.bridgeOutNetwork].tokens
-    );
-    setUserBridgeOutTokens(bridgeOutTokens);
-  }
-  async function getAllBalances() {
-    await getConvertCoinBalance();
-    await getBridgeOutTokens();
-  }
-
-  useEffect(() => {
-    if (networkInfo.account && networkInfo.cantoAddress) {
-      getAllBalances();
-      setBridgingTransactions();
-      transactionStore.checkAccount(networkInfo.account);
-      tokenStore.checkTimeAndResetTokens();
-      transactionChecklistStore.checkPreviousAccount(networkInfo.account);
-    }
-  }, [networkInfo.account, networkInfo.cantoAddress]);
-
-  //useEffect to get tokens quick after user makes changes
-  useEffect(() => {
-    getConvertCoinBalance();
-  }, [cantoERC20Fail]);
-  useEffect(() => {
-    getBridgeOutTokens();
-  }, [tokenStore.bridgeOutNetwork]);
-
-  //Useffect for calling data per block
-  useEffect(() => {
-    if (networkInfo.account && networkInfo.cantoAddress) {
-      const interval = setInterval(async () => {
-        await setBridgingTransactions();
-        await getAllBalances();
-        //reselecting the tokens so it is the most updated version
-        tokenStore.resetSelectedToken(SelectedTokens.ETHTOKEN, userEthGTokens);
-        tokenStore.resetSelectedToken(
-          SelectedTokens.CONVERTIN,
-          userConvertTokens
-        );
-        tokenStore.resetSelectedToken(
-          SelectedTokens.CONVERTOUT,
-          userConvertTokens
-        );
-        tokenStore.resetSelectedToken(
-          SelectedTokens.BRIDGEOUT,
-          userBridgeOutTokens
-        );
-      }, 6000);
-      return () => clearInterval(interval);
-    }
-  }, [userEthGTokens, userBridgeOutTokens, userConvertTokens]);
+  const { activateBrowserWallet } = useEthers();
+  const {
+    account,
+    userConvertTokens,
+    userBridgeInTokens,
+    userBridgeOutTokens,
+    gravityAddress,
+  } = useCustomBridgeInfo();
 
   const notConnectedTabs = () => {
     const tabs = [];
@@ -230,7 +104,7 @@ const BridgingPage = () => {
             <>
               <TabPanel>
                 <BridgeIn
-                  userEthTokens={userEthGTokens}
+                  userEthTokens={userBridgeInTokens}
                   gravityAddress={gravityAddress}
                   userConvertCoinNativeTokens={userConvertTokens}
                 />
