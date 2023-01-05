@@ -1,20 +1,35 @@
-import { useEthers } from "@usedapp/core";
 import { formatUnits } from "ethers/lib/utils";
+import { chain, convertFee, ibcFee, memo } from "global/config/cosmosConstants";
 import { CantoMainnet } from "global/config/networks";
+import { switchNetwork } from "global/utils/walletConnect/addCantoToWallet";
+import {
+  BridgeOutNetworkInfo,
+  BridgeOutNetworks,
+  BridgeOutNetworkTokenData,
+} from "pages/bridge/config/gravityBridgeTokens";
 import {
   BaseToken,
+  BridgeTransactionType,
   UserConvertToken,
   UserNativeTokens,
 } from "pages/bridge/config/interfaces";
-import { SelectedTokens, useTokenStore } from "pages/bridge/stores/tokenStore";
-import { useEffect, useState } from "react";
+import { SelectedTokens } from "pages/bridge/stores/tokenStore";
+import { BridgeTransactionStatus } from "pages/bridge/stores/transactionStore";
+import { performBridgeCosmosTxAndSetStatus } from "pages/bridge/utils/bridgeCosmosTxUtils";
+import { txConvertERC20 } from "pages/bridge/utils/convertCoin/convertTransactions";
+import { txIBCTransfer } from "pages/bridge/utils/IBC/IBCTransfer";
+import { convertStringToBigNumber } from "pages/bridge/utils/stringToBigNumber";
+import BarIndicator from "../components/barIndicator";
 import AmountPage from "../pages/amount";
+import { ConfirmTransactionPage } from "../pages/confirmTxPage";
+import SelectBridgeOutNetwork from "../pages/selectBridgeOutNetwork";
 import SelectTokenPage from "../pages/selectToken";
 import SwitchNetworkPage from "../pages/switchNetwork";
 import { BridgeOutStep } from "../walkthroughTracker";
 
 interface BridgeOutManagerProps {
   chainId: number;
+  cantoAddress: string;
   currentStep: BridgeOutStep;
   canContinue: boolean;
   onPrev: () => void;
@@ -23,17 +38,15 @@ interface BridgeOutManagerProps {
   convertTokens: UserConvertToken[];
   currentBridgeOutToken: UserNativeTokens;
   bridgeOutTokens: UserNativeTokens[];
+  currentBridgeOutNetwork: BridgeOutNetworkInfo;
+  bridgeOutNetworks: BridgeOutNetworkTokenData;
+  setBridgeOutNetwork: (network: BridgeOutNetworks) => void;
   setToken: (token: BaseToken, type: SelectedTokens) => void;
   amount: string;
   setAmount: (amount: string) => void;
+  setCosmosTxStatus: (status: BridgeTransactionStatus | undefined) => void;
 }
 export const BridgeOutManager = (props: BridgeOutManagerProps) => {
-  const { switchNetwork } = useEthers();
-  const [selectedToken, setSelectedToken] = useState<BaseToken>();
-
-  useEffect(() => {
-    console.log(selectedToken);
-  }, [selectedToken]);
   return (
     <>
       {(props.currentStep === BridgeOutStep.SWITCH_TO_CANTO ||
@@ -53,39 +66,32 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           tokenList={props.convertTokens}
           activeToken={props.currentConvertToken}
           tokenBalance="erc20Balance"
-          onSelect={(token) => {
-            setSelectedToken(token);
-            return props.setToken(token, SelectedTokens.CONVERTOUT);
-          }}
+          onSelect={(token) => props.setToken(token, SelectedTokens.CONVERTOUT)}
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
         />
       )}
-      {props.currentStep === BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT &&
-        selectedToken != undefined && (
-          <AmountPage
-            amount={props.amount}
-            setAmount={props.setAmount}
-            selectedToken={selectedToken}
-            max={formatUnits(
-              props.currentConvertToken.erc20Balance,
-              props.currentConvertToken.decimals
-            )}
-            canContinue={props.canContinue}
-            onNext={props.onNext}
-            onPrev={props.onPrev}
-          />
-        )}
-
-      {/* {props.currentStep === BridgeOutStep.CONVERT_COIN && (
-        <ConfirmConvert
-          amount={convertStringToBigNumber(
-            props.amount,
+      {props.currentStep === BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT && (
+        <AmountPage
+          amount={props.amount}
+          setAmount={props.setAmount}
+          selectedToken={props.currentConvertToken}
+          max={formatUnits(
+            props.currentConvertToken.erc20Balance,
             props.currentConvertToken.decimals
           )}
+          canContinue={props.canContinue}
+          onNext={props.onNext}
+          onPrev={props.onPrev}
+        />
+      )}
+
+      {props.currentStep === BridgeOutStep.CONVERT_COIN && (
+        <ConfirmTransactionPage
+          amount={props.amount}
           token={props.currentConvertToken}
-          convertTx={async () =>
+          onTxConfirm={async () =>
             await performBridgeCosmosTxAndSetStatus(
               async () =>
                 await txConvertERC20(
@@ -101,92 +107,95 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
                   memo
                 ),
               BridgeTransactionType.CONVERT_OUT,
-              props.setTxStatus,
+              props.setCosmosTxStatus,
               props.currentConvertToken.name,
               props.amount,
               "canto evm",
               "canto bridge"
             )
           }
-          txMessage={props.txMessage}
-        />
-      )} */}
-
-      {/* {props.currentStep === BridgeOutStep.SELECT_BRIDGE_OUT_NETWORK && (
-        <SwitchNetworkPage
-          toChainId={CantoMainnet.chainId}
-          fromChainId={props.chainId}
-          onClick={() => switchNetwork(CantoMainnet.chainId)}
+          txType={"CONVERT OUT"}
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
         />
-      )} */}
+      )}
+
+      {props.currentStep === BridgeOutStep.SELECT_BRIDGE_OUT_NETWORK && (
+        <SelectBridgeOutNetwork
+          networks={props.bridgeOutNetworks}
+          activeNetwork={props.currentBridgeOutNetwork}
+          onSelect={(net) => props.setBridgeOutNetwork(net)}
+          canContinue={props.canContinue}
+          onNext={props.onNext}
+          onPrev={props.onPrev}
+        />
+      )}
       {props.currentStep === BridgeOutStep.SELECT_NATIVE_TOKEN && (
         <SelectTokenPage
           bridgeType="OUT"
           tokenList={props.bridgeOutTokens}
           activeToken={props.currentBridgeOutToken}
           tokenBalance="nativeBalance"
-          onSelect={(token) => {
-            setSelectedToken(token);
-            props.setToken(token, SelectedTokens.BRIDGEOUT);
-          }}
+          onSelect={(token) => props.setToken(token, SelectedTokens.BRIDGEOUT)}
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
         />
       )}
-      {props.currentStep === BridgeOutStep.SELECT_NATIVE_TOKEN_AMOUNT &&
-        selectedToken != undefined && (
-          <AmountPage
-            amount={props.amount}
-            setAmount={props.setAmount}
-            selectedToken={selectedToken}
-            max={formatUnits(
-              props.currentBridgeOutToken.nativeBalance,
-              props.currentBridgeOutToken.decimals
-            )}
-            canContinue={props.canContinue}
-            onNext={props.onNext}
-            onPrev={props.onPrev}
-          />
-        )}
-      {/* {props.currentStep === BridgeOutStep.SEND_TO_GRBIDGE && (
-        <ConfirmConvert
-          amount={convertStringToBigNumber(
-            props.amount,
+      {props.currentStep === BridgeOutStep.SELECT_NATIVE_TOKEN_AMOUNT && (
+        <AmountPage
+          amount={props.amount}
+          setAmount={props.setAmount}
+          selectedToken={props.currentBridgeOutToken}
+          max={formatUnits(
+            props.currentBridgeOutToken.nativeBalance,
             props.currentBridgeOutToken.decimals
           )}
+          canContinue={props.canContinue}
+          onNext={props.onNext}
+          onPrev={props.onPrev}
+        />
+      )}
+      {props.currentStep === BridgeOutStep.SEND_TO_GRBIDGE && (
+        <ConfirmTransactionPage
+          amount={props.amount}
           token={props.currentBridgeOutToken}
-          convertTx={async () =>
+          onTxConfirm={async () =>
             await performBridgeCosmosTxAndSetStatus(
               async () =>
                 await txIBCTransfer(
                   props.cantoAddress,
-                  props.bridgeOutNetwork.channel,
+                  props.currentBridgeOutNetwork.channel,
                   convertStringToBigNumber(
                     props.amount,
                     props.currentBridgeOutToken.decimals
                   ).toString(),
                   props.currentBridgeOutToken.nativeName,
                   CantoMainnet.cosmosAPIEndpoint,
-                  props.bridgeOutNetwork.endpoint,
+                  props.currentBridgeOutNetwork.endpoint,
                   ibcFee,
                   chain,
                   memo
                 ),
               BridgeTransactionType.BRIDGE_OUT,
-              props.setTxStatus,
+              props.setCosmosTxStatus,
               props.currentBridgeOutToken.name,
               props.amount,
               "canto bridge",
-              props.bridgeOutNetwork.name
+              props.currentBridgeOutNetwork.name
             )
           }
-          txMessage={props.txMessage}
+          txType={"SEND TO GRBIDGE"}
+          onNext={props.onNext}
+          onPrev={props.onPrev}
+          canContinue={props.canContinue}
         />
-      )} */}
+      )}
+      <BarIndicator
+        total={Object.keys(BridgeOutStep).length / 2}
+        current={props.currentStep}
+      />
     </>
   );
 };

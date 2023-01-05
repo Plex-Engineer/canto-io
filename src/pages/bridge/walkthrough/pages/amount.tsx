@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { CInput } from "global/packages/src/components/atoms/Input";
-import { truncateNumber } from "global/utils/utils";
 import { BaseToken } from "pages/bridge/config/interfaces";
 import BaseStyled from "./layout";
 
@@ -74,7 +73,9 @@ const AmountPage = (props: AmountProps) => {
       <footer>
         <div className="row">
           <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
-          <PrimaryButton onClick={props.onNext}>Next</PrimaryButton>
+          <PrimaryButton disabled={!props.canContinue} onClick={props.onNext}>
+            Next
+          </PrimaryButton>
         </div>
       </footer>
     </Styled>

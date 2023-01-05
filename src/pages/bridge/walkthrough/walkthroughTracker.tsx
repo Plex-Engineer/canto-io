@@ -19,7 +19,6 @@ interface WalkthroughTracker {
   [key: number]: WalkthroughStep;
 }
 export enum BridgeInStep {
-  // CHECK_NATIVE_TOKEN_BALANCE,
   SWTICH_TO_ETH,
   SELECT_ERC20_TOKEN,
   NEED_ALLOWANCE,
@@ -62,7 +61,7 @@ export const BridgeInWalkthroughSteps: WalkthroughTracker = {
       !token.allowance.lte(max),
   },
   [BridgeInStep.SELECT_ERC20_AMOUNT]: {
-    prev: BridgeInStep.SELECT_ERC20_TOKEN,
+    prev: BridgeInStep.NEED_ALLOWANCE,
     next: BridgeInStep.SEND_FUNDS_TO_GBRIDGE,
     checkFunction: (amount: BigNumber, max: BigNumber) =>
       amount.gt(0) && amount.lte(max),

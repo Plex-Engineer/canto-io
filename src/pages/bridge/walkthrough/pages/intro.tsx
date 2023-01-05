@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
-import TextSwitch from "../../walkthrough-dummy/components/TextSwitch";
+import TextSwitch from "../components/TextSwitch";
 import BaseStyled from "./layout";
 
 interface IntroPageProps {

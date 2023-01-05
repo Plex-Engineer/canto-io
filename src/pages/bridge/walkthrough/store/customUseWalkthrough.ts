@@ -1,5 +1,13 @@
+import { TransactionStatus } from "@usedapp/core";
+import { BigNumber } from "ethers";
+import { ADDRESSES } from "global/config/addresses";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import { allBridgeOutNetworks } from "pages/bridge/config/gravityBridgeTokens";
+import {
+  allBridgeOutNetworks,
+  BridgeOutNetworkInfo,
+  BridgeOutNetworks,
+  BridgeOutNetworkTokenData,
+} from "pages/bridge/config/gravityBridgeTokens";
 import {
   BaseToken,
   BridgeTransactionType,
@@ -8,9 +16,12 @@ import {
   UserNativeTokens,
 } from "pages/bridge/config/interfaces";
 import { useCustomBridgeInfo } from "pages/bridge/hooks/useCustomBridgeInfo";
+import { useApprove, useCosmos } from "pages/bridge/hooks/useTransactions";
 import { SelectedTokens, useTokenStore } from "pages/bridge/stores/tokenStore";
 import { useBridgeTransactionPageStore } from "pages/bridge/stores/transactionPageStore";
-import useBridgeTxStore from "pages/bridge/stores/transactionStore";
+import useBridgeTxStore, {
+  BridgeTransactionStatus,
+} from "pages/bridge/stores/transactionStore";
 import { convertStringToBigNumber } from "pages/bridge/utils/stringToBigNumber";
 import { useBridgeWalkthroughStore } from "pages/bridge/walkthrough/store/bridgeWalkthroughStore";
 import {
@@ -21,22 +32,42 @@ import { useState } from "react";
 
 interface Props {
   chainId: number;
+  cantoAddress: string;
+  gravityAddress: string;
   canContinue: boolean;
   canSkip: boolean;
-  allUserTokens: {
-    convertTokens: UserConvertToken[];
-    bridgeInTokens: UserGravityBridgeTokens[];
-    bridgeOutTokens: UserNativeTokens[];
+  tokens: {
+    allUserTokens: {
+      convertTokens: UserConvertToken[];
+      bridgeInTokens: UserGravityBridgeTokens[];
+      bridgeOutTokens: UserNativeTokens[];
+    };
+    selectedTokens: {
+      convertInToken: UserConvertToken;
+      convertOutToken: UserConvertToken;
+      bridgeInToken: UserGravityBridgeTokens;
+      bridgeOutToken: UserNativeTokens;
+    };
+    setTokens: (token: BaseToken, type: SelectedTokens) => void;
   };
-  selectedTokens: {
-    convertInToken: UserConvertToken;
-    convertOutToken: UserConvertToken;
-    bridgeInToken: UserGravityBridgeTokens;
-    bridgeOutToken: UserNativeTokens;
+  bridgeInTx: {
+    approve: {
+      tx: (gravityAddress: string, amount: BigNumber) => void;
+      state: TransactionStatus;
+    };
+    sendCosmos: {
+      tx: () => void;
+      state: TransactionStatus;
+    };
   };
-  setTokens: (token: BaseToken, type: SelectedTokens) => void;
+  bridgeOutNetworks: {
+    allNetworks: BridgeOutNetworkTokenData;
+    selectedNetwork: BridgeOutNetworkInfo;
+    setNetwork: (network: BridgeOutNetworks) => void;
+  };
   amount: string;
   setAmount: (amount: string) => void;
+  setCosmosTxStatus: (status: BridgeTransactionStatus | undefined) => void;
 }
 export function useCustomWalkthrough(): Props {
   //all stores we needed here:
@@ -116,23 +147,51 @@ export function useCustomWalkthrough(): Props {
     return false;
   }
 
+  //function states for approval of ETH tokens and bridging to gBridge
+  const { state: stateApprove, send: sendApprove } = useApprove(
+    bridgeInToken.address
+  );
+  const { state: stateCosmos, send: sendCosmos } = useCosmos(
+    gravityAddress ?? ADDRESSES.ETHMainnet.GravityBridge
+  );
+
   return {
     chainId: Number(networkInfo.chainId),
+    cantoAddress: networkInfo.cantoAddress,
+    gravityAddress: gravityAddress ?? ADDRESSES.ETHMainnet.GravityBridge,
     canContinue: checkIfCanContinue(),
     canSkip: checkIfCanSkip(userConvertTokens),
-    allUserTokens: {
-      convertTokens: userConvertTokens,
-      bridgeInTokens: userBridgeInTokens,
-      bridgeOutTokens: userBridgeOutTokens,
+    tokens: {
+      allUserTokens: {
+        convertTokens: userConvertTokens,
+        bridgeInTokens: userBridgeInTokens,
+        bridgeOutTokens: userBridgeOutTokens,
+      },
+      selectedTokens: {
+        convertInToken,
+        convertOutToken,
+        bridgeInToken,
+        bridgeOutToken,
+      },
+      setTokens: tokenStore.setSelectedToken,
     },
-    selectedTokens: {
-      convertInToken,
-      convertOutToken,
-      bridgeInToken,
-      bridgeOutToken,
+    bridgeInTx: {
+      approve: {
+        tx: sendApprove,
+        state: stateApprove,
+      },
+      sendCosmos: {
+        tx: sendCosmos,
+        state: stateCosmos,
+      },
     },
-    setTokens: tokenStore.setSelectedToken,
+    bridgeOutNetworks: {
+      allNetworks: allBridgeOutNetworks,
+      selectedNetwork: allBridgeOutNetworks[tokenStore.bridgeOutNetwork],
+      setNetwork: tokenStore.setBridgeOutNetwork,
+    },
     amount,
     setAmount,
+    setCosmosTxStatus: bridgeTxStore.setTransactionStatus,
   };
 }

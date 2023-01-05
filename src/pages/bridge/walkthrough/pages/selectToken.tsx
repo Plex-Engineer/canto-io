@@ -2,8 +2,6 @@ import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { TokenWallet } from "pages/bridge/components/TokenSelect";
 import { BaseToken } from "pages/bridge/config/interfaces";
-import { useEffect } from "react";
-
 import BaseStyled from "./layout";
 
 interface SelectTokenProps {
@@ -17,11 +15,6 @@ interface SelectTokenProps {
   onNext: () => void;
 }
 const SelectTokenPage = (props: SelectTokenProps) => {
-  //need to do this so that we can set some token to selectedToken or the logic won't work
-  useEffect(() => {
-    props.onSelect(props.activeToken);
-  }, []);
-
   return (
     <Styled>
       <header>

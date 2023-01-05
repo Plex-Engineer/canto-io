@@ -1,20 +1,15 @@
-import { PrimaryButton } from "global/packages/src";
+import { OutlinedButton, PrimaryButton } from "global/packages/src";
 import { UserGravityBridgeTokens } from "pages/bridge/config/interfaces";
-import { useEffect } from "react";
 
 interface NeedAllowanceProps {
-  skipStep: () => void;
   token: UserGravityBridgeTokens;
-
   txMessage: React.ReactNode;
   allowTx: () => void;
+  canContinue: boolean;
+  onPrev: () => void;
+  onNext: () => void;
 }
 export const NeedAllowancePage = (props: NeedAllowanceProps) => {
-  useEffect(() => {
-    if (props.token.allowance.gt(props.token.balanceOf)) {
-      props.skipStep();
-    }
-  });
   return (
     <div>
       <h1>Need Allowance</h1>
@@ -22,8 +17,18 @@ export const NeedAllowancePage = (props: NeedAllowanceProps) => {
         You need to allow the Canto Bridge to transfer your tokens. Please click
         the button below to allow the Canto Bridge to transfer your tokens.
       </p>
-      <PrimaryButton onClick={props.allowTx}>Allow</PrimaryButton>
+      <PrimaryButton disabled={props.canContinue} onClick={props.allowTx}>
+        Allow
+      </PrimaryButton>
       <p>{props.txMessage}</p>
+      <footer>
+        <div className="row">
+          <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
+          <PrimaryButton onClick={props.onNext} disabled={!props.canContinue}>
+            Next
+          </PrimaryButton>
+        </div>
+      </footer>
     </div>
   );
 };

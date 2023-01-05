@@ -1,5 +1,5 @@
 import { TOKENS } from "global/config/tokenInfo";
-import { BaseToken, NativeERC20Tokens } from "./interfaces";
+import { NativeERC20Tokens } from "./interfaces";
 import cosmosIcon from "assets/icons/ATOM.svg";
 import GravitonGrey from "assets/icons/Graviton-Grey.svg";
 
