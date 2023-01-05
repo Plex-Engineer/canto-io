@@ -14,53 +14,58 @@ interface IntroPageProps {
 const IntroPage = (props: IntroPageProps) => {
   return (
     <Styled>
-      <Text type="title" size="title2">
-        Getting Started
-      </Text>
-      <Text type="text" size="title3">
-        What would you like to do ?
-      </Text>
-      <div className="row">
-        <TextSwitch
-          text="get funds into canto"
-          active={props.currentBridgeType == "IN"}
-          onClick={() => {
-            props.setBridgeType("IN");
-          }}
-        />
-        <TextSwitch
-          text="get funds out of canto"
-          active={props.currentBridgeType == "OUT"}
-          onClick={() => props.setBridgeType("OUT")}
-        />
-      </div>
+      <header>
+        <Text type="title" size="title2">
+          Getting Started
+        </Text>
+        <Text type="text" size="title3">
+          What would you like to do ?
+        </Text>
+      </header>
+      <section>
+        <div className="row">
+          <TextSwitch
+            text="get funds into canto"
+            active={props.currentBridgeType == "IN"}
+            onClick={() => {
+              props.setBridgeType("IN");
+            }}
+          />
+          <TextSwitch
+            text="get funds out of canto"
+            active={props.currentBridgeType == "OUT"}
+            onClick={() => props.setBridgeType("OUT")}
+          />
+        </div>
 
-      {props.canSkip && (
-        <>
-          <Text type="text" size="title3">
-            Has your gravity Bridge transaction completed ?
-          </Text>
-          <div className="row">
-            <TextSwitch
-              text="mainnet to gBridge"
-              active={!props.currentSkipDecision}
-              onClick={() => {
-                props.setSkipDecision(false);
-              }}
-            />
-            <TextSwitch
-              text="gBridge to canto(EVM)"
-              active={props.currentSkipDecision}
-              onClick={() => props.setSkipDecision(true)}
-            />
-          </div>
-        </>
-      )}
-
-      <div className="row">
-        <OutlinedButton disabled>Prev</OutlinedButton>
-        <PrimaryButton onClick={props.onNext}>Next</PrimaryButton>
-      </div>
+        {props.canSkip && (
+          <>
+            <Text type="text" size="title3">
+              Has your gravity Bridge transaction completed ?
+            </Text>
+            <div className="row">
+              <TextSwitch
+                text="mainnet to gBridge"
+                active={!props.currentSkipDecision}
+                onClick={() => {
+                  props.setSkipDecision(false);
+                }}
+              />
+              <TextSwitch
+                text="gBridge to canto(EVM)"
+                active={props.currentSkipDecision}
+                onClick={() => props.setSkipDecision(true)}
+              />
+            </div>
+          </>
+        )}
+      </section>
+      <footer>
+        <div className="row">
+          <OutlinedButton disabled>Prev</OutlinedButton>
+          <PrimaryButton onClick={props.onNext}>Next</PrimaryButton>
+        </div>
+      </footer>
     </Styled>
   );
 };

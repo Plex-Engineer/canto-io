@@ -24,33 +24,39 @@ const SelectTokenPage = (props: SelectTokenProps) => {
 
   return (
     <Styled>
-      <Text type="title" size="title2">
-        Bridgin Token
-      </Text>
-      <div>
-        <Text type="text" size="title3" bold>
-          Select the token you&#39;d like to bridge{" "}
-          {props.bridgeType == "IN" ? "in" : "out"}
+      <header>
+        <Text type="title" size="title2">
+          Bridgin Token
         </Text>
-        <Text type="text" size="text3">
-          Now that you are on the right network. Please select the token
-          you&#39;d like to bridge in.
-        </Text>
-      </div>
-      <div className="wallet">
-        <TokenWallet
-          tokens={props.tokenList}
-          activeToken={props.activeToken}
-          onSelect={(token) => props.onSelect(token ?? props.activeToken)}
-          balance={props.tokenBalance}
-        />
-      </div>
-      <div className="row">
-        <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
-        <PrimaryButton onClick={props.onNext} disabled={!props.canContinue}>
-          Next
-        </PrimaryButton>
-      </div>
+        <div>
+          <Text type="text" size="title3" bold>
+            Select the token you&#39;d like to bridge{" "}
+            {props.bridgeType == "IN" ? "in" : "out"}
+          </Text>
+          <Text type="text" size="text3">
+            Now that you are on the right network. Please select the token
+            you&#39;d like to bridge in.
+          </Text>
+        </div>
+      </header>
+      <section>
+        <div className="wallet">
+          <TokenWallet
+            tokens={props.tokenList}
+            activeToken={props.activeToken}
+            onSelect={(token) => props.onSelect(token ?? props.activeToken)}
+            balance={props.tokenBalance}
+          />
+        </div>
+      </section>
+      <footer>
+        <div className="row">
+          <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
+          <PrimaryButton onClick={props.onNext} disabled={!props.canContinue}>
+            Next
+          </PrimaryButton>
+        </div>
+      </footer>
     </Styled>
   );
 };

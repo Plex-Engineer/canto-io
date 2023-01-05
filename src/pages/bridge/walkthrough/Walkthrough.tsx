@@ -5,6 +5,7 @@ import { useBridgeWalkthroughStore } from "./store/bridgeWalkthroughStore";
 import { BridgeOutManager } from "./managers/BridgeOutManager";
 import IntroPage from "./pages/intro";
 import { useCustomWalkthrough } from "./store/customUseWalkthrough";
+import BarIndicator from "./components/barIndicator";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
@@ -22,7 +23,6 @@ const Walkthrough = () => {
   const [finishedBridgeSelection, setFinishedBridgeSelection] = useState(false);
   return (
     <Styled>
-      <Text type="title">Walkthrough</Text>
       {!finishedBridgeSelection && (
         <IntroPage
           setBridgeType={walkthrough.setBridgeType}
@@ -62,6 +62,7 @@ const Walkthrough = () => {
           />
         </>
       )}
+      <BarIndicator total={7} current={0} />
     </Styled>
   );
 };
@@ -72,6 +73,7 @@ const Styled = styled.div`
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
+  position: relative;
 `;
 
 export default Walkthrough;

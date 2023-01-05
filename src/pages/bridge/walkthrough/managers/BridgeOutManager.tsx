@@ -35,7 +35,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
     console.log(selectedToken);
   }, [selectedToken]);
   return (
-    <div>
+    <>
       {(props.currentStep === BridgeOutStep.SWITCH_TO_CANTO ||
         props.currentStep === BridgeOutStep.SWITCH_TO_CANTO_2) && (
         <SwitchNetworkPage
@@ -187,6 +187,6 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           txMessage={props.txMessage}
         />
       )} */}
-    </div>
+    </>
   );
 };

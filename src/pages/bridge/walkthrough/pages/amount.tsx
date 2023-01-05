@@ -17,56 +17,66 @@ interface AmountProps {
 const AmountPage = (props: AmountProps) => {
   return (
     <Styled>
-      <Text type="title" size="title2">
-        CHOOSE THE AMOUNT
-      </Text>
-      <Text type="text" size="title2">
-        You are try to bridge out
-      </Text>
-      <div className="token-details">
-        <img src={props.selectedToken.icon} />
-        <Text type="text" size="text2">
-          {props.selectedToken.name}
+      <header>
+        <Text type="title" size="title2">
+          CHOOSE THE AMOUNT
         </Text>
-        <Text type="text" size="text2">
-          {props.max}
+        <Text type="text" size="title3">
+          You are trying to bridge out
         </Text>
-      </div>
-
-      <div className="amount">
-        <div className="amount-input">
-          <Text type="text" size="text2" align="left" color="primary">
-            amount you&#39;d like to transfer:
+      </header>
+      <section>
+        <div className="token-details">
+          <img src={props.selectedToken.icon} height={30} />
+          <Text type="text" color="white" size="text2">
+            {props.selectedToken.name}
           </Text>
-
-          <CInput
-            autoComplete="off"
-            type="number"
-            name="amount-bridge"
-            id="amount-bridge"
-            placeholder="enter amount..."
-            value={props.amount}
-            onChange={(e) => props.setAmount(e.target.value)}
-          />
-          {Number(props.max) < 0 ? null : (
-            <div className="max">
-              balance {truncateNumber(props.max)}{" "}
-              <span
-                tabIndex={0}
-                role="button"
-                style={{ cursor: "pointer", textDecoration: "underline" }}
-                onClick={() => props.setAmount(props.max)}
-              >
-                max
-              </span>
-            </div>
-          )}
+          <Text
+            type="text"
+            size="text2"
+            color="white"
+            align="right"
+            className="balance"
+          >
+            balance : {props.max}
+          </Text>
         </div>
-      </div>
-      <div className="row">
-        <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
-        <PrimaryButton onClick={props.onNext}>Next</PrimaryButton>
-      </div>
+
+        <div className="amount">
+          <div className="amount-input">
+            <Text type="text" size="text2" align="left" color="primary">
+              amount you&#39;d like to transfer:
+            </Text>
+            <div className="max-button">
+              <CInput
+                autoComplete="off"
+                type="number"
+                name="amount-bridge"
+                id="amount-bridge"
+                placeholder="enter amount..."
+                value={props.amount}
+                onChange={(e) => props.setAmount(e.target.value)}
+              />
+              {Number(props.max) < 0 ? null : (
+                <div
+                  className="max"
+                  tabIndex={0}
+                  role="button"
+                  onClick={() => props.setAmount(props.max)}
+                >
+                  max
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer>
+        <div className="row">
+          <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
+          <PrimaryButton onClick={props.onNext}>Next</PrimaryButton>
+        </div>
+      </footer>
     </Styled>
   );
 };
@@ -87,8 +97,40 @@ const Styled = styled(BaseStyled)`
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+    height: 3.8rem;
+    gap: 1rem;
+    padding: 0 1.4rem;
+    .balance {
+      width: 100%;
+    }
+  }
 
-    height: 3.4rem;
+  .amount-input {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .max-button {
+    display: flex;
+    position: relative;
+    .max {
+      width: 4rem;
+      height: 56px;
+      background-color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 0 4px 4px 0;
+      position: absolute;
+      right: 0rem;
+      cursor: pointer;
+      color: #888;
+      &:hover {
+        background-color: #444;
+        color: white;
+      }
+    }
   }
 `;
 
