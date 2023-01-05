@@ -1,12 +1,13 @@
+import { useEthers } from "@usedapp/core";
 import { formatUnits } from "ethers/lib/utils";
 import { CantoMainnet } from "global/config/networks";
-import { switchNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import {
   BaseToken,
   UserConvertToken,
   UserNativeTokens,
 } from "pages/bridge/config/interfaces";
-import { SelectedTokens } from "pages/bridge/stores/tokenStore";
+import { SelectedTokens, useTokenStore } from "pages/bridge/stores/tokenStore";
+import { useEffect, useState } from "react";
 import AmountPage from "../pages/amount";
 import SelectTokenPage from "../pages/selectToken";
 import SwitchNetworkPage from "../pages/switchNetwork";
@@ -27,44 +28,55 @@ interface BridgeOutManagerProps {
   setAmount: (amount: string) => void;
 }
 export const BridgeOutManager = (props: BridgeOutManagerProps) => {
+  const { switchNetwork } = useEthers();
+  const [selectedToken, setSelectedToken] = useState<BaseToken>();
+
+  useEffect(() => {
+    console.log(selectedToken);
+  }, [selectedToken]);
   return (
     <div>
-      {props.currentStep === BridgeOutStep.SWITCH_TO_CANTO ||
-        (props.currentStep === BridgeOutStep.SWITCH_TO_CANTO_2 && (
-          <SwitchNetworkPage
-            toChainId={CantoMainnet.chainId}
-            fromChainId={props.chainId}
-            onClick={() => switchNetwork(CantoMainnet.chainId)}
-            canContinue={props.canContinue}
-            onNext={props.onNext}
-            onPrev={props.onPrev}
-          />
-        ))}
+      {(props.currentStep === BridgeOutStep.SWITCH_TO_CANTO ||
+        props.currentStep === BridgeOutStep.SWITCH_TO_CANTO_2) && (
+        <SwitchNetworkPage
+          toChainId={CantoMainnet.chainId}
+          fromChainId={props.chainId}
+          onClick={() => switchNetwork(CantoMainnet.chainId)}
+          canContinue={props.canContinue}
+          onNext={props.onNext}
+          onPrev={props.onPrev}
+        />
+      )}
       {props.currentStep === BridgeOutStep.SELECT_CONVERT_TOKEN && (
         <SelectTokenPage
           bridgeType="OUT"
           tokenList={props.convertTokens}
           activeToken={props.currentConvertToken}
           tokenBalance="erc20Balance"
-          onSelect={(token) => props.setToken(token, SelectedTokens.CONVERTOUT)}
+          onSelect={(token) => {
+            setSelectedToken(token);
+            return props.setToken(token, SelectedTokens.CONVERTOUT);
+          }}
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
         />
       )}
-      {props.currentStep === BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT && (
-        <AmountPage
-          amount={props.amount}
-          setAmount={props.setAmount}
-          max={formatUnits(
-            props.currentConvertToken.erc20Balance,
-            props.currentConvertToken.decimals
-          )}
-          canContinue={props.canContinue}
-          onNext={props.onNext}
-          onPrev={props.onPrev}
-        />
-      )}
+      {props.currentStep === BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT &&
+        selectedToken != undefined && (
+          <AmountPage
+            amount={props.amount}
+            setAmount={props.setAmount}
+            selectedToken={selectedToken}
+            max={formatUnits(
+              props.currentConvertToken.erc20Balance,
+              props.currentConvertToken.decimals
+            )}
+            canContinue={props.canContinue}
+            onNext={props.onNext}
+            onPrev={props.onPrev}
+          />
+        )}
 
       {/* {props.currentStep === BridgeOutStep.CONVERT_COIN && (
         <ConfirmConvert
@@ -116,25 +128,30 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           tokenList={props.bridgeOutTokens}
           activeToken={props.currentBridgeOutToken}
           tokenBalance="nativeBalance"
-          onSelect={(token) => props.setToken(token, SelectedTokens.BRIDGEOUT)}
+          onSelect={(token) => {
+            setSelectedToken(token);
+            props.setToken(token, SelectedTokens.BRIDGEOUT);
+          }}
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
         />
       )}
-      {props.currentStep === BridgeOutStep.SELECT_NATIVE_TOKEN_AMOUNT && (
-        <AmountPage
-          amount={props.amount}
-          setAmount={props.setAmount}
-          max={formatUnits(
-            props.currentBridgeOutToken.nativeBalance,
-            props.currentBridgeOutToken.decimals
-          )}
-          canContinue={props.canContinue}
-          onNext={props.onNext}
-          onPrev={props.onPrev}
-        />
-      )}
+      {props.currentStep === BridgeOutStep.SELECT_NATIVE_TOKEN_AMOUNT &&
+        selectedToken != undefined && (
+          <AmountPage
+            amount={props.amount}
+            setAmount={props.setAmount}
+            selectedToken={selectedToken}
+            max={formatUnits(
+              props.currentBridgeOutToken.nativeBalance,
+              props.currentBridgeOutToken.decimals
+            )}
+            canContinue={props.canContinue}
+            onNext={props.onNext}
+            onPrev={props.onPrev}
+          />
+        )}
       {/* {props.currentStep === BridgeOutStep.SEND_TO_GRBIDGE && (
         <ConfirmConvert
           amount={convertStringToBigNumber(

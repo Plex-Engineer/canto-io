@@ -21,45 +21,43 @@ interface BridgeWalkthroughStoreProps {
   resetState: (bridgeIn: boolean) => void;
 }
 export const useBridgeWalkthroughStore = create<BridgeWalkthroughStoreProps>()(
-  devtools(
-    persist((set, get) => ({
-      currentBridgeType: "NONE",
-      setBridgeType: (type) => set({ currentBridgeType: type }),
-      userSkip: false,
-      setUserSkip: (skip) => set({ userSkip: skip }),
-      bridgeInStep: 0,
-      setBridgeInStep: (step) => set({ bridgeInStep: step }),
-      bridgeOutStep: 0,
-      setBridgeOutStep: (step) => set({ bridgeOutStep: step }),
-      nextStep: (bridgeIn) => {
-        if (bridgeIn) {
-          set({
-            bridgeInStep: BridgeInWalkthroughSteps[get().bridgeInStep].next,
-          });
-        } else {
-          set({
-            bridgeOutStep: BridgeOutWalkthroughSteps[get().bridgeOutStep].next,
-          });
-        }
-      },
-      previousStep(bridgeIn) {
-        if (bridgeIn) {
-          set({
-            bridgeInStep: BridgeInWalkthroughSteps[get().bridgeInStep].prev,
-          });
-        } else {
-          set({
-            bridgeOutStep: BridgeOutWalkthroughSteps[get().bridgeOutStep].prev,
-          });
-        }
-      },
-      resetState: (bridgeIn: boolean) => {
-        if (bridgeIn) {
-          set({ bridgeInStep: 0 });
-        } else {
-          set({ bridgeOutStep: 0 });
-        }
-      },
-    }))
-  )
+  (set, get) => ({
+    currentBridgeType: "NONE",
+    setBridgeType: (type) => set({ currentBridgeType: type }),
+    userSkip: false,
+    setUserSkip: (skip) => set({ userSkip: skip }),
+    bridgeInStep: 0,
+    setBridgeInStep: (step) => set({ bridgeInStep: step }),
+    bridgeOutStep: 0,
+    setBridgeOutStep: (step) => set({ bridgeOutStep: step }),
+    nextStep: (bridgeIn) => {
+      if (bridgeIn) {
+        set({
+          bridgeInStep: BridgeInWalkthroughSteps[get().bridgeInStep].next,
+        });
+      } else {
+        set({
+          bridgeOutStep: BridgeOutWalkthroughSteps[get().bridgeOutStep].next,
+        });
+      }
+    },
+    previousStep(bridgeIn) {
+      if (bridgeIn) {
+        set({
+          bridgeInStep: BridgeInWalkthroughSteps[get().bridgeInStep].prev,
+        });
+      } else {
+        set({
+          bridgeOutStep: BridgeOutWalkthroughSteps[get().bridgeOutStep].prev,
+        });
+      }
+    },
+    resetState: (bridgeIn: boolean) => {
+      if (bridgeIn) {
+        set({ bridgeInStep: 0 });
+      } else {
+        set({ bridgeOutStep: 0 });
+      }
+    },
+  })
 );

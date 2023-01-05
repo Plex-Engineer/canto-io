@@ -8,6 +8,7 @@ import { useCustomWalkthrough } from "./store/customUseWalkthrough";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
+
   const {
     canSkip,
     canContinue,
@@ -38,26 +39,28 @@ const Walkthrough = () => {
         />
       )}
       {finishedBridgeSelection && walkthrough.currentBridgeType == "OUT" && (
-        <BridgeOutManager
-          chainId={chainId}
-          currentStep={walkthrough.bridgeOutStep}
-          onPrev={() => {
-            if (walkthrough.bridgeOutStep === 0) {
-              setFinishedBridgeSelection(false);
-            } else {
-              walkthrough.previousStep(false);
-            }
-          }}
-          onNext={() => walkthrough.nextStep(false)}
-          canContinue={canContinue}
-          convertTokens={allUserTokens.convertTokens}
-          currentConvertToken={selectedTokens.convertOutToken}
-          bridgeOutTokens={allUserTokens.bridgeOutTokens}
-          currentBridgeOutToken={selectedTokens.bridgeOutToken}
-          setToken={setTokens}
-          amount={amount}
-          setAmount={setAmount}
-        />
+        <>
+          <BridgeOutManager
+            chainId={chainId}
+            currentStep={walkthrough.bridgeOutStep}
+            onPrev={() => {
+              if (walkthrough.bridgeOutStep === 0) {
+                setFinishedBridgeSelection(false);
+              } else {
+                walkthrough.previousStep(false);
+              }
+            }}
+            onNext={() => walkthrough.nextStep(false)}
+            canContinue={canContinue}
+            convertTokens={allUserTokens.convertTokens}
+            currentConvertToken={selectedTokens.convertOutToken}
+            bridgeOutTokens={allUserTokens.bridgeOutTokens}
+            currentBridgeOutToken={selectedTokens.bridgeOutToken}
+            setToken={setTokens}
+            amount={amount}
+            setAmount={setAmount}
+          />
+        </>
       )}
     </Styled>
   );

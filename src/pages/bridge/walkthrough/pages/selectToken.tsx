@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { TokenWallet } from "pages/bridge/components/TokenSelect";
 import { BaseToken } from "pages/bridge/config/interfaces";
+import { useEffect } from "react";
 
 import BaseStyled from "./layout";
 
@@ -16,6 +17,11 @@ interface SelectTokenProps {
   onNext: () => void;
 }
 const SelectTokenPage = (props: SelectTokenProps) => {
+  //need to do this so that we can set some token to selectedToken or the logic won't work
+  useEffect(() => {
+    props.onSelect(props.activeToken);
+  }, []);
+
   return (
     <Styled>
       <Text type="title" size="title2">
@@ -31,12 +37,14 @@ const SelectTokenPage = (props: SelectTokenProps) => {
           you&#39;d like to bridge in.
         </Text>
       </div>
-      <TokenWallet
-        tokens={props.tokenList}
-        activeToken={props.activeToken}
-        onSelect={(token) => props.onSelect(token ?? props.activeToken)}
-        balance={props.tokenBalance}
-      />
+      <div className="wallet">
+        <TokenWallet
+          tokens={props.tokenList}
+          activeToken={props.activeToken}
+          onSelect={(token) => props.onSelect(token ?? props.activeToken)}
+          balance={props.tokenBalance}
+        />
+      </div>
       <div className="row">
         <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
         <PrimaryButton onClick={props.onNext} disabled={!props.canContinue}>
@@ -50,6 +58,14 @@ const SelectTokenPage = (props: SelectTokenProps) => {
 const Styled = styled(BaseStyled)`
   padding: 2rem;
   justify-content: center;
+
+  .wallet {
+    width: 20rem;
+    & > div {
+      border: 1px solid #333;
+      border-radius: 4px;
+    }
+  }
 `;
 
 export default SelectTokenPage;
