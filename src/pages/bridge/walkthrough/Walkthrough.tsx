@@ -5,6 +5,7 @@ import { BridgeOutManager } from "./managers/BridgeOutManager";
 import IntroPage from "./pages/intro";
 import { useCustomWalkthrough } from "./store/customUseWalkthrough";
 import { BridgeInManager } from "./managers/BridgeInManager";
+import { BridgeInStep, BridgeOutStep } from "./walkthroughTracker";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
@@ -33,7 +34,11 @@ const Walkthrough = () => {
           setSkipDecision={walkthrough.setUserSkip}
           onNext={() => {
             if (walkthrough.userSkip) {
-              //skip here
+              if (walkthrough.currentBridgeType === "IN") {
+                walkthrough.setBridgeInStep(BridgeInStep.SWITCH_TO_CANTO);
+              } else {
+                walkthrough.setBridgeOutStep(BridgeOutStep.SWITCH_TO_CANTO_2);
+              }
             }
             setFinishedBridgeSelection(true);
           }}

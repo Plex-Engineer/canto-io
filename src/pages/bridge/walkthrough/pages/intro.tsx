@@ -38,21 +38,23 @@ const IntroPage = (props: IntroPageProps) => {
           />
         </div>
 
-        {props.canSkip && (
+        {props.canSkip && props.currentBridgeType != "NONE" && (
           <>
             <Text type="text" size="title3">
-              Has your gravity Bridge transaction completed ?
+              {props.currentBridgeType == "IN"
+                ? "Has your gravity Bridge transaction completed ?"
+                : "Have you already sent funds to the canto bridge ?"}
             </Text>
             <div className="row">
               <TextSwitch
-                text="mainnet to gBridge"
+                text="no"
                 active={!props.currentSkipDecision}
                 onClick={() => {
                   props.setSkipDecision(false);
                 }}
               />
               <TextSwitch
-                text="gBridge to canto(EVM)"
+                text="yes"
                 active={props.currentSkipDecision}
                 onClick={() => props.setSkipDecision(true)}
               />
@@ -63,7 +65,12 @@ const IntroPage = (props: IntroPageProps) => {
       <footer>
         <div className="row">
           <OutlinedButton disabled>Prev</OutlinedButton>
-          <PrimaryButton onClick={props.onNext}>Next</PrimaryButton>
+          <PrimaryButton
+            disabled={props.currentBridgeType == "NONE"}
+            onClick={props.onNext}
+          >
+            Next
+          </PrimaryButton>
         </div>
       </footer>
     </Styled>
