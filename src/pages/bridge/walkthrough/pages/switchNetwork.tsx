@@ -10,6 +10,7 @@ interface SwtichNetworkProps {
   canContinue: boolean;
   onNext: () => void;
   onPrev: () => void;
+  canGoBack: boolean;
 }
 const SwitchNetworkPage = (props: SwtichNetworkProps) => {
   const rightNetwork = props.fromChainId == props.toChainId;
@@ -46,7 +47,9 @@ const SwitchNetworkPage = (props: SwtichNetworkProps) => {
       </section>
       <footer>
         <div className="row">
-          <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
+          <OutlinedButton onClick={props.onPrev} disabled={!props.canGoBack}>
+            Prev
+          </OutlinedButton>
           <PrimaryButton onClick={props.onNext} disabled={!props.canContinue}>
             Next
           </PrimaryButton>

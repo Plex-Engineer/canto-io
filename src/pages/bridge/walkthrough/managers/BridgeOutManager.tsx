@@ -32,6 +32,7 @@ interface BridgeOutManagerProps {
   cantoAddress: string;
   currentStep: BridgeOutStep;
   canContinue: boolean;
+  canGoBack: boolean;
   onPrev: () => void;
   onNext: () => void;
   currentConvertToken: UserConvertToken;
@@ -58,6 +59,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
         />
       )}
       {props.currentStep === BridgeOutStep.SELECT_CONVERT_TOKEN && (
@@ -70,6 +72,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
         />
       )}
       {props.currentStep === BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT && (
@@ -84,6 +87,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
         />
       )}
 
@@ -118,6 +122,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
         />
       )}
 
@@ -129,6 +134,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
         />
       )}
       {props.currentStep === BridgeOutStep.SELECT_NATIVE_TOKEN && (
@@ -141,6 +147,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
         />
       )}
       {props.currentStep === BridgeOutStep.SELECT_NATIVE_TOKEN_AMOUNT && (
@@ -155,6 +162,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
         />
       )}
       {props.currentStep === BridgeOutStep.SEND_TO_GRBIDGE && (
@@ -189,6 +197,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           txType={"SEND TO GRBIDGE"}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
           canContinue={props.canContinue}
         />
       )}

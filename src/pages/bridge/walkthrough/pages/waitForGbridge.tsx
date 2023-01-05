@@ -4,6 +4,8 @@ interface WaitProps {
   onPrev: () => void;
   onNext: () => void;
   canContinue: boolean;
+  txHash: string | undefined;
+  canGoBack: boolean;
 }
 export const WaitForGbridge = (props: WaitProps) => {
   return (
@@ -11,7 +13,9 @@ export const WaitForGbridge = (props: WaitProps) => {
       <h1>wait for gbridge</h1>{" "}
       <footer>
         <div className="row">
-          <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
+          <OutlinedButton onClick={props.onPrev} disabled={!props.canGoBack}>
+            Prev
+          </OutlinedButton>
           <PrimaryButton onClick={props.onNext} disabled={false}>
             Next
           </PrimaryButton>

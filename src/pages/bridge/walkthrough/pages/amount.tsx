@@ -12,6 +12,7 @@ interface AmountProps {
   onPrev: () => void;
   canContinue: boolean;
   selectedToken: BaseToken;
+  canGoBack: boolean;
 }
 const AmountPage = (props: AmountProps) => {
   return (
@@ -72,7 +73,9 @@ const AmountPage = (props: AmountProps) => {
       </section>
       <footer>
         <div className="row">
-          <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
+          <OutlinedButton disabled={!props.canGoBack} onClick={props.onPrev}>
+            Prev
+          </OutlinedButton>
           <PrimaryButton disabled={!props.canContinue} onClick={props.onNext}>
             Next
           </PrimaryButton>

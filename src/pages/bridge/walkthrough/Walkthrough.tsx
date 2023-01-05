@@ -12,6 +12,7 @@ const Walkthrough = () => {
   const {
     canSkip,
     canContinue,
+    canGoBack,
     chainId,
     cantoAddress,
     gravityAddress,
@@ -58,6 +59,7 @@ const Walkthrough = () => {
           }}
           onNext={() => walkthrough.nextStep(true)}
           canContinue={canContinue}
+          canGoBack={canGoBack}
           currentBridgeInToken={tokens.selectedTokens.bridgeInToken}
           bridgeInTokens={tokens.allUserTokens.bridgeInTokens}
           setToken={tokens.setTokens}
@@ -88,6 +90,7 @@ const Walkthrough = () => {
           }}
           onNext={() => walkthrough.nextStep(false)}
           canContinue={canContinue}
+          canGoBack={canGoBack}
           convertTokens={tokens.allUserTokens.convertTokens}
           currentConvertToken={tokens.selectedTokens.convertOutToken}
           bridgeOutTokens={tokens.allUserTokens.bridgeOutTokens}

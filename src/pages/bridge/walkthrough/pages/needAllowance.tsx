@@ -8,6 +8,7 @@ interface NeedAllowanceProps {
   canContinue: boolean;
   onPrev: () => void;
   onNext: () => void;
+  canGoBack: boolean;
 }
 export const NeedAllowancePage = (props: NeedAllowanceProps) => {
   return (
@@ -23,7 +24,9 @@ export const NeedAllowancePage = (props: NeedAllowanceProps) => {
       <p>{props.txMessage}</p>
       <footer>
         <div className="row">
-          <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
+          <OutlinedButton onClick={props.onPrev} disabled={!props.canGoBack}>
+            Prev
+          </OutlinedButton>
           <PrimaryButton onClick={props.onNext} disabled={!props.canContinue}>
             Next
           </PrimaryButton>

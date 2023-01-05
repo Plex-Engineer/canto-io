@@ -30,6 +30,7 @@ interface BridgeInManagerProps {
   cantoAddress: string;
   currentStep: BridgeInStep;
   canContinue: boolean;
+  canGoBack: boolean;
   onPrev: () => void;
   onNext: () => void;
   currentBridgeInToken: UserGravityBridgeTokens;
@@ -61,6 +62,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
         />
       )}
       {props.currentStep === BridgeInStep.SELECT_ERC20_TOKEN && (
@@ -73,6 +75,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
         />
       )}
       {props.currentStep == BridgeInStep.NEED_ALLOWANCE && (
@@ -88,6 +91,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
         />
       )}
       {props.currentStep === BridgeInStep.SELECT_ERC20_AMOUNT && (
@@ -102,6 +106,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
         />
       )}
       {props.currentStep === BridgeInStep.SEND_FUNDS_TO_GBRIDGE && (
@@ -122,6 +127,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           onNext={props.onNext}
           onPrev={props.onPrev}
           canContinue={props.canContinue}
+          canGoBack={props.canGoBack}
         />
       )}
       {props.currentStep === BridgeInStep.WAIT_FOR_GRBIDGE && (
@@ -129,6 +135,8 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           onNext={props.onNext}
           onPrev={props.onPrev}
           canContinue={props.canContinue}
+          txHash={props.stateCosmos.transaction?.hash}
+          canGoBack={props.canGoBack}
         />
       )}
       {props.currentStep === BridgeInStep.SWITCH_TO_CANTO && (
@@ -139,6 +147,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
         />
       )}
       {props.currentStep === BridgeInStep.SELECT_CONVERT_TOKEN && (
@@ -151,6 +160,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
         />
       )}
       {props.currentStep === BridgeInStep.SELECT_CONVERT_TOKEN_AMOUNT && (
@@ -165,6 +175,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
+          canGoBack={props.canGoBack}
         />
       )}
       {props.currentStep === BridgeInStep.CONVERT && (
@@ -198,6 +209,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           onNext={props.onNext}
           onPrev={props.onPrev}
           canContinue={props.canContinue}
+          canGoBack={props.canGoBack}
         />
       )}
       <BarIndicator

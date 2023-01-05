@@ -13,6 +13,7 @@ interface SelectTokenProps {
   canContinue: boolean;
   onPrev: () => void;
   onNext: () => void;
+  canGoBack: boolean;
 }
 const SelectTokenPage = (props: SelectTokenProps) => {
   return (
@@ -44,7 +45,9 @@ const SelectTokenPage = (props: SelectTokenProps) => {
       </section>
       <footer>
         <div className="row">
-          <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
+          <OutlinedButton onClick={props.onPrev} disabled={!props.canGoBack}>
+            Prev
+          </OutlinedButton>
           <PrimaryButton onClick={props.onNext} disabled={!props.canContinue}>
             Next
           </PrimaryButton>

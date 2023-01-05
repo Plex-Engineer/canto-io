@@ -12,6 +12,7 @@ interface SelectBridgeProps {
   activeNetwork: BridgeOutNetworkInfo;
   onSelect: (network: BridgeOutNetworks) => void;
   canContinue: boolean;
+  canGoBack: boolean;
   onPrev: () => void;
   onNext: () => void;
 }
@@ -64,7 +65,9 @@ const SelectBridgeOutNetwork = (props: SelectBridgeProps) => {
       </section>
       <footer>
         <div className="row">
-          <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
+          <OutlinedButton onClick={props.onPrev} disabled={!props.canGoBack}>
+            Prev
+          </OutlinedButton>
           <PrimaryButton onClick={props.onNext} disabled={!props.canContinue}>
             Next
           </PrimaryButton>

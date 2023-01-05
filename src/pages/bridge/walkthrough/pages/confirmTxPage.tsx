@@ -9,6 +9,7 @@ interface ConfirmationProps {
   onPrev: () => void;
   onNext: () => void;
   canContinue: boolean;
+  canGoBack: boolean;
 }
 export const ConfirmTransactionPage = (props: ConfirmationProps) => {
   return (
@@ -16,10 +17,14 @@ export const ConfirmTransactionPage = (props: ConfirmationProps) => {
       <p>{props.txType}</p>
       <p>token: {props.token.name}</p>
       <p>amount: {props.amount}</p>
-      <PrimaryButton onClick={props.onTxConfirm}>Confirm</PrimaryButton>
+      <PrimaryButton disabled={props.canContinue} onClick={props.onTxConfirm}>
+        Confirm
+      </PrimaryButton>
       <footer>
         <div className="row">
-          <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
+          <OutlinedButton disabled={!props.canGoBack} onClick={props.onPrev}>
+            Prev
+          </OutlinedButton>
           <PrimaryButton disabled={!props.canContinue} onClick={props.onNext}>
             Next
           </PrimaryButton>

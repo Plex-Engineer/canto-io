@@ -29,12 +29,17 @@ import {
   didPassBridgeOutWalkthroughCheck,
 } from "pages/bridge/walkthrough/walkthroughFunctions";
 import { useState } from "react";
+import {
+  BridgeInWalkthroughSteps,
+  BridgeOutWalkthroughSteps,
+} from "../walkthroughTracker";
 
 interface Props {
   chainId: number;
   cantoAddress: string;
   gravityAddress: string;
   canContinue: boolean;
+  canGoBack: boolean;
   canSkip: boolean;
   tokens: {
     allUserTokens: {
@@ -103,7 +108,7 @@ export function useCustomWalkthrough(): Props {
         bridgeInToken,
         convertStringToBigNumber(amount, bridgeInToken.decimals),
         bridgeInToken.balanceOf,
-        "",
+        stateCosmos.transaction?.hash,
         completedBridgeInTxs,
         convertInToken,
         convertStringToBigNumber(amount, convertInToken.decimals),
@@ -147,6 +152,18 @@ export function useCustomWalkthrough(): Props {
     return false;
   }
 
+  function checkIfCanClickPrevious() {
+    const currentType = walkthroughStore.currentBridgeType;
+    if (currentType == "IN") {
+      return !BridgeInWalkthroughSteps[walkthroughStore.bridgeInStep]
+        .isCheckpoint;
+    } else if (currentType == "OUT") {
+      return !BridgeOutWalkthroughSteps[walkthroughStore.bridgeOutStep]
+        .isCheckpoint;
+    }
+    return true;
+  }
+
   //function states for approval of ETH tokens and bridging to gBridge
   const { state: stateApprove, send: sendApprove } = useApprove(
     bridgeInToken.address
@@ -160,6 +177,7 @@ export function useCustomWalkthrough(): Props {
     cantoAddress: networkInfo.cantoAddress,
     gravityAddress: gravityAddress ?? ADDRESSES.ETHMainnet.GravityBridge,
     canContinue: checkIfCanContinue(),
+    canGoBack: checkIfCanClickPrevious(),
     canSkip: checkIfCanSkip(userConvertTokens),
     tokens: {
       allUserTokens: {
