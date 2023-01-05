@@ -2,26 +2,20 @@ import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { TokenWallet } from "pages/bridge/components/TokenSelect";
 import { BaseToken } from "pages/bridge/config/interfaces";
-import { BridgeStep, useBridgeWalkthroughStore } from "../store/useWalkthough";
 
 import BaseStyled from "./layout";
 
 interface SelectTokenProps {
+  bridgeType: "IN" | "OUT";
   tokenBalance: string;
   tokenList: BaseToken[];
   activeToken: BaseToken;
   onSelect: (token: BaseToken) => void;
+  canContinue: boolean;
+  onPrev: () => void;
+  onNext: () => void;
 }
 const SelectTokenPage = (props: SelectTokenProps) => {
-  const [popPage, pushPage, bridgeType, bridgeStep] = useBridgeWalkthroughStore(
-    (state) => [
-      state.popStepTracker,
-      state.pushStepTracker,
-      state.BridgeType,
-      state.BridgeStep,
-    ]
-  );
-
   return (
     <Styled>
       <Text type="title" size="title2">
@@ -30,7 +24,7 @@ const SelectTokenPage = (props: SelectTokenProps) => {
       <div>
         <Text type="text" size="title3" bold>
           Select the token you&#39;d like to bridge{" "}
-          {bridgeType == "IN" ? "in" : "out"}
+          {props.bridgeType == "IN" ? "in" : "out"}
         </Text>
         <Text type="text" size="text3">
           Now that you are on the right network. Please select the token
@@ -44,13 +38,8 @@ const SelectTokenPage = (props: SelectTokenProps) => {
         balance={props.tokenBalance}
       />
       <div className="row">
-        <OutlinedButton onClick={() => popPage()}>Prev</OutlinedButton>
-        <PrimaryButton
-          onClick={() => pushPage(BridgeStep.CHOOSE_AMOUNT)}
-          disabled={
-            //check selected Token amount and allowance
-          }
-        >
+        <OutlinedButton onClick={props.onPrev}>Prev</OutlinedButton>
+        <PrimaryButton onClick={props.onNext} disabled={!props.canContinue}>
           Next
         </PrimaryButton>
       </div>

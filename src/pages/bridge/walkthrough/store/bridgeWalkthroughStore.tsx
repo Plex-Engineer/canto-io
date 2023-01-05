@@ -8,9 +8,13 @@ import {
 } from "../walkthroughTracker";
 
 interface BridgeWalkthroughStoreProps {
+  currentBridgeType: "IN" | "OUT" | "NONE";
+  setBridgeType: (type: "IN" | "OUT" | "NONE") => void;
+  userSkip: boolean;
+  setUserSkip: (skip: boolean) => void;
   bridgeInStep: BridgeInStep;
-  bridgeOutStep: BridgeOutStep;
   setBridgeInStep: (step: BridgeInStep) => void;
+  bridgeOutStep: BridgeOutStep;
   setBridgeOutStep: (step: BridgeOutStep) => void;
   nextStep: (bridgeIn: boolean) => void;
   previousStep: (bridgeIn: boolean) => void;
@@ -19,9 +23,13 @@ interface BridgeWalkthroughStoreProps {
 export const useBridgeWalkthroughStore = create<BridgeWalkthroughStoreProps>()(
   devtools(
     persist((set, get) => ({
+      currentBridgeType: "NONE",
+      setBridgeType: (type) => set({ currentBridgeType: type }),
+      userSkip: false,
+      setUserSkip: (skip) => set({ userSkip: skip }),
       bridgeInStep: 0,
-      bridgeOutStep: 0,
       setBridgeInStep: (step) => set({ bridgeInStep: step }),
+      bridgeOutStep: 0,
       setBridgeOutStep: (step) => set({ bridgeOutStep: step }),
       nextStep: (bridgeIn) => {
         if (bridgeIn) {

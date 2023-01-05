@@ -37,6 +37,7 @@ export enum BridgeOutStep {
   SELECT_CONVERT_TOKEN,
   SELECT_CONVERT_TOKEN_AMOUNT,
   CONVERT_COIN,
+  SWITCH_TO_CANTO_2,
   SELECT_BRIDGE_OUT_NETWORK,
   SELECT_NATIVE_TOKEN,
   SELECT_NATIVE_TOKEN_AMOUNT,
@@ -121,7 +122,7 @@ export const BridgeOutWalkthroughSteps: WalkthroughTracker = {
   [BridgeOutStep.SELECT_CONVERT_TOKEN]: {
     prev: BridgeOutStep.SWITCH_TO_CANTO,
     next: BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT,
-    checkFunction: (token: UserConvertToken) => !token.erc20Balance.lt(0),
+    checkFunction: (token: UserConvertToken) => !token.erc20Balance.lte(0),
   },
   [BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT]: {
     prev: BridgeOutStep.SELECT_CONVERT_TOKEN,
@@ -131,8 +132,14 @@ export const BridgeOutWalkthroughSteps: WalkthroughTracker = {
   },
   [BridgeOutStep.CONVERT_COIN]: {
     prev: BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT,
-    next: BridgeOutStep.SELECT_BRIDGE_OUT_NETWORK,
+    next: BridgeOutStep.SWITCH_TO_CANTO_2,
     checkFunction: (txStatus: TransactionState) => txStatus === "Success",
+  },
+  [BridgeOutStep.SWITCH_TO_CANTO_2]: {
+    prev: BridgeOutStep.CONVERT_COIN,
+    next: BridgeOutStep.SELECT_BRIDGE_OUT_NETWORK,
+    checkFunction: (chainId: number | undefined) =>
+      chainId == CantoMainnet.chainId,
   },
   [BridgeOutStep.SELECT_BRIDGE_OUT_NETWORK]: {
     prev: BridgeOutStep.CONVERT_COIN,

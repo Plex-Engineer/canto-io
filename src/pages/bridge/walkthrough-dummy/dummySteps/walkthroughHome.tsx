@@ -15,11 +15,11 @@ import { useBridgeTransactionPageStore } from "pages/bridge/stores/transactionPa
 import useBridgeTxStore from "pages/bridge/stores/transactionStore";
 import { convertStringToBigNumber } from "pages/bridge/utils/stringToBigNumber";
 import { useState } from "react";
-import { useBridgeWalkthroughStore } from "../store/bridgeWalkthroughStore";
+import { useBridgeWalkthroughStore } from "../../walkthrough/store/bridgeWalkthroughStore";
 import {
   didPassBridgeInWalkthroughCheck,
   didPassBridgeOutWalkthroughCheck,
-} from "../walkthroughFunctions";
+} from "../../walkthrough/walkthroughFunctions";
 import {
   BridgeInStep,
   BridgeInWalkthroughSteps,

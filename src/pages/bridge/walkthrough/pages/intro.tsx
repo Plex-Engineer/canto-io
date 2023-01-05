@@ -1,12 +1,17 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
-import { useState } from "react";
 import TextSwitch from "../../walkthrough-dummy/components/TextSwitch";
-import { BridgeStep, useBridgeWalkthroughStore } from "../store/useWalkthough";
 import BaseStyled from "./layout";
 
-const IntroPage = () => {
-  const walkthrough = useBridgeWalkthroughStore();
+interface IntroPageProps {
+  setBridgeType: (type: "IN" | "OUT" | "NONE") => void;
+  currentBridgeType: "IN" | "OUT" | "NONE";
+  canSkip: boolean;
+  setSkipDecision: (skip: boolean) => void;
+  currentSkipDecision: boolean;
+  onNext: () => void;
+}
+const IntroPage = (props: IntroPageProps) => {
   return (
     <Styled>
       <Text type="title" size="title2">
@@ -18,46 +23,43 @@ const IntroPage = () => {
       <div className="row">
         <TextSwitch
           text="get funds into canto"
-          active={walkthrough.BridgeType == "IN"}
+          active={props.currentBridgeType == "IN"}
           onClick={() => {
-            walkthrough.setBridgeType("IN");
+            props.setBridgeType("IN");
           }}
         />
         <TextSwitch
           text="get funds out of canto"
-          active={walkthrough.BridgeType == "OUT"}
-          onClick={() => walkthrough.setBridgeType("OUT")}
+          active={props.currentBridgeType == "OUT"}
+          onClick={() => props.setBridgeType("OUT")}
         />
       </div>
 
-      <Text type="text" size="title3">
-        Has your gravity Bridge transaction completed ?
-      </Text>
-      <div className="row">
-        <TextSwitch
-          text="mainnet to gBridge"
-          active={walkthrough.BridgeStep == "FIRST"}
-          onClick={() => {
-            walkthrough.setBridgeStep("FIRST");
-          }}
-        />
-        <TextSwitch
-          text="gBridge to canto(EVM)"
-          active={walkthrough.BridgeStep == "LAST"}
-          onClick={() => walkthrough.setBridgeStep("LAST")}
-        />
-      </div>
+      {props.canSkip && (
+        <>
+          <Text type="text" size="title3">
+            Has your gravity Bridge transaction completed ?
+          </Text>
+          <div className="row">
+            <TextSwitch
+              text="mainnet to gBridge"
+              active={!props.currentSkipDecision}
+              onClick={() => {
+                props.setSkipDecision(false);
+              }}
+            />
+            <TextSwitch
+              text="gBridge to canto(EVM)"
+              active={props.currentSkipDecision}
+              onClick={() => props.setSkipDecision(true)}
+            />
+          </div>
+        </>
+      )}
 
       <div className="row">
         <OutlinedButton disabled>Prev</OutlinedButton>
-        <PrimaryButton
-          onClick={() => walkthrough.pushStepTracker(BridgeStep.SWITCH_NETWORK)}
-          disabled={
-            walkthrough.BridgeStep == "NONE" || walkthrough.BridgeType == "NONE"
-          }
-        >
-          Next
-        </PrimaryButton>
+        <PrimaryButton onClick={props.onNext}>Next</PrimaryButton>
       </div>
     </Styled>
   );

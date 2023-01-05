@@ -14,7 +14,10 @@ import { BridgeTransactionStatus } from "pages/bridge/stores/transactionStore";
 import { performBridgeCosmosTxAndSetStatus } from "pages/bridge/utils/bridgeCosmosTxUtils";
 import { txConvertCoin } from "pages/bridge/utils/convertCoin/convertTransactions";
 import { convertStringToBigNumber } from "pages/bridge/utils/stringToBigNumber";
-import { BridgeInStep } from "../../walkthroughTracker";
+import {
+  BridgeInStep,
+  BridgeInWalkthroughSteps,
+} from "../../walkthroughTracker";
 import { AmountSelect } from "../amountSelect";
 import { ConfirmConvert } from "../confirmConvert";
 import { SelectToken } from "../selectToken";
@@ -40,11 +43,16 @@ interface BridgeInWalkthroughProps {
   setTxStatus: (status: BridgeTransactionStatus | undefined) => void;
 }
 export const BridgeInWalkthroughManager = (props: BridgeInWalkthroughProps) => {
+  const activeFunction =
+    BridgeInWalkthroughSteps[props.currentStep].activeFunction;
   return (
     <div>
       <h1>Bridge In Start</h1>
       {props.currentStep === BridgeInStep.SWTICH_TO_ETH && (
-        <SwitchNetwork chainId={ETHMainnet.chainId} />
+        <SwitchNetwork
+          chainId={ETHMainnet.chainId}
+          onClick={() => activeFunction(7700)}
+        />
       )}
       {props.currentStep === BridgeInStep.SELECT_ERC20_TOKEN && (
         <SelectToken

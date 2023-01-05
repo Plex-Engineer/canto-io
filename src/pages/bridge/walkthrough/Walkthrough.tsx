@@ -1,28 +1,64 @@
 import styled from "@emotion/styled";
-import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
+import { Text } from "global/packages/src";
 import { useState } from "react";
-import { useBridgeStore } from "../stores/gravityStore";
-import AmountPage from "./pages/amount";
+import { useBridgeWalkthroughStore } from "./store/bridgeWalkthroughStore";
+import { BridgeOutManager } from "./managers/BridgeOutManager";
 import IntroPage from "./pages/intro";
-import SelectTokenPage from "./pages/selectToken";
-import SwitchNetworkPage from "./pages/switchNetwork";
-import { BridgeStep, useBridgeWalkthroughStore } from "./store/useWalkthough";
+import { useCustomWalkthrough } from "./store/customUseWalkthrough";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
-  const bridging = useBridgeStore();
+  const {
+    canSkip,
+    canContinue,
+    chainId,
+    selectedTokens,
+    allUserTokens,
+    setTokens,
+    amount,
+    setAmount,
+  } = useCustomWalkthrough();
+  const [finishedBridgeSelection, setFinishedBridgeSelection] = useState(false);
   return (
     <Styled>
       <Text type="title">Walkthrough</Text>
-
-      {walkthrough.currentStep == BridgeStep.CHOICE && <IntroPage />}
-      {walkthrough.currentStep == BridgeStep.SWITCH_NETWORK && (
-        <SwitchNetworkPage />
+      {!finishedBridgeSelection && (
+        <IntroPage
+          setBridgeType={walkthrough.setBridgeType}
+          currentBridgeType={walkthrough.currentBridgeType}
+          canSkip={canSkip}
+          currentSkipDecision={walkthrough.userSkip}
+          setSkipDecision={walkthrough.setUserSkip}
+          onNext={() => {
+            if (walkthrough.userSkip) {
+              //skip here
+            }
+            setFinishedBridgeSelection(true);
+          }}
+        />
       )}
-      {walkthrough.currentStep == BridgeStep.CHOOSE_TOKEN && (
-        <SelectTokenPage />
+      {finishedBridgeSelection && walkthrough.currentBridgeType == "OUT" && (
+        <BridgeOutManager
+          chainId={chainId}
+          currentStep={walkthrough.bridgeOutStep}
+          onPrev={() => {
+            if (walkthrough.bridgeOutStep === 0) {
+              setFinishedBridgeSelection(false);
+            } else {
+              walkthrough.previousStep(false);
+            }
+          }}
+          onNext={() => walkthrough.nextStep(false)}
+          canContinue={canContinue}
+          convertTokens={allUserTokens.convertTokens}
+          currentConvertToken={selectedTokens.convertOutToken}
+          bridgeOutTokens={allUserTokens.bridgeOutTokens}
+          currentBridgeOutToken={selectedTokens.bridgeOutToken}
+          setToken={setTokens}
+          amount={amount}
+          setAmount={setAmount}
+        />
       )}
-      {walkthrough.currentStep == BridgeStep.CHOOSE_AMOUNT && <AmountPage />}
     </Styled>
   );
 };
