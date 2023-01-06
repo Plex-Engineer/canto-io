@@ -21,23 +21,23 @@ const AmountPage = (props: AmountProps) => {
         <Text type="title" size="title2">
           CHOOSE THE AMOUNT
         </Text>
-        <Text type="text" size="title3">
-          You are trying to bridge out
-        </Text>
+        <div>
+          <Text type="text" size="title3" bold>
+            Enter the amount you&#39;d like to transfer
+          </Text>
+          <Text type="text" size="text3">
+            You can either click max or enter a specific amount that you&#39;d
+            prefer.
+          </Text>
+        </div>
       </header>
       <section>
         <div className="token-details">
           <img src={props.selectedToken.icon} height={30} />
-          <Text type="text" color="white" size="text2">
+          <Text type="text" size="text2">
             {props.selectedToken.name}
           </Text>
-          <Text
-            type="text"
-            size="text2"
-            color="white"
-            align="right"
-            className="balance"
-          >
+          <Text type="text" size="text2" align="right" className="balance">
             balance : {props.max}
           </Text>
         </div>

@@ -123,7 +123,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
               )
             )
           }
-          txType={"SEND TO GRBIDGE BRIDGE IN"}
+          txType={"SEND TO GBRIDGE BRIDGE IN"}
           onNext={props.onNext}
           onPrev={props.onPrev}
           canContinue={props.canContinue}

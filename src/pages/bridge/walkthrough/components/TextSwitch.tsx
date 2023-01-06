@@ -4,6 +4,7 @@ import { Text } from "global/packages/src";
 interface Props {
   onClick?: () => void;
   text: string;
+  children?: React.ReactNode;
   active?: boolean;
 }
 const TextSwitch = (props: Props) => {
@@ -20,6 +21,7 @@ const TextSwitch = (props: Props) => {
         ></div>
       </div>
       <Text type="text">{props.text}</Text>
+      {props.children}
     </Styled>
   );
 };

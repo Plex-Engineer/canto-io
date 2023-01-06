@@ -33,9 +33,11 @@ const Styled = styled.div`
     border-radius: 4px;
     background-color: #333;
   }
-
+  transition: all 0.4s;
   .active {
     background-color: var(--primary-color);
+    width: 44px;
+    transition: all 0.4s;
   }
 `;
 export default BarIndicator;

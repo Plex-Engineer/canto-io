@@ -24,8 +24,25 @@ const BaseStyled = styled.div`
     justify-content: center;
   }
 
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
   footer {
     margin-bottom: 2rem;
+    button {
+      width: 10rem;
+    }
+  }
+  animation: fadeIn 0.2s forwards;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 `;
 

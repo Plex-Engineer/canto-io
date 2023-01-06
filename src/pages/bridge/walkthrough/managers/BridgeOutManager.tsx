@@ -194,7 +194,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
               props.currentBridgeOutNetwork.name
             )
           }
-          txType={"SEND TO GRBIDGE"}
+          txType={"SEND TO GBRIDGE"}
           onNext={props.onNext}
           onPrev={props.onPrev}
           canGoBack={props.canGoBack}
