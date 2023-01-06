@@ -17,6 +17,15 @@ export const PAGES = {
     pageTitle: "bridge",
     networks: [CantoMainnet.chainId, CantoTestnet.chainId, 1],
     showInMenu: true,
+    subPages: {
+      walkthrough: {
+        name: "walkthrough",
+        link: "/bridge/walkthrough",
+        pageTitle: "walkthrough",
+        networks: [CantoMainnet.chainId, CantoTestnet.chainId, 1],
+        showInMenu: false,
+      },
+    },
   },
   governance: {
     name: "governance",
@@ -108,6 +117,7 @@ export const pageList: PageObject[] = [
     pageTitle: PAGES.bridge.pageTitle,
     networks: PAGES.bridge.networks,
     showInMenu: PAGES.bridge.showInMenu,
+    subpages: [PAGES.bridge.subPages.walkthrough],
   },
   {
     name: PAGES.staking.name,
