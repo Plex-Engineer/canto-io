@@ -5,6 +5,7 @@ import {
   BridgeOutNetworks,
   BridgeOutNetworkTokenData,
 } from "pages/bridge/config/gravityBridgeTokens";
+import TextSwitch from "../components/TextSwitch";
 import BaseStyled from "./layout";
 
 interface SelectBridgeProps {
@@ -26,26 +27,22 @@ const SelectBridgeOutNetwork = (props: SelectBridgeProps) => {
           <Text type="text" size="title3" bold>
             Select the network you&#39;d like to bridge out to
           </Text>
+          <Text type="text" size="text3">
+            The funds will be sent the network you&#39;d like to bridge out.
+          </Text>
         </div>
       </header>
       <section>
         <div className="network-list">
           {Object.keys(props.networks).map((key, network) => (
-            <div
-              style={{
-                background:
-                  props.activeNetwork.name ==
-                  props.networks[network as keyof typeof props.networks].name
-                    ? "white"
-                    : "none",
-              }}
-              role="button"
-              tabIndex={0}
+            <TextSwitch
               key={key}
-              className="network-item"
-              onClick={() => {
-                props.onSelect(network);
-              }}
+              text=""
+              onClick={() => props.onSelect(network)}
+              active={
+                props.activeNetwork.name ==
+                props.networks[network as keyof typeof props.networks].name
+              }
             >
               <span>
                 <img
@@ -53,12 +50,13 @@ const SelectBridgeOutNetwork = (props: SelectBridgeProps) => {
                     props.networks[network as keyof typeof props.networks].icon
                   }
                   alt=""
+                  height={30}
                 />
-                <p>
+                <Text type="text">
                   {props.networks[network as keyof typeof props.networks].name}
-                </p>
+                </Text>
               </span>
-            </div>
+            </TextSwitch>
           ))}
         </div>
       </section>
@@ -77,45 +75,19 @@ const SelectBridgeOutNetwork = (props: SelectBridgeProps) => {
 const Styled = styled(BaseStyled)`
   padding: 2rem;
   justify-content: center;
-  p {
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 21px;
-    letter-spacing: -0.03em;
-    color: var(--primary-color);
-  }
+
   span {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
   }
-  .network-list {
-    scrollbar-color: var(--primary-color);
-    scroll-behavior: smooth;
-    /* width */
-    padding: 8px;
-    .network-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-weight: 400;
-      font-size: 18px;
-      letter-spacing: -0.02em;
-      height: 38px;
-      padding: 0 14px;
-      outline: none;
-      cursor: pointer;
-      img {
-        margin: 6px;
-        height: 18px;
-        width: 18px;
-      }
 
-      &:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
-      }
-    }
+  .network-list {
+    padding: 8px;
+    flex-grow: 1;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
   }
 `;
 
