@@ -21,6 +21,7 @@ const Walkthrough = () => {
     bridgeOutNetworks,
     amount,
     setAmount,
+    cosmosTxStatus,
     setCosmosTxStatus,
   } = useCustomWalkthrough();
   const [finishedBridgeSelection, setFinishedBridgeSelection] = useState(false);
@@ -72,6 +73,7 @@ const Walkthrough = () => {
           stateCosmos={bridgeInTx.sendCosmos.state}
           convertTokens={tokens.allUserTokens.convertTokens}
           currentConvertToken={tokens.selectedTokens.convertInToken}
+          cosmosTxStatus={cosmosTxStatus}
           setCosmosTxStatus={setCosmosTxStatus}
         />
       )}
@@ -101,6 +103,7 @@ const Walkthrough = () => {
           setToken={tokens.setTokens}
           amount={amount}
           setAmount={setAmount}
+          cosmosTxStatus={cosmosTxStatus}
           setCosmosTxStatus={setCosmosTxStatus}
         />
       )}

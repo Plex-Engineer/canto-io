@@ -1,12 +1,14 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { BaseToken } from "pages/bridge/config/interfaces";
+import { ReactNode } from "react";
 import BaseStyled from "./layout";
 
 interface ConfirmationProps {
   token: BaseToken;
   amount: string;
   txType: string;
+  txStatus: ReactNode | undefined;
   onTxConfirm: () => void;
   onPrev: () => void;
   onNext: () => void;
@@ -67,6 +69,12 @@ export const ConfirmTransactionPage = (props: ConfirmationProps) => {
           </Text>
           <Text type="text" size="title3">
             {props.amount}
+          </Text>
+          <Text type="text" size="title3">
+            Transaction Status:
+          </Text>
+          <Text type="text" size="title3">
+            {props.txStatus ?? "None"}
           </Text>
         </div>
         <PrimaryButton disabled={props.canContinue} onClick={props.onTxConfirm}>

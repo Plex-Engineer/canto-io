@@ -45,6 +45,7 @@ interface BridgeOutManagerProps {
   setToken: (token: BaseToken, type: SelectedTokens) => void;
   amount: string;
   setAmount: (amount: string) => void;
+  cosmosTxStatus: BridgeTransactionStatus | undefined;
   setCosmosTxStatus: (status: BridgeTransactionStatus | undefined) => void;
 }
 export const BridgeOutManager = (props: BridgeOutManagerProps) => {
@@ -119,6 +120,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
             )
           }
           txType={"CONVERT OUT"}
+          txStatus={props.cosmosTxStatus?.status}
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
@@ -195,6 +197,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
             )
           }
           txType={"SEND TO GBRIDGE"}
+          txStatus={props.cosmosTxStatus?.status}
           onNext={props.onNext}
           onPrev={props.onPrev}
           canGoBack={props.canGoBack}

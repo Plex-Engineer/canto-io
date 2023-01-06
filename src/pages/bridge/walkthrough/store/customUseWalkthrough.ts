@@ -28,7 +28,7 @@ import {
   didPassBridgeInWalkthroughCheck,
   didPassBridgeOutWalkthroughCheck,
 } from "pages/bridge/walkthrough/walkthroughFunctions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BridgeInWalkthroughSteps,
   BridgeOutWalkthroughSteps,
@@ -72,6 +72,7 @@ interface Props {
   };
   amount: string;
   setAmount: (amount: string) => void;
+  cosmosTxStatus: BridgeTransactionStatus | undefined;
   setCosmosTxStatus: (status: BridgeTransactionStatus | undefined) => void;
 }
 export function useCustomWalkthrough(): Props {
@@ -172,6 +173,11 @@ export function useCustomWalkthrough(): Props {
     gravityAddress ?? ADDRESSES.ETHMainnet.GravityBridge
   );
 
+  //must reset transaction state when the user steps forward or back since txState is the same store
+  useEffect(() => {
+    bridgeTxStore.setTransactionStatus(undefined);
+  }, [walkthroughStore.bridgeInStep, walkthroughStore.bridgeOutStep]);
+
   return {
     chainId: Number(networkInfo.chainId),
     cantoAddress: networkInfo.cantoAddress,
@@ -210,6 +216,7 @@ export function useCustomWalkthrough(): Props {
     },
     amount,
     setAmount,
+    cosmosTxStatus: bridgeTxStore.transactionStatus,
     setCosmosTxStatus: bridgeTxStore.setTransactionStatus,
   };
 }

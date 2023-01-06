@@ -19,7 +19,6 @@ import { convertStringToBigNumber } from "pages/bridge/utils/stringToBigNumber";
 import BarIndicator from "../components/barIndicator";
 import AmountPage from "../pages/amount";
 import { ConfirmTransactionPage } from "../pages/confirmTxPage";
-import { NeedAllowancePage } from "../pages/needAllowance";
 import SelectTokenPage from "../pages/selectToken";
 import SwitchNetworkPage from "../pages/switchNetwork";
 import { WaitForGbridge } from "../pages/waitForGbridge";
@@ -49,6 +48,7 @@ interface BridgeInManagerProps {
   convertTokens: UserConvertToken[];
   amount: string;
   setAmount: (amount: string) => void;
+  cosmosTxStatus: BridgeTransactionStatus | undefined;
   setCosmosTxStatus: (status: BridgeTransactionStatus | undefined) => void;
 }
 export const BridgeInManager = (props: BridgeInManagerProps) => {
@@ -79,15 +79,17 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
         />
       )}
       {props.currentStep == BridgeInStep.NEED_ALLOWANCE && (
-        <NeedAllowancePage
+        <ConfirmTransactionPage
+          amount=""
           token={props.currentBridgeInToken}
-          txMessage={props.currentBridgeInToken.name}
-          allowTx={() =>
+          onTxConfirm={() =>
             props.sendApprove(
               props.gravityAddress,
               BigNumber.from(ethers.constants.MaxUint256)
             )
           }
+          txType={"APPROVE TOKEN"}
+          txStatus={props.stateApprove.status}
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
@@ -123,6 +125,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
               )
             )
           }
+          txStatus={props.stateCosmos.status}
           txType={"SEND TO GBRIDGE BRIDGE IN"}
           onNext={props.onNext}
           onPrev={props.onPrev}
@@ -206,6 +209,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
             )
           }
           txType={"SEND FROM CANTO BRIDGE TO CANTO EVM"}
+          txStatus={props.cosmosTxStatus?.status}
           onNext={props.onNext}
           onPrev={props.onPrev}
           canContinue={props.canContinue}
