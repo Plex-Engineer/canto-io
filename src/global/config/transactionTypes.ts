@@ -27,7 +27,8 @@ export type TransactionState =
   | "Mining"
   | "Success"
   | "Fail"
-  | "Exception";
+  | "Exception"
+  | "CollectingSignaturePool";
 
 export type TransactionActionObject = {
   action: string;

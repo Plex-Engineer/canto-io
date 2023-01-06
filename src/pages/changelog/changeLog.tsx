@@ -5,6 +5,13 @@ const ChangeLog = () => {
   return (
     <Styled>
       <LogSection
+        date="Jan 3rd 2023"
+        title="Fixes & Enhancements"
+        content={`- An issue that resulted in the LP interface & LM pages UI incorrectly displaying a completed transaction as being in progress is now fixed.
+        - When bridging in users now see WETH instead of ETH when selecting a token.
+        - If a user has not yet generated a Canto public key, the button for bridging is now disabled.`}
+      />
+      <LogSection
         date="Dec 27th 2022"
         title="Fixes & Enhancements"
         content={`- An issue where notifications for successful transactions were displayed in red instead of green is now fixed.
@@ -43,7 +50,7 @@ const Styled = styled.div`
     .header {
       position: sticky;
       height: min-content;
-      width: 50%;
+      min-width: 16rem;
       top: 5.5rem;
       background-color: #03ca7b34;
       padding: 1rem;

@@ -99,7 +99,7 @@ export const CantoNav = () => {
   return (
     <NavBar
       onClick={() => {
-        activateBrowserWallet();
+        activateBrowserWallet({ type: "metamask" });
       }}
       chainId={Number(networkInfo.chainId)}
       account={networkInfo.account ?? ""}

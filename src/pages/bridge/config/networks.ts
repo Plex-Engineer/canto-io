@@ -11,8 +11,7 @@ export const ETHMainnet = {
   chainId: 1,
   addresses: ADDRESSES.ETHMainnet,
   gravityTokens: mainnetGravityTokensBase,
-  rpcUrl:
-    "https://eth-mainnet.g.alchemy.com/v2/D81AOUJxz5N8-EEoFDKdHby7s2q4hJkQ",
+  rpcUrl: import.meta.env.VITE_MAINNET_RPC,
   isTestChain: false,
   blockExplorerUrl: "https://www.nothing.com",
 };

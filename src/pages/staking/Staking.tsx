@@ -3,144 +3,38 @@ import "react-tabs/style/react-tabs.css";
 import MyStaking from "./tabs/myStaking";
 import AllDerevatives from "./tabs/allDerevatives";
 import Styled from "./style";
-import { useEffect, useState } from "react";
-import {
-  DelegationResponse,
-  StakingTransactionType,
-  UndelegationMap,
-  Validator,
-} from "./config/interfaces";
-import {
-  getDelegationsForAddress,
-  getDistributionRewards,
-  getUndelegationsForAddress,
-  getValidators,
-  txClaimRewards,
-} from "pages/staking/utils/transactions";
+import { useState } from "react";
 import { CantoMainnet } from "global/config/networks";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import { BigNumber } from "ethers";
 import {
   calculateTotalStaked,
   getAllValidatorData,
-  getStakingApr,
 } from "./utils/allUserValidatorInfo";
 import { ModalManager } from "./modals/modalManager";
-import useTransactionStore from "./stores/transactionStore";
-import { chain, memo } from "global/config/cosmosConstants";
-import { claimRewardFee } from "./config/fees";
 import HelmetSEO from "global/components/seo";
-import useValidatorModalStore, {
-  ValidatorModalType,
-} from "./stores/validatorModalStore";
-import { performTxAndSetStatus } from "./utils/utils";
 import { Selected } from "./modals/redelgationModal";
 import Select from "react-select";
 
 import { CSearch } from "global/packages/src/components/atoms/Input";
 import useStakingStore from "./stores/stakingStore";
+import useStaking from "./hooks/useStaking";
 
 const Staking = () => {
   const networkInfo = useNetworkInfo();
-  const transactionStore = useTransactionStore();
-  const validatorModalStore = useValidatorModalStore();
   const stakingStore = useStakingStore();
-  // get all of the validators
-  const [validators, setValidators] = useState<Validator[]>([]);
-  const [stakingApr, setStakingApr] = useState("");
-  // get all of the validators the user has staked to
-  const [delegations, setDelegations] = useState<DelegationResponse[]>([]);
-  // get all of the undelegations for the user
-  const [undelegations, setUndelegations] = useState<UndelegationMap>({
-    total_unbonding: BigNumber.from("0"),
-  });
-  // get all of the rewards for the user
-  const [rewards, setRewards] = useState<BigNumber>(BigNumber.from("0"));
+  const [isHovering, setIsHovering] = useState(false);
 
-  async function handleClaimRewards() {
-    validatorModalStore.open(ValidatorModalType.STAKE);
-    performTxAndSetStatus(
-      async () =>
-        await txClaimRewards(
-          networkInfo.account ?? "",
-          CantoMainnet.cosmosAPIEndpoint,
-          claimRewardFee,
-          chain,
-          memo,
-          userValidators
-        ),
-      StakingTransactionType.CLAIM_REWARDS,
-      transactionStore.setTransactionStatus,
-      validatorModalStore.close,
-      "",
-      rewards
-    );
-  }
-
-  const ToggleDisplayOptions = [
-    {
-      label: "active",
-      value: 1,
-    },
-    {
-      label: "inactive",
-      value: 2,
-    },
-    {
-      label: "all",
-      value: 3,
-    },
-  ];
-  async function getAllData() {
-    if (networkInfo.account) {
-      setDelegations(
-        await getDelegationsForAddress(
-          CantoMainnet.cosmosAPIEndpoint,
-          networkInfo.account
-        )
-      );
-      setRewards(
-        await getDistributionRewards(
-          CantoMainnet.cosmosAPIEndpoint,
-          networkInfo.account
-        )
-      );
-      setUndelegations(
-        await getUndelegationsForAddress(
-          CantoMainnet.cosmosAPIEndpoint,
-          networkInfo.account
-        )
-      );
-    }
-    setValidators(await getValidators(CantoMainnet.cosmosAPIEndpoint));
-    setStakingApr(await getStakingApr());
-  }
-
-  //get new data every 6 seconds for the block time
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      await getAllData();
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [networkInfo.account]);
-  useEffect(() => {
-    getAllData();
-  }, [networkInfo.account]);
-
-  const allValidatorData = getAllValidatorData(
+  const [
     validators,
     delegations,
-    undelegations
-  );
+    undelegations,
+    userValidators,
+    undelagatingValidators,
+    handleClaimRewards,
+    rewards,
+    stakingApr,
+  ] = useStaking();
 
-  const undelagatingValidators = allValidatorData.filter(
-    (validator) => !!validator.undelagatingInfo
-  );
-  const userValidators = allValidatorData.filter(
-    (validator) => !!validator.userDelegations
-  );
-
-  const [isHovering, setIsHovering] = useState(false);
   return (
     <>
       <HelmetSEO
@@ -205,7 +99,20 @@ const Staking = () => {
                     }),
                   }}
                   classNamePrefix="react-select"
-                  options={ToggleDisplayOptions}
+                  options={[
+                    {
+                      label: "active",
+                      value: 1,
+                    },
+                    {
+                      label: "inactive",
+                      value: 2,
+                    },
+                    {
+                      label: "all",
+                      value: 3,
+                    },
+                  ]}
                   onChange={(val) => {
                     stakingStore.setValidatorSort(val?.value ?? 1);
                   }}
