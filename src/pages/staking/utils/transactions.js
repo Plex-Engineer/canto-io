@@ -157,7 +157,6 @@ export async function txClaimRewards(
       })
     ),
   };
-
   // get sender object using eth address
   const senderObj = await getSenderObj(account, nodeAddressIP);
 
