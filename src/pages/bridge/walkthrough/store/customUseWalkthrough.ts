@@ -41,6 +41,8 @@ interface Props {
   canContinue: boolean;
   canGoBack: boolean;
   canSkip: boolean;
+  canBridgeIn: boolean;
+  canBridgeOut: boolean;
   tokens: {
     allUserTokens: {
       convertTokens: UserConvertToken[];
@@ -178,6 +180,26 @@ export function useCustomWalkthrough(): Props {
     bridgeTxStore.setTransactionStatus(undefined);
   }, [walkthroughStore.bridgeInStep, walkthroughStore.bridgeOutStep]);
 
+  //constants to let walkthrough know if user has funds to perform this bridge
+  const canBridgeIn = () => {
+    for (const token of userBridgeInTokens) {
+      if (token.balanceOf.gt(0)) return true;
+    }
+    for (const token of userConvertTokens) {
+      if (token.nativeBalance.gt(0)) return true;
+    }
+    return false;
+  };
+  const canBridgeOut = () => {
+    for (const token of userBridgeOutTokens) {
+      if (token.nativeBalance.gt(0)) return true;
+    }
+    for (const token of userConvertTokens) {
+      if (token.erc20Balance.gt(0)) return true;
+    }
+    return false;
+  };
+
   return {
     chainId: Number(networkInfo.chainId),
     cantoAddress: networkInfo.cantoAddress,
@@ -185,6 +207,8 @@ export function useCustomWalkthrough(): Props {
     canContinue: checkIfCanContinue(),
     canGoBack: checkIfCanClickPrevious(),
     canSkip: checkIfCanSkip(userConvertTokens),
+    canBridgeIn: canBridgeIn(),
+    canBridgeOut: canBridgeOut(),
     tokens: {
       allUserTokens: {
         convertTokens: userConvertTokens,

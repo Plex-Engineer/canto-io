@@ -23,6 +23,8 @@ const Walkthrough = () => {
     setAmount,
     cosmosTxStatus,
     setCosmosTxStatus,
+    canBridgeIn,
+    canBridgeOut,
   } = useCustomWalkthrough();
   const [finishedBridgeSelection, setFinishedBridgeSelection] = useState(false);
   function restartWalkthrough() {
@@ -32,6 +34,7 @@ const Walkthrough = () => {
   }
   return (
     <Styled>
+      {!(canBridgeIn || canBridgeOut) ? <div>NO FUNDS</div> : null}
       {!finishedBridgeSelection && (
         <IntroPage
           setBridgeType={walkthrough.setBridgeType}
