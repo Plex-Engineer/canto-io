@@ -21,6 +21,7 @@ import { txIBCTransfer } from "pages/bridge/utils/IBC/IBCTransfer";
 import { convertStringToBigNumber } from "pages/bridge/utils/stringToBigNumber";
 import BarIndicator from "../components/barIndicator";
 import AmountPage from "../pages/amount";
+import { CompletePage } from "../pages/complete";
 import { ConfirmTransactionPage } from "../pages/confirmTxPage";
 import SelectBridgeOutNetwork from "../pages/selectBridgeOutNetwork";
 import SelectTokenPage from "../pages/selectToken";
@@ -47,6 +48,7 @@ interface BridgeOutManagerProps {
   setAmount: (amount: string) => void;
   cosmosTxStatus: BridgeTransactionStatus | undefined;
   setCosmosTxStatus: (status: BridgeTransactionStatus | undefined) => void;
+  restartWalkthrough: () => void;
 }
 export const BridgeOutManager = (props: BridgeOutManagerProps) => {
   return (
@@ -119,7 +121,8 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
               "canto bridge"
             )
           }
-          txType={"CONVERT OUT"}
+          txType={"Canto EVM -> Canto Bridge"}
+          txShortDesc={`send ${props.amount} ${props.currentConvertToken.name}`}
           txStatus={props.cosmosTxStatus?.status}
           canContinue={props.canContinue}
           onNext={props.onNext}
@@ -196,7 +199,8 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
               props.currentBridgeOutNetwork.name
             )
           }
-          txType={"SEND TO GBRIDGE"}
+          txType={"Canto Bridge -> " + props.currentBridgeOutNetwork.name}
+          txShortDesc={`send ${props.amount} ${props.currentBridgeOutToken.name}`}
           txStatus={props.cosmosTxStatus?.status}
           onNext={props.onNext}
           onPrev={props.onPrev}
@@ -204,6 +208,10 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           canContinue={props.canContinue}
         />
       )}
+      {props.currentStep === BridgeOutStep.COMPLETE && (
+        <CompletePage bridgeIn={false} restart={props.restartWalkthrough} />
+      )}
+
       <BarIndicator
         total={Object.keys(BridgeOutStep).length / 2}
         current={props.currentStep}

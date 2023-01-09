@@ -8,6 +8,7 @@ interface ConfirmationProps {
   token: BaseToken;
   amount: string;
   txType: string;
+  txShortDesc: string;
   txStatus: ReactNode | undefined;
   onTxConfirm: () => void;
   onPrev: () => void;
@@ -32,8 +33,7 @@ export const ConfirmTransactionPage = (props: ConfirmationProps) => {
             Please confirm the details provided under
           </Text>
           <Text type="text" size="text3">
-            By clicking confirm you are agreeing to send {props.amount}{" "}
-            {props.token.name}
+            By clicking confirm you are agreeing to {props.txShortDesc}
           </Text>
         </div>
       </header>
@@ -63,13 +63,18 @@ export const ConfirmTransactionPage = (props: ConfirmationProps) => {
             </span>
             {props.token.name}
           </Text>
+          {Number(props.amount) == 0 ? null : (
+            <>
+              {" "}
+              <Text type="text" size="title3">
+                Amount:
+              </Text>
+              <Text type="text" size="title3">
+                {props.amount}
+              </Text>
+            </>
+          )}
 
-          <Text type="text" size="title3">
-            Amount:
-          </Text>
-          <Text type="text" size="title3">
-            {props.amount}
-          </Text>
           <Text type="text" size="title3">
             Transaction Status:
           </Text>

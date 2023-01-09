@@ -18,6 +18,7 @@ import { txConvertCoin } from "pages/bridge/utils/convertCoin/convertTransaction
 import { convertStringToBigNumber } from "pages/bridge/utils/stringToBigNumber";
 import BarIndicator from "../components/barIndicator";
 import AmountPage from "../pages/amount";
+import { CompletePage } from "../pages/complete";
 import { ConfirmTransactionPage } from "../pages/confirmTxPage";
 import SelectTokenPage from "../pages/selectToken";
 import SwitchNetworkPage from "../pages/switchNetwork";
@@ -50,6 +51,7 @@ interface BridgeInManagerProps {
   setAmount: (amount: string) => void;
   cosmosTxStatus: BridgeTransactionStatus | undefined;
   setCosmosTxStatus: (status: BridgeTransactionStatus | undefined) => void;
+  restartWalkthrough: () => void;
 }
 export const BridgeInManager = (props: BridgeInManagerProps) => {
   return (
@@ -88,7 +90,8 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
               BigNumber.from(ethers.constants.MaxUint256)
             )
           }
-          txType={"APPROVE TOKEN"}
+          txType={"Enable Token"}
+          txShortDesc={`enable ${props.currentBridgeInToken.name}`}
           txStatus={props.stateApprove.status}
           canContinue={props.canContinue}
           onNext={props.onNext}
@@ -126,7 +129,8 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
             )
           }
           txStatus={props.stateCosmos.status}
-          txType={"SEND TO GBRIDGE BRIDGE IN"}
+          txShortDesc={`send ${props.amount} ${props.currentBridgeInToken.name}`}
+          txType={"Ethereum -> Canto Bridge"}
           onNext={props.onNext}
           onPrev={props.onPrev}
           canContinue={props.canContinue}
@@ -208,14 +212,19 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
               "canto evm"
             )
           }
-          txType={"SEND FROM CANTO BRIDGE TO CANTO EVM"}
+          txType={"Canto Bridge -> Canto EVM"}
+          txShortDesc={`send ${props.amount} ${props.currentConvertToken.name}`}
           txStatus={props.cosmosTxStatus?.status}
           onNext={props.onNext}
           onPrev={props.onPrev}
-          canContinue={props.canContinue}
+          canContinue={!props.canContinue}
           canGoBack={props.canGoBack}
         />
       )}
+      {props.currentStep === BridgeInStep.COMPLETE && (
+        <CompletePage bridgeIn={true} restart={props.restartWalkthrough} />
+      )}
+
       <BarIndicator
         total={Object.keys(BridgeInStep).length / 2}
         current={props.currentStep}

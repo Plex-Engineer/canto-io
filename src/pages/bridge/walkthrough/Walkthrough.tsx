@@ -25,6 +25,11 @@ const Walkthrough = () => {
     setCosmosTxStatus,
   } = useCustomWalkthrough();
   const [finishedBridgeSelection, setFinishedBridgeSelection] = useState(false);
+  function restartWalkthrough() {
+    setFinishedBridgeSelection(false);
+    walkthrough.resetState(true);
+    walkthrough.resetState(false);
+  }
   return (
     <Styled>
       {!finishedBridgeSelection && (
@@ -75,6 +80,7 @@ const Walkthrough = () => {
           currentConvertToken={tokens.selectedTokens.convertInToken}
           cosmosTxStatus={cosmosTxStatus}
           setCosmosTxStatus={setCosmosTxStatus}
+          restartWalkthrough={restartWalkthrough}
         />
       )}
 
@@ -105,6 +111,7 @@ const Walkthrough = () => {
           setAmount={setAmount}
           cosmosTxStatus={cosmosTxStatus}
           setCosmosTxStatus={setCosmosTxStatus}
+          restartWalkthrough={restartWalkthrough}
         />
       )}
     </Styled>
