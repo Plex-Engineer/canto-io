@@ -31,7 +31,6 @@ interface StakingModalProps {
 
 const DelegationModal = ({
   validator,
-  //   allValidators,
   balance,
   account,
   undelegation,

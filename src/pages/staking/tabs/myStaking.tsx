@@ -41,6 +41,7 @@ const MyStaking = (props: MyStakingProps) => {
               onRewards={props.onRewards}
               rewards={truncateNumber(formatEther(props.totalRewards))}
               apr={props.apr}
+              canClaim={props.canClaim}
             />
             <Text
               type="title"
