@@ -8,12 +8,7 @@ import {
   convertToVoteNumber,
   convertVoteNumberToString,
 } from "./utils/formattingStrings";
-import {
-  getAccountVote,
-  txVote,
-  voteAndSetStatus,
-  voteOnProposal,
-} from "./utils/voting";
+import { getAccountVote, txVote, voteAndSetStatus } from "./utils/voting";
 import {
   emptyProposal,
   emptyTally,
@@ -86,7 +81,6 @@ const Proposal = () => {
   const veto = Number(formatUnits(currentVotes.tally.no_with_veto));
   const totalVotes = yes + no + abstain + veto;
   const [accountVote, setAccountVote] = useState(VotingOption.NONE);
-  const [voteSuccess, setVoteSuccess] = useState<number | undefined>(undefined);
   async function showAccountVote() {
     if (proposal.status == VoteStatus.votingOngoing) {
       const vote = await getAccountVote(proposal.proposal_id, nodeURL(chainId));
@@ -370,12 +364,8 @@ const Proposal = () => {
                     ) + "%"
                 : formatBigNumber(totalUserStake) + " canto"
             }`}
-        {voteSuccess == 0 ? (
-          <div style={{ color: "red" }}>vote could not be placed</div>
-        ) : voteSuccess == 1 ? (
+        {voteStatus == "Success" && (
           <div style={{ color: "green" }}>thank you for your vote!</div>
-        ) : (
-          ""
         )}
       </div>
     </ProposalContainer>

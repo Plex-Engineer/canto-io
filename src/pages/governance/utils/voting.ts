@@ -54,56 +54,6 @@ export async function txVote(
   );
 }
 
-export async function voteOnProposal(
-  proposalID: number,
-  proposalOption: number,
-  nodeAddressIP: string,
-  fee: Fee,
-  chain: Chain,
-  memo: string
-) {
-  // check metamask
-  //@ts-ignore
-  if (typeof window.ethereum !== "undefined") {
-    // console.log("MetaMask is installed!");
-  } else {
-    console.error("Please install Metamask!");
-    return 0;
-  }
-
-  // get metamask account address
-  //@ts-ignore
-  const accounts = await window.ethereum.request({
-    method: "eth_requestAccounts",
-  });
-  const account = accounts[0];
-
-  // get sender object using eth address
-  try {
-    const senderObj = await getSenderObj(account, nodeAddressIP);
-    const params = {
-      proposalId: proposalID,
-      option: proposalOption,
-    };
-
-    const msg = createTxMsgVote(chain, senderObj, fee, memo, params);
-
-    const tx = await signAndBroadcastTxMsg(
-      msg,
-      senderObj,
-      chain,
-      nodeAddressIP,
-      account
-    );
-    // console.log("thank you for your vote");
-    return 1;
-  } catch (err) {
-    console.error("vote could not be placed");
-    console.error(err);
-    return 0;
-  }
-}
-
 export async function getAccountVote(
   proposalID: string,
   nodeAddressIP: string
