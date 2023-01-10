@@ -18,7 +18,7 @@ export async function checkCosmosTxConfirmation(
       )
     ).json();
     if (tx.tx_response) {
-      return true;
+      return tx.tx_response.code === 0;
     }
     numberOfBlocksChecked++;
     await sleep(4000);
