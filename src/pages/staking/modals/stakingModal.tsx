@@ -240,7 +240,13 @@ export const StakingModal = ({
                 <button
                   className="max"
                   onClick={() => {
-                    setAmount(formatEther(balance));
+                    //need to subtract the total fee + 1 Canto to make sure the user has enough for gas and left over canto for other transactions
+                    const totalFee = BigNumber.from(delegateFee.amount)
+                      .add(delegateFee.gas)
+                      .add(parseEther("1"));
+                    balance.sub(totalFee).lte(0)
+                      ? setAmount("0")
+                      : setAmount(formatEther(balance.sub(totalFee)));
                   }}
                 >
                   max

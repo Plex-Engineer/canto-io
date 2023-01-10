@@ -34,6 +34,7 @@ import useValidatorModalStore, {
   ValidatorModalType,
 } from "../stores/validatorModalStore";
 import { performTxAndSetStatus } from "../utils/utils";
+import { parseEther } from "ethers/lib/utils";
 
 const useStaking = (): {
   validators: Validator[];
@@ -130,8 +131,10 @@ const useStaking = (): {
     (validator) => !!validator.userDelegations
   );
 
-  function getTotalFee(fee: Fee): BigNumber {
-    return BigNumber.from(fee.amount).add(fee.gas);
+  function getTotalFee(fee: Fee, additionalFee?: BigNumber): BigNumber {
+    return BigNumber.from(fee.amount)
+      .add(fee.gas)
+      .add(additionalFee ?? 0);
   }
   function enoughBalanceForFee(balance: BigNumber, fee: BigNumber) {
     return balance.gt(fee);
@@ -140,7 +143,10 @@ const useStaking = (): {
     const balance = networkInfo.balance;
     return {
       claimRewards: enoughBalanceForFee(balance, getTotalFee(claimRewardFee)),
-      delegate: enoughBalanceForFee(balance, getTotalFee(delegateFee)),
+      delegate: enoughBalanceForFee(
+        balance,
+        getTotalFee(delegateFee, parseEther("1"))
+      ),
       redelegate: enoughBalanceForFee(balance, getTotalFee(reDelegateFee)),
       undelegate: enoughBalanceForFee(balance, getTotalFee(unbondingFee)),
     };
