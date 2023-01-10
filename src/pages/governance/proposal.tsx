@@ -8,7 +8,12 @@ import {
   convertToVoteNumber,
   convertVoteNumberToString,
 } from "./utils/formattingStrings";
-import { getAccountVote, voteOnProposal } from "./utils/voting";
+import {
+  getAccountVote,
+  txVote,
+  voteAndSetStatus,
+  voteOnProposal,
+} from "./utils/voting";
 import {
   emptyProposal,
   emptyTally,
@@ -310,22 +315,23 @@ const Proposal = () => {
               )}
               <GovModal
                 onVote={async (vote: VotingOption) => {
-                  setVoteStatus("PendingSignature");
-                  setCastingVote(vote);
-                  const voteSuccess = await voteOnProposal(
-                    Number(proposal.proposal_id),
-                    convertToVoteNumber(vote),
-                    nodeURL(chainId),
-                    votingFee,
-                    chain,
-                    memo
-                  );
-                  setVoteSuccess(voteSuccess);
-                  if (voteSuccess) {
-                    setVoteStatus("Success");
-                  } else {
-                    setVoteStatus("Fail");
+                  if (!account) {
+                    return;
                   }
+                  setCastingVote(vote);
+                  await voteAndSetStatus(
+                    async () =>
+                      await txVote(
+                        account,
+                        Number(proposal.proposal_id),
+                        convertToVoteNumber(vote),
+                        nodeURL(chainId),
+                        votingFee,
+                        chain,
+                        memo
+                      ),
+                    setVoteStatus
+                  );
                 }}
                 proposal={proposal}
                 currentVote={accountVote}
