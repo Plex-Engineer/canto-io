@@ -1,6 +1,7 @@
 import {
   MasterValidatorProps,
   StakingTransactionType,
+  TxFeeBalanceCheck,
   Validator,
 } from "../config/interfaces";
 import { StakingModalContainer } from "../components/Styled";
@@ -36,6 +37,7 @@ interface StakingModalProps {
   balance: BigNumber;
   account?: string;
   onClose: () => void;
+  txFeeCheck: TxFeeBalanceCheck;
 }
 export const StakingModal = ({
   validator,
@@ -43,6 +45,7 @@ export const StakingModal = ({
   balance,
   account,
   onClose,
+  txFeeCheck,
 }: StakingModalProps) => {
   const [amount, setAmount] = useState("");
   const [agreed, setAgreed] = useState(false);
@@ -265,13 +268,19 @@ export const StakingModal = ({
                   !agreed ||
                   Number(amount) == 0 ||
                   isNaN(Number(amount)) ||
-                  Number(amount) > Number(formatEther(balance))
+                  Number(amount) > Number(formatEther(balance)) ||
+                  !txFeeCheck.delegate
                 }
                 className="btn"
                 onClick={() => handleDelegate()}
               >
                 delegate
               </PrimaryButton>
+              {!txFeeCheck.delegate && (
+                <Text type="text" size="text3" style={{ color: "red" }}>
+                  not enough funds for delegation fee
+                </Text>
+              )}
             </TabPanel>
             <TabPanel className="tabPanel">
               <div
@@ -313,12 +322,18 @@ export const StakingModal = ({
                       formatEther(
                         validator.userDelegations?.balance.amount ?? "0"
                       )
-                    )
+                    ) ||
+                  !txFeeCheck.undelegate
                 }
                 onClick={() => setShowUndelegateConfirmation(true)}
               >
                 undelegate
               </OutlinedButton>
+              {!txFeeCheck.undelegate && (
+                <Text type="text" size="text3" style={{ color: "red" }}>
+                  not enough funds for undelegation fee
+                </Text>
+              )}
               {showUndelegateConfimation && (
                 <ConfirmUndelegationModal
                   onUndelegate={() => handleUndelegate()}
@@ -395,12 +410,18 @@ export const StakingModal = ({
                         validator.userDelegations?.balance.amount ?? "0"
                       )
                     ) ||
-                  newValidator == undefined
+                  newValidator == undefined ||
+                  !txFeeCheck.redelegate
                 }
                 onClick={() => handleRedelegate()}
               >
                 re-delegate
               </PrimaryButton>
+              {!txFeeCheck.redelegate && (
+                <Text type="text" size="text3" style={{ color: "red" }}>
+                  not enough funds for re-delegation fee
+                </Text>
+              )}
             </TabPanel>
           </Tabs>
         </div>

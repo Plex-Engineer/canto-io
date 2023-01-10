@@ -24,7 +24,7 @@ const Staking = () => {
   const stakingStore = useStakingStore();
   const [isHovering, setIsHovering] = useState(false);
 
-  const [
+  const {
     validators,
     delegations,
     undelegations,
@@ -33,7 +33,8 @@ const Staking = () => {
     handleClaimRewards,
     rewards,
     stakingApr,
-  ] = useStaking();
+    txFeeCheck,
+  } = useStaking();
 
   return (
     <>
@@ -43,7 +44,7 @@ const Staking = () => {
         link="staking"
       />
       <Styled>
-        <ModalManager allValidators={validators} />
+        <ModalManager allValidators={validators} txBalanceChecks={txFeeCheck} />
         <Tabs className="tabs">
           <TabList className="tablist">
             <Tab
@@ -148,6 +149,7 @@ const Staking = () => {
               apr={stakingApr}
               userValidationInfo={userValidators}
               undelegationValidators={undelagatingValidators}
+              canClaim={txFeeCheck.claimRewards}
             />
           </TabPanel>
           <TabPanel>

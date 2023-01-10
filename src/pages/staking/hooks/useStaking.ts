@@ -4,6 +4,7 @@ import {
   DelegationResponse,
   MasterValidatorProps,
   StakingTransactionType,
+  TxFeeBalanceCheck,
   UndelegationMap,
   Validator,
 } from "../config/interfaces";
@@ -18,28 +19,33 @@ import { CantoMainnet } from "global/config/networks";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { BigNumber } from "ethers";
 import {
-  calculateTotalStaked,
   getAllValidatorData,
   getStakingApr,
 } from "../utils/allUserValidatorInfo";
 import useTransactionStore from "../stores/transactionStore";
-import { chain, memo } from "global/config/cosmosConstants";
-import { claimRewardFee } from "../config/fees";
+import { chain, Fee, memo } from "global/config/cosmosConstants";
+import {
+  claimRewardFee,
+  delegateFee,
+  reDelegateFee,
+  unbondingFee,
+} from "../config/fees";
 import useValidatorModalStore, {
   ValidatorModalType,
 } from "../stores/validatorModalStore";
 import { performTxAndSetStatus } from "../utils/utils";
 
-const useStaking = (): [
-  Validator[],
-  DelegationResponse[],
-  UndelegationMap,
-  MasterValidatorProps[],
-  MasterValidatorProps[],
-  () => Promise<void>,
-  BigNumber,
-  string
-] => {
+const useStaking = (): {
+  validators: Validator[];
+  delegations: DelegationResponse[];
+  undelegations: UndelegationMap;
+  userValidators: MasterValidatorProps[];
+  undelagatingValidators: MasterValidatorProps[];
+  handleClaimRewards: () => Promise<void>;
+  rewards: BigNumber;
+  stakingApr: string;
+  txFeeCheck: TxFeeBalanceCheck;
+} => {
   const networkInfo = useNetworkInfo();
   const transactionStore = useTransactionStore();
   const validatorModalStore = useValidatorModalStore();
@@ -124,7 +130,23 @@ const useStaking = (): [
     (validator) => !!validator.userDelegations
   );
 
-  return [
+  function getTotalFee(fee: Fee): BigNumber {
+    return BigNumber.from(fee.amount).add(fee.gas);
+  }
+  function enoughBalanceForFee(balance: BigNumber, fee: BigNumber) {
+    return balance.gt(fee);
+  }
+  const enoughBalanceForTxFees = () => {
+    const balance = networkInfo.balance;
+    return {
+      claimRewards: enoughBalanceForFee(balance, getTotalFee(claimRewardFee)),
+      delegate: enoughBalanceForFee(balance, getTotalFee(delegateFee)),
+      redelegate: enoughBalanceForFee(balance, getTotalFee(reDelegateFee)),
+      undelegate: enoughBalanceForFee(balance, getTotalFee(unbondingFee)),
+    };
+  };
+
+  return {
     validators,
     delegations,
     undelegations,
@@ -133,7 +155,8 @@ const useStaking = (): [
     handleClaimRewards,
     rewards,
     stakingApr,
-  ];
+    txFeeCheck: enoughBalanceForTxFees(),
+  };
 };
 
 export default useStaking;

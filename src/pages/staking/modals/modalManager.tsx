@@ -1,5 +1,5 @@
 import { useNetworkInfo } from "global/stores/networkInfo";
-import { Validator } from "../config/interfaces";
+import { TxFeeBalanceCheck, Validator } from "../config/interfaces";
 import useValidatorModalStore, {
   ValidatorModalType,
 } from "../stores/validatorModalStore";
@@ -14,6 +14,7 @@ import { StyledPopup } from "global/components/Styled";
 
 interface ModalManagerProps {
   allValidators: Validator[];
+  txBalanceChecks: TxFeeBalanceCheck;
 }
 export const ModalManager = (props: ModalManagerProps) => {
   const validatorModals = useValidatorModalStore();
@@ -99,6 +100,7 @@ export const ModalManager = (props: ModalManagerProps) => {
           allValidators={props.allValidators}
           balance={networkInfo.balance}
           account={networkInfo.account}
+          txFeeCheck={props.txBalanceChecks}
           onClose={() =>
             validatorModals.close(() =>
               transactionStore.setTransactionStatus(undefined)

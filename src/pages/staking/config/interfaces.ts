@@ -68,6 +68,7 @@ export interface MyStakingProps {
   userValidationInfo: MasterValidatorProps[];
   undelegationValidators: MasterValidatorProps[];
   onRewards: () => Promise<void>;
+  canClaim: boolean;
 }
 export interface AllStakingProps {
   validators: Validator[];
@@ -90,6 +91,14 @@ export interface MasterValidatorProps {
   validator: Validator;
   userDelegations: DelegationResponse | undefined;
   undelagatingInfo?: UndelegatingValidator | undefined;
+}
+
+//used to check if the user has enough funds to perform each transaction
+export interface TxFeeBalanceCheck {
+  claimRewards: boolean;
+  delegate: boolean;
+  redelegate: boolean;
+  undelegate: boolean;
 }
 
 //used to initiate the modal validator so it is never undefined
