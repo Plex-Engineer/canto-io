@@ -8,21 +8,19 @@ export const DexModalContainer = styled.div`
   align-items: center;
   justify-content: start;
   gap: 1rem;
-  /* padding: 1rem; */
+
   .title {
-    font-style: normal;
-    font-weight: 300;
-    font-size: 22px;
-    line-height: 130%;
-    text-align: center;
-    letter-spacing: -0.1em;
-    color: var(--primary-color);
-    /* margin-top: 0.3rem; */
     width: 100%;
-    background-color: #06fc991a;
+    /* background-color: #06fc991a; */
     padding: 1rem;
-    border-bottom: 1px solid var(--primary-color);
+    border-bottom: 1px solid #222;
     z-index: 2;
+  }
+
+  .content {
+    height: 100%;
+    display: grid;
+    place-items: center;
   }
 
   .tokenBox {
