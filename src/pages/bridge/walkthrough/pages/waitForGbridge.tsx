@@ -1,4 +1,5 @@
-import { OutlinedButton, PrimaryButton } from "global/packages/src";
+import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
+import BaseStyled from "./layout";
 
 interface WaitProps {
   onPrev: () => void;
@@ -9,8 +10,12 @@ interface WaitProps {
 }
 export const WaitForGbridge = (props: WaitProps) => {
   return (
-    <>
-      <h1>wait for gbridge</h1>{" "}
+    <BaseStyled>
+      <header>
+        <Text type="title" size="title2">
+          wait for gbridge
+        </Text>
+      </header>
       <footer>
         <div className="row">
           <OutlinedButton onClick={props.onPrev} disabled={!props.canGoBack}>
@@ -21,6 +26,6 @@ export const WaitForGbridge = (props: WaitProps) => {
           </PrimaryButton>
         </div>
       </footer>
-    </>
+    </BaseStyled>
   );
 };

@@ -217,7 +217,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           txStatus={props.cosmosTxStatus?.status}
           onNext={props.onNext}
           onPrev={props.onPrev}
-          canContinue={!props.canContinue}
+          canContinue={props.canContinue}
           canGoBack={props.canGoBack}
         />
       )}
