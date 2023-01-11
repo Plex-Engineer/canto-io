@@ -8,8 +8,9 @@ interface Props {
   rewards: string;
   apr: string;
   onRewards: () => Promise<void>;
+  canClaim: boolean;
 }
-const InfoBar = ({ totalStaked, rewards, apr, onRewards }: Props) => {
+const InfoBar = ({ totalStaked, rewards, apr, onRewards, canClaim }: Props) => {
   return (
     <Styled>
       <div className="dual-item">
@@ -33,7 +34,7 @@ const InfoBar = ({ totalStaked, rewards, apr, onRewards }: Props) => {
       </div>
       <OutlinedButton
         height="big"
-        disabled={Number(rewards) == 0}
+        disabled={Number(rewards) == 0 || !canClaim}
         onClick={() => {
           onRewards();
         }}

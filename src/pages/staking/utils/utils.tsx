@@ -1,4 +1,3 @@
-import { CantoMainnet } from "global/config/networks";
 import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";

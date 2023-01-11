@@ -2,7 +2,7 @@ import IconPair from "../components/iconPair";
 import useModals, { ModalType } from "../hooks/useModals";
 import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
 import { UserLPPairInfo } from "../config/interfaces";
-import { PrimaryButton } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
 import { getEnableButtonTextAndOnClick } from "../utils/modalButtonParams";
 import { DexModalContainer } from "../components/Styled";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
@@ -148,43 +148,58 @@ const EnableModal = ({ activePair, chainId, onClose }: Props) => {
           }}
         />
       )}
-      <div className="title">{"Enable Token"}</div>
-      {/* <div className="logo">
-        <img src={logo} height={30} />
-      </div> */}
+      <div className="title">
+        <Text type="title" align="left" size="title3">
+          Enable Token
+        </Text>
+      </div>
+      <div className="content">
+        <div
+          style={{
+            marginTop: "1rem",
+          }}
+        >
+          <IconPair
+            iconLeft={activePair.basePairInfo.token1.icon}
+            iconRight={activePair.basePairInfo.token2.icon}
+          />
+        </div>
+        <Text
+          type="text"
+          align="left"
+          size="title3"
+          style={{
+            padding: "2rem",
+            textAlign: "center",
+            height: "100%",
+          }}
+        >
+          Your tokens need to be enabled in order to transfer them to canto LP
+          interface
+        </Text>
+      </div>
+
       <div
         style={{
-          marginTop: "1rem",
+          paddingBottom: "3rem",
         }}
       >
-        <IconPair
-          iconLeft={activePair.basePairInfo.token1.icon}
-          iconRight={activePair.basePairInfo.token2.icon}
-        />
+        {prevModalType == ModalType.ADD ? (
+          <AddAllowanceButton
+            pair={activePair}
+            chainId={chainId}
+            addAllowance1={addAllowanceASend}
+            addAllowance2={addAllowanceBSend}
+          />
+        ) : (
+          <RemoveAllowanceButton
+            pair={activePair}
+            chainId={chainId}
+            addAllowance1={addLPAllowanceSend}
+            addAllowance2={addAllowanceASend}
+          />
+        )}
       </div>
-      <p
-        style={{
-          padding: "2rem",
-          textAlign: "center",
-        }}
-      >
-        enable your tokens to be transferred in the canto lp interface
-      </p>
-      {prevModalType == ModalType.ADD ? (
-        <AddAllowanceButton
-          pair={activePair}
-          chainId={chainId}
-          addAllowance1={addAllowanceASend}
-          addAllowance2={addAllowanceBSend}
-        />
-      ) : (
-        <RemoveAllowanceButton
-          pair={activePair}
-          chainId={chainId}
-          addAllowance1={addLPAllowanceSend}
-          addAllowance2={addAllowanceASend}
-        />
-      )}
     </DexModalContainer>
   );
 };

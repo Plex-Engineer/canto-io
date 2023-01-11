@@ -8,7 +8,7 @@ import {
   convertToVoteNumber,
   convertVoteNumberToString,
 } from "./utils/formattingStrings";
-import { getAccountVote, voteOnProposal } from "./utils/voting";
+import { getAccountVote, txVote, voteAndSetStatus } from "./utils/voting";
 import {
   emptyProposal,
   emptyTally,
@@ -81,7 +81,6 @@ const Proposal = () => {
   const veto = Number(formatUnits(currentVotes.tally.no_with_veto));
   const totalVotes = yes + no + abstain + veto;
   const [accountVote, setAccountVote] = useState(VotingOption.NONE);
-  const [voteSuccess, setVoteSuccess] = useState<number | undefined>(undefined);
   async function showAccountVote() {
     if (proposal.status == VoteStatus.votingOngoing) {
       const vote = await getAccountVote(proposal.proposal_id, nodeURL(chainId));
@@ -310,22 +309,23 @@ const Proposal = () => {
               )}
               <GovModal
                 onVote={async (vote: VotingOption) => {
-                  setVoteStatus("PendingSignature");
-                  setCastingVote(vote);
-                  const voteSuccess = await voteOnProposal(
-                    Number(proposal.proposal_id),
-                    convertToVoteNumber(vote),
-                    nodeURL(chainId),
-                    votingFee,
-                    chain,
-                    memo
-                  );
-                  setVoteSuccess(voteSuccess);
-                  if (voteSuccess) {
-                    setVoteStatus("Success");
-                  } else {
-                    setVoteStatus("Fail");
+                  if (!account) {
+                    return;
                   }
+                  setCastingVote(vote);
+                  await voteAndSetStatus(
+                    async () =>
+                      await txVote(
+                        account,
+                        Number(proposal.proposal_id),
+                        convertToVoteNumber(vote),
+                        nodeURL(chainId),
+                        votingFee,
+                        chain,
+                        memo
+                      ),
+                    setVoteStatus
+                  );
                 }}
                 proposal={proposal}
                 currentVote={accountVote}
@@ -364,12 +364,8 @@ const Proposal = () => {
                     ) + "%"
                 : formatBigNumber(totalUserStake) + " canto"
             }`}
-        {voteSuccess == 0 ? (
-          <div style={{ color: "red" }}>vote could not be placed</div>
-        ) : voteSuccess == 1 ? (
+        {voteStatus == "Success" && (
           <div style={{ color: "green" }}>thank you for your vote!</div>
-        ) : (
-          ""
         )}
       </div>
     </ProposalContainer>
