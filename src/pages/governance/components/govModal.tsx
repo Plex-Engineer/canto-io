@@ -12,6 +12,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: start;
   padding: 1rem;
+  overflow-y: scroll;
   .btn {
     margin-top: 1rem;
   }

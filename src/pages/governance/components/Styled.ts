@@ -48,6 +48,7 @@ export const ProposalContainer = styled.div`
   overflow-wrap: break-word;
   padding: 4rem;
   display: flex;
+  flex-direction: column;
   max-width: 1200px;
   align-items: stretch;
   gap: 4rem;
@@ -60,7 +61,6 @@ export const ProposalContainer = styled.div`
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
-    width: 75%;
   }
   .pie {
     height: 300px;
@@ -68,10 +68,11 @@ export const ProposalContainer = styled.div`
     /* align-self: flex-start; */
   }
   .voting {
-    width: 25%;
+    /* width: 25%; */
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
     justify-content: flex-start;
+    align-items: center;
     gap: 1rem;
   }
   .title {

@@ -39,6 +39,7 @@ import {
   TransactionState,
 } from "global/config/transactionTypes";
 import { Mixpanel } from "mixpanel";
+import GBar from "./components/gBar";
 const Proposal = () => {
   const [chainId, account] = useNetworkInfo((state) => [
     Number(state.chainId),
@@ -234,139 +235,110 @@ const Proposal = () => {
       </div>
 
       <div className="voting">
-        <PieChart
-          className="pie"
-          animationDuration={500}
-          animationEasing="ease-out"
-          lineWidth={10}
-          totalValue={totalVotes}
-          label={({ dataEntry }) => {
-            if (Math.round(dataEntry.percentage) == 0) {
-              return "";
-            }
-            return `${Math.round(dataEntry.percentage)} %`;
-          }}
-          labelStyle={{
-            accentColor: "#ffffff",
-            color: "#ffffff",
-            colorScheme: "dark",
-          }}
-          data={[
-            {
-              title: "yes",
-              value: yes,
-              color: "#06fc99",
-            },
-            {
-              title: "no",
-              value: no,
-              color: "#ff4646",
-            },
-            {
-              title: "veto",
-              value: veto,
-              color: "#710808",
-            },
-            {
-              title: "abstain",
-              value: abstain,
-              color: "#fbea51",
-            },
-          ]}
+        <GBar
+          yes={totalVotes ? (yes * 100) / totalVotes : 0}
+          no={totalVotes ? (no * 100) / totalVotes : 0}
+          veto={totalVotes ? (veto * 100) / totalVotes : 0}
+          abstain={totalVotes ? (abstain * 100) / totalVotes : 0}
+          quorum={Number.parseFloat(votingThresholds.quorum)}
+          vetoThreshold={Number.parseFloat(votingThresholds.veto)}
+          threshold={Number.parseFloat(votingThresholds.threshold)}
         />
-        <Popup
-          overlayStyle={{
-            background: "rgba(32, 32, 32, 0.4)",
-            backdropFilter: "blur(35px)",
-          }}
-          trigger={
-            <PrimaryButton disabled={voteEnded} autoFocus={false}>
-              {voteEnded ? "voting has ended" : "vote"}
-            </PrimaryButton>
-          }
-          modal={true}
-          onClose={() => {
-            setCastingVote(VotingOption.NONE);
-            setVoteStatus("None");
-          }}
-        >
-          {
-            <div>
-              {voteStatus != "None" && (
-                <GlobalLoadingModal
-                  transactionType={CantoTransactionType.VOTING}
-                  status={voteStatus}
-                  tokenName={convertVoteNumberToString(castingVote)}
-                  onClose={() => {
-                    setCastingVote(VotingOption.NONE);
-                    setVoteStatus("None");
+        <div className="voting-wrapper">
+          <Popup
+            overlayStyle={{
+              backgroundColor: "#1f4a2c6e",
+              backdropFilter: "blur(2px)",
+            }}
+            trigger={
+              <PrimaryButton disabled={voteEnded} autoFocus={false}>
+                {voteEnded ? "voting ended" : "vote"}
+              </PrimaryButton>
+            }
+            modal={true}
+            onClose={() => {
+              setCastingVote(VotingOption.NONE);
+              setVoteStatus("None");
+            }}
+          >
+            {
+              <div>
+                {voteStatus != "None" && (
+                  <GlobalLoadingModal
+                    transactionType={CantoTransactionType.VOTING}
+                    status={voteStatus}
+                    tokenName={convertVoteNumberToString(castingVote)}
+                    onClose={() => {
+                      setCastingVote(VotingOption.NONE);
+                      setVoteStatus("None");
+                    }}
+                    mixPanelEventInfo={{
+                      proposalId: proposal.proposal_id,
+                      vote: convertVoteNumberToString(castingVote),
+                    }}
+                  />
+                )}
+                <GovModal
+                  onVote={async (vote: VotingOption) => {
+                    if (!account) {
+                      return;
+                    }
+                    setCastingVote(vote);
+                    await voteAndSetStatus(
+                      async () =>
+                        await txVote(
+                          account,
+                          Number(proposal.proposal_id),
+                          convertToVoteNumber(vote),
+                          nodeURL(chainId),
+                          votingFee,
+                          chain,
+                          memo
+                        ),
+                      setVoteStatus
+                    );
                   }}
-                  mixPanelEventInfo={{
-                    proposalId: proposal.proposal_id,
-                    vote: convertVoteNumberToString(castingVote),
-                  }}
+                  proposal={proposal}
+                  currentVote={accountVote}
                 />
-              )}
-              <GovModal
-                onVote={async (vote: VotingOption) => {
-                  if (!account) {
-                    return;
-                  }
-                  setCastingVote(vote);
-                  await voteAndSetStatus(
-                    async () =>
-                      await txVote(
-                        account,
-                        Number(proposal.proposal_id),
-                        convertToVoteNumber(vote),
-                        nodeURL(chainId),
-                        votingFee,
-                        chain,
-                        memo
-                      ),
-                    setVoteStatus
-                  );
-                }}
-                proposal={proposal}
-                currentVote={accountVote}
-              />
-            </div>
-          }
-        </Popup>
-        {accountVote != VotingOption.NONE ? (
-          <p style={{ color: "white" }}>
-            YOUR VOTE:{" "}
-            <a
-              style={
-                accountVote == VotingOption.YES
-                  ? { color: "#06fc99" }
-                  : accountVote == VotingOption.NO
-                  ? { color: "#ff4646" }
-                  : accountVote == VotingOption.VETO
-                  ? { color: "#710808" }
-                  : { color: "#fbea51" }
-              }
-            >
-              {convertVoteNumberToString(accountVote).toUpperCase()}
-            </a>
-          </p>
-        ) : (
-          ""
-        )}
-        {voteEnded
-          ? ""
-          : `voting power: ${
-              showPercentVote
-                ? totalVotes == 0
-                  ? "100%"
-                  : truncateNumber(
-                      (100 * (Number(totalUserStake) / totalVotes)).toString()
-                    ) + "%"
-                : formatBigNumber(totalUserStake) + " canto"
-            }`}
-        {voteStatus == "Success" && (
-          <div style={{ color: "green" }}>thank you for your vote!</div>
-        )}
+              </div>
+            }
+          </Popup>
+          {accountVote != VotingOption.NONE ? (
+            <p style={{ color: "white" }}>
+              YOUR VOTE:{" "}
+              <a
+                style={
+                  accountVote == VotingOption.YES
+                    ? { color: "#06fc99" }
+                    : accountVote == VotingOption.NO
+                    ? { color: "#ff4646" }
+                    : accountVote == VotingOption.VETO
+                    ? { color: "#710808" }
+                    : { color: "#fbea51" }
+                }
+              >
+                {convertVoteNumberToString(accountVote).toUpperCase()}
+              </a>
+            </p>
+          ) : (
+            ""
+          )}
+          {voteEnded
+            ? ""
+            : `voting power: ${
+                showPercentVote
+                  ? totalVotes == 0
+                    ? "100%"
+                    : truncateNumber(
+                        (100 * (Number(totalUserStake) / totalVotes)).toString()
+                      ) + "%"
+                  : formatBigNumber(totalUserStake) + " canto"
+              }`}
+          {voteStatus == "Success" && (
+            <div style={{ color: "green" }}>thank you for your vote!</div>
+          )}
+        </div>
       </div>
     </ProposalContainer>
   );
