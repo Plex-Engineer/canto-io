@@ -25,7 +25,6 @@ const StyledPopup = styled(Popup)`
     overflow-y: hidden;
     overflow-x: hidden;
     background-color: black;
-    border: 1px solid var(--primary-color);
     scroll-behavior: smooth;
     /* width */
 
