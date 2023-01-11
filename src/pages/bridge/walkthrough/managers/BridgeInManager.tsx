@@ -226,6 +226,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
       )}
 
       <BarIndicator
+        stepAt={6}
         total={Object.keys(BridgeInStep).length / 2}
         current={props.currentStep}
       />

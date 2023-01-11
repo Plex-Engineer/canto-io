@@ -213,6 +213,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
       )}
 
       <BarIndicator
+        stepAt={4}
         total={Object.keys(BridgeOutStep).length / 2}
         current={props.currentStep}
       />
