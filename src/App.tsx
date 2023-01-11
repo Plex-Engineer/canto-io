@@ -10,7 +10,6 @@ import Footer from "global/components/nFooter";
 import { PAGES } from "global/config/pageList";
 import Loading from "global/components/Loading";
 import PageNotFound from "global/components/pageNotFound";
-import { WalkthroughHomeScreen } from "pages/bridge/walkthrough-dummy/dummySteps/walkthroughHome";
 import IntroPage from "pages/bridge/walkthrough/pages/intro";
 import ChangeLog from "pages/changelog/changeLog";
 import SelectTokenPage from "pages/bridge/walkthrough/pages/selectToken";
