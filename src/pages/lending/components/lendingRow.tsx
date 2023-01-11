@@ -5,6 +5,9 @@ import { ToolTip } from "./Tooltip";
 import React from "react";
 import { formatLiquidity } from "../utils/utils";
 import cantoIcon from "assets/logo.svg";
+import Popup from "reactjs-popup";
+import { ToolTipL } from "./Styled";
+import { Text } from "global/packages/src";
 
 interface BorrowingProps {
   borrowing: boolean;
@@ -90,10 +93,30 @@ const BorrowRow = (props: BorrowingProps) => {
         <React.Fragment>
           <td>{props.amount}</td>
           {props.assetName == "NOTE" ? (
-            <ToolTip as={"td"} data-tooltip="Note Liquidity Is Infinite">
-              N/A
-            </ToolTip>
+            <td>
+              {" "}
+              <Popup
+                trigger={<span>N/A</span>}
+                position="bottom center"
+                on={["hover", "focus"]}
+                arrow={true}
+                arrowStyle={{
+                  color: "rgba(217, 217, 217, 0.25)",
+                  backdropFilter: "blur(35px)",
+                }}
+              >
+                <ToolTipL>
+                  <Text type="text" size="text4">
+                    this asset cannot
+                    <br /> be collateralised
+                  </Text>
+                </ToolTipL>
+              </Popup>
+            </td>
           ) : (
+            // <ToolTip as={"td"} data-tooltip="Note Liquidity Is Infinite">
+
+            // </ToolTip>
             <td>
               {noteSymbol}
               {formatLiquidity(props.liquidity)}

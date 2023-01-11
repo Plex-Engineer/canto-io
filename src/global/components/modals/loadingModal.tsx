@@ -97,8 +97,11 @@ const GlobalLoadingModal = (props: GlobalLoadingProps) => {
             ? warningIcon
             : loadingGif
         }
-        height={100}
-        width={100}
+        style={{
+          marginBottom: "1rem",
+        }}
+        height={80}
+        width={80}
       />
       <Text size="title2" type="title" style={{ marginBottom: "2rem" }}>
         {props.tokenName}
@@ -140,6 +143,7 @@ const LoadingModal = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 0 2rem;
   .btn {
     margin-top: 2rem;
   }
