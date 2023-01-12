@@ -1,4 +1,7 @@
 import styled from "@emotion/styled";
+import { Text } from "global/packages/src";
+import Tooltip from "global/packages/src/components/molecules/Tooltip";
+import { ToolTip } from "pages/lending/components/Tooltip";
 interface Props {
   yes: number;
   no: number;
@@ -12,9 +15,15 @@ interface Props {
 const GBar = (props: Props) => {
   return (
     <Styled {...props}>
-      <div className="yes bar">
-        <p>{props.yes.toFixed(2)}%</p>
-      </div>
+      <Tooltip
+        content={<Text>Helpful tip</Text>}
+        trigger={
+          <div className="yes bar">
+            <p>{props.yes.toFixed(2)}%</p>
+          </div>
+        }
+      />
+
       <div className="no bar"></div>
       <div className="veto bar"></div>
       <div className="abstain bar"></div>

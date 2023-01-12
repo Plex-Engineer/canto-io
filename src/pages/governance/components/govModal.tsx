@@ -46,24 +46,6 @@ const Container = styled.div`
   }
 `;
 
-const Button = styled.button`
-  font-weight: 300;
-  font-size: 18px;
-  background-color: black;
-  color: var(--primary-color);
-  padding: 0.2rem 2rem;
-  border: 1px solid var(--primary-color);
-  margin: 3rem auto;
-  display: flex;
-  align-self: center;
-
-  &:hover {
-    background-color: var(--primary-color-dark);
-    color: black;
-    cursor: pointer;
-  }
-`;
-
 interface Props {
   proposal: ProposalData;
   currentVote: VotingOption;
