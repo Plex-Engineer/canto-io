@@ -10,6 +10,8 @@ interface IntroPageProps {
   setSkipDecision: (skip: boolean) => void;
   currentSkipDecision: boolean;
   onNext: () => void;
+  canBridgeIn: boolean;
+  canBridgeOut: boolean;
 }
 const IntroPage = (props: IntroPageProps) => {
   return (
@@ -30,11 +32,13 @@ const IntroPage = (props: IntroPageProps) => {
             onClick={() => {
               props.setBridgeType("IN");
             }}
+            disabled={!props.canBridgeIn}
           />
           <TextSwitch
             text="get funds out of canto"
             active={props.currentBridgeType == "OUT"}
             onClick={() => props.setBridgeType("OUT")}
+            disabled={!props.canBridgeOut}
           />
         </div>
 
@@ -52,11 +56,13 @@ const IntroPage = (props: IntroPageProps) => {
                 onClick={() => {
                   props.setSkipDecision(false);
                 }}
+                disabled={false}
               />
               <TextSwitch
                 text="yes"
                 active={props.currentSkipDecision}
                 onClick={() => props.setSkipDecision(true)}
+                disabled={false}
               />
             </div>
           </>

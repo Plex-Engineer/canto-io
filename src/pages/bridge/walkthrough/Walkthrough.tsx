@@ -62,6 +62,8 @@ const Walkthrough = () => {
             }
             setFinishedBridgeSelection(true);
           }}
+          canBridgeIn={canBridgeIn}
+          canBridgeOut={canBridgeOut}
         />
       )}
       {finishedBridgeSelection && walkthrough.currentBridgeType == "IN" && (
