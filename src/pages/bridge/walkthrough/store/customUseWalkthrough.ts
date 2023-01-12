@@ -2,6 +2,7 @@ import { TransactionStatus } from "@usedapp/core";
 import { BigNumber } from "ethers";
 import { ADDRESSES } from "global/config/addresses";
 import { useNetworkInfo } from "global/stores/networkInfo";
+import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
 import {
   allBridgeOutNetworks,
   BridgeOutNetworkInfo,
@@ -28,7 +29,7 @@ import {
   didPassBridgeInWalkthroughCheck,
   didPassBridgeOutWalkthroughCheck,
 } from "pages/bridge/walkthrough/walkthroughFunctions";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import {
   BridgeInWalkthroughSteps,
   BridgeOutWalkthroughSteps,
@@ -37,6 +38,7 @@ import {
 interface Props {
   chainId: number;
   cantoAddress: string;
+  needPubKey: boolean;
   gravityAddress: string;
   canContinue: boolean;
   canGoBack: boolean;
@@ -76,6 +78,10 @@ interface Props {
   setAmount: (amount: string) => void;
   cosmosTxStatus: BridgeTransactionStatus | undefined;
   setCosmosTxStatus: (status: BridgeTransactionStatus | undefined) => void;
+  pubKey: {
+    tx: () => void;
+    status: ReactNode;
+  };
 }
 export function useCustomWalkthrough(): Props {
   //all stores we needed here:
@@ -200,9 +206,12 @@ export function useCustomWalkthrough(): Props {
     return false;
   };
 
+  const [pubKeyStatus, setPubKeyStatus] = useState("None");
+
   return {
     chainId: Number(networkInfo.chainId),
     cantoAddress: networkInfo.cantoAddress,
+    needPubKey: !networkInfo.hasPubKey,
     gravityAddress: gravityAddress ?? ADDRESSES.ETHMainnet.GravityBridge,
     canContinue: checkIfCanContinue(),
     canGoBack: checkIfCanClickPrevious(),
@@ -242,5 +251,9 @@ export function useCustomWalkthrough(): Props {
     setAmount,
     cosmosTxStatus: bridgeTxStore.transactionStatus,
     setCosmosTxStatus: bridgeTxStore.setTransactionStatus,
+    pubKey: {
+      tx: () => generatePubKey(networkInfo.account, setPubKeyStatus),
+      status: pubKeyStatus,
+    },
   };
 }

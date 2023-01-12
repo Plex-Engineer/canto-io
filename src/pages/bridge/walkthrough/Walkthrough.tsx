@@ -6,6 +6,8 @@ import IntroPage from "./pages/intro";
 import { useCustomWalkthrough } from "./store/customUseWalkthrough";
 import { BridgeInManager } from "./managers/BridgeInManager";
 import { BridgeInStep, BridgeOutStep } from "./walkthroughTracker";
+import { GenPubKeyWalkthrough } from "./pages/genPubKey";
+import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
@@ -25,6 +27,8 @@ const Walkthrough = () => {
     setCosmosTxStatus,
     canBridgeIn,
     canBridgeOut,
+    needPubKey,
+    pubKey,
   } = useCustomWalkthrough();
   const [finishedBridgeSelection, setFinishedBridgeSelection] = useState(false);
   function restartWalkthrough() {
@@ -32,9 +36,15 @@ const Walkthrough = () => {
     walkthrough.resetState(true);
     walkthrough.resetState(false);
   }
+
+  if (needPubKey) {
+    return (
+      <GenPubKeyWalkthrough txGenPubKey={pubKey.tx} txStatus={pubKey.status} />
+    );
+  }
   return (
     <Styled>
-      {!(canBridgeIn || canBridgeOut) ? <div>NO FUNDS</div> : null}
+      {!(canBridgeIn || canBridgeOut) ? <div>NO FUNDS TO BRIDGE</div> : null}
       {!finishedBridgeSelection && (
         <IntroPage
           setBridgeType={walkthrough.setBridgeType}
