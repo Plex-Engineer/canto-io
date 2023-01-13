@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
 import Tooltip from "global/packages/src/components/molecules/Tooltip";
-import { ToolTip } from "pages/lending/components/Tooltip";
+import { truncateNumber } from "global/utils/utils";
 interface Props {
   yes: number;
   no: number;
@@ -16,20 +16,70 @@ const GBar = (props: Props) => {
   return (
     <Styled {...props}>
       <Tooltip
-        content={<Text>Helpful tip</Text>}
+        content={
+          <Text>
+            {truncateNumber(props.yes.toString()).toString()}% votes casted for
+            "YES"
+          </Text>
+        }
         trigger={
           <div className="yes bar">
-            <p>{props.yes.toFixed(2)}%</p>
+            <p>{truncateNumber(props.yes.toString()).toString()}%</p>
           </div>
         }
       />
 
-      <div className="no bar"></div>
-      <div className="veto bar"></div>
-      <div className="abstain bar"></div>
-      <div className="threshold dashed"></div>
-      <div className="vetoThreshold dashed"></div>
-      <div className="quorum dashed"></div>
+      <Tooltip
+        content={
+          <Text>
+            {truncateNumber(props.no.toString()).toString()}% of validators
+            voted no.
+          </Text>
+        }
+        trigger={
+          <div className="no bar">
+            {/* <p>{truncateNumber(props.no.toString()).toString()}%</p> */}
+          </div>
+        }
+      />
+      <Tooltip
+        content={
+          <Text>
+            {truncateNumber(props.veto.toString()).toString()}% of validators
+            voted veto.
+          </Text>
+        }
+        trigger={
+          <div className="veto bar">
+            {/* <p>{truncateNumber(props.veto.toString()).toString()}%</p> */}
+          </div>
+        }
+      />
+      <Tooltip
+        content={
+          <Text>
+            {truncateNumber(props.abstain.toString()).toString()}% of validators
+            voted abstain.
+          </Text>
+        }
+        trigger={
+          <div className="abstain bar">
+            {/* <p>{truncateNumber(props.abstain.toString()).toString()}%</p> */}
+          </div>
+        }
+      />
+      <Tooltip
+        content={<Text>{props.threshold + "% threshold"}</Text>}
+        trigger={<div className="threshold dashed"></div>}
+      />
+      <Tooltip
+        content={<Text>{props.vetoThreshold + "% veto threshold"}</Text>}
+        trigger={<div className="vetoThreshold dashed"></div>}
+      />
+      <Tooltip
+        content={<Text>{props.quorum + "% quorum"}</Text>}
+        trigger={<div className="quorum dashed"></div>}
+      />
     </Styled>
   );
 };
@@ -49,7 +99,7 @@ const Styled = styled.div<Props>`
     place-items: center;
   }
   .dashed {
-    border-right: 3px dotted #000000;
+    border-right: 3px dotted #176155;
     position: absolute;
     left: 0;
     top: 0;
