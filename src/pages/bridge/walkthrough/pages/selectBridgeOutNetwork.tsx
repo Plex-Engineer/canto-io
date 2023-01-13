@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
+import { CInput } from "global/packages/src/components/atoms/Input";
 import {
   BridgeOutNetworkInfo,
   BridgeOutNetworks,
@@ -60,6 +61,29 @@ const SelectBridgeOutNetwork = (props: SelectBridgeProps) => {
             </TextSwitch>
           ))}
         </div>
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+          }}
+        >
+          <Text type="title" align="left">
+            Enter the wallet address :
+          </Text>
+          <CInput
+            className="address-input"
+            placeholder={
+              props.activeNetwork.name == "gravity bridge"
+                ? "Enter gravity bridge address"
+                : "Enter the cosmos address"
+            }
+          />
+          <Text type="text" align="left" size="text4">
+            This field is used to send the funds to a different walllet address.
+          </Text>
+        </div>
       </section>
       <footer>
         <div className="row">
@@ -84,7 +108,10 @@ const Styled = styled(BaseStyled)`
     align-items: center;
     gap: 10px;
   }
-
+  .address-input {
+    background-color: #111;
+    border: 1px solid #333;
+  }
   .network-list {
     padding: 8px;
     flex-grow: 1;
