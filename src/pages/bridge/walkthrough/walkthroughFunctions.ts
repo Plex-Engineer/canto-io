@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 import { TransactionState } from "global/config/transactionTypes";
-import { BridgeOutNetworkInfo } from "../config/gravityBridgeTokens";
+import { BridgeOutNetworks } from "../config/gravityBridgeTokens";
 import {
   BaseToken,
   UserGravityBridgeTokens,
@@ -21,11 +21,12 @@ export function didPassBridgeOutWalkthroughCheck(
   convertOutAmount: BigNumber,
   maxConvertOutAmount: BigNumber,
   convertTxState: TransactionState,
-  bridgeOutNetwork: BridgeOutNetworkInfo,
+  bridgeOutNetwork: BridgeOutNetworks,
   bridgeOutToken: UserNativeTokens,
   bridgeOutAmount: BigNumber,
   maxBridgeOutAmount: BigNumber,
-  bridgeOutStatus: TransactionState
+  bridgeOutStatus: TransactionState,
+  bridgeOutSendAddress: string
 ): boolean {
   const currentCheckFunction =
     BridgeOutWalkthroughSteps[currentStep].checkFunction;
@@ -43,7 +44,7 @@ export function didPassBridgeOutWalkthroughCheck(
       return currentCheckFunction(convertTxState);
     }
     case BridgeOutStep.SELECT_BRIDGE_OUT_NETWORK: {
-      return currentCheckFunction(bridgeOutNetwork.name);
+      return currentCheckFunction(bridgeOutNetwork, bridgeOutSendAddress);
     }
     case BridgeOutStep.SELECT_NATIVE_TOKEN: {
       return currentCheckFunction(bridgeOutToken);

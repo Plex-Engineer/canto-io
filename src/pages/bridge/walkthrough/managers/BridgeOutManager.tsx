@@ -49,6 +49,10 @@ interface BridgeOutManagerProps {
   cosmosTxStatus: BridgeTransactionStatus | undefined;
   setCosmosTxStatus: (status: BridgeTransactionStatus | undefined) => void;
   restartWalkthrough: () => void;
+  userCosmosSend: {
+    address: string;
+    setAddress: (s: string) => void;
+  };
 }
 export const BridgeOutManager = (props: BridgeOutManagerProps) => {
   return (
@@ -140,6 +144,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           onNext={props.onNext}
           onPrev={props.onPrev}
           canGoBack={props.canGoBack}
+          userCosmosSend={props.userCosmosSend}
         />
       )}
       {props.currentStep === BridgeOutStep.SELECT_NATIVE_TOKEN && (
@@ -200,7 +205,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
             )
           }
           txType={"Canto Bridge -> " + props.currentBridgeOutNetwork.name}
-          txShortDesc={`send ${props.amount} ${props.currentBridgeOutToken.name}`}
+          txShortDesc={`send ${props.amount} ${props.currentBridgeOutToken.name} to ${props.userCosmosSend.address}`}
           txStatus={props.cosmosTxStatus?.status}
           onNext={props.onNext}
           onPrev={props.onPrev}

@@ -40,6 +40,10 @@ interface Props {
   cantoAddress: string;
   needPubKey: boolean;
   gravityAddress: string;
+  userCosmosSend: {
+    address: string;
+    setAddress: (s: string) => void;
+  };
   canContinue: boolean;
   canGoBack: boolean;
   canSkip: boolean;
@@ -106,6 +110,7 @@ export function useCustomWalkthrough(): Props {
 
   //amount will be the same value across the walkthrough
   const [amount, setAmount] = useState("");
+  const [userCosmosSendAddress, setUserCosmosSendAddress] = useState("");
 
   //check if the current step is complete
   function checkIfCanContinue() {
@@ -138,14 +143,15 @@ export function useCustomWalkthrough(): Props {
           BridgeTransactionType.CONVERT_OUT
           ? bridgeTxStore.transactionStatus.status
           : "None",
-        allBridgeOutNetworks[tokenStore.bridgeOutNetwork],
+        tokenStore.bridgeOutNetwork,
         bridgeOutToken,
         convertStringToBigNumber(amount, bridgeOutToken.decimals),
         bridgeOutToken.nativeBalance,
         bridgeTxStore.transactionStatus?.type ===
           BridgeTransactionType.BRIDGE_OUT
           ? bridgeTxStore.transactionStatus.status
-          : "None"
+          : "None",
+        userCosmosSendAddress
       );
     }
     return false;
@@ -218,6 +224,10 @@ export function useCustomWalkthrough(): Props {
     canSkip: checkIfCanSkip(userConvertTokens),
     canBridgeIn: canBridgeIn(),
     canBridgeOut: canBridgeOut(),
+    userCosmosSend: {
+      address: userCosmosSendAddress,
+      setAddress: setUserCosmosSendAddress,
+    },
     tokens: {
       allUserTokens: {
         convertTokens: userConvertTokens,

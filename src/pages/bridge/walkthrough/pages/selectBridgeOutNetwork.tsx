@@ -17,6 +17,10 @@ interface SelectBridgeProps {
   canGoBack: boolean;
   onPrev: () => void;
   onNext: () => void;
+  userCosmosSend: {
+    address: string;
+    setAddress: (s: string) => void;
+  };
 }
 const SelectBridgeOutNetwork = (props: SelectBridgeProps) => {
   return (
@@ -77,8 +81,10 @@ const SelectBridgeOutNetwork = (props: SelectBridgeProps) => {
             placeholder={
               props.activeNetwork.name == "gravity bridge"
                 ? "Enter gravity bridge address"
-                : "Enter the cosmos address"
+                : "Enter cosmos hub address"
             }
+            value={props.userCosmosSend.address}
+            onChange={(e) => props.userCosmosSend.setAddress(e.target.value)}
           />
           <Text type="text" align="left" size="text4">
             This field is used to send the funds to a different walllet address.

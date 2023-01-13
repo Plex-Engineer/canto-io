@@ -2,6 +2,10 @@ import { BigNumber } from "ethers";
 import { CantoMainnet } from "global/config/networks";
 import { TransactionState } from "global/config/transactionTypes";
 import {
+  allBridgeOutNetworks,
+  BridgeOutNetworks,
+} from "../config/gravityBridgeTokens";
+import {
   UserConvertToken,
   UserGravityBridgeTokens,
   UserNativeTokens,
@@ -161,7 +165,12 @@ export const BridgeOutWalkthroughSteps: WalkthroughTracker = {
     isCheckpoint: false,
     prev: BridgeOutStep.SWITCH_TO_CANTO_2,
     next: BridgeOutStep.SELECT_NATIVE_TOKEN,
-    checkFunction: (network: string) => !!network,
+    checkFunction: (network: BridgeOutNetworks, cosmosAddress: string) => {
+      return (
+        [0, 1].includes(network) &&
+        allBridgeOutNetworks[network].checkAddress(cosmosAddress)
+      );
+    },
   },
   [BridgeOutStep.SELECT_NATIVE_TOKEN]: {
     isCheckpoint: false,

@@ -30,6 +30,7 @@ const Walkthrough = () => {
     canBridgeOut,
     needPubKey,
     pubKey,
+    userCosmosSend,
   } = useCustomWalkthrough();
   const [finishedBridgeSelection, setFinishedBridgeSelection] = useState(false);
   function restartWalkthrough() {
@@ -135,6 +136,7 @@ const Walkthrough = () => {
             cosmosTxStatus={cosmosTxStatus}
             setCosmosTxStatus={setCosmosTxStatus}
             restartWalkthrough={restartWalkthrough}
+            userCosmosSend={userCosmosSend}
           />
         )}
     </Styled>
