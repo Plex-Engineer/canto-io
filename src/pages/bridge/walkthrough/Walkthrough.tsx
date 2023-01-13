@@ -7,7 +7,6 @@ import { useCustomWalkthrough } from "./store/customUseWalkthrough";
 import { BridgeInManager } from "./managers/BridgeInManager";
 import { BridgeInStep, BridgeOutStep } from "./walkthroughTracker";
 import { GenPubKeyWalkthrough } from "./pages/genPubKey";
-import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();

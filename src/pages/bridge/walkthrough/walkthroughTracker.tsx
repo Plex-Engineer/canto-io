@@ -159,7 +159,7 @@ export const BridgeOutWalkthroughSteps: WalkthroughTracker = {
   },
   [BridgeOutStep.SELECT_BRIDGE_OUT_NETWORK]: {
     isCheckpoint: false,
-    prev: BridgeOutStep.CONVERT_COIN,
+    prev: BridgeOutStep.SWITCH_TO_CANTO_2,
     next: BridgeOutStep.SELECT_NATIVE_TOKEN,
     checkFunction: (network: string) => !!network,
   },
@@ -178,7 +178,7 @@ export const BridgeOutWalkthroughSteps: WalkthroughTracker = {
   },
   [BridgeOutStep.SEND_TO_GRBIDGE]: {
     isCheckpoint: false,
-    prev: BridgeOutStep.SELECT_NATIVE_TOKEN,
+    prev: BridgeOutStep.SELECT_NATIVE_TOKEN_AMOUNT,
     next: BridgeOutStep.COMPLETE,
     checkFunction: (txStatus: TransactionState) => txStatus === "Success",
   },
