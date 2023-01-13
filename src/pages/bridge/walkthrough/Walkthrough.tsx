@@ -7,8 +7,8 @@ import { useCustomWalkthrough } from "./store/customUseWalkthrough";
 import { BridgeInManager } from "./managers/BridgeInManager";
 import { BridgeInStep, BridgeOutStep } from "./walkthroughTracker";
 import { GenPubKeyWalkthrough } from "./pages/genPubKey";
-import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
 import NoFunds from "./pages/noFunds";
+import LoadingWalkthrough from "./pages/LoadingWalkthrough";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
@@ -47,6 +47,7 @@ const Walkthrough = () => {
   const hasFunds = canBridgeIn || canBridgeOut;
   return (
     <Styled>
+      <LoadingWalkthrough delay={2500} />
       {!hasFunds && <NoFunds />}
       {!finishedBridgeSelection && hasFunds && (
         <IntroPage
