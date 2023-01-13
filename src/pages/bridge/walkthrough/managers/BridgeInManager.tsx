@@ -16,6 +16,7 @@ import { BridgeTransactionStatus } from "pages/bridge/stores/transactionStore";
 import { performBridgeCosmosTxAndSetStatus } from "pages/bridge/utils/bridgeCosmosTxUtils";
 import { txConvertCoin } from "pages/bridge/utils/convertCoin/convertTransactions";
 import { convertStringToBigNumber } from "pages/bridge/utils/stringToBigNumber";
+import { useState } from "react";
 import BarIndicator from "../components/barIndicator";
 import AmountPage from "../pages/amount";
 import { CompletePage } from "../pages/complete";
@@ -54,6 +55,7 @@ interface BridgeInManagerProps {
   restartWalkthrough: () => void;
 }
 export const BridgeInManager = (props: BridgeInManagerProps) => {
+  const [hasAllowance, setHasAllowance] = useState(false);
   return (
     <>
       {props.currentStep === BridgeInStep.SWTICH_TO_ETH && (
@@ -75,12 +77,20 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           tokenBalance="balanceOf"
           onSelect={(token) => props.setToken(token, SelectedTokens.ETHTOKEN)}
           canContinue={props.canContinue}
-          onNext={props.onNext}
+          onNext={() => {
+            props.onNext();
+            if (
+              props.currentBridgeInToken.balanceOf.gt(
+                props.currentBridgeInToken.allowance
+              )
+            )
+              setHasAllowance(false);
+          }}
           onPrev={props.onPrev}
           canGoBack={props.canGoBack}
         />
       )}
-      {props.currentStep == BridgeInStep.NEED_ALLOWANCE && (
+      {props.currentStep == BridgeInStep.NEED_ALLOWANCE && !hasAllowance && (
         <ConfirmTransactionPage
           amount=""
           token={props.currentBridgeInToken}

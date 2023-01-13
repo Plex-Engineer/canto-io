@@ -51,6 +51,7 @@ export const useBridgeWalkthroughStore = create<BridgeWalkthroughStoreProps>()(
         });
       }
     },
+
     resetState: (bridgeIn: boolean) => {
       if (bridgeIn) {
         set({ bridgeInStep: 0 });
