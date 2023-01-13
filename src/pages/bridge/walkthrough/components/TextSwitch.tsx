@@ -4,14 +4,14 @@ import { Text } from "global/packages/src";
 interface Props {
   onClick?: () => void;
   text: string;
-  disabled: boolean;
+  disabled?: boolean;
   children?: React.ReactNode;
   active?: boolean;
 }
 const TextSwitch = (props: Props) => {
   return (
     <Styled
-      disabled={props.disabled}
+      disabled={props.disabled ? props.disabled : false}
       style={{
         backgroundColor: props.active
           ? "rgba(6, 252, 153, 0.2)"

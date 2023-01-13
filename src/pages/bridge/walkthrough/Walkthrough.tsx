@@ -7,6 +7,8 @@ import { useCustomWalkthrough } from "./store/customUseWalkthrough";
 import { BridgeInManager } from "./managers/BridgeInManager";
 import { BridgeInStep, BridgeOutStep } from "./walkthroughTracker";
 import { GenPubKeyWalkthrough } from "./pages/genPubKey";
+import NoFunds from "./pages/noFunds";
+import LoadingWalkthrough from "./pages/LoadingWalkthrough";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
@@ -41,10 +43,13 @@ const Walkthrough = () => {
       <GenPubKeyWalkthrough txGenPubKey={pubKey.tx} txStatus={pubKey.status} />
     );
   }
+
+  const hasFunds = canBridgeIn || canBridgeOut;
   return (
     <Styled>
-      {!(canBridgeIn || canBridgeOut) ? <div>NO FUNDS TO BRIDGE</div> : null}
-      {!finishedBridgeSelection && (
+      <LoadingWalkthrough delay={2500} />
+      {!hasFunds && <NoFunds />}
+      {!finishedBridgeSelection && hasFunds && (
         <IntroPage
           setBridgeType={walkthrough.setBridgeType}
           currentBridgeType={walkthrough.currentBridgeType}
@@ -65,69 +70,73 @@ const Walkthrough = () => {
           canBridgeOut={canBridgeOut}
         />
       )}
-      {finishedBridgeSelection && walkthrough.currentBridgeType == "IN" && (
-        <BridgeInManager
-          chainId={chainId}
-          cantoAddress={cantoAddress}
-          currentStep={walkthrough.bridgeInStep}
-          onPrev={() => {
-            if (walkthrough.bridgeInStep === 0) {
-              setFinishedBridgeSelection(false);
-            } else {
-              walkthrough.previousStep(true);
-            }
-          }}
-          onNext={() => walkthrough.nextStep(true)}
-          canContinue={canContinue}
-          canGoBack={canGoBack}
-          currentBridgeInToken={tokens.selectedTokens.bridgeInToken}
-          bridgeInTokens={tokens.allUserTokens.bridgeInTokens}
-          setToken={tokens.setTokens}
-          amount={amount}
-          setAmount={setAmount}
-          sendApprove={bridgeInTx.approve.tx}
-          stateApprove={bridgeInTx.approve.state}
-          gravityAddress={gravityAddress}
-          sendCosmos={bridgeInTx.sendCosmos.tx}
-          stateCosmos={bridgeInTx.sendCosmos.state}
-          convertTokens={tokens.allUserTokens.convertTokens}
-          currentConvertToken={tokens.selectedTokens.convertInToken}
-          cosmosTxStatus={cosmosTxStatus}
-          setCosmosTxStatus={setCosmosTxStatus}
-          restartWalkthrough={restartWalkthrough}
-        />
-      )}
+      {finishedBridgeSelection &&
+        hasFunds &&
+        walkthrough.currentBridgeType == "IN" && (
+          <BridgeInManager
+            chainId={chainId}
+            cantoAddress={cantoAddress}
+            currentStep={walkthrough.bridgeInStep}
+            onPrev={() => {
+              if (walkthrough.bridgeInStep === 0) {
+                setFinishedBridgeSelection(false);
+              } else {
+                walkthrough.previousStep(true);
+              }
+            }}
+            onNext={() => walkthrough.nextStep(true)}
+            canContinue={canContinue}
+            canGoBack={canGoBack}
+            currentBridgeInToken={tokens.selectedTokens.bridgeInToken}
+            bridgeInTokens={tokens.allUserTokens.bridgeInTokens}
+            setToken={tokens.setTokens}
+            amount={amount}
+            setAmount={setAmount}
+            sendApprove={bridgeInTx.approve.tx}
+            stateApprove={bridgeInTx.approve.state}
+            gravityAddress={gravityAddress}
+            sendCosmos={bridgeInTx.sendCosmos.tx}
+            stateCosmos={bridgeInTx.sendCosmos.state}
+            convertTokens={tokens.allUserTokens.convertTokens}
+            currentConvertToken={tokens.selectedTokens.convertInToken}
+            cosmosTxStatus={cosmosTxStatus}
+            setCosmosTxStatus={setCosmosTxStatus}
+            restartWalkthrough={restartWalkthrough}
+          />
+        )}
 
-      {finishedBridgeSelection && walkthrough.currentBridgeType == "OUT" && (
-        <BridgeOutManager
-          chainId={chainId}
-          cantoAddress={cantoAddress}
-          currentStep={walkthrough.bridgeOutStep}
-          onPrev={() => {
-            if (walkthrough.bridgeOutStep === 0) {
-              setFinishedBridgeSelection(false);
-            } else {
-              walkthrough.previousStep(false);
-            }
-          }}
-          onNext={() => walkthrough.nextStep(false)}
-          canContinue={canContinue}
-          canGoBack={canGoBack}
-          convertTokens={tokens.allUserTokens.convertTokens}
-          currentConvertToken={tokens.selectedTokens.convertOutToken}
-          bridgeOutTokens={tokens.allUserTokens.bridgeOutTokens}
-          currentBridgeOutToken={tokens.selectedTokens.bridgeOutToken}
-          bridgeOutNetworks={bridgeOutNetworks.allNetworks}
-          currentBridgeOutNetwork={bridgeOutNetworks.selectedNetwork}
-          setBridgeOutNetwork={bridgeOutNetworks.setNetwork}
-          setToken={tokens.setTokens}
-          amount={amount}
-          setAmount={setAmount}
-          cosmosTxStatus={cosmosTxStatus}
-          setCosmosTxStatus={setCosmosTxStatus}
-          restartWalkthrough={restartWalkthrough}
-        />
-      )}
+      {finishedBridgeSelection &&
+        hasFunds &&
+        walkthrough.currentBridgeType == "OUT" && (
+          <BridgeOutManager
+            chainId={chainId}
+            cantoAddress={cantoAddress}
+            currentStep={walkthrough.bridgeOutStep}
+            onPrev={() => {
+              if (walkthrough.bridgeOutStep === 0) {
+                setFinishedBridgeSelection(false);
+              } else {
+                walkthrough.previousStep(false);
+              }
+            }}
+            onNext={() => walkthrough.nextStep(false)}
+            canContinue={canContinue}
+            canGoBack={canGoBack}
+            convertTokens={tokens.allUserTokens.convertTokens}
+            currentConvertToken={tokens.selectedTokens.convertOutToken}
+            bridgeOutTokens={tokens.allUserTokens.bridgeOutTokens}
+            currentBridgeOutToken={tokens.selectedTokens.bridgeOutToken}
+            bridgeOutNetworks={bridgeOutNetworks.allNetworks}
+            currentBridgeOutNetwork={bridgeOutNetworks.selectedNetwork}
+            setBridgeOutNetwork={bridgeOutNetworks.setNetwork}
+            setToken={tokens.setTokens}
+            amount={amount}
+            setAmount={setAmount}
+            cosmosTxStatus={cosmosTxStatus}
+            setCosmosTxStatus={setCosmosTxStatus}
+            restartWalkthrough={restartWalkthrough}
+          />
+        )}
     </Styled>
   );
 };

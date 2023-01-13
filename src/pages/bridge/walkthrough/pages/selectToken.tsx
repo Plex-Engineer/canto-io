@@ -20,7 +20,7 @@ const SelectTokenPage = (props: SelectTokenProps) => {
     <Styled>
       <header>
         <Text type="title" size="title2">
-          Bridgin Token
+          Bridge {props.bridgeType == "IN" ? "in" : "out"} Token
         </Text>
         <div>
           <Text type="text" size="title3" bold>
@@ -28,8 +28,9 @@ const SelectTokenPage = (props: SelectTokenProps) => {
             {props.bridgeType == "IN" ? "in" : "out"}
           </Text>
           <Text type="text" size="text3">
-            Now that you are on the right network. Please select the token
-            you&#39;d like to bridge in.
+            {props.bridgeType == "IN"
+              ? "placeholder text for bridging in tokens"
+              : "placeholder text for bridging out tokens"}
           </Text>
         </div>
       </header>
