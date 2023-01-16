@@ -48,7 +48,7 @@ export interface Tally {
 
 export const emptyTally: Tally = {
   tally: {
-    yes: "0",
+    yes: "1",
     abstain: "0",
     no: "0",
     no_with_veto: "0",

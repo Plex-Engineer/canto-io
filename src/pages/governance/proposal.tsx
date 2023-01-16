@@ -1,118 +1,35 @@
-import { memo, votingFee } from "global/config/cosmosConstants";
-import { nodeURL } from "global/utils/cantoTransactions/helpers";
-import { useEffect } from "react";
-import { useState } from "react";
 import { votingThresholds } from "./config/votingThresholds";
 import {
   convertDateToString,
-  convertToVoteNumber,
   convertVoteNumberToString,
 } from "./utils/formattingStrings";
-import { getAccountVote, txVote, voteAndSetStatus } from "./utils/voting";
-import {
-  emptyProposal,
-  emptyTally,
-  ProposalData,
-  Tally,
-  VoteStatus,
-  VotingOption,
-} from "./config/interfaces";
+import { VoteStatus, VotingOption } from "./config/interfaces";
 import { PrimaryButton } from "global/packages/src";
 import { ProposalContainer } from "./components/Styled";
 import { formatUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
-import { queryTally } from "./stores/proposals";
-import { useNetworkInfo } from "global/stores/networkInfo";
-import { useParams } from "react-router-dom";
-import { getSingleProposalData } from "./utils/proposalUtils";
-import { PieChart } from "react-minimal-pie-chart";
 import Popup from "reactjs-popup";
 import GovModal from "./components/govModal";
-import { DelegationResponse } from "pages/staking/config/interfaces";
-import { getDelegationsForAddress } from "pages/staking/utils/transactions";
-import { CantoMainnet } from "global/config/networks";
-import { calculateTotalStaked } from "pages/staking/utils/allUserValidatorInfo";
 import { formatBigNumber } from "global/packages/src/utils/formatNumbers";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
-import {
-  CantoTransactionType,
-  TransactionState,
-} from "global/config/transactionTypes";
-import { Mixpanel } from "mixpanel";
+import { CantoTransactionType } from "global/config/transactionTypes";
 import GBar from "./components/gBar";
+import { useSingleProposalData } from "./hooks/useSingleProposalData";
 const Proposal = () => {
-  const [chainId, account] = useNetworkInfo((state) => [
-    Number(state.chainId),
-    state.account,
-  ]);
-
-  //voting power is equal to toal stake
-  const [delegations, setDelegations] = useState<DelegationResponse[]>([]);
-  const totalUserStake = formatUnits(calculateTotalStaked(delegations));
-  async function getTotalStake() {
-    if (account) {
-      setDelegations(
-        await getDelegationsForAddress(CantoMainnet.cosmosAPIEndpoint, account)
-      );
-    }
-  }
-  useEffect(() => {
-    getTotalStake();
-  }, [account]);
-
-  //will show the votes in percent or total votes format
-  const [showPercentVote, setShowPercentVote] = useState(true);
-  //this will contain the proposal id
-  const { id } = useParams();
-  const [proposalFound, setProposalFound] = useState(true);
-  const [currentVotes, setCurrentVotes] = useState<Tally>(emptyTally);
-  const [proposal, setProposal] = useState<ProposalData>(emptyProposal);
-  async function getProposalData() {
-    const singleProposal = await getSingleProposalData(id ?? "0", chainId);
-    setProposal(singleProposal);
-    setCurrentVotes(await queryTally(id ?? "0", chainId));
-    if (singleProposal == emptyProposal) {
-      setProposalFound(false);
-    }
-  }
-
-  const yes = Number(formatUnits(currentVotes.tally.yes));
-  const no = Number(formatUnits(currentVotes.tally.no));
-  const abstain = Number(formatUnits(currentVotes.tally.abstain));
-  const veto = Number(formatUnits(currentVotes.tally.no_with_veto));
-  const totalVotes = yes + no + abstain + veto;
-  const [accountVote, setAccountVote] = useState(VotingOption.NONE);
-  async function showAccountVote() {
-    if (proposal.status == VoteStatus.votingOngoing) {
-      const vote = await getAccountVote(proposal.proposal_id, nodeURL(chainId));
-      setAccountVote(vote);
-    }
-  }
-  useEffect(() => {
-    showAccountVote();
-    getProposalData();
-  }, []);
-  useEffect(() => {
-    if (id) {
-      Mixpanel.events.governanceActions.proposalOpened(id);
-    }
-  }, [id]);
-  const chain = {
-    chainId: chainId ?? 0,
-    cosmosChainId: `canto_${chainId}-1`,
-  };
-
-  const voteEnded = proposal.status != VoteStatus.votingOngoing;
-
-  const [castingVote, setCastingVote] = useState<VotingOption>(
-    VotingOption.NONE
-  );
-  const [voteStatus, setVoteStatus] = useState<TransactionState>("None");
-
+  const {
+    proposalId,
+    proposalFound,
+    proposal,
+    voteEnded,
+    voteData,
+    userVoteData,
+    customizeData,
+    votingFuncionality,
+  } = useSingleProposalData();
   if (!proposalFound) {
     return (
       <ProposalContainer>
-        <div>{`proposal id "${id}" not found`}</div>
+        <div>{`proposal id "${proposalId}" not found`}</div>
       </ProposalContainer>
     );
   }
@@ -161,52 +78,53 @@ const Proposal = () => {
           role={"button"}
           tabIndex={0}
           className="details"
-          onClick={() => setShowPercentVote(!showPercentVote)}
+          onClick={() =>
+            customizeData.setShowPercentVote(!customizeData.showPercentVote)
+          }
           style={{ cursor: "pointer", width: "100%" }}
         >
           <RowCell
             color="#06fc99"
             type="Yes:"
             value={
-              showPercentVote
-                ? totalVotes
-                  ? truncateNumber(((yes * 100) / totalVotes).toString()) + "%"
-                  : "0%"
-                : truncateNumber(yes.toString()) + " canto"
+              customizeData.showPercentVote
+                ? truncateNumber((voteData.percents.yes * 100).toString()) + "%"
+                : truncateNumber(formatUnits(voteData.currentTally.tally.yes)) +
+                  " canto"
             }
           />
           <RowCell
             color="#ff4646"
             type="No:"
             value={
-              showPercentVote
-                ? totalVotes
-                  ? truncateNumber(((no * 100) / totalVotes).toString()) + "%"
-                  : "0%"
-                : truncateNumber(no.toString()) + " canto"
+              customizeData.showPercentVote
+                ? truncateNumber((voteData.percents.no * 100).toString()) + "%"
+                : truncateNumber(formatUnits(voteData.currentTally.tally.no)) +
+                  " canto"
             }
           />
           <RowCell
             color="#710808"
             type="No With Veto:"
             value={
-              showPercentVote
-                ? totalVotes
-                  ? truncateNumber(((veto * 100) / totalVotes).toString()) + "%"
-                  : "0%"
-                : truncateNumber(veto.toString()) + " canto"
+              customizeData.showPercentVote
+                ? truncateNumber((voteData.percents.veto * 100).toString()) +
+                  "%"
+                : truncateNumber(
+                    formatUnits(voteData.currentTally.tally.no_with_veto)
+                  ) + " canto"
             }
           />
           <RowCell
             color="#fbea51"
             type="Abstain:"
             value={
-              showPercentVote
-                ? totalVotes
-                  ? truncateNumber(((abstain * 100) / totalVotes).toString()) +
-                    "%"
-                  : "0%"
-                : truncateNumber(abstain.toString()) + " canto"
+              customizeData.showPercentVote
+                ? truncateNumber((voteData.percents.abstain * 100).toString()) +
+                  "%"
+                : truncateNumber(
+                    formatUnits(voteData.currentTally.tally.abstain)
+                  ) + " canto"
             }
           />
         </div>
@@ -236,10 +154,10 @@ const Proposal = () => {
 
       <div className="voting">
         <GBar
-          yes={totalVotes ? (yes * 100) / totalVotes : 0}
-          no={totalVotes ? (no * 100) / totalVotes : 0}
-          veto={totalVotes ? (veto * 100) / totalVotes : 0}
-          abstain={totalVotes ? (abstain * 100) / totalVotes : 0}
+          yes={voteData.percents.yes * 100}
+          no={voteData.percents.no * 100}
+          veto={voteData.percents.veto * 100}
+          abstain={voteData.percents.abstain * 100}
           quorum={Number.parseFloat(votingThresholds.quorum)}
           vetoThreshold={Number.parseFloat(votingThresholds.veto)}
           threshold={Number.parseFloat(votingThresholds.threshold)}
@@ -256,69 +174,51 @@ const Proposal = () => {
               </PrimaryButton>
             }
             modal={true}
-            onClose={() => {
-              setCastingVote(VotingOption.NONE);
-              setVoteStatus("None");
-            }}
+            onClose={() => votingFuncionality.resetVote()}
           >
             {
               <div>
-                {voteStatus != "None" && (
+                {votingFuncionality.voteStatus != "None" && (
                   <GlobalLoadingModal
                     transactionType={CantoTransactionType.VOTING}
-                    status={voteStatus}
-                    tokenName={convertVoteNumberToString(castingVote)}
-                    onClose={() => {
-                      setCastingVote(VotingOption.NONE);
-                      setVoteStatus("None");
-                    }}
+                    status={votingFuncionality.voteStatus}
+                    tokenName={convertVoteNumberToString(
+                      votingFuncionality.castingVote
+                    )}
+                    onClose={() => votingFuncionality.resetVote()}
                     mixPanelEventInfo={{
                       proposalId: proposal.proposal_id,
-                      vote: convertVoteNumberToString(castingVote),
+                      vote: convertVoteNumberToString(
+                        votingFuncionality.castingVote
+                      ),
                     }}
                   />
                 )}
                 <GovModal
-                  onVote={async (vote: VotingOption) => {
-                    if (!account) {
-                      return;
-                    }
-                    setCastingVote(vote);
-                    await voteAndSetStatus(
-                      async () =>
-                        await txVote(
-                          account,
-                          Number(proposal.proposal_id),
-                          convertToVoteNumber(vote),
-                          nodeURL(chainId),
-                          votingFee,
-                          chain,
-                          memo
-                        ),
-                      setVoteStatus
-                    );
-                  }}
+                  onVote={votingFuncionality.txVote}
                   proposal={proposal}
-                  currentVote={accountVote}
+                  currentVote={userVoteData.currentVote}
                 />
               </div>
             }
           </Popup>
-          {accountVote != VotingOption.NONE ? (
+          {userVoteData.currentVote != VotingOption.NONE ? (
             <p style={{ color: "white" }}>
               YOUR VOTE:{" "}
               <a
                 style={
-                  accountVote == VotingOption.YES
+                  userVoteData.currentVote == VotingOption.YES
                     ? { color: "#06fc99" }
-                    : accountVote == VotingOption.NO
+                    : userVoteData.currentVote == VotingOption.NO
                     ? { color: "#ff4646" }
-                    : accountVote == VotingOption.VETO
+                    : userVoteData.currentVote == VotingOption.VETO
                     ? { color: "#710808" }
                     : { color: "#fbea51" }
                 }
               >
-                {convertVoteNumberToString(accountVote).toUpperCase()}
+                {convertVoteNumberToString(
+                  userVoteData.currentVote
+                ).toUpperCase()}
               </a>
             </p>
           ) : (
@@ -327,15 +227,13 @@ const Proposal = () => {
           {voteEnded
             ? ""
             : `voting power: ${
-                showPercentVote
-                  ? totalVotes == 0
-                    ? "100%"
-                    : truncateNumber(
-                        (100 * (Number(totalUserStake) / totalVotes)).toString()
-                      ) + "%"
-                  : formatBigNumber(totalUserStake) + " canto"
+                customizeData.showPercentVote
+                  ? truncateNumber(
+                      (100 * userVoteData.votingPowerPercent).toString()
+                    ) + "%"
+                  : formatBigNumber(userVoteData.votingPower) + " canto"
               }`}
-          {voteStatus == "Success" && (
+          {votingFuncionality.voteStatus == "Success" && (
             <div style={{ color: "green" }}>thank you for your vote!</div>
           )}
         </div>
