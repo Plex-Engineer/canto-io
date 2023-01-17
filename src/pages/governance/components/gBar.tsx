@@ -7,6 +7,7 @@ interface Props {
   no: number;
   veto: number;
   abstain: number;
+  totalVotes: number;
   quorum: number;
   threshold: number;
   vetoThreshold: number;
