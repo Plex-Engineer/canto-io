@@ -14,6 +14,7 @@ const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
   const {
     canSkip,
+    notEnoughCantoBalance,
     canContinue,
     canGoBack,
     chainId,
@@ -76,6 +77,7 @@ const Walkthrough = () => {
         walkthrough.currentBridgeType == "IN" && (
           <BridgeInManager
             chainId={chainId}
+            notEnoughCantoBalance={notEnoughCantoBalance}
             cantoAddress={cantoAddress}
             currentStep={walkthrough.bridgeInStep}
             onPrev={() => {
@@ -111,6 +113,7 @@ const Walkthrough = () => {
         walkthrough.currentBridgeType == "OUT" && (
           <BridgeOutManager
             chainId={chainId}
+            notEnoughCantoBalance={notEnoughCantoBalance}
             cantoAddress={cantoAddress}
             currentStep={walkthrough.bridgeOutStep}
             onPrev={() => {

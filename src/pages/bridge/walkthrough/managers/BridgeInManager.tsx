@@ -28,6 +28,7 @@ import { BridgeInStep } from "../walkthroughTracker";
 
 interface BridgeInManagerProps {
   chainId: number;
+  notEnoughCantoBalance: boolean;
   cantoAddress: string;
   currentStep: BridgeInStep;
   canContinue: boolean;
@@ -93,6 +94,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
       {props.currentStep == BridgeInStep.NEED_ALLOWANCE && !hasAllowance && (
         <ConfirmTransactionPage
           amount=""
+          notEnoughCantoBalance={false}
           token={props.currentBridgeInToken}
           onTxConfirm={() =>
             props.sendApprove(
@@ -128,6 +130,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
       {props.currentStep === BridgeInStep.SEND_FUNDS_TO_GBRIDGE && (
         <ConfirmTransactionPage
           amount={props.amount}
+          notEnoughCantoBalance={false}
           token={props.currentBridgeInToken}
           onTxConfirm={() =>
             props.sendCosmos(
@@ -199,6 +202,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
       {props.currentStep === BridgeInStep.CONVERT && (
         <ConfirmTransactionPage
           amount={props.amount}
+          notEnoughCantoBalance={props.notEnoughCantoBalance}
           token={props.currentConvertToken}
           onTxConfirm={async () =>
             await performBridgeCosmosTxAndSetStatus(

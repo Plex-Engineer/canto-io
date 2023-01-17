@@ -30,6 +30,7 @@ import { BridgeOutStep } from "../walkthroughTracker";
 
 interface BridgeOutManagerProps {
   chainId: number;
+  notEnoughCantoBalance: boolean;
   cantoAddress: string;
   currentStep: BridgeOutStep;
   canContinue: boolean;
@@ -101,6 +102,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
       {props.currentStep === BridgeOutStep.CONVERT_COIN && (
         <ConfirmTransactionPage
           amount={props.amount}
+          notEnoughCantoBalance={props.notEnoughCantoBalance}
           token={props.currentConvertToken}
           onTxConfirm={async () =>
             await performBridgeCosmosTxAndSetStatus(
@@ -178,6 +180,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
       {props.currentStep === BridgeOutStep.SEND_TO_GRBIDGE && (
         <ConfirmTransactionPage
           amount={props.amount}
+          notEnoughCantoBalance={props.notEnoughCantoBalance}
           token={props.currentBridgeOutToken}
           onTxConfirm={async () =>
             await performBridgeCosmosTxAndSetStatus(
