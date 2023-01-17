@@ -10,6 +10,7 @@ interface ConfirmationProps {
   txType: string;
   txShortDesc: string;
   txStatus: ReactNode | undefined;
+  txCompletedDesc?: string;
   onTxConfirm: () => void;
   onPrev: () => void;
   onNext: () => void;
@@ -85,6 +86,9 @@ export const ConfirmTransactionPage = (props: ConfirmationProps) => {
         <PrimaryButton disabled={props.canContinue} onClick={props.onTxConfirm}>
           Confirm
         </PrimaryButton>
+        {props.canContinue && props.txCompletedDesc && (
+          <Text>{props.txCompletedDesc}</Text>
+        )}
       </section>
       <footer>
         <div className="row">

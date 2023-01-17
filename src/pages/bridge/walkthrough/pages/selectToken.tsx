@@ -28,9 +28,7 @@ const SelectTokenPage = (props: SelectTokenProps) => {
             {props.bridgeType == "IN" ? "in" : "out"}
           </Text>
           <Text type="text" size="text3">
-            {props.bridgeType == "IN"
-              ? "placeholder text for bridging in tokens"
-              : "placeholder text for bridging out tokens"}
+            please make sure the token you select has a balance
           </Text>
         </div>
       </header>

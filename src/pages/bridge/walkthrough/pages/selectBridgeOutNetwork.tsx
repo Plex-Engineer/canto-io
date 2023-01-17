@@ -87,7 +87,8 @@ const SelectBridgeOutNetwork = (props: SelectBridgeProps) => {
             onChange={(e) => props.userCosmosSend.setAddress(e.target.value)}
           />
           <Text type="text" align="left" size="text4">
-            This field is used to send the funds to a different walllet address.
+            this is the address that will recieve the funds on the{" "}
+            {props.activeNetwork.name} chain
           </Text>
         </div>
       </section>

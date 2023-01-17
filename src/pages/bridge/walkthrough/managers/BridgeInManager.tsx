@@ -102,6 +102,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           }
           txType={"Enable Token"}
           txShortDesc={`enable ${props.currentBridgeInToken.name}`}
+          txCompletedDesc={"this token has been enabled, you may continue"}
           txStatus={props.stateApprove.status}
           canContinue={props.canContinue}
           onNext={props.onNext}
