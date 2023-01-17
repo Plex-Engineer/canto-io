@@ -128,6 +128,7 @@ export const ProposalContainer = styled.div`
       width: 100%;
       gap: 2rem;
       margin-bottom: 1rem;
+      flex-direction: column;
     }
   }
 `;

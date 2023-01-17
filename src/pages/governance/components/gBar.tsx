@@ -16,67 +16,70 @@ interface Props {
 const GBar = (props: Props) => {
   return (
     <Styled {...props}>
-      <Tooltip
-        content={
-          <Text>
-            {truncateNumber(props.yes.toString()).toString()}% votes casted for
-            "YES"
-          </Text>
-        }
-        trigger={
-          <div className="yes bar">
-            <p>{truncateNumber(props.yes.toString()).toString()}%</p>
-          </div>
-        }
-      />
+      <div className="votes">
+        <Tooltip
+          content={
+            <Text>
+              {truncateNumber(props.yes.toString()).toString()}% votes casted
+              for "YES"
+            </Text>
+          }
+          trigger={
+            <div className="yes bar">
+              <p>{truncateNumber(props.yes.toString()).toString()}%</p>
+            </div>
+          }
+        />
 
-      <Tooltip
-        content={
-          <Text>
-            {truncateNumber(props.no.toString()).toString()}% of validators
-            voted no.
-          </Text>
-        }
-        trigger={
-          <div className="no bar">
-            {/* <p>{truncateNumber(props.no.toString()).toString()}%</p> */}
-          </div>
-        }
-      />
-      <Tooltip
-        content={
-          <Text>
-            {truncateNumber(props.veto.toString()).toString()}% of validators
-            voted veto.
-          </Text>
-        }
-        trigger={
-          <div className="veto bar">
-            {/* <p>{truncateNumber(props.veto.toString()).toString()}%</p> */}
-          </div>
-        }
-      />
-      <Tooltip
-        content={
-          <Text>
-            {truncateNumber(props.abstain.toString()).toString()}% of validators
-            voted abstain.
-          </Text>
-        }
-        trigger={
-          <div className="abstain bar">
-            {/* <p>{truncateNumber(props.abstain.toString()).toString()}%</p> */}
-          </div>
-        }
-      />
-      <Tooltip
+        <Tooltip
+          content={
+            <Text>
+              {truncateNumber(props.no.toString()).toString()}% of validators
+              voted no.
+            </Text>
+          }
+          trigger={
+            <div className="no bar">
+              {/* <p>{truncateNumber(props.no.toString()).toString()}%</p> */}
+            </div>
+          }
+        />
+        <Tooltip
+          content={
+            <Text>
+              {truncateNumber(props.veto.toString()).toString()}% of validators
+              voted veto.
+            </Text>
+          }
+          trigger={
+            <div className="veto bar">
+              {/* <p>{truncateNumber(props.veto.toString()).toString()}%</p> */}
+            </div>
+          }
+        />
+        <Tooltip
+          content={
+            <Text>
+              {truncateNumber(props.abstain.toString()).toString()}% of
+              validators voted abstain.
+            </Text>
+          }
+          trigger={
+            <div className="abstain bar">
+              {/* <p>{truncateNumber(props.abstain.toString()).toString()}%</p> */}
+            </div>
+          }
+        />
+      </div>
+      <div className="empty bar"></div>
+      {/* <Tooltip
         content={<Text>{props.threshold + "% threshold"}</Text>}
         trigger={<div className="threshold dashed"></div>}
       />
       <Tooltip
         content={<Text>{props.vetoThreshold + "% veto threshold"}</Text>}
         trigger={<div className="vetoThreshold dashed"></div>}
-      />
+      /> */}
       <Tooltip
         content={<Text>{props.quorum + "% quorum"}</Text>}
         trigger={<div className="quorum dashed"></div>}
@@ -95,7 +98,6 @@ const Styled = styled.div<Props>`
   padding: 4px;
   .bar {
     height: 100%;
-    border-radius: 4px;
     display: grid;
     place-items: center;
   }
@@ -136,6 +138,17 @@ const Styled = styled.div<Props>`
   .abstain {
     background-color: #fbea51;
     width: ${(props) => props.abstain + "%"};
+    color: black;
+  }
+
+  .votes {
+    width: ${(props) => props.totalVotes + "%"};
+    height: 100%;
+    display: flex;
+  }
+  .empty {
+    background-color: #111;
+    width: ${(props) => 100 - props.totalVotes + "%"};
     color: black;
   }
 `;

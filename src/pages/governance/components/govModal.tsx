@@ -74,14 +74,14 @@ const GovModal = ({ proposal, currentVote, onVote }: Props) => {
       >
         {proposal.content.title}
       </h2>
-      <h2
+      {/* <h2
         style={{
           fontSize: "14px",
           color: "#999",
         }}
       >
         {proposal.content.description}
-      </h2>
+      </h2> */}
 
       <GovRadioButton
         selected={option === VotingOption.YES}

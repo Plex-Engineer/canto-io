@@ -6,7 +6,7 @@ import {
 import { VoteStatus, VotingOption } from "./config/interfaces";
 import { PrimaryButton } from "global/packages/src";
 import { ProposalContainer } from "./components/Styled";
-import { formatUnits } from "ethers/lib/utils";
+import { formatEther, formatUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
 import Popup from "reactjs-popup";
 import GovModal from "./components/govModal";
@@ -232,7 +232,8 @@ const Proposal = () => {
                   ? truncateNumber(
                       (100 * userVoteData.votingPowerPercent).toString()
                     ) + "%"
-                  : formatBigNumber(userVoteData.votingPower) + " canto"
+                  : truncateNumber(formatEther(userVoteData.votingPower)) +
+                    " canto"
               }`}
           {votingFuncionality.voteStatus == "Success" && (
             <div style={{ color: "green" }}>thank you for your vote!</div>
