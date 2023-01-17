@@ -162,30 +162,15 @@ const Proposal = () => {
         <div className="row">
           <RowCell
             type="SUBMIT TIME:"
-            value={convertDateToString(
-              proposal.submit_time,
-              new Date().getTime() -
-                new Date(proposal.voting_end_time).getTime() <
-                0
-            )}
+            value={convertDateToString(proposal.submit_time, voteEnded)}
           />
           <RowCell
             type="VOTING END TIME:"
-            value={convertDateToString(
-              proposal.voting_end_time,
-              new Date().getTime() -
-                new Date(proposal.voting_end_time).getTime() <
-                0
-            )}
+            value={convertDateToString(proposal.voting_end_time, voteEnded)}
           />
           <RowCell
             type="DEPOSIT END TIME:"
-            value={convertDateToString(
-              proposal.deposit_end_time,
-              new Date().getTime() -
-                new Date(proposal.voting_end_time).getTime() <
-                0
-            )}
+            value={convertDateToString(proposal.deposit_end_time, voteEnded)}
           />
         </div>
         <div className="row thresholds">
