@@ -15,6 +15,7 @@ import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import GBar from "./components/gBar";
 import { useSingleProposalData } from "./hooks/useSingleProposalData";
+import { useState } from "react";
 const Proposal = () => {
   const {
     proposalId,
@@ -26,6 +27,8 @@ const Proposal = () => {
     customizeData,
     votingFuncionality,
   } = useSingleProposalData();
+  const [votingOpen, setVotingOpen] = useState(false);
+
   if (!proposalFound) {
     return (
       <ProposalContainer>
@@ -164,17 +167,23 @@ const Proposal = () => {
           threshold={Number.parseFloat(votingThresholds.threshold)}
         />
         <div className="voting-wrapper">
+          <PrimaryButton
+            disabled={voteEnded}
+            autoFocus={false}
+            onClick={() => {
+              setVotingOpen(true);
+            }}
+          >
+            {voteEnded ? "voting ended" : "vote"}
+          </PrimaryButton>
           <Popup
             overlayStyle={{
               backgroundColor: "#1f4a2c6e",
               backdropFilter: "blur(2px)",
             }}
-            trigger={
-              <PrimaryButton disabled={voteEnded} autoFocus={false}>
-                {voteEnded ? "voting ended" : "vote"}
-              </PrimaryButton>
-            }
-            modal={true}
+            lockScroll
+            open={votingOpen}
+            modal
             onClose={() => votingFuncionality.resetVote()}
           >
             {
@@ -197,6 +206,7 @@ const Proposal = () => {
                 )}
                 <GovModal
                   onVote={votingFuncionality.txVote}
+                  onClose={() => setVotingOpen(false)}
                   proposal={proposal}
                   currentVote={userVoteData.currentVote}
                 />

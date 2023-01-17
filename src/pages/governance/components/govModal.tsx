@@ -1,32 +1,32 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
 import { ProposalData, VotingOption } from "../config/interfaces";
-import { PrimaryButton } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
+import ImageButton from "global/components/ImageButton";
+import closeIcon from "assets/icons/close.svg";
 
 const Container = styled.div`
   background-color: #040404;
-  height: 80vh;
+  height: min-content;
   width: 26rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: start;
-  padding: 1rem;
-  overflow-y: scroll;
-  .btn {
-    margin-top: 1rem;
+  justify-content: center;
+  padding: 1rem 2rem 2rem 2rem;
+  overflow-y: auto;
+  gap: 1rem;
+
+  .close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
   }
-  h2 {
-    font-style: normal;
-    font-weight: 300;
-    font-size: 22px;
-    line-height: 130%;
-    text-align: center;
-    letter-spacing: -0.3px;
-    text-transform: lowercase;
-    color: #efefef;
-    margin-bottom: 2rem;
-    margin-top: 0.3rem;
+
+  .grp {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
   }
 
   .selected {
@@ -44,14 +44,20 @@ const Container = styled.div`
       width: 100%;
     }
   }
+
+  @media (max-width: 1000px) {
+    height: 100vh;
+    width: 100%;
+  }
 `;
 
 interface Props {
   proposal: ProposalData;
   currentVote: VotingOption;
   onVote: (voteOption: VotingOption) => void;
+  onClose: () => void;
 }
-const GovModal = ({ proposal, currentVote, onVote }: Props) => {
+const GovModal = ({ proposal, currentVote, onVote, onClose }: Props) => {
   const [option, setOption] = useState(currentVote ?? VotingOption.NONE);
   const handleChange = (value: VotingOption) => {
     setOption(value);
@@ -59,56 +65,53 @@ const GovModal = ({ proposal, currentVote, onVote }: Props) => {
 
   return (
     <Container>
-      <p
-        style={{
-          marginTop: "2rem",
-          color: "#999",
-        }}
-      >
+      <div className="close">
+        <ImageButton
+          src={closeIcon}
+          alt="close"
+          height={30}
+          onClick={onClose}
+        />
+      </div>
+      <Text type="title" size="title3">
         your vote for #{proposal.proposal_id}
-      </p>
-      <h2
-        style={{
-          marginBottom: ".3rem",
-        }}
-      >
-        {proposal.content.title}
-      </h2>
-      {/* <h2
-        style={{
-          fontSize: "14px",
-          color: "#999",
-        }}
-      >
-        {proposal.content.description}
-      </h2> */}
+      </Text>
+      <Text color="white">{proposal.content.title}</Text>
 
-      <GovRadioButton
-        selected={option === VotingOption.YES}
-        voteOption={VotingOption.YES}
-        name="yes"
-        onChange={handleChange}
-      />
-      <GovRadioButton
-        selected={option === VotingOption.NO}
-        voteOption={VotingOption.NO}
-        name="no"
-        onChange={handleChange}
-      />
-      <GovRadioButton
-        selected={option === VotingOption.VETO}
-        voteOption={VotingOption.VETO}
-        name="veto"
-        onChange={handleChange}
-      />
-      <GovRadioButton
-        selected={option === VotingOption.ABSTAIN}
-        voteOption={VotingOption.ABSTAIN}
-        name="abstain"
-        onChange={handleChange}
-      />
+      <div className="grp">
+        <GovRadioButton
+          selected={option === VotingOption.YES}
+          voteOption={VotingOption.YES}
+          name="yes"
+          onChange={handleChange}
+        />
+        <GovRadioButton
+          selected={option === VotingOption.NO}
+          voteOption={VotingOption.NO}
+          name="no"
+          onChange={handleChange}
+        />
+        <GovRadioButton
+          selected={option === VotingOption.VETO}
+          voteOption={VotingOption.VETO}
+          name="veto"
+          onChange={handleChange}
+        />
+        <GovRadioButton
+          selected={option === VotingOption.ABSTAIN}
+          voteOption={VotingOption.ABSTAIN}
+          name="abstain"
+          onChange={handleChange}
+        />
+      </div>
 
-      <PrimaryButton className="btn" onClick={() => onVote(option)}>
+      <PrimaryButton
+        style={{
+          marginTop: "1rem",
+        }}
+        onClick={() => onVote(option)}
+        filled
+      >
         vote
       </PrimaryButton>
     </Container>
@@ -139,6 +142,15 @@ const GovRadioStyle = styled.div`
     background-color: #06fc9a1d;
     .unchecked {
       border: 1px solid var(--primary-color);
+    }
+  }
+
+  &:hover {
+    border: 1px solid #06fc9aac;
+    color: #06fc9aac;
+    background-color: #06fc9a2;
+    .unchecked {
+      border: 1px solid #06fc9aac;
     }
   }
 
