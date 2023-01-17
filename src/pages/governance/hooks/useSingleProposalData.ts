@@ -30,6 +30,7 @@ import {
 import { getAccountVote, txVote, voteAndSetStatus } from "../utils/voting";
 
 interface SingleProposalReturnProps {
+  loading: boolean;
   proposalId?: string;
   proposalFound: boolean;
   proposal: ProposalData;
@@ -60,7 +61,9 @@ export function useSingleProposalData(): SingleProposalReturnProps {
     state.account,
   ]);
 
-  //voting power is equal to toal stake
+  const [loading, setLoading] = useState(true);
+
+  //voting power is equal to total stake
   const [delegations, setDelegations] = useState<DelegationResponse[]>([]);
   const totalUserStake = calculateTotalStaked(delegations);
   const [totalGlobalStake, setTotalGlobalStake] = useState(BigNumber.from(0));
@@ -86,6 +89,7 @@ export function useSingleProposalData(): SingleProposalReturnProps {
 
   const [currentVotes, setCurrentVotes] = useState<Tally>(emptyTally);
   const [proposal, setProposal] = useState<ProposalData>(emptyProposal);
+
   async function getProposalData() {
     const singleProposal = await getSingleProposalData(id ?? "0", chainId);
     setProposal(singleProposal);
@@ -104,7 +108,10 @@ export function useSingleProposalData(): SingleProposalReturnProps {
     }
   }
   useEffect(() => {
+    setLoading(true);
+
     getProposalData();
+    setLoading(false);
   }, []);
   useEffect(() => {
     showAccountVote();
@@ -138,6 +145,7 @@ export function useSingleProposalData(): SingleProposalReturnProps {
     );
   }
   return {
+    loading,
     proposalId: id,
     proposalFound,
     proposal,

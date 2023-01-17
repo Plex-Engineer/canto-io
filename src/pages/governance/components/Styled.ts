@@ -50,6 +50,7 @@ export const ProposalContainer = styled.div`
   display: flex;
   flex-direction: column;
   max-width: 1200px;
+  width: 100%;
   align-items: stretch;
   gap: 4rem;
   background-color: black;
@@ -84,7 +85,21 @@ export const ProposalContainer = styled.div`
     color: #06fc99;
     text-shadow: 0px 12.2818px 12.2818px rgba(6, 252, 153, 0.2);
   }
+  .row {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .row {
+    > div {
+      width: 100%;
+    }
+  }
   .rowCell {
+    border: 1px solid #555;
+    padding: 1rem;
+    border-radius: 4px;
+    background-color: #121212;
     p:first-of-type {
       text-transform: lowercase;
       color: #888;
@@ -123,6 +138,10 @@ export const ProposalContainer = styled.div`
     flex-direction: column;
     .details {
       width: 100%;
+    }
+
+    .row {
+      flex-direction: column;
     }
     .voting {
       width: 100%;

@@ -10,14 +10,15 @@ import { formatEther, formatUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
 import Popup from "reactjs-popup";
 import GovModal from "./components/govModal";
-import { formatBigNumber } from "global/packages/src/utils/formatNumbers";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import GBar from "./components/gBar";
 import { useSingleProposalData } from "./hooks/useSingleProposalData";
 import { useState } from "react";
+import cantoIcon from "assets/logo.svg";
 const Proposal = () => {
   const {
+    loading,
     proposalId,
     proposalFound,
     proposal,
@@ -35,6 +36,9 @@ const Proposal = () => {
         <div>{`proposal id "${proposalId}" not found`}</div>
       </ProposalContainer>
     );
+  }
+  if (loading) {
+    return <div>Loading</div>;
   }
 
   return (
@@ -86,73 +90,116 @@ const Proposal = () => {
           }
           style={{ cursor: "pointer", width: "100%" }}
         >
-          <RowCell
-            color="#06fc99"
-            type="Yes:"
-            value={
-              customizeData.showPercentVote
-                ? truncateNumber((voteData.percents.yes * 100).toString()) + "%"
-                : truncateNumber(formatUnits(voteData.currentTally.tally.yes)) +
-                  " canto"
-            }
-          />
-          <RowCell
-            color="#ff4646"
-            type="No:"
-            value={
-              customizeData.showPercentVote
-                ? truncateNumber((voteData.percents.no * 100).toString()) + "%"
-                : truncateNumber(formatUnits(voteData.currentTally.tally.no)) +
-                  " canto"
-            }
-          />
-          <RowCell
-            color="#710808"
-            type="No With Veto:"
-            value={
-              customizeData.showPercentVote
-                ? truncateNumber((voteData.percents.veto * 100).toString()) +
+          <div className="row">
+            <RowCell
+              color="#06fc99"
+              type="Yes:"
+              value={
+                customizeData.showPercentVote ? (
+                  truncateNumber((voteData.percents.yes * 100).toString()) + "%"
+                ) : (
+                  <>
+                    {truncateNumber(
+                      formatUnits(voteData.currentTally.tally.yes)
+                    )}{" "}
+                    <img src={cantoIcon} height={16} alt="canto" />
+                  </>
+                )
+              }
+            />
+            <RowCell
+              color="#ff4646"
+              type="No:"
+              value={
+                customizeData.showPercentVote ? (
+                  truncateNumber((voteData.percents.no * 100).toString()) + "%"
+                ) : (
+                  <>
+                    {truncateNumber(
+                      formatUnits(voteData.currentTally.tally.no)
+                    )}{" "}
+                    <img src={cantoIcon} height={16} alt="canto" />
+                  </>
+                )
+              }
+            />
+            <RowCell
+              color="#b40f0f"
+              type="No With Veto:"
+              value={
+                customizeData.showPercentVote ? (
+                  truncateNumber((voteData.percents.veto * 100).toString()) +
                   "%"
-                : truncateNumber(
-                    formatUnits(voteData.currentTally.tally.no_with_veto)
-                  ) + " canto"
-            }
+                ) : (
+                  <>
+                    {truncateNumber(
+                      formatUnits(voteData.currentTally.tally.no_with_veto)
+                    )}{" "}
+                    <img src={cantoIcon} height={16} alt="canto" />
+                  </>
+                )
+              }
+            />
+            <RowCell
+              color="#fbea51"
+              type="Abstain:"
+              value={
+                customizeData.showPercentVote ? (
+                  truncateNumber((voteData.percents.abstain * 100).toString()) +
+                  "%"
+                ) : (
+                  <>
+                    {truncateNumber(
+                      formatUnits(voteData.currentTally.tally.abstain)
+                    )}{" "}
+                    <img src={cantoIcon} height={16} alt="canto" />
+                  </>
+                )
+              }
+            />
+          </div>
+        </div>
+        <div className="row">
+          <RowCell
+            type="SUBMIT TIME:"
+            value={convertDateToString(
+              proposal.submit_time,
+              new Date().getTime() -
+                new Date(proposal.voting_end_time).getTime() <
+                0
+            )}
           />
           <RowCell
-            color="#fbea51"
-            type="Abstain:"
-            value={
-              customizeData.showPercentVote
-                ? truncateNumber((voteData.percents.abstain * 100).toString()) +
-                  "%"
-                : truncateNumber(
-                    formatUnits(voteData.currentTally.tally.abstain)
-                  ) + " canto"
-            }
+            type="VOTING END TIME:"
+            value={convertDateToString(
+              proposal.voting_end_time,
+              new Date().getTime() -
+                new Date(proposal.voting_end_time).getTime() <
+                0
+            )}
+          />
+          <RowCell
+            type="DEPOSIT END TIME:"
+            value={convertDateToString(
+              proposal.deposit_end_time,
+              new Date().getTime() -
+                new Date(proposal.voting_end_time).getTime() <
+                0
+            )}
           />
         </div>
-        <RowCell
-          type="TOTAL DEPOSIT:"
-          value={
-            truncateNumber(formatUnits(proposal.total_deposit[0].amount)) +
-            " canto"
-          }
-        />
-        <RowCell
-          type="SUBMIT TIME:"
-          value={convertDateToString(proposal.submit_time)}
-        />
-        <RowCell
-          type="VOTING END TIME:"
-          value={convertDateToString(proposal.voting_end_time)}
-        />
-        <RowCell
-          type="DEPOSIT END TIME:"
-          value={convertDateToString(proposal.deposit_end_time)}
-        />
-        <RowCell type="QUORUM:" value={votingThresholds.quorum} />
-        <RowCell type="THRESHOLD:" value={votingThresholds.threshold} />
-        <RowCell type="VETO THRESHOLD:" value={votingThresholds.veto} />
+        <div className="row thresholds">
+          <RowCell
+            type="TOTAL DEPOSIT:"
+            value={
+              truncateNumber(formatUnits(proposal.total_deposit[0].amount)) +
+              " canto"
+            }
+          />
+          <RowCell type="QUORUM:" value={votingThresholds.quorum} />
+          <RowCell type="THRESHOLD:" value={votingThresholds.threshold} />
+          <RowCell type="VETO THRESHOLD:" value={votingThresholds.veto} />
+        </div>
       </div>
 
       <div className="voting">
@@ -219,11 +266,11 @@ const Proposal = () => {
               <a
                 style={
                   userVoteData.currentVote == VotingOption.YES
-                    ? { color: "#06fc99" }
+                    ? { color: "#06fc9a8f" }
                     : userVoteData.currentVote == VotingOption.NO
                     ? { color: "#ff4646" }
                     : userVoteData.currentVote == VotingOption.VETO
-                    ? { color: "#710808" }
+                    ? { color: "#b40f0f" }
                     : { color: "#fbea51" }
                 }
               >
@@ -256,7 +303,7 @@ const Proposal = () => {
 
 interface Props {
   type: string;
-  value?: string;
+  value?: string | React.ReactNode;
   color?: string;
 }
 const RowCell = (props: Props) => {
@@ -266,7 +313,8 @@ const RowCell = (props: Props) => {
       style={{
         display: "flex",
         justifyContent: "space-between",
-        color: "green",
+        borderColor: props.color + "cc",
+        backgroundColor: props.color + "34",
       }}
     >
       <p
@@ -276,7 +324,13 @@ const RowCell = (props: Props) => {
       >
         {props.type}
       </p>
-      <p>{props.value}</p>
+      <p
+        style={{
+          color: props.color ?? "white",
+        }}
+      >
+        {props.value}
+      </p>
     </div>
   );
 };
