@@ -21,7 +21,7 @@ const GBar = (props: Props) => {
           content={
             <Text>
               {truncateNumber(props.yes.toString()).toString()}% votes casted
-              for "YES"
+              for &quot;YES&quot;
             </Text>
           }
           trigger={
