@@ -38,6 +38,7 @@ import { useCustomCantoToCosmosInfo } from "./hooks/customBridgeOutInfo";
 import { BridgeOutChecklistFunctionTracker } from "./config/transactionChecklist";
 import { useCustomConvertInfo } from "./hooks/customConvertInfo";
 import { useBridgeOutChecklistSetter } from "./hooks/useBridgeOutChecklistSetter";
+import { useNavigate } from "react-router-dom";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -77,15 +78,15 @@ const BridgeOut = (props: BridgeOutProps) => {
       bridgeDisabled,
       convertDisabled
     );
-
+  const navigate = useNavigate();
   return (
     <FadeIn wrapperTag={BridgeStyled}>
       <ClosedCheckbox
-        style={{ top: "0", marginTop: "10px" }}
-        onClick={() => window.open("/bridge/walkthrough", "_self")}
+        style={{ top: "0", marginTop: "8px" }}
+        onClick={() => navigate("/bridge/walkthrough")}
       >
         <Text type="text" size="text2">
-          Bridge Guide
+          Guide
         </Text>
       </ClosedCheckbox>
       <BridgeChecklistBox

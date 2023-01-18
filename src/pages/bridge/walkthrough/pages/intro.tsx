@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
+import { useNavigate } from "react-router-dom";
 import TextSwitch from "../components/TextSwitch";
 import BaseStyled from "./layout";
 
@@ -14,6 +15,8 @@ interface IntroPageProps {
   canBridgeOut: boolean;
 }
 const IntroPage = (props: IntroPageProps) => {
+  const navigate = useNavigate();
+
   return (
     <Styled>
       <header>
@@ -70,10 +73,13 @@ const IntroPage = (props: IntroPageProps) => {
       </section>
       <footer>
         <div className="row">
-          <OutlinedButton disabled>Prev</OutlinedButton>
+          <OutlinedButton onClick={() => navigate("/bridge")} weight="bold">
+            return
+          </OutlinedButton>
           <PrimaryButton
             disabled={props.currentBridgeType == "NONE"}
             onClick={props.onNext}
+            weight="bold"
           >
             Next
           </PrimaryButton>

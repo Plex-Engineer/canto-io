@@ -97,7 +97,11 @@ const SelectBridgeOutNetwork = (props: SelectBridgeProps) => {
           <OutlinedButton onClick={props.onPrev} disabled={!props.canGoBack}>
             Prev
           </OutlinedButton>
-          <PrimaryButton onClick={props.onNext} disabled={!props.canContinue}>
+          <PrimaryButton
+            onClick={props.onNext}
+            disabled={!props.canContinue}
+            weight="bold"
+          >
             Next
           </PrimaryButton>
         </div>

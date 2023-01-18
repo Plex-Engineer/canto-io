@@ -107,7 +107,11 @@ export const ConfirmTransactionPage = (props: ConfirmationProps) => {
           <OutlinedButton disabled={!props.canGoBack} onClick={props.onPrev}>
             Prev
           </OutlinedButton>
-          <PrimaryButton disabled={!props.canContinue} onClick={props.onNext}>
+          <PrimaryButton
+            disabled={!props.canContinue}
+            onClick={props.onNext}
+            weight="bold"
+          >
             Next
           </PrimaryButton>
         </div>

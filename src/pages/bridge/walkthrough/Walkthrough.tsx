@@ -9,7 +9,6 @@ import { BridgeInStep, BridgeOutStep } from "./walkthroughTracker";
 import { GenPubKeyWalkthrough } from "./pages/genPubKey";
 import NoFunds from "./pages/noFunds";
 import LoadingWalkthrough from "./pages/LoadingWalkthrough";
-import { FilledButton, OutlinedButton } from "global/packages/src";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
@@ -48,17 +47,9 @@ const Walkthrough = () => {
   }
 
   const hasFunds = canBridgeIn || canBridgeOut;
+
   return (
     <Styled>
-      <OutlinedButton
-        size="xx-sm"
-        onClick={() => {
-          window.open("/bridge", "_self");
-        }}
-        style={{ position: "absolute", zIndex: 1 }}
-      >
-        return to bridge
-      </OutlinedButton>
       <LoadingWalkthrough delay={2500} />
       {!hasFunds && <NoFunds />}
       {!finishedBridgeSelection && hasFunds && (

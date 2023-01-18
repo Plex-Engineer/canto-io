@@ -37,7 +37,9 @@ export const GenPubKeyWalkthrough = (props: PubKeyProps) => {
             {props.txStatus ?? "None"}
           </Text>
         </div>
-        <PrimaryButton onClick={props.txGenPubKey}>Confirm</PrimaryButton>
+        <PrimaryButton onClick={props.txGenPubKey} weight="bold">
+          Confirm
+        </PrimaryButton>
       </section>
     </Styled>
   );

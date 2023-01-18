@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
+import { useNavigate } from "react-router-dom";
 import BaseStyled from "./layout";
 
 interface CompletePageProps {
@@ -7,18 +8,19 @@ interface CompletePageProps {
   restart: () => void;
 }
 export const CompletePage = (props: CompletePageProps) => {
+  const navigate = useNavigate();
   return (
     <Styled>
       <header>
         <Text type="title" size="title2">
-          Bridge {props.bridgeIn ? "in" : "out"} complete
+          Bridge {props.bridgeIn ? "in" : "out"} completed
         </Text>
       </header>
       <section>
         <Text type="text">
-          you have complete the bridge {props.bridgeIn ? "in" : "out"} proccess.
-          you may return to the bridge walkthrough home to bridge again, or go
-          to the bridge page to see your transactions
+          you have completed the bridge {props.bridgeIn ? "in" : "out"}{" "}
+          proccess. you may return to the bridge walkthrough home to bridge
+          again, or go to the bridge page to see your transactions
         </Text>
       </section>
       <footer>
@@ -26,7 +28,7 @@ export const CompletePage = (props: CompletePageProps) => {
           <OutlinedButton onClick={props.restart}>
             Restart Walkthrough
           </OutlinedButton>
-          <PrimaryButton onClick={() => window.open("/bridge", "_self")}>
+          <PrimaryButton onClick={() => navigate("/bridge")}>
             Go to Bridge Home
           </PrimaryButton>
         </div>
