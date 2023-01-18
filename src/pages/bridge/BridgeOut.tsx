@@ -28,7 +28,10 @@ import { Text } from "global/packages/src/components/atoms/Text";
 import { BridgeStyled } from "./BridgeIn";
 import { Mixpanel } from "mixpanel";
 import { CantoTransactionType } from "global/config/transactionTypes";
-import { BridgeChecklistBox } from "./components/BridgeChecklistBox";
+import {
+  BridgeChecklistBox,
+  ClosedCheckbox,
+} from "./components/BridgeChecklistBox";
 import useBridgeTxStore from "./stores/transactionStore";
 import { performBridgeCosmosTxAndSetStatus } from "./utils/bridgeCosmosTxUtils";
 import { useCustomCantoToCosmosInfo } from "./hooks/customBridgeOutInfo";
@@ -77,6 +80,14 @@ const BridgeOut = (props: BridgeOutProps) => {
 
   return (
     <FadeIn wrapperTag={BridgeStyled}>
+      <ClosedCheckbox
+        style={{ top: "0", marginTop: "10px" }}
+        onClick={() => window.open("/bridge/walkthrough", "_self")}
+      >
+        <Text type="text" size="text2">
+          Bridge Guide
+        </Text>
+      </ClosedCheckbox>
       <BridgeChecklistBox
         trackerList={BridgeOutChecklistFunctionTracker}
         totalTxs={totalTxs}

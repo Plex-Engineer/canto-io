@@ -22,7 +22,10 @@ import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import FadeIn from "react-fade-in";
 import { Text } from "global/packages/src";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
-import { BridgeChecklistBox } from "./components/BridgeChecklistBox";
+import {
+  BridgeChecklistBox,
+  ClosedCheckbox,
+} from "./components/BridgeChecklistBox";
 import { BridgeInChecklistFunctionTracker } from "./config/transactionChecklist";
 import { useBridgeEthToCantoInfo } from "./hooks/customBridgeInInfo";
 import { useCustomConvertInfo } from "./hooks/customConvertInfo";
@@ -75,6 +78,14 @@ const BridgeIn = (props: BridgeInProps) => {
   return (
     <FadeIn wrapperTag={BridgeStyled}>
       <div className="title">
+        <ClosedCheckbox
+          style={{ top: "0", marginTop: "10px" }}
+          onClick={() => window.open("/bridge/walkthrough", "_self")}
+        >
+          <Text type="text" size="text2">
+            Bridge Guide
+          </Text>
+        </ClosedCheckbox>
         <BridgeChecklistBox
           trackerList={BridgeInChecklistFunctionTracker}
           totalTxs={totalTxs}
