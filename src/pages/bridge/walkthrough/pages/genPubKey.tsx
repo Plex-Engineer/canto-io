@@ -37,7 +37,11 @@ export const GenPubKeyWalkthrough = (props: PubKeyProps) => {
             {props.txStatus ?? "None"}
           </Text>
         </div>
-        <PrimaryButton onClick={props.txGenPubKey} weight="bold">
+        <PrimaryButton
+          onClick={props.txGenPubKey}
+          disabled={props.txStatus != "None"}
+          weight="bold"
+        >
           Confirm
         </PrimaryButton>
       </section>
