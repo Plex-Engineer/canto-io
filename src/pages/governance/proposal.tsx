@@ -177,8 +177,10 @@ const Proposal = () => {
           <RowCell
             type="TOTAL DEPOSIT:"
             value={
-              truncateNumber(formatUnits(proposal.total_deposit[0].amount)) +
-              " canto"
+              <>
+                {truncateNumber(formatUnits(proposal.total_deposit[0].amount))}{" "}
+                <img src={cantoIcon} height={16} alt="canto" />
+              </>
             }
           />
           <RowCell type="QUORUM:" value={votingThresholds.quorum} />

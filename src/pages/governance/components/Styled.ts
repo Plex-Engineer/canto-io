@@ -100,6 +100,10 @@ export const ProposalContainer = styled.div`
     padding: 1rem;
     border-radius: 4px;
     background-color: #121212;
+    img {
+      position: relative;
+      top: 2px;
+    }
     p:first-of-type {
       text-transform: lowercase;
       color: #888;
