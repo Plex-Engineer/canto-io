@@ -15,7 +15,7 @@ export const CompletePage = (props: CompletePageProps) => {
         </Text>
       </header>
       <section>
-        <Text>
+        <Text type="text">
           you have complete the bridge {props.bridgeIn ? "in" : "out"} proccess.
           you may return to the bridge walkthrough home to bridge again, or go
           to the bridge page to see your transactions

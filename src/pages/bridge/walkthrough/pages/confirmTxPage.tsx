@@ -91,7 +91,7 @@ export const ConfirmTransactionPage = (props: ConfirmationProps) => {
           Confirm
         </PrimaryButton>
         {props.notEnoughCantoBalance && (
-          <Text>
+          <Text type="text">
             you do not have enough canto to perform this transaction you must
             have at leat 0.3 Canto in your Metamask wallet. If necessary, you
             can request a drip from the #social-faucet on the{" "}
@@ -99,7 +99,7 @@ export const ConfirmTransactionPage = (props: ConfirmationProps) => {
           </Text>
         )}
         {props.canContinue && props.txCompletedDesc && (
-          <Text>{props.txCompletedDesc}</Text>
+          <Text type="text">{props.txCompletedDesc}</Text>
         )}
       </section>
       <footer>

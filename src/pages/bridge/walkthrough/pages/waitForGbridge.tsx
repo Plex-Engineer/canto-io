@@ -18,11 +18,11 @@ export const WaitForGbridge = (props: WaitProps) => {
         </Text>
       </header>
       <section>
-        <Text>
+        <Text type="text">
           this transaction could take up to 30 minutes to complete. to track the
           progress, please go to the bridge page and check the transactions tab
         </Text>
-        <Text>
+        <Text type="text">
           once the transaction is complete, please select &quot;bridge in&quot;
           on the walkthrough home and select &quot;yes&quot; when asked if the
           gravity bridge transaction has completed. this will bring you to the
