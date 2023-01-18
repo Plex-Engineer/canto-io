@@ -15,6 +15,7 @@ import { StyledPopup } from "global/components/Styled";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { useCustomBridgeInfo } from "./hooks/useCustomBridgeInfo";
+import { useEffect } from "react";
 
 const BridgingPage = () => {
   //all stores needed
@@ -23,6 +24,7 @@ const BridgingPage = () => {
   const { activateBrowserWallet } = useEthers();
   const {
     account,
+    hasPubKey,
     userConvertTokens,
     userBridgeInTokens,
     userBridgeOutTokens,
@@ -52,6 +54,12 @@ const BridgingPage = () => {
     }
     return tabs;
   };
+
+  useEffect(() => {
+    if (!hasPubKey) {
+      window.open("/bridge/walkthrough", "_self");
+    }
+  }, [hasPubKey]);
 
   return (
     <>

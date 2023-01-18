@@ -96,7 +96,7 @@ export const BridgeChecklistBox = (props: ChecklistBoxProps) => {
   );
 };
 
-const ClosedCheckbox = styled.div`
+export const ClosedCheckbox = styled.div`
   width: 4rem;
   height: 2.5rem;
   display: flex;
