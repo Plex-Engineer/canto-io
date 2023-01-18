@@ -52,5 +52,11 @@ const Styled = styled.div`
 
     transition: all 0.4s;
   }
+
+  @media (max-width: 1000px) {
+    .bar {
+      width: 10px;
+    }
+  }
 `;
 export default BarIndicator;

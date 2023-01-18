@@ -21,7 +21,7 @@ export const PAGES = {
       walkthrough: {
         name: "walkthrough",
         link: "/bridge/walkthrough",
-        pageTitle: "walkthrough",
+        pageTitle: "guide",
         networks: [CantoMainnet.chainId, CantoTestnet.chainId, 1],
         showInMenu: false,
       },
