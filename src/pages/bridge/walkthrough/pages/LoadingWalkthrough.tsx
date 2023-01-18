@@ -46,6 +46,7 @@ const Styled = styled.div`
   place-items: center;
   background-color: #010101;
   z-index: 2;
+  padding: 2rem;
 `;
 
 export default LoadingWalkthrough;

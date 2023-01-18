@@ -44,6 +44,11 @@ const BaseStyled = styled.div`
       opacity: 1;
     }
   }
+  @media (max-width: 1000px) {
+    .row {
+      flex-direction: column;
+    }
+  }
 `;
 
 export default BaseStyled;

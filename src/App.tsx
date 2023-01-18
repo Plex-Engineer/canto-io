@@ -54,7 +54,7 @@ function App() {
                 <Route path="/" key={"home"} element={<HomePage />} />
                 <Route
                   path="/bridge/walkthrough"
-                  key={"walkthrough"}
+                  key={"guide"}
                   element={<Walkthrough />}
                 />
                 <Route
