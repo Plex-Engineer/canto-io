@@ -3,7 +3,6 @@ import { Mixpanel } from "mixpanel";
 import { useProposals } from "./stores/proposals";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import GovBar from "./components/govBar";
-import { convertDateToString } from "./utils/formattingStrings";
 import { ProposalData } from "./config/interfaces";
 import { GovernanceContainer } from "./components/Styled";
 import HelmetSEO from "global/components/seo";
@@ -52,8 +51,8 @@ const Governance = () => {
                     abstainPecterage={
                       totalVotes == 0 ? 0 : (100 * abstain) / totalVotes
                     }
-                    startDate={convertDateToString(proposal.voting_start_time)}
-                    endDate={convertDateToString(proposal.voting_end_time)}
+                    startDate={proposal.voting_start_time}
+                    endDate={proposal.voting_end_time}
                     status={proposal.status}
                     onClick={() => {
                       proposals.setCurrentProposal(proposal);
