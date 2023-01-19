@@ -5,7 +5,9 @@ import { emptyProposal, Tally } from "../config/interfaces";
 
 const fetchOptions = {
   method: "GET",
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    "Content-Type": "application/json",
+  },
 };
 export async function getSingleProposalData(id: string, chainId: number) {
   if (isNaN(Number(id))) {
