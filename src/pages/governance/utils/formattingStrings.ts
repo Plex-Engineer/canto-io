@@ -1,12 +1,20 @@
+import moment from "moment";
+
 import { VotingOption } from "../config/interfaces";
 
-export function convertDateToString(dateString: string) {
+export function convertDateToString(dateString: string, relavite: boolean) {
   const date = new Date(dateString);
-  return (
-    date.toLocaleDateString().replace(/[/]/g, ".") +
-    " : " +
-    date.toLocaleTimeString()
-  );
+  return relavite
+    ? moment(date).format("MMM Do YY - h:mm:ss a")
+    : moment(date).fromNow();
+  //   return moment(date).fromNow();
+
+  //   return moment(date).format("MMM Do YY / h:mm:ss a");
+  //   return (
+  //     date.toLocaleDateString().replace(/[/]/g, ".") +
+  //     " : " +
+  //     date.toLocaleTimeString()
+  //   );
 }
 
 export function convertToVoteNumber(option: VotingOption): number {

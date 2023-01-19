@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 
 interface Props {
-  type: "title" | "text";
+  type?: "title" | "text";
   color?: "white" | "primary" | "dark";
   bold?: boolean;
   align?: "left" | "center" | "right";
