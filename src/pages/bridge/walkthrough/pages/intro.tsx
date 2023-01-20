@@ -1,8 +1,13 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
+import {
+  UserConvertToken,
+  UserGravityBridgeTokens,
+} from "pages/bridge/config/interfaces";
 import { useNavigate } from "react-router-dom";
 import TextSwitch from "../components/TextSwitch";
 import TokenTable from "../components/tokenTable";
+import { formatTokensAmountsbyChain } from "../utils/utils";
 import BaseStyled from "./layout";
 
 interface IntroPageProps {
@@ -14,6 +19,8 @@ interface IntroPageProps {
   onNext: () => void;
   canBridgeIn: boolean;
   canBridgeOut: boolean;
+  ethTokens: UserGravityBridgeTokens[];
+  convertTokens: UserConvertToken[];
 }
 const IntroPage = (props: IntroPageProps) => {
   const navigate = useNavigate();
@@ -40,16 +47,10 @@ const IntroPage = (props: IntroPageProps) => {
             Token Balances
           </Text>
           <TokenTable
-            tokens={[
-              { name: "wETH", main: "0.3", gBridge: "0.2", canto: "1.2" },
-              { name: "USDC", main: "220.00", gBridge: "0.29", canto: "134.2" },
-              {
-                name: "USDT",
-                main: "10000.2",
-                gBridge: "344.4",
-                canto: "122.2",
-              },
-            ]}
+            tokens={formatTokensAmountsbyChain(
+              props.ethTokens,
+              props.convertTokens
+            )}
           />
         </div>
         <div className="row">

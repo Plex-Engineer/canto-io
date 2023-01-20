@@ -71,6 +71,8 @@ const Walkthrough = () => {
           }}
           canBridgeIn={canBridgeIn}
           canBridgeOut={canBridgeOut}
+          ethTokens={tokens.allUserTokens.bridgeInTokens}
+          convertTokens={tokens.allUserTokens.convertTokens}
         />
       )}
       {finishedBridgeSelection &&
