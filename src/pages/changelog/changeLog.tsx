@@ -5,10 +5,18 @@ const ChangeLog = () => {
   return (
     <Styled>
       <LogSection
+        date="Jan 10th 2023"
+        title="Fixes & Enhancements"
+        content={`- An issue where in some cases failed Cosmo’s transactions were showing as successful in the UI is now fixed.
+        - An issue where claiming rewards on the staking page resulted in a failed transaction if a user was staked to too many validators is now fixed.
+        - An issue where supplying an LP token to the lending market would result in a failed transaction on the LP interface if a user did not have an allowance for the LP token is now fixed.
+        - When a user selects the “max” option while staking, we now deduct the amount needed for gas from the amount being staked to ensure the transaction is successful.`}
+      />
+      <LogSection
         date="Jan 3rd 2023"
         title="Fixes & Enhancements"
-        content={`- An issue that resulted in the LP interface & LM pages UI incorrectly displaying a completed transaction as being in progress is now fixed.\n
-        - When bridging in users now see WETH instead of ETH when selecting a token.\n
+        content={`- An issue that resulted in the LP interface & LM pages UI incorrectly displaying a completed transaction as being in progress is now fixed.
+        - When bridging in users now see WETH instead of ETH when selecting a token.
         - If a user has not yet generated a Canto public key, the button for bridging is now disabled.`}
       />
       <LogSection
@@ -50,7 +58,7 @@ const Styled = styled.div`
     .header {
       position: sticky;
       height: min-content;
-      width: 50%;
+      min-width: 16rem;
       top: 5.5rem;
       background-color: #03ca7b34;
       padding: 1rem;

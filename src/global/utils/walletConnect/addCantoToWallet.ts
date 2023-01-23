@@ -1,5 +1,10 @@
-import { CantoMainnet, NodeAddresses } from "global/config/networks";
+import {
+  CantoMainnet,
+  CantoTestnet,
+  NodeAddresses,
+} from "global/config/networks";
 import { BigNumber, ethers } from "ethers";
+
 
 export async function switchNetwork(chainId: number) {
   //@ts-ignore
@@ -14,6 +19,10 @@ export async function switchNetwork(chainId: number) {
       console.error(error);
     }
   }
+export function getProvider(chainId: number) {
+  const providerURL =
+    CantoTestnet.chainId == chainId ? CantoTestnet.rpcUrl : CantoMainnet.rpcUrl;
+  return new ethers.providers.JsonRpcProvider(providerURL);
 }
 
 export async function addNetwork() {

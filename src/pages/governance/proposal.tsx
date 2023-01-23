@@ -1,120 +1,44 @@
-import { memo, votingFee } from "global/config/cosmosConstants";
-import { nodeURL } from "global/utils/cantoTransactions/helpers";
-import { useEffect } from "react";
-import { useState } from "react";
 import { votingThresholds } from "./config/votingThresholds";
 import {
   convertDateToString,
-  convertToVoteNumber,
   convertVoteNumberToString,
 } from "./utils/formattingStrings";
-import { getAccountVote, voteOnProposal } from "./utils/voting";
-import {
-  emptyProposal,
-  emptyTally,
-  ProposalData,
-  Tally,
-  VoteStatus,
-  VotingOption,
-} from "./config/interfaces";
+import { VoteStatus, VotingOption } from "./config/interfaces";
 import { PrimaryButton } from "global/packages/src";
 import { ProposalContainer } from "./components/Styled";
-import { formatUnits } from "ethers/lib/utils";
+import { formatEther, formatUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
-import { queryTally } from "./stores/proposals";
-import { useNetworkInfo } from "global/stores/networkInfo";
-import { useParams } from "react-router-dom";
-import { getSingleProposalData } from "./utils/proposalUtils";
-import { PieChart } from "react-minimal-pie-chart";
 import Popup from "reactjs-popup";
 import GovModal from "./components/govModal";
-import { DelegationResponse } from "pages/staking/config/interfaces";
-import { getDelegationsForAddress } from "pages/staking/utils/transactions";
-import { CantoMainnet } from "global/config/networks";
-import { calculateTotalStaked } from "pages/staking/utils/allUserValidatorInfo";
-import { formatBigNumber } from "global/packages/src/utils/formatNumbers";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
-import {
-  CantoTransactionType,
-  TransactionState,
-} from "global/config/transactionTypes";
-import { Mixpanel } from "mixpanel";
+import { CantoTransactionType } from "global/config/transactionTypes";
+import GBar from "./components/gBar";
+import { useSingleProposalData } from "./hooks/useSingleProposalData";
+import { useState } from "react";
+import cantoIcon from "assets/logo.svg";
 const Proposal = () => {
-  const [chainId, account] = useNetworkInfo((state) => [
-    Number(state.chainId),
-    state.account,
-  ]);
-
-  //voting power is equal to toal stake
-  const [delegations, setDelegations] = useState<DelegationResponse[]>([]);
-  const totalUserStake = formatUnits(calculateTotalStaked(delegations));
-  async function getTotalStake() {
-    if (account) {
-      setDelegations(
-        await getDelegationsForAddress(CantoMainnet.cosmosAPIEndpoint, account)
-      );
-    }
-  }
-  useEffect(() => {
-    getTotalStake();
-  }, [account]);
-
-  //will show the votes in percent or total votes format
-  const [showPercentVote, setShowPercentVote] = useState(true);
-  //this will contain the proposal id
-  const { id } = useParams();
-  const [proposalFound, setProposalFound] = useState(true);
-  const [currentVotes, setCurrentVotes] = useState<Tally>(emptyTally);
-  const [proposal, setProposal] = useState<ProposalData>(emptyProposal);
-  async function getProposalData() {
-    const singleProposal = await getSingleProposalData(id ?? "0", chainId);
-    setProposal(singleProposal);
-    setCurrentVotes(await queryTally(id ?? "0", chainId));
-    if (singleProposal == emptyProposal) {
-      setProposalFound(false);
-    }
-  }
-
-  const yes = Number(formatUnits(currentVotes.tally.yes));
-  const no = Number(formatUnits(currentVotes.tally.no));
-  const abstain = Number(formatUnits(currentVotes.tally.abstain));
-  const veto = Number(formatUnits(currentVotes.tally.no_with_veto));
-  const totalVotes = yes + no + abstain + veto;
-  const [accountVote, setAccountVote] = useState(VotingOption.NONE);
-  const [voteSuccess, setVoteSuccess] = useState<number | undefined>(undefined);
-  async function showAccountVote() {
-    if (proposal.status == VoteStatus.votingOngoing) {
-      const vote = await getAccountVote(proposal.proposal_id, nodeURL(chainId));
-      setAccountVote(vote);
-    }
-  }
-  useEffect(() => {
-    showAccountVote();
-    getProposalData();
-  }, []);
-  useEffect(() => {
-    if (id) {
-      Mixpanel.events.governanceActions.proposalOpened(id);
-    }
-  }, [id]);
-  const chain = {
-    chainId: chainId ?? 0,
-    cosmosChainId: `canto_${chainId}-1`,
-  };
-
-  const voteEnded = proposal.status != VoteStatus.votingOngoing;
-
-  const [castingVote, setCastingVote] = useState<VotingOption>(
-    VotingOption.NONE
-  );
-  const [voteStatus, setVoteStatus] = useState<TransactionState>("None");
+  const {
+    loading,
+    proposalId,
+    proposalFound,
+    proposal,
+    voteEnded,
+    voteData,
+    userVoteData,
+    customizeData,
+    votingFuncionality,
+  } = useSingleProposalData();
+  const [votingOpen, setVotingOpen] = useState(false);
 
   if (!proposalFound) {
     return (
       <ProposalContainer>
-        <div>{`proposal id "${id}" not found`}</div>
+        <div>{`proposal id "${proposalId}" not found`}</div>
       </ProposalContainer>
     );
+  }
+  if (loading) {
+    return <div>Loading</div>;
   }
 
   return (
@@ -161,216 +85,204 @@ const Proposal = () => {
           role={"button"}
           tabIndex={0}
           className="details"
-          onClick={() => setShowPercentVote(!showPercentVote)}
+          onClick={() =>
+            customizeData.setShowPercentVote(!customizeData.showPercentVote)
+          }
           style={{ cursor: "pointer", width: "100%" }}
         >
+          <div className="row">
+            <RowCell
+              color="#06fc99"
+              type="Yes:"
+              value={
+                customizeData.showPercentVote ? (
+                  truncateNumber((voteData.percents.yes * 100).toString()) + "%"
+                ) : (
+                  <>
+                    {truncateNumber(
+                      formatUnits(voteData.currentTally.tally.yes)
+                    )}{" "}
+                    <img src={cantoIcon} height={16} alt="canto" />
+                  </>
+                )
+              }
+            />
+            <RowCell
+              color="#ff4646"
+              type="No:"
+              value={
+                customizeData.showPercentVote ? (
+                  truncateNumber((voteData.percents.no * 100).toString()) + "%"
+                ) : (
+                  <>
+                    {truncateNumber(
+                      formatUnits(voteData.currentTally.tally.no)
+                    )}{" "}
+                    <img src={cantoIcon} height={16} alt="canto" />
+                  </>
+                )
+              }
+            />
+            <RowCell
+              color="#b40f0f"
+              type="No With Veto:"
+              value={
+                customizeData.showPercentVote ? (
+                  truncateNumber((voteData.percents.veto * 100).toString()) +
+                  "%"
+                ) : (
+                  <>
+                    {truncateNumber(
+                      formatUnits(voteData.currentTally.tally.no_with_veto)
+                    )}{" "}
+                    <img src={cantoIcon} height={16} alt="canto" />
+                  </>
+                )
+              }
+            />
+            <RowCell
+              color="#fbea51"
+              type="Abstain:"
+              value={
+                customizeData.showPercentVote ? (
+                  truncateNumber((voteData.percents.abstain * 100).toString()) +
+                  "%"
+                ) : (
+                  <>
+                    {truncateNumber(
+                      formatUnits(voteData.currentTally.tally.abstain)
+                    )}{" "}
+                    <img src={cantoIcon} height={16} alt="canto" />
+                  </>
+                )
+              }
+            />
+          </div>
+        </div>
+        <div className="row">
           <RowCell
-            color="#06fc99"
-            type="Yes:"
-            value={
-              showPercentVote
-                ? totalVotes
-                  ? truncateNumber(((yes * 100) / totalVotes).toString()) + "%"
-                  : "0%"
-                : truncateNumber(yes.toString()) + " canto"
-            }
+            type="SUBMIT TIME:"
+            value={convertDateToString(proposal.submit_time, voteEnded)}
           />
           <RowCell
-            color="#ff4646"
-            type="No:"
-            value={
-              showPercentVote
-                ? totalVotes
-                  ? truncateNumber(((no * 100) / totalVotes).toString()) + "%"
-                  : "0%"
-                : truncateNumber(no.toString()) + " canto"
-            }
+            type="VOTING END TIME:"
+            value={convertDateToString(proposal.voting_end_time, voteEnded)}
           />
           <RowCell
-            color="#710808"
-            type="No With Veto:"
-            value={
-              showPercentVote
-                ? totalVotes
-                  ? truncateNumber(((veto * 100) / totalVotes).toString()) + "%"
-                  : "0%"
-                : truncateNumber(veto.toString()) + " canto"
-            }
-          />
-          <RowCell
-            color="#fbea51"
-            type="Abstain:"
-            value={
-              showPercentVote
-                ? totalVotes
-                  ? truncateNumber(((abstain * 100) / totalVotes).toString()) +
-                    "%"
-                  : "0%"
-                : truncateNumber(abstain.toString()) + " canto"
-            }
+            type="DEPOSIT END TIME:"
+            value={convertDateToString(proposal.deposit_end_time, voteEnded)}
           />
         </div>
-        <RowCell
-          type="TOTAL DEPOSIT:"
-          value={
-            truncateNumber(formatUnits(proposal.total_deposit[0].amount)) +
-            " canto"
-          }
-        />
-        <RowCell
-          type="SUBMIT TIME:"
-          value={convertDateToString(proposal.submit_time)}
-        />
-        <RowCell
-          type="VOTING END TIME:"
-          value={convertDateToString(proposal.voting_end_time)}
-        />
-        <RowCell
-          type="DEPOSIT END TIME:"
-          value={convertDateToString(proposal.deposit_end_time)}
-        />
-        <RowCell type="QUORUM:" value={votingThresholds.quorum} />
-        <RowCell type="THRESHOLD:" value={votingThresholds.threshold} />
-        <RowCell type="VETO THRESHOLD:" value={votingThresholds.veto} />
+        <div className="row thresholds">
+          <RowCell
+            type="TOTAL DEPOSIT:"
+            value={
+              <>
+                {truncateNumber(formatUnits(proposal.total_deposit[0].amount))}{" "}
+                <img src={cantoIcon} height={16} alt="canto" />
+              </>
+            }
+          />
+          <RowCell type="QUORUM:" value={votingThresholds.quorum} />
+          <RowCell type="THRESHOLD:" value={votingThresholds.threshold} />
+          <RowCell type="VETO THRESHOLD:" value={votingThresholds.veto} />
+        </div>
       </div>
 
       <div className="voting">
-        <PieChart
-          className="pie"
-          animationDuration={500}
-          animationEasing="ease-out"
-          lineWidth={10}
-          totalValue={totalVotes}
-          label={({ dataEntry }) => {
-            if (Math.round(dataEntry.percentage) == 0) {
-              return "";
-            }
-            return `${Math.round(dataEntry.percentage)} %`;
-          }}
-          labelStyle={{
-            accentColor: "#ffffff",
-            color: "#ffffff",
-            colorScheme: "dark",
-          }}
-          data={[
-            {
-              title: "yes",
-              value: yes,
-              color: "#06fc99",
-            },
-            {
-              title: "no",
-              value: no,
-              color: "#ff4646",
-            },
-            {
-              title: "veto",
-              value: veto,
-              color: "#710808",
-            },
-            {
-              title: "abstain",
-              value: abstain,
-              color: "#fbea51",
-            },
-          ]}
+        <GBar
+          yes={voteData.percents.yes * 100}
+          no={voteData.percents.no * 100}
+          veto={voteData.percents.veto * 100}
+          abstain={voteData.percents.abstain * 100}
+          totalVotes={voteData.percents.totalVoted * 100}
+          quorum={Number.parseFloat(votingThresholds.quorum)}
+          vetoThreshold={Number.parseFloat(votingThresholds.veto)}
+          threshold={Number.parseFloat(votingThresholds.threshold)}
         />
-        <Popup
-          overlayStyle={{
-            background: "rgba(32, 32, 32, 0.4)",
-            backdropFilter: "blur(35px)",
-          }}
-          trigger={
-            <PrimaryButton disabled={voteEnded} autoFocus={false}>
-              {voteEnded ? "voting has ended" : "vote"}
-            </PrimaryButton>
-          }
-          modal={true}
-          onClose={() => {
-            setCastingVote(VotingOption.NONE);
-            setVoteStatus("None");
-          }}
-        >
-          {
-            <div>
-              {voteStatus != "None" && (
-                <GlobalLoadingModal
-                  transactionType={CantoTransactionType.VOTING}
-                  status={voteStatus}
-                  tokenName={convertVoteNumberToString(castingVote)}
-                  onClose={() => {
-                    setCastingVote(VotingOption.NONE);
-                    setVoteStatus("None");
-                  }}
-                  mixPanelEventInfo={{
-                    proposalId: proposal.proposal_id,
-                    vote: convertVoteNumberToString(castingVote),
-                  }}
+        <div className="voting-wrapper">
+          <PrimaryButton
+            disabled={voteEnded}
+            autoFocus={false}
+            onClick={() => {
+              setVotingOpen(true);
+            }}
+          >
+            {voteEnded ? "voting ended" : "vote"}
+          </PrimaryButton>
+          <Popup
+            overlayStyle={{
+              backgroundColor: "#1f4a2c6e",
+              backdropFilter: "blur(2px)",
+            }}
+            lockScroll
+            open={votingOpen}
+            modal
+            onClose={() => votingFuncionality.resetVote()}
+          >
+            {
+              <div>
+                {votingFuncionality.voteStatus != "None" && (
+                  <GlobalLoadingModal
+                    transactionType={CantoTransactionType.VOTING}
+                    status={votingFuncionality.voteStatus}
+                    tokenName={convertVoteNumberToString(
+                      votingFuncionality.castingVote
+                    )}
+                    onClose={() => votingFuncionality.resetVote()}
+                    mixPanelEventInfo={{
+                      proposalId: proposal.proposal_id,
+                      vote: convertVoteNumberToString(
+                        votingFuncionality.castingVote
+                      ),
+                    }}
+                  />
+                )}
+                <GovModal
+                  onVote={votingFuncionality.txVote}
+                  onClose={() => setVotingOpen(false)}
+                  proposal={proposal}
+                  currentVote={userVoteData.currentVote}
                 />
-              )}
-              <GovModal
-                onVote={async (vote: VotingOption) => {
-                  setVoteStatus("PendingSignature");
-                  setCastingVote(vote);
-                  const voteSuccess = await voteOnProposal(
-                    Number(proposal.proposal_id),
-                    convertToVoteNumber(vote),
-                    nodeURL(chainId),
-                    votingFee,
-                    chain,
-                    memo
-                  );
-                  setVoteSuccess(voteSuccess);
-                  if (voteSuccess) {
-                    setVoteStatus("Success");
-                  } else {
-                    setVoteStatus("Fail");
-                  }
-                }}
-                proposal={proposal}
-                currentVote={accountVote}
-              />
-            </div>
-          }
-        </Popup>
-        {accountVote != VotingOption.NONE ? (
-          <p style={{ color: "white" }}>
-            YOUR VOTE:{" "}
-            <a
-              style={
-                accountVote == VotingOption.YES
-                  ? { color: "#06fc99" }
-                  : accountVote == VotingOption.NO
-                  ? { color: "#ff4646" }
-                  : accountVote == VotingOption.VETO
-                  ? { color: "#710808" }
-                  : { color: "#fbea51" }
-              }
-            >
-              {convertVoteNumberToString(accountVote).toUpperCase()}
-            </a>
-          </p>
-        ) : (
-          ""
-        )}
-        {voteEnded
-          ? ""
-          : `voting power: ${
-              showPercentVote
-                ? totalVotes == 0
-                  ? "100%"
-                  : truncateNumber(
-                      (100 * (Number(totalUserStake) / totalVotes)).toString()
+              </div>
+            }
+          </Popup>
+          {userVoteData.currentVote != VotingOption.NONE ? (
+            <p style={{ color: "white" }}>
+              YOUR VOTE:{" "}
+              <a
+                style={
+                  userVoteData.currentVote == VotingOption.YES
+                    ? { color: "#06fc9a8f" }
+                    : userVoteData.currentVote == VotingOption.NO
+                    ? { color: "#ff4646" }
+                    : userVoteData.currentVote == VotingOption.VETO
+                    ? { color: "#b40f0f" }
+                    : { color: "#fbea51" }
+                }
+              >
+                {convertVoteNumberToString(
+                  userVoteData.currentVote
+                ).toUpperCase()}
+              </a>
+            </p>
+          ) : (
+            ""
+          )}
+          {voteEnded
+            ? ""
+            : `voting power: ${
+                customizeData.showPercentVote
+                  ? truncateNumber(
+                      (100 * userVoteData.votingPowerPercent).toString()
                     ) + "%"
-                : formatBigNumber(totalUserStake) + " canto"
-            }`}
-        {voteSuccess == 0 ? (
-          <div style={{ color: "red" }}>vote could not be placed</div>
-        ) : voteSuccess == 1 ? (
-          <div style={{ color: "green" }}>thank you for your vote!</div>
-        ) : (
-          ""
-        )}
+                  : truncateNumber(formatEther(userVoteData.votingPower)) +
+                    " canto"
+              }`}
+          {votingFuncionality.voteStatus == "Success" && (
+            <div style={{ color: "green" }}>thank you for your vote!</div>
+          )}
+        </div>
       </div>
     </ProposalContainer>
   );
@@ -378,7 +290,7 @@ const Proposal = () => {
 
 interface Props {
   type: string;
-  value?: string;
+  value?: string | React.ReactNode;
   color?: string;
 }
 const RowCell = (props: Props) => {
@@ -388,7 +300,8 @@ const RowCell = (props: Props) => {
       style={{
         display: "flex",
         justifyContent: "space-between",
-        color: "green",
+        borderColor: props.color + "cc",
+        backgroundColor: props.color + "34",
       }}
     >
       <p
@@ -398,7 +311,13 @@ const RowCell = (props: Props) => {
       >
         {props.type}
       </p>
-      <p>{props.value}</p>
+      <p
+        style={{
+          color: props.color ?? "white",
+        }}
+      >
+        {props.value}
+      </p>
     </div>
   );
 };

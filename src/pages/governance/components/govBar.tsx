@@ -1,4 +1,6 @@
 import styled from "@emotion/styled";
+import { VoteStatus } from "../config/interfaces";
+import { convertDateToString } from "../utils/formattingStrings";
 
 const GovBar = (props: barProps) => {
   return (
@@ -22,8 +24,15 @@ const GovBar = (props: barProps) => {
 
       <div className="options">
         <div className="details options-1">
-          <p>start {props.startDate}</p> <p> &nbsp;→&nbsp; </p>
-          <p>end {props.endDate}</p>
+          {props.status == VoteStatus.votingOngoing ? (
+            <>
+              <p>start {convertDateToString(props.startDate, true)}</p>{" "}
+              <p> &nbsp;→&nbsp; </p>
+              <p>end {convertDateToString(props.endDate, true)}</p>
+            </>
+          ) : (
+            <>vote ended {convertDateToString(props.endDate, false)}</>
+          )}
         </div>
 
         <div className="details options-2">

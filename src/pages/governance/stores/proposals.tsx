@@ -49,7 +49,6 @@ export const useProposals = create<ProposalProps>()(
       set({ currentProposal: proposal }),
   }))
 );
-
 export async function queryTally(
   proposalID: string,
   chainId: number

@@ -3,7 +3,8 @@ import React from "react";
 import { Chain } from "@usedapp/core";
 import { ETHMainnet } from "pages/bridge/config/networks";
 import { HelmetProvider } from "react-helmet-async";
-import { MetamaskConnector } from "@usedapp/core";
+import { MetamaskConnector, CoinbaseWalletConnector } from "@usedapp/core";
+
 
 import {
   CantoMainnet as CantoMain,

@@ -61,6 +61,7 @@ export const NavBar = (props: Props) => {
         <Text
           id="title"
           type="title"
+          size="title1"
           style={{
             transform: "translateY(-3px)",
           }}
@@ -119,7 +120,7 @@ const Container = styled.div`
       justify-content: end;
     }
     #title {
-      font-size: 44px;
+      /* font-size: 44px; */
       letter-spacing: -0.08em;
     }
     #logo {

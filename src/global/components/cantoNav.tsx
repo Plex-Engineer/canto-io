@@ -95,11 +95,12 @@ export const CantoNav = () => {
     networkInfo.chainId,
     networkInfo.hasPubKey,
     location,
+    networkInfo.balance,
   ]);
   return (
     <NavBar
       onClick={() => {
-        activateBrowserWallet();
+        activateBrowserWallet({ type: "metamask" });
       }}
       chainId={Number(networkInfo.chainId)}
       account={networkInfo.account ?? ""}

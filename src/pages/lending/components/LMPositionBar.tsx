@@ -54,14 +54,7 @@ export const LMPositionBar = ({
             />
           </h1>
         </div>
-        <div
-          className="middle"
-          style={
-            {
-              // backgroundColor: "red",
-            }
-          }
-        >
+        <div className="middle">
           <RewardsBox rewards={rewardBalance} />
           <OutlinedButton
             weight="bold"
@@ -74,7 +67,11 @@ export const LMPositionBar = ({
           >
             <Text type="text">claim</Text>
           </OutlinedButton>
-
+          <div
+            style={{
+              height: "30px",
+            }}
+          ></div>
           <LimitBar>
             <div className="bar">
               {borrowPercentage.lte(80) ? (
