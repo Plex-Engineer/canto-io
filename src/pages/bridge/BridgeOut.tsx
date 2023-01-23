@@ -28,13 +28,17 @@ import { Text } from "global/packages/src/components/atoms/Text";
 import { BridgeStyled } from "./BridgeIn";
 import { Mixpanel } from "mixpanel";
 import { CantoTransactionType } from "global/config/transactionTypes";
-import { BridgeChecklistBox } from "./components/BridgeChecklistBox";
+import {
+  BridgeChecklistBox,
+  ClosedCheckbox,
+} from "./components/BridgeChecklistBox";
 import useBridgeTxStore from "./stores/transactionStore";
 import { performBridgeCosmosTxAndSetStatus } from "./utils/bridgeCosmosTxUtils";
 import { useCustomCantoToCosmosInfo } from "./hooks/customBridgeOutInfo";
 import { BridgeOutChecklistFunctionTracker } from "./config/transactionChecklist";
 import { useCustomConvertInfo } from "./hooks/customConvertInfo";
 import { useBridgeOutChecklistSetter } from "./hooks/useBridgeOutChecklistSetter";
+import { useNavigate } from "react-router-dom";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -74,9 +78,17 @@ const BridgeOut = (props: BridgeOutProps) => {
       bridgeDisabled,
       convertDisabled
     );
-
+  const navigate = useNavigate();
   return (
     <FadeIn wrapperTag={BridgeStyled}>
+      <ClosedCheckbox
+        style={{ top: "0", marginTop: "8px" }}
+        onClick={() => navigate("/bridge/walkthrough")}
+      >
+        <Text type="text" size="text2">
+          Guide
+        </Text>
+      </ClosedCheckbox>
       <BridgeChecklistBox
         trackerList={BridgeOutChecklistFunctionTracker}
         totalTxs={totalTxs}

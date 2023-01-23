@@ -25,7 +25,7 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
     <Styled isOpen={isOpen}>
       {/* <Styled className={isOpen ? "active" : ""}> */}
       <div
-        className="menu-btn"
+        className="menu-btn burger"
         // style={{
         //   transform: isOpen ? "translateX(200px)" : "translateX(0)",
         // }}
@@ -242,6 +242,12 @@ const Styled = styled.div<MenuState>`
   .active-bar {
     opacity: 1;
     border-right: 4px solid var(--primary-color);
+  }
+
+  @media (max-width: 1000px) {
+    .burger {
+      transform: translateY(-10px);
+    }
   }
 `;
 

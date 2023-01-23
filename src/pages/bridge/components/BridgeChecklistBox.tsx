@@ -96,9 +96,9 @@ export const BridgeChecklistBox = (props: ChecklistBoxProps) => {
   );
 };
 
-const ClosedCheckbox = styled.div`
-  width: 4rem;
-  height: 2.5rem;
+export const ClosedCheckbox = styled.div`
+  width: 5em;
+  height: 3rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -111,6 +111,12 @@ const ClosedCheckbox = styled.div`
   cursor: pointer;
   opacity: 0;
   animation: fadeIn 0.5s forwards 0.6s;
+  transition: all 0.3s;
+  &:hover {
+    background-color: #444444;
+    width: 5.5em;
+    transition: all 0.3s;
+  }
 `;
 
 const Styled = styled.div`
