@@ -10,9 +10,9 @@ const NoFunds = () => {
         Oops, looks like you have no funds to transfer
       </Text>
       <Text type="text">
-        To use the walkthrough you either need to have funds on "ethereum
-        network" or "canto network" and as of now. it doesn't seem like you have
-        funds on either of the networks
+        To use the walkthrough you either need to have funds on &quot;ethereum
+        network&quot; or &quot;canto network&quot; and as of now. it
+        doesn&apos;t seem like you have funds on either of the networks
       </Text>
     </Styled>
   );
