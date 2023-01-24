@@ -40,7 +40,7 @@ const Container = styled.div<Props>`
     font-size: 14px;
     text-align: center;
   }
-
+  padding: ${({ open }) => (open ? "1rem 2rem" : "0rem")};
   height: ${({ open, floating }) =>
     open ? "min-content" : floating ? "min-content" : "0rem"};
   position: ${({ floating }) => (floating ? "absolute" : "relative")};
