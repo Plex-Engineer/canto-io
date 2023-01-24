@@ -28,7 +28,7 @@ interface Props {
 }
 const Container = styled.div<Props>`
   transition: all 0.3s;
-  padding: 0 2rem;
+  padding: 1rem 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -42,7 +42,7 @@ const Container = styled.div<Props>`
   }
 
   height: ${({ open, floating }) =>
-    open ? "4rem" : floating ? "4rem" : "0rem"};
+    open ? "min-content" : floating ? "min-content" : "0rem"};
   position: ${({ floating }) => (floating ? "absolute" : "relative")};
   left: 50%;
   top: ${({ open, floating }) => (open && floating ? "1rem" : "0rem")};
