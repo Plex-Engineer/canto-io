@@ -10,30 +10,31 @@ export const GenPubKey = () => {
 
   return (
     <p
+      role="button"
+      tabIndex={0}
+      onClick={() => {
+        if (Number(networkInfo.chainId) != CantoMainnet.chainId) {
+          addNetwork();
+          setPubKeySuccess("switch to canto network");
+        } else {
+          generatePubKey(networkInfo.account, setPubKeySuccess);
+        }
+      }}
       style={{
         color: "#b73d3d",
         fontWeight: "bold",
         textShadow: "0px 0px black",
         lineHeight: "220%",
+        cursor: "pointer",
       }}
     >
       please{" "}
       <span
-        role="button"
-        tabIndex={0}
         style={{
           cursor: "pointer",
           border: "1px solid",
           padding: "6px 1rem",
           borderRadius: "4px",
-        }}
-        onClick={() => {
-          if (Number(networkInfo.chainId) != CantoMainnet.chainId) {
-            addNetwork();
-            setPubKeySuccess("switch to canto network");
-          } else {
-            generatePubKey(networkInfo.account, setPubKeySuccess);
-          }
         }}
       >
         generate a public key
