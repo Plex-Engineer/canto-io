@@ -78,7 +78,7 @@ const Walkthrough = () => {
         <NotConnected
           buttonText="connect wallet"
           title="Wallet is not connected"
-          subtext="to use the bridge guide you need to connect a wallet throught metamask"
+          subtext="to use the bridge guide you need to connect a wallet through metamask"
           icon={walletIcon}
           onClick={activateBrowserWallet}
         />
