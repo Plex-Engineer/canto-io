@@ -55,7 +55,7 @@ export function showAlerts(
   } else if (currentPageObj.balanceLimits && !balance.isZero()) {
     for (const limit of currentPageObj.balanceLimits) {
       if (balance.lt(limit.minBalance)) {
-        openAlert("Warning", <p>{limit.warningMessage}</p>);
+        openAlert("Failure", <p>{limit.warningMessage}</p>);
         return;
       }
     }
