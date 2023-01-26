@@ -49,7 +49,7 @@ const Walkthrough = () => {
   }
 
   if (needPubKey) {
-    const haveFunds = false;
+    const haveFunds = true;
     if (!haveFunds) {
       return (
         <Styled>
