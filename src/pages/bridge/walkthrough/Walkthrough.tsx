@@ -14,6 +14,7 @@ import NotConnected from "global/packages/src/components/molecules/NotConnected"
 import walletIcon from "assets/wallet.svg";
 import warningIcon from "assets/warning.svg";
 import { Navigate, useNavigate } from "react-router-dom";
+import BalanceTableModal from "./components/BalanceTableModal";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
@@ -86,6 +87,10 @@ const Walkthrough = () => {
   }
   return (
     <Styled>
+      <BalanceTableModal
+        ethTokens={tokens.allUserTokens.bridgeInTokens}
+        convertTokens={tokens.allUserTokens.convertTokens}
+      />
       <LoadingWalkthrough delay={2500} />
       {!hasFunds && <NoFunds />}
       {!finishedBridgeSelection && hasFunds && (

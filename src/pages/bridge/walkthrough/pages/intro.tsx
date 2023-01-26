@@ -36,23 +36,6 @@ const IntroPage = (props: IntroPageProps) => {
         </Text>
       </header>
       <section>
-        <div>
-          <Text
-            type="title"
-            align="left"
-            style={{
-              marginBottom: "1rem",
-            }}
-          >
-            Token Balances
-          </Text>
-          <TokenTable
-            tokens={formatTokensAmountsbyChain(
-              props.ethTokens,
-              props.convertTokens
-            )}
-          />
-        </div>
         <div className="row">
           <TextSwitch
             text="move funds into canto"
