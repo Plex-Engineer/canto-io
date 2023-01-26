@@ -9,9 +9,16 @@ import { BridgeInStep, BridgeOutStep } from "./walkthroughTracker";
 import { GenPubKeyWalkthrough } from "./pages/genPubKey";
 import NoFunds from "./pages/noFunds";
 import LoadingWalkthrough from "./pages/LoadingWalkthrough";
+import { useEthers } from "@usedapp/core";
+import NotConnected from "global/packages/src/components/molecules/NotConnected";
+import walletIcon from "assets/wallet.svg";
+import warningIcon from "assets/warning.svg";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
+  const { active: isConnected, activateBrowserWallet } = useEthers();
+  const navigate = useNavigate();
   const {
     canSkip,
     notEnoughCantoBalance,
@@ -41,6 +48,22 @@ const Walkthrough = () => {
   }
 
   if (needPubKey) {
+    const haveFunds = false;
+    if (!haveFunds) {
+      return (
+        <Styled>
+          <NotConnected
+            title="No Minimum Balance"
+            subtext="It seems like you don't have a public key on this account. In order to generate a public key, you must have at least 0.5 CANTO or 0.01 ETH on mainnet"
+            buttonText="Home"
+            onClick={() => {
+              navigate("/");
+            }}
+            icon={warningIcon}
+          />
+        </Styled>
+      );
+    }
     return (
       <GenPubKeyWalkthrough txGenPubKey={pubKey.tx} txStatus={pubKey.status} />
     );
@@ -48,6 +71,19 @@ const Walkthrough = () => {
 
   const hasFunds = canBridgeIn || canBridgeOut;
 
+  if (!isConnected) {
+    return (
+      <Styled>
+        <NotConnected
+          buttonText="connect wallet"
+          title="Wallet is not connected"
+          subtext="to use the bridge guide you need to connect a wallet throught metamask"
+          icon={walletIcon}
+          onClick={activateBrowserWallet}
+        />
+      </Styled>
+    );
+  }
   return (
     <Styled>
       <LoadingWalkthrough delay={2500} />
