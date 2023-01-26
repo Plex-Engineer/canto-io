@@ -53,7 +53,7 @@ const Walkthrough = () => {
       return (
         <Styled>
           <NotConnected
-            title="No Minimum Balance"
+            title="No Public Key"
             subtext="It seems like you don't have a public key on this account. In order to generate a public key, you must have at least 0.5 CANTO or 0.01 ETH on mainnet"
             buttonText="Home"
             onClick={() => {
