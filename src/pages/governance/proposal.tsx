@@ -195,7 +195,7 @@ const Proposal = () => {
           no={voteData.percents.no * 100}
           veto={voteData.percents.veto * 100}
           abstain={voteData.percents.abstain * 100}
-          totalVotes={voteData.percents.totalVoted * 100}
+          totalVotes={voteEnded ? 100 : voteData.percents.totalVoted * 100}
           quorum={Number.parseFloat(votingThresholds.quorum)}
           vetoThreshold={Number.parseFloat(votingThresholds.veto)}
           threshold={Number.parseFloat(votingThresholds.threshold)}
@@ -236,6 +236,9 @@ const Proposal = () => {
                         votingFuncionality.castingVote
                       ),
                     }}
+                    customMessage={
+                      "the gas to vote on canto governance is unexpectedly high right now, your vote may not be successful"
+                    }
                   />
                 )}
                 <GovModal

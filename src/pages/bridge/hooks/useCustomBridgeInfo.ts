@@ -132,7 +132,6 @@ export function useCustomBridgeInfo(): AllBridgeInfo {
   useEffect(() => {
     if (networkInfo.account && networkInfo.cantoAddress) {
       const interval = setInterval(async () => {
-        await setBridgingTransactions();
         await getAllBalances();
         //reselecting the tokens so it is the most updated version
         tokenStore.resetSelectedToken(
@@ -155,6 +154,12 @@ export function useCustomBridgeInfo(): AllBridgeInfo {
       return () => clearInterval(interval);
     }
   }, [userBridgeInTokens, userBridgeOutTokens, userConvertTokens]);
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await setBridgingTransactions();
+    }, 30000);
+    return () => clearInterval(interval);
+  });
 
   return {
     account: networkInfo.account,
