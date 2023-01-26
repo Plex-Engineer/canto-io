@@ -55,7 +55,7 @@ const IntroPage = (props: IntroPageProps) => {
         </div>
         <div className="row">
           <TextSwitch
-            text="get funds into canto"
+            text="move funds into canto"
             active={props.currentBridgeType == "IN"}
             onClick={() => {
               props.setBridgeType("IN");
@@ -63,7 +63,7 @@ const IntroPage = (props: IntroPageProps) => {
             disabled={!props.canBridgeIn}
           />
           <TextSwitch
-            text="get funds out of canto"
+            text="move funds out of canto"
             active={props.currentBridgeType == "OUT"}
             onClick={() => props.setBridgeType("OUT")}
             disabled={!props.canBridgeOut}

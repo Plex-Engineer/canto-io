@@ -14,7 +14,13 @@ const BarIndicator = ({ total, current, stepAt }: Props) => {
           {idx == stepAt ? <div className="circle"></div> : null}
           <div
             key={idx}
-            className={idx == current ? "active bar" : "not-active bar"}
+            className={
+              idx == current
+                ? "active bar"
+                : idx < current
+                ? "completed bar"
+                : "not-active bar"
+            }
           />
         </>
       ))}
@@ -36,6 +42,10 @@ const Styled = styled.div`
     width: 28px;
     border-radius: 4px;
     background-color: #333;
+  }
+
+  .completed {
+    background-color: #06fc9ab4;
   }
 
   .circle {

@@ -5,7 +5,6 @@ import {
 } from "global/config/networks";
 import { BigNumber, ethers } from "ethers";
 
-
 export async function switchNetwork(chainId: number) {
   //@ts-ignore
   if (window.ethereum) {
@@ -19,6 +18,7 @@ export async function switchNetwork(chainId: number) {
       console.error(error);
     }
   }
+}
 export function getProvider(chainId: number) {
   const providerURL =
     CantoTestnet.chainId == chainId ? CantoTestnet.rpcUrl : CantoMainnet.rpcUrl;
