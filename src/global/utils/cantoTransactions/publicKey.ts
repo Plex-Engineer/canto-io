@@ -54,7 +54,7 @@ export async function generatePubKey(
     } catch {
       console.log("no response from bot");
       setIsSuccess(
-        "account must have ETH balance on ethereum mainnet or CANTO balance on canto network"
+        "Failed. Account must have ETH balance on ethereum mainnet or CANTO balance on canto network."
       );
       return;
     }

@@ -8,6 +8,7 @@ import warningIcon from "assets/warning.svg";
 import { findGravityToken } from "./utils/bridgeTxPageUtils";
 import { useBridgeTransactionPageStore } from "./stores/transactionPageStore";
 import { Mixpanel } from "mixpanel";
+import { useNavigate } from "react-router-dom";
 
 const Transactions = () => {
   const transactionStore = useBridgeTransactionPageStore();
@@ -24,7 +25,7 @@ const Transactions = () => {
     }
     Mixpanel.events.bridgeActions.transactionPageOpened();
   }, []);
-
+  const navigate = useNavigate();
   // useEffect(() => {
   //   filterTransactionSuccess(completedBridgeTransactions);
   // }, [completedBridgeTransactions.length]);
@@ -84,8 +85,7 @@ const Transactions = () => {
             buttonText="Get Started"
             bgFilled
             onClick={() => {
-              // activateBrowserWallet();
-              // addNetwork();
+              navigate("/bridge/walkthrough");
             }}
             icon={warningIcon}
           />

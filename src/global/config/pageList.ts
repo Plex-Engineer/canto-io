@@ -25,6 +25,15 @@ export const PAGES = {
           "you may not have enough CANTO to complete all bridging actions, we recommend at least 2.5 CANTO to avoid transaction failure",
       },
     ],
+    subPages: {
+      walkthrough: {
+        name: "walkthrough",
+        link: "/bridge/walkthrough",
+        pageTitle: "guide",
+        networks: [CantoMainnet.chainId, CantoTestnet.chainId, 1],
+        showInMenu: false,
+      },
+    },
   },
   governance: {
     name: "governance",
@@ -117,6 +126,7 @@ export const pageList: PageObject[] = [
     networks: PAGES.bridge.networks,
     showInMenu: PAGES.bridge.showInMenu,
     balanceLimits: PAGES.bridge.balanceLimits,
+    subpages: [PAGES.bridge.subPages.walkthrough],
   },
   {
     name: PAGES.staking.name,

@@ -5,6 +5,7 @@ import { ETHMainnet } from "pages/bridge/config/networks";
 import { HelmetProvider } from "react-helmet-async";
 import { MetamaskConnector, CoinbaseWalletConnector } from "@usedapp/core";
 
+
 import {
   CantoMainnet as CantoMain,
   CantoTestnet as CantoTest,
@@ -54,7 +55,7 @@ const config: Config = {
   },
   connectors: {
     metamask: new MetamaskConnector(),
-    coinbase: new CoinbaseWalletConnector(),
+    // coinbase: new CoinbaseWalletConnector(),
   },
   autoConnect: true,
   fastMulticallEncoding: true,
