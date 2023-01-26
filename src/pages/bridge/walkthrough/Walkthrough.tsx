@@ -13,7 +13,7 @@ import { useEthers } from "@usedapp/core";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
 import walletIcon from "assets/wallet.svg";
 import warningIcon from "assets/warning.svg";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BalanceTableModal from "./components/BalanceTableModal";
 
 const Walkthrough = () => {
@@ -38,6 +38,7 @@ const Walkthrough = () => {
     canBridgeIn,
     canBridgeOut,
     needPubKey,
+    canPubKey,
     pubKey,
     userCosmosSend,
   } = useCustomWalkthrough();
@@ -49,8 +50,7 @@ const Walkthrough = () => {
   }
 
   if (needPubKey) {
-    const haveFunds = true;
-    if (!haveFunds) {
+    if (!canPubKey) {
       return (
         <Styled>
           <NotConnected

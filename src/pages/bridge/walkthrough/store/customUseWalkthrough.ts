@@ -1,7 +1,8 @@
-import { TransactionStatus } from "@usedapp/core";
+import { TransactionStatus, useEtherBalance } from "@usedapp/core";
 import { BigNumber } from "ethers";
-import { parseEther } from "ethers/lib/utils";
+import { parseEther, parseUnits } from "ethers/lib/utils";
 import { ADDRESSES } from "global/config/addresses";
+import { CantoMainnet } from "global/providers";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
 import {
@@ -41,6 +42,7 @@ interface Props {
   cantoAddress: string;
   notEnoughCantoBalance: boolean;
   needPubKey: boolean;
+  canPubKey: boolean;
   gravityAddress: string;
   userCosmosSend: {
     address: string;
@@ -95,6 +97,10 @@ export function useCustomWalkthrough(): Props {
     useBridgeTransactionPageStore().transactions.completedBridgeTransactions;
   const walkthroughStore = useBridgeWalkthroughStore();
   const networkInfo = useNetworkInfo();
+  const cantoBalance = useEtherBalance(networkInfo.account, {
+    chainId: CantoMainnet.chainId,
+  });
+  const ethBalance = useEtherBalance(networkInfo.account, { chainId: 1 });
   const tokenStore = useTokenStore();
   const bridgeTxStore = useBridgeTxStore();
   const {
@@ -215,12 +221,16 @@ export function useCustomWalkthrough(): Props {
   };
 
   const [pubKeyStatus, setPubKeyStatus] = useState("None");
-
+  const canPubKey =
+    (ethBalance?.gt(parseUnits("0.01")) ||
+      cantoBalance?.gt(parseUnits("0.5"))) ??
+    true;
   return {
     chainId: Number(networkInfo.chainId),
     cantoAddress: networkInfo.cantoAddress,
-    notEnoughCantoBalance: networkInfo.balance.lt(parseEther("0.3")),
+    notEnoughCantoBalance: networkInfo.balance.lt(parseEther("3")),
     needPubKey: !networkInfo.hasPubKey,
+    canPubKey,
     gravityAddress: gravityAddress ?? ADDRESSES.ETHMainnet.GravityBridge,
     canContinue: checkIfCanContinue(),
     canGoBack: checkIfCanClickPrevious(),
