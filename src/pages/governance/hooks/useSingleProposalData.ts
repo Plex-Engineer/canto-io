@@ -114,9 +114,6 @@ export function useSingleProposalData(): SingleProposalReturnProps {
     setLoading(false);
   }, []);
   useEffect(() => {
-    showAccountVote();
-  }, [proposal]);
-  useEffect(() => {
     if (id) {
       Mixpanel.events.governanceActions.proposalOpened(id);
     }
@@ -126,6 +123,9 @@ export function useSingleProposalData(): SingleProposalReturnProps {
     VotingOption.NONE
   );
   const [voteStatus, setVoteStatus] = useState<TransactionState>("None");
+  useEffect(() => {
+    showAccountVote();
+  }, [proposal, voteStatus]);
 
   async function voteOnProposal(vote: VotingOption) {
     if (!account) return;

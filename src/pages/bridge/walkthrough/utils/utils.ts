@@ -16,7 +16,7 @@ export function formatTokensAmountsbyChain(
   convertTokens: UserConvertToken[]
 ): TokenTableProps[] {
   return convertCoinTokens.map((token) => {
-    const ethToken = ethTokens.find((eTok) => (eTok.name = token.name));
+    const ethToken = ethTokens.find((eTok) => eTok.name == token.name);
     const ethBalance = ethToken
       ? formatUnits(ethToken.balanceOf, ethToken.decimals)
       : "0";

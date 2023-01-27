@@ -36,26 +36,9 @@ const IntroPage = (props: IntroPageProps) => {
         </Text>
       </header>
       <section>
-        <div>
-          <Text
-            type="title"
-            align="left"
-            style={{
-              marginBottom: "1rem",
-            }}
-          >
-            Token Balances
-          </Text>
-          <TokenTable
-            tokens={formatTokensAmountsbyChain(
-              props.ethTokens,
-              props.convertTokens
-            )}
-          />
-        </div>
         <div className="row">
           <TextSwitch
-            text="get funds into canto"
+            text="move funds into canto"
             active={props.currentBridgeType == "IN"}
             onClick={() => {
               props.setBridgeType("IN");
@@ -63,7 +46,7 @@ const IntroPage = (props: IntroPageProps) => {
             disabled={!props.canBridgeIn}
           />
           <TextSwitch
-            text="get funds out of canto"
+            text="move funds out of canto"
             active={props.currentBridgeType == "OUT"}
             onClick={() => props.setBridgeType("OUT")}
             disabled={!props.canBridgeOut}

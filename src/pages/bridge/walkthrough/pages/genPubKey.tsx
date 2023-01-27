@@ -16,7 +16,7 @@ export const GenPubKeyWalkthrough = (props: PubKeyProps) => {
           Generate Public Key
         </Text>
         <div>
-          <Text type="text" size="text3">
+          <Text type="text" size="text2">
             By clicking &quot;generate&quot; you are creating a public key for
             your account to allow you to make transactions on the Canto network
           </Text>

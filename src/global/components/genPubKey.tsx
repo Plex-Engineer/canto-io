@@ -10,28 +10,35 @@ export const GenPubKey = () => {
 
   return (
     <p
+      role="button"
+      tabIndex={0}
+      onClick={() => {
+        if (Number(networkInfo.chainId) != CantoMainnet.chainId) {
+          addNetwork();
+          setPubKeySuccess("switch to canto network");
+        } else {
+          generatePubKey(networkInfo.account, setPubKeySuccess);
+        }
+      }}
       style={{
         color: "#b73d3d",
         fontWeight: "bold",
         textShadow: "0px 0px black",
+        lineHeight: "220%",
+        cursor: "pointer",
       }}
     >
       please{" "}
-      <a
-        role="button"
-        tabIndex={0}
-        style={{ color: "red", textDecoration: "underline", cursor: "pointer" }}
-        onClick={() => {
-          if (Number(networkInfo.chainId) != CantoMainnet.chainId) {
-            addNetwork();
-            setPubKeySuccess("switch to canto network");
-          } else {
-            generatePubKey(networkInfo.account, setPubKeySuccess);
-          }
+      <span
+        style={{
+          cursor: "pointer",
+          border: "1px solid",
+          padding: "6px 1rem",
+          borderRadius: "4px",
         }}
       >
         generate a public key
-      </a>{" "}
+      </span>{" "}
       before bridging assets
       <div>{pubKeySuccess}</div>
       <div>

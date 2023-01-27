@@ -24,6 +24,8 @@ export const ConfirmTransactionPage = (props: ConfirmationProps) => {
       .split(" ")
       .flatMap((val) => val.charAt(0).toUpperCase() + val.slice(1) + " ");
   }
+  const txInProgress =
+    props.txStatus === "Mining" || props.txStatus === "PendingSignature";
   return (
     <Styled>
       <header>
@@ -85,7 +87,9 @@ export const ConfirmTransactionPage = (props: ConfirmationProps) => {
           </Text>
         </div>
         <PrimaryButton
-          disabled={props.canContinue || props.notEnoughCantoBalance}
+          disabled={
+            props.canContinue || props.notEnoughCantoBalance || txInProgress
+          }
           onClick={props.onTxConfirm}
         >
           Confirm
@@ -93,8 +97,8 @@ export const ConfirmTransactionPage = (props: ConfirmationProps) => {
         {props.notEnoughCantoBalance && (
           <Text type="text">
             you do not have enough canto to perform this transaction you must
-            have at leat 0.3 Canto in your Metamask wallet. If necessary, you
-            can request a drip from the #social-faucet on the{" "}
+            have at leat 3 Canto in your Metamask wallet. If necessary, you can
+            request a drip from the #social-faucet on the{" "}
             <a href="https://discord.gg/ucRX6XCFbr"> Canto discord</a>
           </Text>
         )}

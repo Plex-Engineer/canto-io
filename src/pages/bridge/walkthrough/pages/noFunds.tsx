@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
 import BaseStyled from "./layout";
 import WarningIcon from "assets/warning.svg";
+
 const NoFunds = () => {
   return (
     <Styled>
@@ -10,9 +11,9 @@ const NoFunds = () => {
         Oops, looks like you have no funds to transfer
       </Text>
       <Text type="text">
-        To use the walkthrough you either need to have funds on &quot;ethereum
-        network&quot; or &quot;canto network&quot; and as of now. it
-        doesn&apos;t seem like you have funds on either of the networks
+        To use the bridge, you must have either USDC, USDT, or WETH on the
+        Ethereum network, or USDC, USDT, ETH, or ATOM on the Canto network.
+        Currently, it appears that you do not have any funds on either network.
       </Text>
     </Styled>
   );
