@@ -78,14 +78,11 @@ export const NavBar = (props: Props) => {
 
 const Container = styled.div`
   position: sticky;
-  top: 0%;
+  top: 0;
   z-index: 12;
   transition: all 1s;
 
   .scroll {
-    /* border-bottom: 1px solid var(--primary-color);
-    background-color: #09221454;
-    backdrop-filter: blur(5px); */
     animation: scroll-down 1s forwards ease;
   }
 
@@ -143,8 +140,8 @@ const Container = styled.div`
       }
 
       #title {
-        font-size: 18px;
-        flex: 6 !important;
+        font-size: 22px;
+        flex: 8 !important;
       }
 
       .hide-on-mobile {

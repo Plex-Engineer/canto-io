@@ -35,7 +35,6 @@ const Styled = styled.div`
   }
   button {
     width: 340px !important;
-    background-color: red;
   }
 `;
 export default NotConnected;

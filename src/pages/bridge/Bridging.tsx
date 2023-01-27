@@ -15,14 +15,18 @@ import { StyledPopup } from "global/components/Styled";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { useCustomBridgeInfo } from "./hooks/useCustomBridgeInfo";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const BridgingPage = () => {
   //all stores needed
   const bridgeTxStore = useBridgeTxStore();
+  const navigate = useNavigate();
   const transactionStore = useBridgeTransactionPageStore();
   const { activateBrowserWallet } = useEthers();
   const {
     account,
+    hasPubKey,
     userConvertTokens,
     userBridgeInTokens,
     userBridgeOutTokens,
@@ -52,6 +56,12 @@ const BridgingPage = () => {
     }
     return tabs;
   };
+
+  useEffect(() => {
+    if (!hasPubKey) {
+      navigate("/bridge/walkthrough");
+    }
+  }, [hasPubKey]);
 
   return (
     <>

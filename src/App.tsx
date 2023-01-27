@@ -10,7 +10,10 @@ import Footer from "global/components/nFooter";
 import { PAGES } from "global/config/pageList";
 import Loading from "global/components/Loading";
 import PageNotFound from "global/components/pageNotFound";
+import IntroPage from "pages/bridge/walkthrough/pages/intro";
 import ChangeLog from "pages/changelog/changeLog";
+import SelectTokenPage from "pages/bridge/walkthrough/pages/selectToken";
+import Walkthrough from "pages/bridge/walkthrough/Walkthrough";
 
 //Styling
 const Container = styled.div`
@@ -50,6 +53,11 @@ function App() {
               <Routes>
                 <Route path="/" key={"home"} element={<HomePage />} />
                 <Route
+                  path="/bridge/walkthrough"
+                  key={"guide"}
+                  element={<Walkthrough />}
+                />
+                <Route
                   path={PAGES.bridge.link}
                   key={"bridge"}
                   element={<Bridging />}
@@ -78,11 +86,6 @@ function App() {
                   path={PAGES.staking.link}
                   key={"staking"}
                   element={<Staking />}
-                />
-                <Route
-                  path="/lending/balanceSheet"
-                  key={"balanceSheet"}
-                  element={<BalanceSheet />}
                 />
                 <Route
                   path={PAGES.changelog.link}
