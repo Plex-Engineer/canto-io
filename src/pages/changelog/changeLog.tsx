@@ -5,6 +5,15 @@ const ChangeLog = () => {
   return (
     <Styled>
       <LogSection
+        date="Jan 26th 2023"
+        title="Fixes & Enhancements"
+        content={`- Bridging assets into and out of Canto is now easier than ever with a new guided walkthrough. To use the walkthrough click the “Guide” button on the bridge page.
+        - Updates have been made to the UI on various pages to fix issues with the mobile experience.
+        - An issue that resulted in votes not appearing in proposals on the page until refreshing has now been fixed.
+        - An issue where canto.io incorrectly displayed 0 as the ETH mainnet balance at times is now fixed.
+        - The design of the proposal page has been changed to enhance readability.`}
+      />
+      <LogSection
         date="Jan 10th 2023"
         title="Fixes & Enhancements"
         content={`- An issue where in some cases failed Cosmo’s transactions were showing as successful in the UI is now fixed.
