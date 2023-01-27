@@ -10,9 +10,7 @@ import Footer from "global/components/nFooter";
 import { PAGES } from "global/config/pageList";
 import Loading from "global/components/Loading";
 import PageNotFound from "global/components/pageNotFound";
-import IntroPage from "pages/bridge/walkthrough/pages/intro";
 import ChangeLog from "pages/changelog/changeLog";
-import SelectTokenPage from "pages/bridge/walkthrough/pages/selectToken";
 import Walkthrough from "pages/bridge/walkthrough/Walkthrough";
 
 //Styling
@@ -31,13 +29,6 @@ const Governance = lazy(() => import("./pages/governance/governance"));
 const Proposal = lazy(() => import("./pages/governance/proposal"));
 // const HomePage = lazy(() => import("./pages/home/homepage"));
 const HomePage = lazy(() => import("./pages/landing/Landing"));
-const BalanceSheet = lazy(() =>
-  import("pages/lending/balanceSheet/BalanceSheet").then((module) => {
-    return {
-      default: module.BalanceSheet,
-    };
-  })
-);
 
 function App() {
   return (
