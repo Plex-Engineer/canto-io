@@ -88,11 +88,6 @@ function App() {
                   element={<Staking />}
                 />
                 <Route
-                  path="/lending/balanceSheet"
-                  key={"balanceSheet"}
-                  element={<BalanceSheet />}
-                />
-                <Route
                   path={PAGES.changelog.link}
                   key={"changelog   "}
                   element={<ChangeLog />}
