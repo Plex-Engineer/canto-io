@@ -1,6 +1,7 @@
 import { TOKENS } from "global/config/tokenInfo";
-import { BaseToken, NativeERC20Tokens } from "./interfaces";
+import { NativeERC20Tokens } from "./interfaces";
 import cosmosIcon from "assets/icons/ATOM.svg";
+import GravitonGrey from "assets/icons/Graviton-Grey.svg";
 
 export const gravityTokenBase = [
   TOKENS.GravityBridge.E2H,
@@ -64,7 +65,7 @@ export enum BridgeOutNetworks {
 export const allBridgeOutNetworks: BridgeOutNetworkTokenData = {
   [BridgeOutNetworks.GRAVITY_BRIDGE]: {
     name: "gravity bridge",
-    icon: "https://raw.githubusercontent.com/Gravity-Bridge/Gravity-Docs/main/assets/Graviton-Grey.svg",
+    icon: GravitonGrey,
     tokens: gBridgeOutTokens,
     channel: "channel-0",
     endpoint: "https://gravitychain.io:1317",

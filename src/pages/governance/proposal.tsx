@@ -236,6 +236,9 @@ const Proposal = () => {
                         votingFuncionality.castingVote
                       ),
                     }}
+                    customMessage={
+                      "the gas to vote on canto governance is unexpectedly high right now, your vote may not be successful"
+                    }
                   />
                 )}
                 <GovModal

@@ -10,12 +10,16 @@ import { formatEther } from "ethers/lib/utils";
 import { showAlerts } from "global/utils/alerts";
 import { pageList, PageObject } from "global/config/pageList";
 import { Mixpanel } from "mixpanel";
+import { CantoMainnet } from "global/config/networks";
 
 export const CantoNav = () => {
   const networkInfo = useNetworkInfo();
   const alert = useAlert();
   const { activateBrowserWallet, account, chainId, active } = useEthers();
   const balance = useEtherBalance(account);
+  const cantoBalance = useEtherBalance(account, {
+    chainId: CantoMainnet.chainId,
+  });
   const location = useLocation();
   const [tokenName, setTokenName] = useState("");
   async function grabTokenName() {
@@ -86,7 +90,7 @@ export const CantoNav = () => {
       Number(networkInfo.chainId),
       networkInfo.hasPubKey,
       account,
-      networkInfo.balance,
+      cantoBalance ?? BigNumber.from(0),
       location.pathname,
       pageList
     );
@@ -95,7 +99,7 @@ export const CantoNav = () => {
     networkInfo.chainId,
     networkInfo.hasPubKey,
     location,
-    networkInfo.balance,
+    cantoBalance,
   ]);
   return (
     <NavBar
