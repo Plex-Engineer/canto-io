@@ -61,7 +61,7 @@ export const NavBar = (props: Props) => {
         <Text
           id="title"
           type="title"
-          size="title1"
+          size="title2"
           style={{
             transform: "translateY(-3px)",
           }}
