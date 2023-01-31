@@ -11,6 +11,7 @@ import { PAGES } from "global/config/pageList";
 import Loading from "global/components/Loading";
 import PageNotFound from "global/components/pageNotFound";
 import ChangeLog from "pages/changelog/changeLog";
+import Walkthrough from "pages/bridge/walkthrough/Walkthrough";
 
 //Styling
 const Container = styled.div`
@@ -28,13 +29,6 @@ const Governance = lazy(() => import("./pages/governance/governance"));
 const Proposal = lazy(() => import("./pages/governance/proposal"));
 // const HomePage = lazy(() => import("./pages/home/homepage"));
 const HomePage = lazy(() => import("./pages/landing/Landing"));
-const BalanceSheet = lazy(() =>
-  import("pages/lending/balanceSheet/BalanceSheet").then((module) => {
-    return {
-      default: module.BalanceSheet,
-    };
-  })
-);
 
 function App() {
   return (
@@ -49,6 +43,11 @@ function App() {
             <Suspense fallback={<Loading />}>
               <Routes>
                 <Route path="/" key={"home"} element={<HomePage />} />
+                <Route
+                  path="/bridge/walkthrough"
+                  key={"guide"}
+                  element={<Walkthrough />}
+                />
                 <Route
                   path={PAGES.bridge.link}
                   key={"bridge"}
@@ -78,11 +77,6 @@ function App() {
                   path={PAGES.staking.link}
                   key={"staking"}
                   element={<Staking />}
-                />
-                <Route
-                  path="/lending/balanceSheet"
-                  key={"balanceSheet"}
-                  element={<BalanceSheet />}
                 />
                 <Route
                   path={PAGES.changelog.link}

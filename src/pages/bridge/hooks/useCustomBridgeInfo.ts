@@ -30,6 +30,7 @@ import { useEthGravityTokens } from "./useEthGravityTokens";
 
 interface AllBridgeInfo {
   account: string | undefined;
+  hasPubKey: boolean;
   userConvertTokens: UserConvertToken[];
   userBridgeInTokens: UserGravityBridgeTokens[];
   userBridgeOutTokens: UserNativeTokens[];
@@ -162,6 +163,7 @@ export function useCustomBridgeInfo(): AllBridgeInfo {
 
   return {
     account: networkInfo.account,
+    hasPubKey: networkInfo.hasPubKey,
     userConvertTokens,
     userBridgeInTokens,
     userBridgeOutTokens,

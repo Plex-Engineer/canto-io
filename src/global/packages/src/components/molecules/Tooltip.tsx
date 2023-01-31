@@ -1,11 +1,12 @@
 import styled from "@emotion/styled";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Popup from "reactjs-popup";
 
 interface Props {
   content: ReactNode;
   trigger: JSX.Element;
   position?: PopupPosition;
+  autoShow?: boolean;
 }
 
 export declare type PopupPosition =
@@ -24,9 +25,19 @@ export declare type PopupPosition =
   | "center center";
 
 const Tooltip = (props: Props) => {
+  const [isDone, setIsDone] = useState(false);
+  useEffect(() => {
+    if (props.autoShow) {
+      setTimeout(() => {
+        setIsDone(true);
+      }, 5000);
+    }
+  }, []);
+
   return (
     <Popup
       trigger={props.trigger}
+      open={!isDone}
       position={props.position ? props.position : "bottom center"}
       on={["hover", "focus"]}
       arrow={true}
