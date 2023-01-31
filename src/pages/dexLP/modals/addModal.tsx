@@ -299,16 +299,19 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
                   activePair.basePairInfo.token1.decimals
                 );
                 setValue2(
-                  formatUnits(
-                    getTokenBFromA(
-                      parseUnits(
-                        truncatedVal,
-                        activePair.basePairInfo.token1.decimals
+                  truncateNumber(
+                    formatUnits(
+                      getTokenBFromA(
+                        parseUnits(
+                          truncatedVal,
+                          activePair.basePairInfo.token1.decimals
+                        ),
+                        activePair.totalSupply.ratio.ratio,
+                        activePair.totalSupply.ratio.aTob
                       ),
-                      activePair.totalSupply.ratio.ratio,
-                      activePair.totalSupply.ratio.aTob
+                      activePair.basePairInfo.token2.decimals
                     ),
-                    activePair.basePairInfo.token2.decimals
+                    6
                   )
                 );
               }
@@ -344,16 +347,19 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
                   activePair.basePairInfo.token2.decimals
                 );
                 setValue1(
-                  formatUnits(
-                    getTokenAFromB(
-                      parseUnits(
-                        truncatedVal,
-                        activePair.basePairInfo.token2.decimals
+                  truncateNumber(
+                    formatUnits(
+                      getTokenAFromB(
+                        parseUnits(
+                          truncatedVal,
+                          activePair.basePairInfo.token2.decimals
+                        ),
+                        activePair.totalSupply.ratio.ratio,
+                        activePair.totalSupply.ratio.aTob
                       ),
-                      activePair.totalSupply.ratio.ratio,
-                      activePair.totalSupply.ratio.aTob
+                      activePair.basePairInfo.token1.decimals
                     ),
-                    activePair.basePairInfo.token1.decimals
+                    6
                   )
                 );
               }

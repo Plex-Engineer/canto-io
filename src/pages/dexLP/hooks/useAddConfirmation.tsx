@@ -7,7 +7,11 @@ import { getProvider } from "global/utils/walletConnect/addCantoToWallet";
 import { useEnableToken, useSupply } from "pages/lending/hooks/useTransaction";
 import { useEffect, useState } from "react";
 import { AddConfirmationProps } from "../modals/addConfirmation";
-import { checkForCantoInPair, getCurrentBlockTimestamp } from "../utils/utils";
+import {
+  checkForCantoInPair,
+  getCurrentBlockTimestamp,
+  getTokenValueFromPercent,
+} from "../utils/utils";
 import { useAddLiquidity, useAddLiquidityCANTO } from "./useTransactions";
 
 interface ReturnProps {
@@ -71,9 +75,14 @@ export function useAddConfirmation(props: AddConfirmationProps): ReturnProps {
     props.pair.basePairInfo,
     props.chainId
   );
-  const amountMinOut1 = props.value1.mul(Number(props.slippage)).div(100);
-  const amountMinOut2 = props.value2.mul(Number(props.slippage)).div(100);
-
+  const amountMinOut1 = getTokenValueFromPercent(
+    props.value1,
+    100 - Number(props.slippage)
+  );
+  const amountMinOut2 = getTokenValueFromPercent(
+    props.value2,
+    100 - Number(props.slippage)
+  );
   async function addLiquidity() {
     if (isToken1Canto) {
       addLiquidityCANTOSend(
@@ -84,7 +93,7 @@ export function useAddConfirmation(props: AddConfirmationProps): ReturnProps {
         amountMinOut1,
         props.account,
         (await getCurrentBlockTimestamp(props.chainId)) +
-          Number(props.deadline) * 60,
+          Math.floor(Number(props.deadline)) * 60,
         {
           value: props.value1,
         }
@@ -98,7 +107,7 @@ export function useAddConfirmation(props: AddConfirmationProps): ReturnProps {
         amountMinOut2,
         props.account,
         (await getCurrentBlockTimestamp(props.chainId)) +
-          Number(props.deadline) * 60,
+          Math.floor(Number(props.deadline)) * 60,
         {
           value: props.value2,
         }
@@ -114,7 +123,7 @@ export function useAddConfirmation(props: AddConfirmationProps): ReturnProps {
         amountMinOut2,
         props.account,
         (await getCurrentBlockTimestamp(props.chainId)) +
-          Number(props.deadline) * 60
+          Math.floor(Number(props.deadline)) * 60
       );
     }
   }
