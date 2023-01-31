@@ -108,10 +108,7 @@ const BridgeIn = (props: BridgeInProps) => {
         >
           send funds to canto
         </Text> */}
-        <div
-          style={{ display: "flex", flexDirection: "row" }}
-          className="blinking"
-        >
+        <div>
           <Text type="title" size="title3">
             {props.bridgeInUserStatus}
           </Text>
@@ -264,21 +261,6 @@ export const BridgeStyled = styled.div`
   @media (max-width: 1000px) {
     br {
       display: none;
-    }
-  }
-
-  .blinking {
-    animation: blink 1s linear infinite;
-    @keyframes blink {
-      0% {
-        opacity: 0;
-      }
-      50% {
-        opacity: 0.5;
-      }
-      100% {
-        opacity: 1;
-      }
     }
   }
 `;
