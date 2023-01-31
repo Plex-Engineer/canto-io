@@ -31,6 +31,7 @@ import { useBridgeEthToCantoInfo } from "./hooks/customBridgeInInfo";
 import { useCustomConvertInfo } from "./hooks/customConvertInfo";
 import { useBridgeInChecklistSetter } from "./hooks/useBridgeInChecklistSetter";
 import { useNavigate } from "react-router-dom";
+import { ReactNode } from "react";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];
@@ -38,6 +39,7 @@ interface BridgeInProps {
   userConvertCoinNativeTokens: UserConvertToken[];
   selectedTokens: TokenStore["selectedTokens"];
   setToken: (token: BaseToken, selectedFrom: SelectedTokens) => void;
+  bridgeInUserStatus: ReactNode;
 }
 const BridgeIn = (props: BridgeInProps) => {
   const { account, cantoAddress, chainId } = useNetworkInfo();
@@ -95,7 +97,7 @@ const BridgeIn = (props: BridgeInProps) => {
           addTx={addTx}
           removeTx={removeTx}
         />
-        <Text
+        {/* <Text
           type="title"
           size="title2"
           color="primary"
@@ -105,8 +107,17 @@ const BridgeIn = (props: BridgeInProps) => {
           }}
         >
           send funds to canto
-        </Text>
+        </Text> */}
+        <div
+          style={{ display: "flex", flexDirection: "row" }}
+          className="blinking"
+        >
+          <Text type="title" size="title3">
+            {props.bridgeInUserStatus}
+          </Text>
+        </div>
 
+        {/* 
         <Text
           type="text"
           color="primary"
@@ -136,7 +147,7 @@ const BridgeIn = (props: BridgeInProps) => {
             read here
           </a>
           .
-        </Text>
+        </Text> */}
       </div>
       <SwitchBridging
         left={{
@@ -253,6 +264,21 @@ export const BridgeStyled = styled.div`
   @media (max-width: 1000px) {
     br {
       display: none;
+    }
+  }
+
+  .blinking {
+    animation: blink 1s linear infinite;
+    @keyframes blink {
+      0% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.5;
+      }
+      100% {
+        opacity: 1;
+      }
     }
   }
 `;

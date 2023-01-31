@@ -27,6 +27,7 @@ const Styled = styled.div<Props>`
   gap: 6px;
   justify-content: center;
   align-items: center;
+  height: 4px;
 
   .bar {
     height: 4px;
