@@ -49,8 +49,10 @@ const Homepage = () => {
 };
 const Styled = styled.div`
   display: flex;
-  width: 1200px;
-  margin: 0 auto;
+  justify-content: space-between;
+  max-width: 1200px;
+  width: 100%;
+  margin: 2rem auto;
   height: 100%;
   z-index: 0;
 
@@ -64,10 +66,8 @@ const Styled = styled.div`
     flex-direction: column;
     justify-content: center;
     flex-grow: 2;
-    margin-left: 6rem;
-    max-width: 1200px;
+    align-items: flex-start;
     width: 100%;
-    margin: 0 auto;
   }
   .bg {
     position: absolute;
@@ -111,7 +111,7 @@ const Styled = styled.div`
   }
 
   a {
-    width: 32rem;
+    width: 60%;
   }
 
   .navLink {
