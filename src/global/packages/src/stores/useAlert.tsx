@@ -18,12 +18,12 @@ interface AlertProps {
 export const useAlert = create<AlertProps>((set) => ({
   id: "1",
   type: "None",
-  floating: false,
+  floating: true,
   show: (type, child, floating, closeAfter) => {
     if (type == "Success" && closeAfter != undefined) {
       setTimeout(() => set({ open: false, floating }), closeAfter);
     }
-    return set({ type, child, open: true, floating });
+    return set({ type, child, open: true, floating: true });
   },
   open: false,
   child: null,
