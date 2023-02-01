@@ -71,6 +71,7 @@ const WalletModal = () => {
       </div>
       <div
         style={{
+          margin: "12px 0",
           borderTop: "1px solid #d9d9d92b",
           width: "90%",
         }}
@@ -85,6 +86,9 @@ const WalletModal = () => {
       </div>
 
       <OutlinedButton
+        style={{
+          marginTop: "32px",
+        }}
         height="small"
         onClick={() => {
           Mixpanel.events.connections.walletConnect(false);
@@ -107,7 +111,6 @@ const Styled = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
   animation: fadein 0.2s;
   position: fixed;
   top: 4.75rem;
@@ -133,7 +136,7 @@ const Styled = styled.div`
     gap: 0.4rem;
   }
   .address {
-    margin-top: -8px;
+    margin-bottom: 24px;
   }
   .address p {
     font-family: "Silkscreen";
