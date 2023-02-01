@@ -5,6 +5,7 @@ import { Text } from "global/packages/src";
 import { Mixpanel } from "mixpanel";
 import { NavLink } from "react-router-dom";
 import bg from "assets/bg.jpg";
+import { Banner } from "./components/Banner";
 
 const Homepage = () => {
   return (
@@ -26,23 +27,37 @@ const Homepage = () => {
                   Mixpanel.events.landingPageActions.navigatedTo(page.name)
                 }
               >
-                <Text type="title" size="title1" align="left">
+                <Text
+                  type="title"
+                  size="title1"
+                  align="left"
+                  className="navLink"
+                >
                   {"0" + (idx + 1) + " " + page.name}
                 </Text>
               </NavLink>
             ) : null;
           })}
         </ul>
-        <div className="bg"> </div>
+        <div className="right">
+          <Banner />
+        </div>
+        {/* <div className="bg"> </div> */}
       </Styled>
     </>
   );
 };
 const Styled = styled.div`
-  display: grid;
-  align-content: center;
+  display: flex;
+  width: 1200px;
+  margin: 0 auto;
   height: 100%;
   z-index: 0;
+
+  .right {
+    display: grid;
+    place-items: center;
+  }
   .options {
     z-index: 1;
     display: flex;
@@ -99,7 +114,7 @@ const Styled = styled.div`
     width: 32rem;
   }
 
-  p {
+  .navLink {
     height: 68px;
     transition: all 0.3s ease;
     width: 100%;
@@ -126,13 +141,24 @@ const Styled = styled.div`
     }
   }
   @media (max-width: 1000px) {
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+    .options {
+      width: 100vw;
+    }
+    .right {
+      display: flex;
+      width: 100%;
+    }
     a {
       width: 80%;
       margin: 0 auto;
     }
 
-    p {
+    .navLink {
       font-size: 24px;
+      width: 100%;
     }
   }
 `;
