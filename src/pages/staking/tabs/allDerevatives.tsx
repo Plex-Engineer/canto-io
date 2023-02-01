@@ -163,7 +163,7 @@ const Styled = styled.div`
   .sort-search-local {
     display: none;
     justify-content: center;
-    gap: 2rem;
+    gap: 12px;
     margin-top: 1.4rem;
   }
 

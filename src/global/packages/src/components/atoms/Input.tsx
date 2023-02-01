@@ -25,7 +25,7 @@ export const CInput = styled.input`
 export const CSearch = styled.input`
   background: #222222;
   border-radius: 4px;
-  height: 56px;
+  height: 52px;
   color: var(--primary-color);
   border: none;
   text-align: left;

@@ -13,21 +13,40 @@ interface Props {
 const InfoBar = ({ totalStaked, rewards, apr, onRewards, canClaim }: Props) => {
   return (
     <Styled>
-      <div className="dual-item">
-        <div className="top">total staked</div>
+      <div
+        className="dual-item"
+        style={{
+          margin: "0",
+        }}
+      >
+        <div className="top">
+          <Text type="title" size="text1">
+            total staked
+          </Text>
+        </div>
         <div className="bottom">
           <Text type="title">{totalStaked}</Text>
         </div>
       </div>
-
+      <div className="separator"></div>
       <div className="dual-item">
-        <div className="top">% apr</div>
+        <div className="top">
+          <Text type="title" size="text1">
+            apr
+          </Text>
+        </div>
         <div className="bottom">
-          <Text type="title">{apr}</Text>
+          <Text type="title">{apr}%</Text>
         </div>
       </div>
+      <div className="separator"></div>
+
       <div className="dual-item">
-        <div className="top">rewards</div>
+        <div className="top">
+          <Text type="title" size="text1">
+            rewards
+          </Text>
+        </div>
         <div className="bottom">
           <Text type="title">{rewards}</Text>
         </div>
@@ -53,18 +72,25 @@ const Styled = styled.div`
   align-items: center;
   color: var(--primary-color);
   padding: 40px 0;
+
+  .separator {
+    height: 80px;
+    border-left: 1px solid var(--primary-color);
+  }
   .dual-item {
     display: flex;
+    flex-grow: 1;
     flex-direction: column-reverse;
     justify-content: center;
+    margin: 0 20px;
     align-items: flex-start;
     gap: 4px;
+    position: relative;
   }
   .top {
     font-size: 14px;
   }
   .bottom {
-    /* font-family: "Silkscreen", cursive; */
     p {
       font-size: 40px !important;
     }
