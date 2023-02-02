@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 import { CantoMainnet } from "global/config/networks";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import {
   allBridgeOutNetworks,
   convertCoinTokens,
@@ -21,6 +21,7 @@ import {
 import { useTransactionChecklistStore } from "../stores/transactionChecklistStore";
 import { useBridgeTransactionPageStore } from "../stores/transactionPageStore";
 import {
+  convertSecondsToString,
   getBridgeInEventsWithStatus,
   getBridgeOutTransactions,
 } from "../utils/bridgeTxPageUtils";
@@ -37,6 +38,7 @@ interface AllBridgeInfo {
   gravityAddress: string | undefined;
   selectedTokens: TokenStore["selectedTokens"];
   setSelectedToken: (selectedToken: BaseToken, type: SelectedTokens) => void;
+  bridgeInUserStatus: ReactNode;
 }
 export function useCustomBridgeInfo(): AllBridgeInfo {
   const networkInfo = useNetworkInfo();
@@ -160,6 +162,33 @@ export function useCustomBridgeInfo(): AllBridgeInfo {
     }, 30000);
     return () => clearInterval(interval);
   });
+  const bridgeInUserStatus = () => {
+    if (userConvertTokens.length == 0) {
+      return "retreiving status...";
+    }
+    for (const token of userConvertTokens) {
+      if (token.nativeBalance.gt(0)) {
+        return (
+          <>
+            status: step 1 complete <br /> proceed with step 2: bridge to canto
+          </>
+        );
+      }
+    }
+    const latestEthBridge =
+      transactionStore.transactions.pendingBridgeTransactions[0];
+    return latestEthBridge ? (
+      <>
+        status: bridging in progress <br /> estimated completion time:{" "}
+        {convertSecondsToString(latestEthBridge.secondsUntilConfirmed)}
+      </>
+    ) : (
+      <>
+        {" "}
+        status: begin bridging <br /> proceed with step 1: ethereum to bridge
+      </>
+    );
+  };
 
   return {
     account: networkInfo.account,
@@ -170,5 +199,6 @@ export function useCustomBridgeInfo(): AllBridgeInfo {
     gravityAddress,
     selectedTokens: tokenStore.selectedTokens,
     setSelectedToken: tokenStore.setSelectedToken,
+    bridgeInUserStatus: bridgeInUserStatus(),
   };
 }
