@@ -59,7 +59,7 @@ export const Styled = styled.div`
   } */
   .tables {
     display: flex;
-    margin: 20px;
+    margin: 20px 0;
     width: 100%;
     & > div {
       width: 50%;
