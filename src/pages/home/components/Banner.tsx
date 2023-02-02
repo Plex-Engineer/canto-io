@@ -27,7 +27,7 @@ export const Banner = () => {
 
 const Styled = styled.div`
   width: 400px;
-  height: 540px;
+  height: 500px;
   border-radius: 4px;
   padding: 1rem;
   border: 1px solid #06fc99b8;
