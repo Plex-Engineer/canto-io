@@ -6,7 +6,8 @@ export const Styled = styled.div`
   color: #fff;
   max-width: 1200px;
   width: 100%;
-  margin: 2rem auto;
+  margin: 0 auto;
+  margin-top: 20px;
   .typing {
     color: var(--primary-color);
     margin: 2rem 4rem;
@@ -85,8 +86,10 @@ export const Hero = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-top: 2rem;
+
   align-items: flex-end;
+  .bal-title {
+  }
   .middle {
     flex-grow: 1;
     margin: 0 2rem;

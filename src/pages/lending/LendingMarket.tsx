@@ -57,20 +57,6 @@ const LendingMarket = () => {
           position={position}
           rewards={rewards}
         />
-        {/* <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <OutlinedButton
-            onClick={() => {
-              modalStore.open(ModalType.BALANCE);
-            }}
-          >
-            claim LM rewards
-          </OutlinedButton>
-        </div>
-        <div style={{ textAlign: "right" }}>
-          {!rewards.accrued.isZero()
-            ? truncateNumber(formatUnits(rewards.accrued)) + " WCANTO "
-            : ""}
-        </div> */}
 
         <LMPositionBar
           isMobile={isMobile}
@@ -99,7 +85,7 @@ const LendingMarket = () => {
           <div
             className="tables"
             style={{
-              marginBottom: "2rem",
+              marginTop: "60px",
             }}
           >
             <SupplyTable
@@ -138,7 +124,7 @@ const LendingMarket = () => {
           <div
             className="tables"
             style={{
-              marginBottom: "1rem",
+              marginTop: "60px",
             }}
           >
             <div className="left">
@@ -202,6 +188,7 @@ const LendingMarket = () => {
             className="tables"
             style={{
               display: "flex",
+              marginBottom: "2rem",
             }}
           >
             {

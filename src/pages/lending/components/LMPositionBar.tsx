@@ -32,7 +32,7 @@ export const LMPositionBar = ({
   return (
     <>
       <Hero>
-        <div>
+        <div className="bal-title">
           <Text type="title" align="left" size="text1">
             supply {isMobile ? "" : "balance"}
           </Text>
@@ -60,6 +60,7 @@ export const LMPositionBar = ({
             weight="bold"
             style={{
               height: "36px",
+              marginTop: "-23px",
             }}
             onClick={() => {
               modalStore.open(ModalType.BALANCE);
@@ -69,7 +70,7 @@ export const LMPositionBar = ({
           </OutlinedButton>
           <div
             style={{
-              height: "30px",
+              height: "18px",
             }}
           ></div>
           <LimitBar>
@@ -164,6 +165,7 @@ export const LMPositionBar = ({
           style={{
             textAlign: "right",
           }}
+          className="bal-title"
         >
           <Text id="bor-bal" type="title" size="text1" align="right">
             borrow {isMobile ? "" : "balance"}
