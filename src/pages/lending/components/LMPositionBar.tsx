@@ -38,13 +38,7 @@ export const LMPositionBar = ({
           </Text>
           {/* <h1 className="balance">{noteSymbol}{stats?.totalSupply.toFixed(2)??"000.00000"}</h1> */}
           <h1 className="balance">
-            <span
-              style={{
-                fontSize: "21px",
-              }}
-            >
-              {noteSymbol}
-            </span>
+            <span>{noteSymbol}</span>
             <CypherText
               text={
                 supplyBalance.isZero()
@@ -172,13 +166,7 @@ export const LMPositionBar = ({
           </Text>
           {/* <h1 className="balance">{noteSymbol}{stats?.totalBorrow.toFixed(2)??"000.00000"}</h1> */}
           <h1 className="balance">
-            <span
-              style={{
-                fontSize: "21px",
-              }}
-            >
-              {noteSymbol}
-            </span>
+            <span>{noteSymbol}</span>
             <CypherText
               text={
                 borrowBalance.isZero()

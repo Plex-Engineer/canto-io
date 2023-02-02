@@ -81,13 +81,8 @@ const LendingMarket = () => {
           />
         ) : null}
 
-        <div>
-          <div
-            className="tables"
-            style={{
-              marginTop: "60px",
-            }}
-          >
+        <div className="tables-container">
+          <div className="tables">
             <SupplyTable
               visible={!isMobile || onLeftTab}
               supplying={true}
@@ -121,12 +116,7 @@ const LendingMarket = () => {
           </div>
 
           {/* This table is used for showing transaction status */}
-          <div
-            className="tables"
-            style={{
-              marginTop: "60px",
-            }}
-          >
+          <div className="tables">
             <div className="left">
               {notifs.filter(
                 (filterItem) => filterItem.type == "transactionStarted"
@@ -188,7 +178,6 @@ const LendingMarket = () => {
             className="tables"
             style={{
               display: "flex",
-              marginBottom: "2rem",
             }}
           >
             {

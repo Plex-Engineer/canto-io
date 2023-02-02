@@ -22,6 +22,10 @@ export const Styled = styled.div`
       margin: 0;
     }
   }
+
+  .tables-container {
+    padding: 40px 0;
+  }
   .balance {
     font-weight: 300;
     font-family: "SilkScreen";
@@ -55,6 +59,7 @@ export const Styled = styled.div`
   } */
   .tables {
     display: flex;
+    margin: 20px;
     width: 100%;
     & > div {
       width: 50%;
@@ -100,7 +105,8 @@ export const Hero = styled.div`
     gap: 1rem;
   }
   .balance {
-    font-size: 26px;
+    font-size: 30px;
+    margin-top: 2px;
     line-height: 34px;
     letter-spacing: -0.08em;
   }
