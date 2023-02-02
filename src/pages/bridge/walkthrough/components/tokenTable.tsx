@@ -44,7 +44,7 @@ const TokenTable = ({ tokens, onClose }: Props) => {
           ethereum
         </Text>
         <Text type="text" size="title3">
-          gravity
+          bridge
         </Text>
         <Text type="text" size="title3">
           canto

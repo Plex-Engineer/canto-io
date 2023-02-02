@@ -32,19 +32,13 @@ export const LMPositionBar = ({
   return (
     <>
       <Hero>
-        <div>
+        <div className="bal-title">
           <Text type="title" align="left" size="text1">
             supply {isMobile ? "" : "balance"}
           </Text>
           {/* <h1 className="balance">{noteSymbol}{stats?.totalSupply.toFixed(2)??"000.00000"}</h1> */}
           <h1 className="balance">
-            <span
-              style={{
-                fontSize: "21px",
-              }}
-            >
-              {noteSymbol}
-            </span>
+            <span>{noteSymbol}</span>
             <CypherText
               text={
                 supplyBalance.isZero()
@@ -60,6 +54,7 @@ export const LMPositionBar = ({
             weight="bold"
             style={{
               height: "36px",
+              marginTop: "-23px",
             }}
             onClick={() => {
               modalStore.open(ModalType.BALANCE);
@@ -69,7 +64,7 @@ export const LMPositionBar = ({
           </OutlinedButton>
           <div
             style={{
-              height: "30px",
+              height: "18px",
             }}
           ></div>
           <LimitBar>
@@ -164,19 +159,14 @@ export const LMPositionBar = ({
           style={{
             textAlign: "right",
           }}
+          className="bal-title"
         >
           <Text id="bor-bal" type="title" size="text1" align="right">
             borrow {isMobile ? "" : "balance"}
           </Text>
           {/* <h1 className="balance">{noteSymbol}{stats?.totalBorrow.toFixed(2)??"000.00000"}</h1> */}
           <h1 className="balance">
-            <span
-              style={{
-                fontSize: "21px",
-              }}
-            >
-              {noteSymbol}
-            </span>
+            <span>{noteSymbol}</span>
             <CypherText
               text={
                 borrowBalance.isZero()

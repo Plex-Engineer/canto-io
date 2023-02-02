@@ -3,11 +3,12 @@ import { useState } from "react";
 import downImg from "assets/down.svg";
 const Table = styled.table`
   border: none;
-  margin: 5px auto;
+  margin: 0 auto;
   color: var(--primary-color);
   width: calc(100% - 10px);
   text-align: center;
-  border-spacing: 0 1rem;
+  margin-top: 16px;
+  border-spacing: 0 8px;
   border-collapse: separate !important;
   thead {
     text-transform: lowercase;
@@ -102,38 +103,36 @@ interface Props {
 const LendingTable = (props: Props) => {
   const [wasColumnClicked, setWasColumnClicked] = useState(false);
   return (
-    <div>
-      <Table>
-        <thead>
-          <tr>
-            {props.columns.map((heading, key) => (
-              <th
-                style={{
-                  position: "relative",
-                }}
-                key={heading + (Math.random() + 1).toString(36).substring(7)}
-                onClick={() => {
-                  props.onColumnClicked ? props.onColumnClicked(key) : {};
-                  setWasColumnClicked(true);
-                }}
-              >
-                {heading}
-                {wasColumnClicked && key == props.columnClicked ? (
-                  <img
-                    src={downImg}
-                    width="10"
-                    style={{ position: "absolute", right: "10px", top: "2px" }}
-                  />
-                ) : (
-                  ""
-                )}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>{props.children}</tbody>
-      </Table>
-    </div>
+    <Table>
+      <thead>
+        <tr>
+          {props.columns.map((heading, key) => (
+            <th
+              style={{
+                position: "relative",
+              }}
+              key={heading + (Math.random() + 1).toString(36).substring(7)}
+              onClick={() => {
+                props.onColumnClicked ? props.onColumnClicked(key) : {};
+                setWasColumnClicked(true);
+              }}
+            >
+              {heading}
+              {wasColumnClicked && key == props.columnClicked ? (
+                <img
+                  src={downImg}
+                  width="10"
+                  style={{ position: "absolute", right: "10px", top: "2px" }}
+                />
+              ) : (
+                ""
+              )}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>{props.children}</tbody>
+    </Table>
   );
 };
 

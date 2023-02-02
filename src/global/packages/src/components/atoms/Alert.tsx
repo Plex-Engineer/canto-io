@@ -56,6 +56,12 @@ const Container = styled.div<Props>`
   background-color: ${({ type, floating }) =>
     floating ? BGFMapping[type] : BGMapping[type]};
   color: ${({ type }) => ColorMapping[type]};
+
+  @media (max-width: 1000px) {
+    padding: 1rem;
+    width: calc(100% - 4rem);
+    margin: 10px 0;
+  }
 `;
 
 const Alert = () => {

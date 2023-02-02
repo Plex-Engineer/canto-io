@@ -116,8 +116,8 @@ const BridgeIn = (props: BridgeInProps) => {
             lineHeight: "20.3px",
           }}
         >
-          funds are transferred in two steps through our canto bridge. <br /> it
-          takes several minutes. for more details{" "}
+          funds are transferred in two steps through our canto bridge. for more
+          details{" "}
           <a
             role="button"
             tabIndex={0}
@@ -147,6 +147,7 @@ const BridgeIn = (props: BridgeInProps) => {
           icon: cantoIcon,
           name: "EVM",
         }}
+        bridgeIn={true}
       />
 
       {currentTxType == "Bridge" && (

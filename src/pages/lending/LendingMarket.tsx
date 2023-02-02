@@ -57,20 +57,6 @@ const LendingMarket = () => {
           position={position}
           rewards={rewards}
         />
-        {/* <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <OutlinedButton
-            onClick={() => {
-              modalStore.open(ModalType.BALANCE);
-            }}
-          >
-            claim LM rewards
-          </OutlinedButton>
-        </div>
-        <div style={{ textAlign: "right" }}>
-          {!rewards.accrued.isZero()
-            ? truncateNumber(formatUnits(rewards.accrued)) + " WCANTO "
-            : ""}
-        </div> */}
 
         <LMPositionBar
           isMobile={isMobile}
@@ -95,13 +81,8 @@ const LendingMarket = () => {
           />
         ) : null}
 
-        <div>
-          <div
-            className="tables"
-            style={{
-              marginBottom: "2rem",
-            }}
-          >
+        <div className="tables-container">
+          <div className="tables">
             <SupplyTable
               visible={!isMobile || onLeftTab}
               supplying={true}
@@ -135,12 +116,7 @@ const LendingMarket = () => {
           </div>
 
           {/* This table is used for showing transaction status */}
-          <div
-            className="tables"
-            style={{
-              marginBottom: "1rem",
-            }}
-          >
+          <div className="tables">
             <div className="left">
               {notifs.filter(
                 (filterItem) => filterItem.type == "transactionStarted"

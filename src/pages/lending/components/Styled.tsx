@@ -6,7 +6,8 @@ export const Styled = styled.div`
   color: #fff;
   max-width: 1200px;
   width: 100%;
-  margin: 2rem auto;
+  margin: 0 auto;
+  margin-top: 20px;
   .typing {
     color: var(--primary-color);
     margin: 2rem 4rem;
@@ -20,6 +21,10 @@ export const Styled = styled.div`
     @media (max-width: 1000px) {
       margin: 0;
     }
+  }
+
+  .tables-container {
+    padding: 40px 0;
   }
   .balance {
     font-weight: 300;
@@ -54,6 +59,7 @@ export const Styled = styled.div`
   } */
   .tables {
     display: flex;
+    margin: 20px;
     width: 100%;
     & > div {
       width: 50%;
@@ -85,8 +91,10 @@ export const Hero = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-top: 2rem;
+
   align-items: flex-end;
+  .bal-title {
+  }
   .middle {
     flex-grow: 1;
     margin: 0 2rem;
@@ -97,7 +105,8 @@ export const Hero = styled.div`
     gap: 1rem;
   }
   .balance {
-    font-size: 26px;
+    font-size: 30px;
+    margin-top: 2px;
     line-height: 34px;
     letter-spacing: -0.08em;
   }

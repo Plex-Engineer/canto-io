@@ -52,7 +52,7 @@ const useStaking = (): {
   const validatorModalStore = useValidatorModalStore();
   // get all of the validators
   const [validators, setValidators] = useState<Validator[]>([]);
-  const [stakingApr, setStakingApr] = useState("");
+  const [stakingApr, setStakingApr] = useState("0");
   // get all of the validators the user has staked to
   const [delegations, setDelegations] = useState<DelegationResponse[]>([]);
   // get all of the undelegations for the user

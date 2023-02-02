@@ -35,7 +35,9 @@ export function showAlerts(
     openAlert(
       "Failure",
       <p>
-        this network is not supported on the {currentPageObj.pageTitle}, please{" "}
+        this network is not supported on the {currentPageObj.pageTitle}, please
+        <br></br>
+        <br></br>
         <span
           role="button"
           tabIndex={0}
