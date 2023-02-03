@@ -3,6 +3,7 @@ import { BigNumber, ethers } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { PAIR } from "../config/pairs";
 import { TOKENS } from "global/config/tokenInfo";
+import { truncateNumber } from "global/utils/utils";
 
 //function returns if pair contains WCANTO, since we must call a different function for supplying or Withdrawing liquidity
 //returns [isToken1Canto, isToken2Canto]
@@ -120,9 +121,17 @@ export function valueInNote(amount: BigNumber, price: BigNumber) {
   return price.mul(amount).div(BigNumber.from(10).pow(18));
 }
 
-export function getLPOut(percentage: number, totalLP: BigNumber) {
-  if (percentage < 0 || isNaN(percentage)) {
+//get value of token from percent entry
+export function getTokenValueFromPercent(
+  tokenValue: BigNumber,
+  percent: number
+) {
+  if (percent <= 0 || isNaN(percent)) {
     return BigNumber.from(0);
   }
-  return totalLP.mul(percentage).div(100);
+  const percentScaledTo18 = parseUnits(
+    truncateNumber(percent.toString(), 18),
+    18
+  );
+  return tokenValue.mul(percentScaledTo18).div(parseUnits("1", 20));
 }

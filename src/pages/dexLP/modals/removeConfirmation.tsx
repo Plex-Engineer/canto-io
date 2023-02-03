@@ -13,6 +13,7 @@ import {
   checkForCantoInPair,
   getCurrentBlockTimestamp,
   getReserveRatioAtoB,
+  getTokenValueFromPercent,
 } from "../utils/utils";
 import { UserLPPairInfo } from "../config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
@@ -67,8 +68,6 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
         "/" +
         props.pair.basePairInfo.token2.symbol,
     });
-  const setModalType = useModals((state) => state.setModalType);
-
   const [isToken1Canto, isToken2Canto] = checkForCantoInPair(
     props.pair.basePairInfo,
     props.chainId
@@ -77,10 +76,19 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
   const LPOut =
     props.percentage == 100
       ? props.pair.userSupply.totalLP
-      : props.pair.userSupply.totalLP.mul(props.percentage).div(100);
+      : getTokenValueFromPercent(
+          props.pair.userSupply.totalLP,
+          props.percentage
+        );
 
-  const amountMinOut1 = props.value1.mul(100 - props.slippage).div(100);
-  const amountMinOut2 = props.value2.mul(100 - props.slippage).div(100);
+  const amountMinOut1 = getTokenValueFromPercent(
+    props.value1,
+    100 - Number(props.slippage)
+  );
+  const amountMinOut2 = getTokenValueFromPercent(
+    props.value2,
+    100 - Number(props.slippage)
+  );
 
   //getting current block timestamp to add to the deadline that the user inputs
   const [currentBlockTimeStamp, setCurrentBlockTimeStamp] = useState(0);
@@ -244,7 +252,7 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
               amountMinOut2,
               amountMinOut1,
               props.account,
-              currentBlockTimeStamp + Number(props.deadline) * 60
+              currentBlockTimeStamp + Math.floor(Number(props.deadline)) * 60
             );
           } else if (isToken2Canto) {
             removeLiquidityCANTOSend(
@@ -254,7 +262,7 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
               amountMinOut1,
               amountMinOut2,
               props.account,
-              currentBlockTimeStamp + Number(props.deadline) * 60
+              currentBlockTimeStamp + Math.floor(Number(props.deadline)) * 60
             );
           } else {
             removeLiquiditySend(
@@ -265,7 +273,7 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
               amountMinOut1,
               amountMinOut2,
               props.account,
-              currentBlockTimeStamp + Number(props.deadline) * 60
+              currentBlockTimeStamp + Math.floor(Number(props.deadline)) * 60
             );
           }
         }}

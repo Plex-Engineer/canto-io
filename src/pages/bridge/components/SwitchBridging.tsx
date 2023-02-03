@@ -41,26 +41,22 @@ const SwitchBridging = (props: Props) => {
   return (
     <>
       {" "}
-      <ButtonDiv>
+      {/* <ButtonDiv>
         <PrimaryButton
           className="buttn"
           onClick={() => SetTransactionType("Bridge")}
         >
           Step 1: <br />{" "}
-          {props.bridgeIn
-            ? "bridge from etheruem to canto bridge"
-            : "bridge from canto evm to canto bridge"}
+          {props.bridgeIn ? "Ethereum to Bridge" : "Canto to Bridge"}
         </PrimaryButton>
         <PrimaryButton
           className="buttn"
           onClick={() => SetTransactionType("Convert")}
         >
           Step 2: <br />{" "}
-          {props.bridgeIn
-            ? "bridge from canto bridge to canto evm"
-            : "bridge from canto bridge to " + props.right.name}
+          {props.bridgeIn ? "Bridge to Canto" : "Bridge to " + props.right.name}
         </PrimaryButton>
-      </ButtonDiv>
+      </ButtonDiv> */}
       <Styled>
         <div
           className="active-back"
@@ -80,8 +76,10 @@ const SwitchBridging = (props: Props) => {
               {props.left.name}
             </Text>
           </div>
-          <LoadingBlip active={transactionType == "Bridge"} />
-
+          <div className="loading">
+            <div className="stepNumber">step 1</div>{" "}
+            <LoadingBlip active={transactionType == "Bridge"} />
+          </div>
           <div className="center">
             <img
               src={bridgeIcon}
@@ -93,8 +91,10 @@ const SwitchBridging = (props: Props) => {
               Bridge
             </Text>
           </div>
-
-          <LoadingBlip active={transactionType == "Convert"} />
+          <div className="loading">
+            <div className="stepNumber">step 2</div>{" "}
+            <LoadingBlip active={transactionType == "Convert"} />
+          </div>
           <div className="center">
             <ImageButton
               src={props.right.icon}
@@ -173,7 +173,7 @@ const ButtonDiv = styled.div`
   width: 100%;
   .buttn {
     width: 15rem;
-    height: 6rem;
+    height: 5rem;
   }
 `;
 
@@ -186,6 +186,16 @@ const Styled = styled.div`
   position: relative;
   background-color: #222222;
   border-radius: 4px;
+  .loading {
+    display: flex;
+    flex-direction: column;
+    .stepNumber {
+      margin-bottom: 1rem;
+      text-align: center;
+      font-weight: 700;
+    }
+  }
+
   .Switch {
     position: absolute;
     display: grid;
@@ -229,10 +239,11 @@ const Styled = styled.div`
     /* background-color: #4b4b4b3c; */
     cursor: pointer;
     transition: all 0.2s;
-    /* &:hover {
+    &:hover {
       border: 2px solid var(--primary-color);
       background-color: #06fc9a37;
-    } */
+      width: 138%;
+    }
   }
 
   .right {
