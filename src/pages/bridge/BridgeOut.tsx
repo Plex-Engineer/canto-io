@@ -151,6 +151,7 @@ const BridgeOut = (props: BridgeOutProps) => {
           height: 48,
           selectable: true,
         }}
+        bridgeIn={false}
       />
 
       {currentTxType == "Bridge" && (

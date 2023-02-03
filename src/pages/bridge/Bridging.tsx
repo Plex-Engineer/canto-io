@@ -33,6 +33,7 @@ const BridgingPage = () => {
     gravityAddress,
     selectedTokens,
     setSelectedToken,
+    bridgeInUserStatus,
   } = useCustomBridgeInfo();
 
   const notConnectedTabs = () => {
@@ -121,6 +122,7 @@ const BridgingPage = () => {
                   userConvertCoinNativeTokens={userConvertTokens}
                   selectedTokens={selectedTokens}
                   setToken={setSelectedToken}
+                  bridgeInUserStatus={bridgeInUserStatus}
                 />
               </TabPanel>
               <TabPanel>

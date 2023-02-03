@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
 
 import ImageButton from "global/components/ImageButton";
-import { Text } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
 import { useBridgeStore } from "../stores/gravityStore";
 import LoadingBlip from "./LoadingBlip";
 import down from "assets/down.svg";
@@ -29,6 +29,7 @@ interface Props {
     //selectable indicates selectable bridge out network
     selectable?: boolean;
   };
+  bridgeIn: boolean;
 }
 const SwitchBridging = (props: Props) => {
   const networkSelectRef = useRef(null);
@@ -38,107 +39,143 @@ const SwitchBridging = (props: Props) => {
   ]);
   const setBridgeOutNetwork = useTokenStore().setBridgeOutNetwork;
   return (
-    <Styled>
-      <div
-        className="active-back"
-        style={{
-          right: transactionType == "Bridge" ? "calc(41.2% - 4px)" : "0px",
-        }}
-      ></div>
-      <div className="Switch">
-        <div className="center">
-          <ImageButton
-            src={props.left.icon}
-            alt={props.left.name}
-            height={props.left.height ?? 42}
-            onClick={() => SetTransactionType("Bridge")}
-          />
-          <Text className="name" type="text">
-            {props.left.name}
-          </Text>
-        </div>
-        <LoadingBlip active={transactionType == "Bridge"} />
-
-        <div className="center">
-          <img
-            src={bridgeIcon}
-            alt={"canto (Bridge)"}
-            height={42}
-            style={{ marginBottom: "2px" }}
-          />
-          <Text className="name" type="text">
-            Bridge
-          </Text>
-        </div>
-
-        <LoadingBlip active={transactionType == "Convert"} />
-        <div className="center">
-          <ImageButton
-            src={props.right.icon}
-            alt={props.right.name}
-            height={props.right.height ?? 42}
-            onClick={() => SetTransactionType("Convert")}
-          />
-          <div
-            style={{
-              gap: "0.3rem",
-              display: "flex",
-            }}
-          >
-            <Text className="name" type="text">
-              {props.right.name}
-            </Text>
-            {props.right.selectable ? <img src={down} alt="" /> : null}
-          </div>
-        </div>
-      </div>
-
-      <div className="backdrop">
-        <div
-          className={`left ${transactionType == "Bridge" ? "active" : ""}`}
+    <>
+      {" "}
+      {/* <ButtonDiv>
+        <PrimaryButton
+          className="buttn"
           onClick={() => SetTransactionType("Bridge")}
-        />
-        <div className="mid" />
-        <div
-          className={`right ${transactionType == "Convert" ? "active" : ""}`}
+        >
+          Step 1: <br />{" "}
+          {props.bridgeIn ? "Ethereum to Bridge" : "Canto to Bridge"}
+        </PrimaryButton>
+        <PrimaryButton
+          className="buttn"
           onClick={() => SetTransactionType("Convert")}
         >
-          <StyledPopup
-            ref={networkSelectRef}
-            overlayStyle={{ zIndex: 1000 }}
-            arrow={false}
-            trigger={
-              transactionType == "Convert" ? (
-                <div
-                  style={{
-                    height: "50%",
-                    width: "50%",
-                    marginLeft: "50%",
-                    marginTop: "25%",
-                    opacity: "0.2",
-                  }}
-                ></div>
-              ) : (
-                <></>
-              )
-            }
-          >
-            <NetworksModal
-              networks={allBridgeOutNetworks}
-              onClose={(network) => {
-                if (networkSelectRef != null) {
-                  //@ts-ignore
-                  networkSelectRef.current?.close();
-                }
-                setBridgeOutNetwork(network ?? 0);
-              }}
+          Step 2: <br />{" "}
+          {props.bridgeIn ? "Bridge to Canto" : "Bridge to " + props.right.name}
+        </PrimaryButton>
+      </ButtonDiv> */}
+      <Styled>
+        <div
+          className="active-back"
+          style={{
+            right: transactionType == "Bridge" ? "calc(41.2% - 4px)" : "0px",
+          }}
+        ></div>
+        <div className="Switch">
+          <div className="center">
+            <ImageButton
+              src={props.left.icon}
+              alt={props.left.name}
+              height={props.left.height ?? 42}
+              onClick={() => SetTransactionType("Bridge")}
             />
-          </StyledPopup>
+            <Text className="name" type="text">
+              {props.left.name}
+            </Text>
+          </div>
+          <div className="loading">
+            <div className="stepNumber">step 1</div>{" "}
+            <LoadingBlip active={transactionType == "Bridge"} />
+          </div>
+          <div className="center">
+            <img
+              src={bridgeIcon}
+              alt={"canto (Bridge)"}
+              height={42}
+              style={{ marginBottom: "2px" }}
+            />
+            <Text className="name" type="text">
+              Bridge
+            </Text>
+          </div>
+          <div className="loading">
+            <div className="stepNumber">step 2</div>{" "}
+            <LoadingBlip active={transactionType == "Convert"} />
+          </div>
+          <div className="center">
+            <ImageButton
+              src={props.right.icon}
+              alt={props.right.name}
+              height={props.right.height ?? 42}
+              onClick={() => SetTransactionType("Convert")}
+            />
+            <div
+              style={{
+                gap: "0.3rem",
+                display: "flex",
+              }}
+            >
+              <Text className="name" type="text">
+                {props.right.name}
+              </Text>
+              {props.right.selectable ? <img src={down} alt="" /> : null}
+            </div>
+          </div>
         </div>
-      </div>
-    </Styled>
+
+        <div className="backdrop">
+          <div
+            className={`left ${transactionType == "Bridge" ? "active" : ""}`}
+            onClick={() => SetTransactionType("Bridge")}
+          />
+          <div className="mid" />
+          <div
+            className={`right ${transactionType == "Convert" ? "active" : ""}`}
+            onClick={() => SetTransactionType("Convert")}
+          >
+            <StyledPopup
+              ref={networkSelectRef}
+              overlayStyle={{ zIndex: 1000 }}
+              arrow={false}
+              trigger={
+                transactionType == "Convert" ? (
+                  <div
+                    style={{
+                      height: "50%",
+                      width: "50%",
+                      marginLeft: "50%",
+                      marginTop: "25%",
+                      opacity: "0.2",
+                    }}
+                  ></div>
+                ) : (
+                  <></>
+                )
+              }
+            >
+              <NetworksModal
+                networks={allBridgeOutNetworks}
+                onClose={(network) => {
+                  if (networkSelectRef != null) {
+                    //@ts-ignore
+                    networkSelectRef.current?.close();
+                  }
+                  setBridgeOutNetwork(network ?? 0);
+                }}
+              />
+            </StyledPopup>
+          </div>
+        </div>
+      </Styled>
+    </>
   );
 };
+
+const ButtonDiv = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+  width: 100%;
+  .buttn {
+    width: 15rem;
+    height: 5rem;
+  }
+`;
 
 const Styled = styled.div`
   width: 34rem;
@@ -149,6 +186,16 @@ const Styled = styled.div`
   position: relative;
   background-color: #222222;
   border-radius: 4px;
+  .loading {
+    display: flex;
+    flex-direction: column;
+    .stepNumber {
+      margin-bottom: 1rem;
+      text-align: center;
+      font-weight: 700;
+    }
+  }
+
   .Switch {
     position: absolute;
     display: grid;
@@ -192,10 +239,11 @@ const Styled = styled.div`
     /* background-color: #4b4b4b3c; */
     cursor: pointer;
     transition: all 0.2s;
-    /* &:hover {
+    &:hover {
       border: 2px solid var(--primary-color);
       background-color: #06fc9a37;
-    } */
+      width: 138%;
+    }
   }
 
   .right {

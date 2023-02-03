@@ -82,7 +82,7 @@ const Staking = () => {
                 width: "100%",
                 justifyContent: "flex-end",
                 alignItems: "center",
-                gap: "2rem",
+                gap: "12px",
                 display: stakingStore.inAllValidators ? "flex" : "none",
               }}
             >

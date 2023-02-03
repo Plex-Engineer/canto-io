@@ -31,6 +31,7 @@ import { useBridgeEthToCantoInfo } from "./hooks/customBridgeInInfo";
 import { useCustomConvertInfo } from "./hooks/customConvertInfo";
 import { useBridgeInChecklistSetter } from "./hooks/useBridgeInChecklistSetter";
 import { useNavigate } from "react-router-dom";
+import { ReactNode } from "react";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];
@@ -38,6 +39,7 @@ interface BridgeInProps {
   userConvertCoinNativeTokens: UserConvertToken[];
   selectedTokens: TokenStore["selectedTokens"];
   setToken: (token: BaseToken, selectedFrom: SelectedTokens) => void;
+  bridgeInUserStatus: ReactNode;
 }
 const BridgeIn = (props: BridgeInProps) => {
   const { account, cantoAddress, chainId } = useNetworkInfo();
@@ -95,7 +97,7 @@ const BridgeIn = (props: BridgeInProps) => {
           addTx={addTx}
           removeTx={removeTx}
         />
-        <Text
+        {/* <Text
           type="title"
           size="title2"
           color="primary"
@@ -105,8 +107,14 @@ const BridgeIn = (props: BridgeInProps) => {
           }}
         >
           send funds to canto
-        </Text>
+        </Text> */}
+        <div>
+          <Text type="title" size="title3">
+            {props.bridgeInUserStatus}
+          </Text>
+        </div>
 
+        {/* 
         <Text
           type="text"
           color="primary"
@@ -116,8 +124,8 @@ const BridgeIn = (props: BridgeInProps) => {
             lineHeight: "20.3px",
           }}
         >
-          funds are transferred in two steps through our canto bridge. <br /> it
-          takes several minutes. for more details{" "}
+          funds are transferred in two steps through our canto bridge. for more
+          details{" "}
           <a
             role="button"
             tabIndex={0}
@@ -136,7 +144,7 @@ const BridgeIn = (props: BridgeInProps) => {
             read here
           </a>
           .
-        </Text>
+        </Text> */}
       </div>
       <SwitchBridging
         left={{
@@ -147,6 +155,7 @@ const BridgeIn = (props: BridgeInProps) => {
           icon: cantoIcon,
           name: "EVM",
         }}
+        bridgeIn={true}
       />
 
       {currentTxType == "Bridge" && (

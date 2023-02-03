@@ -5,6 +5,15 @@ const ChangeLog = () => {
   return (
     <Styled>
       <LogSection
+        date="Feb 2nd 2023"
+        title="Fixes & Enhancements"
+        content={`- Added a link to the Canto Online Hackathon on the landing page.
+        - An issue that resulted in a black screen when users entered decimal slippage on the LP interface is now fixed.
+        - An issue that resulted in a black screen when users entered a decimal while removing liquidity on the LP interface is now fixed.
+        - Made minor improvements to the bridge so that its more clear to users that bridging is a two step process.
+        - Minor updates have been made to the UI styling on various pages.`}
+      />
+      <LogSection
         date="Jan 26th 2023"
         title="Fixes & Enhancements"
         content={`- Bridging assets into and out of Canto is now easier than ever with a new guided walkthrough. To use the walkthrough click the “Guide” button on the bridge page.
