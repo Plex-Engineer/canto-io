@@ -132,16 +132,23 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           amount={props.amount}
           notEnoughCantoBalance={false}
           token={props.currentBridgeInToken}
-          onTxConfirm={() =>
-            props.sendCosmos(
-              props.currentBridgeInToken.address,
-              props.cantoAddress,
-              convertStringToBigNumber(
-                props.amount,
-                props.currentBridgeInToken.decimals
+          onTxConfirm={() => {
+            if (
+              !(
+                props.cantoAddress == undefined ||
+                props.cantoAddress.slice(0, 5) != "canto"
               )
-            )
-          }
+            ) {
+              props.sendCosmos(
+                props.currentBridgeInToken.address,
+                props.cantoAddress,
+                convertStringToBigNumber(
+                  props.amount,
+                  props.currentBridgeInToken.decimals
+                )
+              );
+            }
+          }}
           txStatus={props.stateCosmos.status}
           txShortDesc={`send ${props.amount} ${props.currentBridgeInToken.name}`}
           txType={"Ethereum -> Canto Bridge"}

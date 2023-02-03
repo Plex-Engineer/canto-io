@@ -7,7 +7,11 @@ import useModals, { ModalType } from "../hooks/useModals";
 import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
 import { UserLPPairInfo } from "../config/interfaces";
 import { BigNumber } from "ethers";
-import { getLPOut, getReserveRatioAtoB, valueInNote } from "../utils/utils";
+import {
+  getReserveRatioAtoB,
+  getTokenValueFromPercent,
+  valueInNote,
+} from "../utils/utils";
 import { formatUnits } from "ethers/lib/utils";
 import { PrimaryButton } from "global/packages/src";
 import { getRemoveButtonTextAndOnClick } from "../utils/modalButtonParams";
@@ -73,7 +77,10 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
   });
 
   const routerAddress = getRouterAddress(props.chainId);
-  const LPOut = getLPOut(props.percentage, props.pair.userSupply.totalLP);
+  const LPOut = getTokenValueFromPercent(
+    props.pair.userSupply.totalLP,
+    props.percentage
+  );
 
   useEffect(() => {
     if (props.pair.allowance.LPtoken.isZero()) {
@@ -146,13 +153,12 @@ const RemoveModal = ({ activePair, chainId, onClose }: Props) => {
   );
 
   useEffect(() => {
-    if (isNaN(Number(percentage)) || Number(percentage) <= 0) {
-      setValue1(BigNumber.from(0));
-      setValue2(BigNumber.from(0));
-    } else {
-      setValue1(activePair.userSupply.token1.mul(Number(percentage)).div(100));
-      setValue2(activePair.userSupply.token2.mul(Number(percentage)).div(100));
-    }
+    setValue1(
+      getTokenValueFromPercent(activePair.userSupply.token1, Number(percentage))
+    );
+    setValue2(
+      getTokenValueFromPercent(activePair.userSupply.token2, Number(percentage))
+    );
   }, [percentage]);
   return (
     <DexModalContainer>
