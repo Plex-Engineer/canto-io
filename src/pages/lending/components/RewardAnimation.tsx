@@ -27,33 +27,34 @@ const Styled = styled.div<Props>`
     padding: 6px 10px;
   }
   img {
-    opacity: 0.02;
-    animation: glow 1.7s infinite ease-out;
+    opacity: 0.2;
+    animation: glow 2.4s infinite ease-out;
     &:nth-of-type(1) {
+      animation-delay: 1s;
     }
     &:nth-of-type(2) {
-      animation-delay: 0.25s;
+      animation-delay: 0.6s;
     }
     &:nth-of-type(3) {
-      animation-delay: 0.75s;
+      animation-delay: 0.3s;
     }
     &:nth-of-type(4) {
-      animation-delay: 1s;
+      animation-delay: 0s;
     }
   }
 
   @keyframes glow {
     0% {
-      opacity: 0.8;
+      opacity: 1;
     }
-    40% {
+    10% {
       opacity: 0.2;
     }
-    60% {
+    90% {
       opacity: 0.2;
     }
     100% {
-      opacity: 0.8;
+      opacity: 1;
     }
   }
 `;
