@@ -273,6 +273,7 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
         <div className="field">
           <Field
             token={activePair.basePairInfo.token1.symbol}
+            tokenDecimals={activePair.basePairInfo.token1.decimals}
             icon={activePair.basePairInfo.token1.icon}
             balance={formatUnits(
               activePair.balances.token1,
@@ -322,6 +323,7 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
           <Field
             icon={activePair.basePairInfo.token2.icon}
             token={activePair.basePairInfo.token2.symbol}
+            tokenDecimals={activePair.basePairInfo.token2.decimals}
             balance={formatUnits(
               activePair.balances.token2,
               activePair.basePairInfo.token2.decimals
