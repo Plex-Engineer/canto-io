@@ -186,7 +186,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
             await performBridgeCosmosTxAndSetStatus(
               async () =>
                 await txIBCTransfer(
-                  props.cantoAddress,
+                  props.userCosmosSend.address,
                   props.currentBridgeOutNetwork.channel,
                   convertStringToBigNumber(
                     props.amount,
