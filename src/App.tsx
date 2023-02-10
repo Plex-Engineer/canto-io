@@ -98,7 +98,7 @@ function App() {
           <Footer />
         </Container>
       </Router>
-    </React.Fragment> 
+    </React.Fragment>
   );
 }
 
