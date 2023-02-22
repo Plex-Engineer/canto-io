@@ -3,10 +3,15 @@ import useModals, { ModalType } from "../hooks/useModals";
 import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
 import { UserLPPairInfo } from "../config/interfaces";
 import { PrimaryButton, Text } from "global/packages/src";
-import { getEnableButtonTextAndOnClick } from "../utils/modalButtonParams";
+import {
+  getEnableButtonTextAndOnClick,
+  getEnableTokenText,
+} from "../utils/modalButtonParams";
 import { DexModalContainer } from "../components/Styled";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
+import lockIcon from "assets/icons/lock.svg";
+import { BigNumber } from "ethers";
 
 interface AddAllowanceProps {
   pair: UserLPPairInfo;
@@ -15,6 +20,12 @@ interface AddAllowanceProps {
   addAllowance2: (router: string, amount: string) => void;
 }
 
+interface AddSingleAllowanceProps {
+  tokenName: string;
+  tokenAllowance: BigNumber;
+  chainId: number | undefined;
+  addAllowance: (router: string, amount: string) => void;
+}
 const AddAllowanceButton = (props: AddAllowanceProps) => {
   const routerAddress = getRouterAddress(props.chainId);
   const [buttonText, buttonOnclick] = getEnableButtonTextAndOnClick(
@@ -33,8 +44,35 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
         "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
       )
   );
+  return (
+    <PrimaryButton onClick={buttonOnclick} filled height={"big"}>
+      <Text color="dark" bold>
+        {buttonText}
+      </Text>
+    </PrimaryButton>
+  );
+};
 
-  return <PrimaryButton onClick={buttonOnclick}>{buttonText}</PrimaryButton>;
+const AddSingleAllowanceButton = (props: AddSingleAllowanceProps) => {
+  const routerAddress = getRouterAddress(props.chainId);
+
+  return (
+    <PrimaryButton
+      disabled={props.tokenAllowance.gt(0)}
+      onClick={() =>
+        props.addAllowance(
+          routerAddress,
+          "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        )
+      }
+      filled
+      height={"big"}
+    >
+      <Text color="dark" bold>
+        enable {props.tokenName}
+      </Text>
+    </PrimaryButton>
+  );
 };
 
 const RemoveAllowanceButton = (props: AddAllowanceProps) => {
@@ -89,6 +127,13 @@ const EnableModal = ({ activePair, chainId, onClose }: Props) => {
   });
 
   const prevModalType = useModals((state) => state.prevModalType);
+  const isTokenPair = getEnableTokenText(
+    activePair.basePairInfo.token1.symbol,
+    activePair.basePairInfo.token2.symbol,
+    activePair.allowance.token1,
+    activePair.allowance.token2
+  ).includes("/");
+
   return (
     <DexModalContainer>
       {addAllowanceA.status != "None" && (
@@ -148,49 +193,84 @@ const EnableModal = ({ activePair, chainId, onClose }: Props) => {
           }}
         />
       )}
-      <div className="title">
-        <Text type="title" align="left" size="title3">
-          Enable Token
-        </Text>
-      </div>
+
       <div className="content">
         <div
           style={{
             marginTop: "1rem",
           }}
-        >
-          <IconPair
-            iconLeft={activePair.basePairInfo.token1.icon}
-            iconRight={activePair.basePairInfo.token2.icon}
-          />
+        ></div>
+        <div className="locked">
+          <img src={lockIcon} alt="token locked" />
+          <span className="icons">
+            <IconPair
+              iconLeft={activePair.basePairInfo.token1.icon}
+              iconRight={activePair.basePairInfo.token2.icon}
+            />
+          </span>
         </div>
-        <Text
-          type="text"
-          align="left"
-          size="title3"
-          style={{
-            padding: "2rem",
-            textAlign: "center",
-            height: "100%",
-          }}
-        >
-          Your tokens need to be enabled in order to transfer them to canto LP
-          interface
-        </Text>
+        <div className="info">
+          <Text
+            type="title"
+            align="left"
+            size="title2"
+            style={{
+              textAlign: "center",
+              marginBottom: "1rem",
+            }}
+          >
+            {`You need to ${getEnableTokenText(
+              activePair.basePairInfo.token1.symbol,
+              activePair.basePairInfo.token2.symbol,
+              activePair.allowance.token1,
+              activePair.allowance.token2
+            )}`}
+          </Text>
+
+          <Text
+            type="text"
+            align="left"
+            size="text2"
+            style={{
+              textAlign: "center",
+            }}
+          >
+            LP needs two tokens to be enabled, which means it&apos;ll trigger
+            two transactions
+          </Text>
+        </div>
       </div>
 
       <div
         style={{
           paddingBottom: "3rem",
+          width: "100%",
         }}
       >
         {prevModalType == ModalType.ADD ? (
-          <AddAllowanceButton
-            pair={activePair}
-            chainId={chainId}
-            addAllowance1={addAllowanceASend}
-            addAllowance2={addAllowanceBSend}
-          />
+          !isTokenPair ? (
+            <div className="dual-button">
+              <AddSingleAllowanceButton
+                addAllowance={addAllowanceASend}
+                chainId={chainId}
+                tokenName={activePair.basePairInfo.token1.name}
+                tokenAllowance={activePair.allowance.token1}
+              />
+              <AddSingleAllowanceButton
+                tokenName={activePair.basePairInfo.token2.name}
+                tokenAllowance={activePair.allowance.token2}
+                chainId={chainId}
+                addAllowance={addAllowanceBSend}
+              />
+            </div>
+          ) : (
+            <AddAllowanceButton
+              pair={activePair}
+              chainId={chainId}
+              addAllowance1={addAllowanceASend}
+              addAllowance2={addAllowanceBSend}
+            />
+          )
         ) : (
           <RemoveAllowanceButton
             pair={activePair}

@@ -10,6 +10,7 @@ import { AddLiquidityConfirmation } from "./addConfirmation";
 import EnableModal from "./enableModal";
 import { useEffect } from "react";
 import { Mixpanel } from "mixpanel";
+import Modal from "global/packages/src/components/molecules/Modal";
 
 const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
@@ -45,6 +46,15 @@ const ModalManager = (props: Props) => {
     state.modalType,
     state.activePair,
   ]);
+
+  function getTitle(modalType: ModalType): string | undefined {
+    switch (modalType) {
+      case ModalType.ENABLE:
+        return "";
+      case ModalType.ADD:
+        return "Add";
+    }
+  }
   useEffect(() => {
     if (modalType !== ModalType.NONE) {
       Mixpanel.events.lpInterfaceActions.modalInteraction(
@@ -56,9 +66,11 @@ const ModalManager = (props: Props) => {
       );
     }
   }, [modalType]);
+
   return (
-    <StyledPopup
+    <Modal
       open={modalType != ModalType.NONE}
+      title={getTitle(modalType)}
       onClose={() => {
         Mixpanel.events.lpInterfaceActions.modalInteraction(
           modalType,
@@ -69,27 +81,7 @@ const ModalManager = (props: Props) => {
         );
         props.onClose();
       }}
-      lockScroll
-      modal
-      position="center center"
-      nested
-      closeOnDocumentClick={false}
     >
-      <div role="button" tabIndex={0} onClick={props.onClose}>
-        <img
-          src={close}
-          style={{
-            position: "absolute",
-            top: ".5rem",
-            right: ".5rem",
-            width: "40px",
-            cursor: "pointer",
-            zIndex: "6",
-          }}
-          alt="close"
-        />
-      </div>
-
       {modalType === ModalType.ENABLE && (
         <EnableModal
           onClose={props.onClose}
@@ -138,7 +130,7 @@ const ModalManager = (props: Props) => {
           account={props.account}
         />
       )}
-    </StyledPopup>
+    </Modal>
   );
 };
 

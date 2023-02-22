@@ -8,7 +8,9 @@ export const DexModalContainer = styled.div`
   align-items: center;
   justify-content: start;
   gap: 1rem;
+  padding: 0 2rem;
 
+  //! marked for deletion
   .title {
     width: 100%;
     /* background-color: #06fc991a; */
@@ -17,10 +19,32 @@ export const DexModalContainer = styled.div`
     z-index: 2;
   }
 
+  .dual-button {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .locked {
+    position: relative;
+    margin: 2rem 0;
+    .icons {
+      position: absolute;
+      bottom: -10px;
+      left: 60px;
+      border: 1px solid var(--primary-color);
+      border-radius: 50px;
+      background-color: #111;
+      padding: 2px 4px;
+    }
+  }
+
   .content {
     height: 100%;
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .tokenBox {
