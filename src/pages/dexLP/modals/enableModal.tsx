@@ -235,8 +235,8 @@ const EnableModal = ({ activePair, chainId, onClose }: Props) => {
               textAlign: "center",
             }}
           >
-            LP needs two tokens to be enabled, which means it&apos;ll trigger
-            two transactions
+            LP needs two tokens to be enabled, which means it’ll trigger two
+            transactions
           </Text>
         </div>
       </div>
@@ -248,29 +248,20 @@ const EnableModal = ({ activePair, chainId, onClose }: Props) => {
         }}
       >
         {prevModalType == ModalType.ADD ? (
-          !isTokenPair ? (
-            <div className="dual-button">
-              <AddSingleAllowanceButton
-                addAllowance={addAllowanceASend}
-                chainId={chainId}
-                tokenName={activePair.basePairInfo.token1.name}
-                tokenAllowance={activePair.allowance.token1}
-              />
-              <AddSingleAllowanceButton
-                tokenName={activePair.basePairInfo.token2.name}
-                tokenAllowance={activePair.allowance.token2}
-                chainId={chainId}
-                addAllowance={addAllowanceBSend}
-              />
-            </div>
-          ) : (
-            <AddAllowanceButton
-              pair={activePair}
+          <div className="dual-button">
+            <AddSingleAllowanceButton
+              addAllowance={addAllowanceASend}
               chainId={chainId}
-              addAllowance1={addAllowanceASend}
-              addAllowance2={addAllowanceBSend}
+              tokenName={activePair.basePairInfo.token1.name}
+              tokenAllowance={activePair.allowance.token1}
             />
-          )
+            <AddSingleAllowanceButton
+              tokenName={activePair.basePairInfo.token2.name}
+              tokenAllowance={activePair.allowance.token2}
+              chainId={chainId}
+              addAllowance={addAllowanceBSend}
+            />
+          </div>
         ) : (
           <RemoveAllowanceButton
             pair={activePair}

@@ -52,7 +52,9 @@ const ModalManager = (props: Props) => {
       case ModalType.ENABLE:
         return "";
       case ModalType.ADD:
-        return "Add";
+        return "Add Liquidity";
+      case ModalType.REMOVE:
+        return "Remove Liquidity";
     }
   }
   useEffect(() => {

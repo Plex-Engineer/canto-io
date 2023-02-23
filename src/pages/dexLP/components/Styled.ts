@@ -102,7 +102,8 @@ export const DexModalContainer = styled.div`
 
   .fields {
     display: flex;
-    padding: 1rem;
+    flex-direction: column;
+    width: 100%;
     gap: 0.3rem;
   }
 
@@ -218,26 +219,30 @@ type fieldProps = {
 };
 export const FieldContainer = styled.div<fieldProps>`
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   background-color: ${(props) => (props.focused ? "#001A0E" : "#191919")};
   border: ${(props) =>
     props.focused ? "1px solid #06FC99" : "1px solid #191919"};
+  border-radius: 4px;
   color: #efefef;
-  height: 130px;
-  flex: 1;
-  margin: 1px;
+  height: 80px;
 
   &:hover {
     background-color: #001a0e;
+    border-radius: 4px;
+
     cursor: text;
     input {
-      background-color: #001a0e !important;
+      border-radius: 4px;
+      /* background-color: #001a0e !important; */
     }
   }
   input[type="text"] {
     padding: 0 1rem;
     margin-top: 1rem;
-    background-color: ${(props) => (props.focused ? "#001A0E" : "#191919")};
+    background-color: transparent;
+    /* background-color: ${(props) =>
+      props.focused ? "#001A0E" : "#191919"}; */
     font-size: 24px;
     width: 100%;
     border: none;
