@@ -5,7 +5,7 @@ import { gravityabi } from "../config/gravityBridgeAbi";
 import { ADDRESSES } from "global/config/addresses";
 import { Token, TOKENS } from "global/config/tokenInfo";
 import { DepositEvent } from "../config/interfaces";
-import { allBridgeOutNetworks } from "../config/gravityBridgeTokens";
+import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 
 const globalFetchOptions = {
   method: "GET",
@@ -115,9 +115,10 @@ export interface BridgeOutEvent {
   };
 }
 export async function getBridgeOutTransactions(cantoAccount?: string) {
-  const bridgeOutNetworks = Object.keys(allBridgeOutNetworks).map(
+  const bridgeOutNetworks = Object.keys(ALL_BRIDGE_OUT_NETWORKS).map(
     (key, network) =>
-      allBridgeOutNetworks[network as keyof typeof allBridgeOutNetworks].channel
+      ALL_BRIDGE_OUT_NETWORKS[network as keyof typeof ALL_BRIDGE_OUT_NETWORKS]
+        .channel
   );
   const bridgeOutData: BridgeOutEvent[] = [];
   const IBC = await (

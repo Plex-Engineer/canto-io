@@ -2,11 +2,11 @@ import { BigNumber } from "ethers";
 import { CantoMainnet } from "global/config/networks";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { ReactNode, useEffect, useState } from "react";
+import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 import {
-  allBridgeOutNetworks,
-  convertCoinTokens,
-  ETHGravityTokens,
-} from "../config/gravityBridgeTokens";
+  CONVERT_COIN_TOKENS,
+  ETH_GRAVITY_BRIDGE_IN_TOKENS,
+} from "../config/bridgingTokens";
 import {
   BaseToken,
   UserConvertToken,
@@ -66,14 +66,14 @@ export function useCustomBridgeInfo(): AllBridgeInfo {
   const { userTokens: userConvertERC20Tokens, fail: cantoERC20Fail } =
     useCantoERC20Balances(
       networkInfo.account,
-      convertCoinTokens,
+      CONVERT_COIN_TOKENS,
       CantoMainnet.chainId
     );
   const [userConvertTokens, setUserConvertTokens] = useState<
     UserConvertToken[]
   >([]);
   const { userEthGTokens: userBridgeInTokens, gravityAddress } =
-    useEthGravityTokens(networkInfo.account, ETHGravityTokens);
+    useEthGravityTokens(networkInfo.account, ETH_GRAVITY_BRIDGE_IN_TOKENS);
   const [userBridgeOutTokens, setUserBridgeOutTokens] = useState<
     UserNativeTokens[]
   >([]);
@@ -82,7 +82,7 @@ export function useCustomBridgeInfo(): AllBridgeInfo {
     const convertNativeWithBalance = await getNativeCantoBalance(
       CantoMainnet.cosmosAPIEndpoint,
       networkInfo.cantoAddress,
-      convertCoinTokens
+      CONVERT_COIN_TOKENS
     );
     if (!cantoERC20Fail) {
       setUserConvertTokens(
@@ -103,7 +103,7 @@ export function useCustomBridgeInfo(): AllBridgeInfo {
       await getNativeCantoBalance(
         CantoMainnet.cosmosAPIEndpoint,
         networkInfo.cantoAddress,
-        allBridgeOutNetworks[tokenStore.bridgeOutNetwork].tokens
+        ALL_BRIDGE_OUT_NETWORKS[tokenStore.bridgeOutNetwork].tokens
       )
     );
   }

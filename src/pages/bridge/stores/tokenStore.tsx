@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 import create from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { BridgeOutNetworks } from "../config/gravityBridgeTokens";
+import { BridgeOutNetworks } from "../config/bridgeOutNetworks";
 import {
   BaseToken,
   EmptySelectedConvertToken,

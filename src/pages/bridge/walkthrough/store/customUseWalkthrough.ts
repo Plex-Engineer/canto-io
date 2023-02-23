@@ -6,11 +6,11 @@ import { CantoMainnet } from "global/providers";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
 import {
-  allBridgeOutNetworks,
+  ALL_BRIDGE_OUT_NETWORKS,
   BridgeOutNetworkInfo,
   BridgeOutNetworks,
   BridgeOutNetworkTokenData,
-} from "pages/bridge/config/gravityBridgeTokens";
+} from "pages/bridge/config/bridgeOutNetworks";
 import {
   BaseToken,
   BridgeTransactionType,
@@ -266,8 +266,8 @@ export function useCustomWalkthrough(): Props {
       },
     },
     bridgeOutNetworks: {
-      allNetworks: allBridgeOutNetworks,
-      selectedNetwork: allBridgeOutNetworks[tokenStore.bridgeOutNetwork],
+      allNetworks: ALL_BRIDGE_OUT_NETWORKS,
+      selectedNetwork: ALL_BRIDGE_OUT_NETWORKS[tokenStore.bridgeOutNetwork],
       setNetwork: tokenStore.setBridgeOutNetwork,
     },
     amount,

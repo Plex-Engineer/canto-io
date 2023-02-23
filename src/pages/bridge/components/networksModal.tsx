@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import {
   BridgeOutNetworks,
   BridgeOutNetworkTokenData,
-} from "../config/gravityBridgeTokens";
+} from "../config/bridgeOutNetworks";
 
 interface Props {
   onClose: (value?: BridgeOutNetworks) => void;

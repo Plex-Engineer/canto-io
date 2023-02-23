@@ -6,7 +6,7 @@ import {
   BridgeOutNetworkInfo,
   BridgeOutNetworks,
   BridgeOutNetworkTokenData,
-} from "pages/bridge/config/gravityBridgeTokens";
+} from "pages/bridge/config/bridgeOutNetworks";
 import {
   BaseToken,
   BridgeTransactionType,

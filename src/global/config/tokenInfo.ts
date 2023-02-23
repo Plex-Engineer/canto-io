@@ -18,7 +18,6 @@ export interface Token {
   isERC20: boolean;
   isLP: boolean;
   icon: string;
-  cTokenAddress: string;
 }
 export interface CTOKEN {
   symbol: string;
@@ -76,11 +75,10 @@ export const TOKENS = {
       symbol: "CANTO",
       name: "Canto",
       decimals: decimals.CANTO,
-      address: ADDRESSES.testnet.ETH,
+      address: ADDRESSES.testnet.WCANTO,
       isERC20: false,
       isLP: false,
       icon: icons.CANTO,
-      cTokenAddress: ADDRESSES.testnet.CCanto,
     },
     WCANTO: {
       symbol: "WCANTO",
@@ -90,7 +88,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.CANTO,
-      cTokenAddress: ADDRESSES.testnet.CCanto,
     },
     NOTE: {
       symbol: "NOTE",
@@ -100,7 +97,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.Note,
-      cTokenAddress: ADDRESSES.testnet.CNote,
     },
     ETH: {
       symbol: "ETH",
@@ -110,7 +106,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.ETH,
-      cTokenAddress: ADDRESSES.testnet.CETH,
     },
     ATOM: {
       symbol: "ATOM",
@@ -120,7 +115,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.ATOM,
-      cTokenAddress: ADDRESSES.testnet.CATOM,
     },
     USDC: {
       symbol: "USDC",
@@ -130,7 +124,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.USDC,
-      cTokenAddress: ADDRESSES.testnet.CUSDC,
     },
     USDT: {
       symbol: "USDT",
@@ -140,7 +133,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.USDT,
-      cTokenAddress: ADDRESSES.testnet.CUSDT,
     },
     CantoNote: {
       symbol: "CantoNoteLP",
@@ -150,7 +142,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.CantoNoteLP,
-      cTokenAddress: ADDRESSES.testnet.cCantoNoteLP,
     },
     CantoAtom: {
       symbol: "CantoAtomLP",
@@ -160,7 +151,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.CantoAtomLP,
-      cTokenAddress: ADDRESSES.testnet.cCantoAtomLP,
     },
     NoteUSDC: {
       symbol: "NoteUSDCLP",
@@ -170,7 +160,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.USDCNoteLP,
-      cTokenAddress: ADDRESSES.testnet.cNoteUSDCLP,
     },
     NoteUSDT: {
       symbol: "NoteUSDTLP",
@@ -180,7 +169,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.USDTNoteLP,
-      cTokenAddress: ADDRESSES.testnet.cNoteUSDTLP,
     },
     CantoETH: {
       symbol: "CantoETHLP",
@@ -190,7 +178,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.CantoETHLP,
-      cTokenAddress: ADDRESSES.testnet.cCantoETHLP,
     },
   },
   cantoMainnet: {
@@ -198,11 +185,10 @@ export const TOKENS = {
       symbol: "CANTO",
       name: "Canto",
       decimals: decimals.CANTO,
-      address: "0x0000000000000000000000000000000000000000",
+      address: ADDRESSES.cantoMainnet.WCANTO,
       isERC20: false,
       isLP: false,
       icon: icons.CANTO,
-      cTokenAddress: ADDRESSES.cantoMainnet.CCanto,
     },
     WCANTO: {
       symbol: "WCANTO",
@@ -212,7 +198,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.CANTO,
-      cTokenAddress: ADDRESSES.cantoMainnet.CCanto,
     },
     NOTE: {
       symbol: "NOTE",
@@ -222,7 +207,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.Note,
-      cTokenAddress: ADDRESSES.cantoMainnet.CNote,
     },
     ETH: {
       symbol: "ETH",
@@ -232,7 +216,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.ETH,
-      cTokenAddress: ADDRESSES.cantoMainnet.CETH,
     },
     ATOM: {
       symbol: "ATOM",
@@ -242,7 +225,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.ATOM,
-      cTokenAddress: ADDRESSES.cantoMainnet.CATOM,
     },
     USDC: {
       symbol: "USDC",
@@ -252,7 +234,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.USDC,
-      cTokenAddress: ADDRESSES.cantoMainnet.CUSDC,
     },
     USDT: {
       symbol: "USDT",
@@ -262,7 +243,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.USDT,
-      cTokenAddress: ADDRESSES.cantoMainnet.CUSDT,
     },
     CantoNote: {
       symbol: "CantoNoteLP",
@@ -272,7 +252,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.CantoNoteLP,
-      cTokenAddress: ADDRESSES.cantoMainnet.cCantoNoteLP,
     },
     CantoAtom: {
       symbol: "CantoAtomLP",
@@ -282,7 +261,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.CantoAtomLP,
-      cTokenAddress: ADDRESSES.cantoMainnet.cCantoAtomLP,
     },
     NoteUSDC: {
       symbol: "NoteUSDCLP",
@@ -292,7 +270,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.USDCNoteLP,
-      cTokenAddress: ADDRESSES.cantoMainnet.cNoteUSDCLP,
     },
     NoteUSDT: {
       symbol: "NoteUSDTLP",
@@ -302,7 +279,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.USDTNoteLP,
-      cTokenAddress: ADDRESSES.cantoMainnet.cNoteUSDTLP,
     },
     CantoETH: {
       symbol: "CantoETHLP",
@@ -312,7 +288,79 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.CantoETHLP,
-      cTokenAddress: ADDRESSES.cantoMainnet.cCantoETHLP,
+    },
+    //ibc tokens new
+    SOMM: {
+      symbol: "SOMM",
+      name: "Sommelier",
+      decimals: 6,
+      address: "0xFA3C22C069B9556A4B2f7EcE1Ee3B467909f4864",
+      isERC20: true,
+      isLP: false,
+      icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/sommelier/images/somm.svg",
+    },
+    GRAV: {
+      symbol: "GRAV",
+      name: "Gravitron",
+      decimals: 6,
+      address: "0xc03345448969Dd8C00e9E4A85d2d9722d093aF8E",
+      isERC20: true,
+      isLP: false,
+      icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/gravitybridge/images/grav.svg",
+    },
+    AKASH: {
+      symbol: "AKT",
+      name: "Akash",
+      decimals: 6,
+      address: "0x5aD523d94Efb56C400941eb6F34393b84c75ba39",
+      isERC20: true,
+      isLP: false,
+      icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/akash/images/akt.svg",
+    },
+    OSMOSIS: {
+      symbol: "OSMO",
+      name: "Osmosis",
+      decimals: 6,
+      address: "0x0CE35b0D42608Ca54Eb7bcc8044f7087C18E7717",
+      isERC20: true,
+      isLP: false,
+      icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg",
+    },
+    CRESCENT: {
+      symbol: "CRE",
+      name: "Crescent",
+      decimals: 6,
+      address: "0x5db67696C3c088DfBf588d3dd849f44266ff0ffa",
+      isERC20: true,
+      isLP: false,
+      icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/crescent/images/cre.svg",
+    },
+    KAVA: {
+      symbol: "SOMM",
+      name: "Sommelier",
+      decimals: 6,
+      address: "0xC5e00D3b04563950941f7137B5AfA3a534F0D6d6",
+      isERC20: true,
+      isLP: false,
+      icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/kava/images/kava.png",
+    },
+    INJECTIVE: {
+      symbol: "INJ",
+      name: "Injective",
+      decimals: 18,
+      address: "0x1D54EcB8583Ca25895c512A8308389fFD581F9c9",
+      isERC20: true,
+      isLP: false,
+      icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/injective/images/inj.svg",
+    },
+    COMDEX: {
+      symbol: "CMDX",
+      name: "Comdex",
+      decimals: 6,
+      address: "0x3452e23F9c4cC62c70B7ADAd699B264AF3549C19",
+      isERC20: true,
+      isLP: false,
+      icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/comdex/images/cmdx.svg",
     },
   },
   ETHMainnet: {
@@ -324,7 +372,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.USDT,
-      cTokenAddress: "0x0000000000000000000000000000000000000000",
     },
     USDC: {
       symbol: "USDC",
@@ -334,7 +381,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.USDC,
-      cTokenAddress: "0x0000000000000000000000000000000000000000",
     },
     WETH: {
       symbol: "WETH",
@@ -344,7 +390,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.ETH,
-      cTokenAddress: "0x0000000000000000000000000000000000000000",
     },
   },
   GravityBridge: {
@@ -356,7 +401,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://s2.coinmarketcap.com/static/img/coins/32x32/1.png",
-      cTokenAddress: "0x0000000000000000000000000000000000000000",
     },
     BYE: {
       symbol: "BYE",
@@ -366,7 +410,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://s2.coinmarketcap.com/static/img/coins/32x32/2.png",
-      cTokenAddress: "0x0000000000000000000000000000000000000000",
     },
     MAX: {
       symbol: "MAX",
@@ -376,7 +419,6 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://s2.coinmarketcap.com/static/img/coins/32x32/3.png",
-      cTokenAddress: "0x0000000000000000000000000000000000000000",
     },
   },
 };

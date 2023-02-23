@@ -5,7 +5,7 @@ import {
   BridgeOutNetworkInfo,
   BridgeOutNetworks,
   BridgeOutNetworkTokenData,
-} from "pages/bridge/config/gravityBridgeTokens";
+} from "pages/bridge/config/bridgeOutNetworks";
 import TextSwitch from "../components/TextSwitch";
 import BaseStyled from "./layout";
 

@@ -6,6 +6,7 @@ import { ERC20Abi, routerAbi } from "global/config/abi";
 import { LPPairInfo } from "../config/interfaces";
 import { getLPPairRatio } from "../utils/utils";
 import { ADDRESSES } from "global/config/addresses";
+import { CTOKENS } from "global/config/tokenInfo";
 
 const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
   const onCanto =
@@ -18,9 +19,22 @@ const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
   const RouterContract = new Contract(routerAddress, routerAbi);
 
   const PAIRS: PAIR[] = chainId == CantoTestnet.chainId ? TESTPAIRS : MAINPAIRS;
+  //ctokens to look for underlying price from lending market
+  const cTokens =
+    chainId == CantoTestnet.chainId
+      ? CTOKENS.cantoTestnet
+      : CTOKENS.cantoMainnet;
 
   const calls = PAIRS.map((pair) => {
     const ERC20Contract = new Contract(pair.address, ERC20Abi);
+    const cTokenAddress = (underlyingAddress: string) => {
+      for (const [, tokenObj] of Object.entries(cTokens)) {
+        if (tokenObj.underlying.address == underlyingAddress) {
+          return tokenObj.address;
+        }
+      }
+      return cTokens.CNOTE.address;
+    };
 
     return [
       //0
@@ -39,13 +53,13 @@ const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
       {
         contract: RouterContract,
         method: "getUnderlyingPrice",
-        args: [pair.token1.cTokenAddress],
+        args: [cTokenAddress(pair.token1.address)],
       },
       //3
       {
         contract: RouterContract,
         method: "getUnderlyingPrice",
-        args: [pair.token2.cTokenAddress],
+        args: [cTokenAddress(pair.token2.address)],
       },
       //4
       {
