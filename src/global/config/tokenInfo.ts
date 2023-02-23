@@ -336,8 +336,8 @@ export const TOKENS = {
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/crescent/images/cre.svg",
     },
     KAVA: {
-      symbol: "SOMM",
-      name: "Sommelier",
+      symbol: "KAVA",
+      name: "Kava",
       decimals: 6,
       address: "0xC5e00D3b04563950941f7137B5AfA3a534F0D6d6",
       isERC20: true,
