@@ -152,7 +152,7 @@ export async function getBridgeOutTransactions(cantoAccount?: string) {
         )?.value;
         //"transfer/channel-0/gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" ~ return of denom
         const [type, channel, tokenAddress] = denom.split("/");
-        console.log(channel)
+
         if (
           type == "transfer" &&
           bridgeOutNetworks.includes(channel) &&
@@ -160,7 +160,6 @@ export async function getBridgeOutTransactions(cantoAccount?: string) {
         ) {
           const token = findBridgeOutToken(tokenAddress);
           if (!token) {
-            console.log(tokenAddress)
           }
           bridgeOutData.push({ token, amount, tx });
         }
