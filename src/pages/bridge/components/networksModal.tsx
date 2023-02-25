@@ -1,12 +1,12 @@
 import styled from "@emotion/styled";
 import {
   BridgeOutNetworks,
-  BridgeOutNetworkTokenData,
+  BridgeOutNetworkData,
 } from "../config/bridgeOutNetworks";
 
 interface Props {
   onClose: (value?: BridgeOutNetworks) => void;
-  networks: BridgeOutNetworkTokenData;
+  networks: BridgeOutNetworkData;
 }
 
 const NetworksModal = (props: Props) => {
@@ -62,6 +62,8 @@ const Styled = styled.div`
     scroll-behavior: smooth;
     /* width */
     padding: 8px;
+    max-height: 200px;
+    overflow-y: scroll;
     .network-item {
       display: flex;
       align-items: center;

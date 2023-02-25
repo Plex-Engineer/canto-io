@@ -5,7 +5,7 @@ import { switchNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import {
   BridgeOutNetworkInfo,
   BridgeOutNetworks,
-  BridgeOutNetworkTokenData,
+  BridgeOutNetworkData,
 } from "pages/bridge/config/bridgeOutNetworks";
 import {
   BaseToken,
@@ -42,7 +42,7 @@ interface BridgeOutManagerProps {
   currentBridgeOutToken: UserNativeTokens;
   bridgeOutTokens: UserNativeTokens[];
   currentBridgeOutNetwork: BridgeOutNetworkInfo;
-  bridgeOutNetworks: BridgeOutNetworkTokenData;
+  bridgeOutNetworks: BridgeOutNetworkData;
   setBridgeOutNetwork: (network: BridgeOutNetworks) => void;
   setToken: (token: BaseToken, type: SelectedTokens) => void;
   amount: string;
@@ -192,7 +192,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
                     props.amount,
                     props.currentBridgeOutToken.decimals
                   ).toString(),
-                  props.currentBridgeOutToken.nativeName,
+                  props.currentBridgeOutToken.ibcDenom,
                   CantoMainnet.cosmosAPIEndpoint,
                   props.currentBridgeOutNetwork.endpoint,
                   ibcFee,

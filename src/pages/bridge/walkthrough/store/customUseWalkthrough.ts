@@ -9,7 +9,7 @@ import {
   ALL_BRIDGE_OUT_NETWORKS,
   BridgeOutNetworkInfo,
   BridgeOutNetworks,
-  BridgeOutNetworkTokenData,
+  BridgeOutNetworkData,
 } from "pages/bridge/config/bridgeOutNetworks";
 import {
   BaseToken,
@@ -78,7 +78,7 @@ interface Props {
     };
   };
   bridgeOutNetworks: {
-    allNetworks: BridgeOutNetworkTokenData;
+    allNetworks: BridgeOutNetworkData;
     selectedNetwork: BridgeOutNetworkInfo;
     setNetwork: (network: BridgeOutNetworks) => void;
   };

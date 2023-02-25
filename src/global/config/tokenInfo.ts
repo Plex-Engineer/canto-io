@@ -301,7 +301,7 @@ export const TOKENS = {
     },
     GRAV: {
       symbol: "GRAV",
-      name: "Gravitron",
+      name: "Graviton",
       decimals: 6,
       address: "0xc03345448969Dd8C00e9E4A85d2d9722d093aF8E",
       isERC20: true,

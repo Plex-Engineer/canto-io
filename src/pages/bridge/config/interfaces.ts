@@ -13,6 +13,7 @@ export interface BaseToken extends Token {
   [x: string | number | symbol]: unknown;
 }
 export interface NativeERC20Tokens extends BaseToken {
+  ibcDenom: string;
   nativeName: string;
 }
 

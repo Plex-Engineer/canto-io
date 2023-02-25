@@ -4,8 +4,12 @@ import { ETHMainnet } from "pages/bridge/config/networks";
 import { gravityabi } from "../config/gravityBridgeAbi";
 import { ADDRESSES } from "global/config/addresses";
 import { Token, TOKENS } from "global/config/tokenInfo";
-import { DepositEvent } from "../config/interfaces";
+import { BaseToken, DepositEvent } from "../config/interfaces";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
+import {
+  ALL_IBC_TOKENS_WITH_DENOMS,
+  CONVERT_COIN_TOKENS,
+} from "../config/bridgingTokens";
 
 const globalFetchOptions = {
   method: "GET",
@@ -127,7 +131,6 @@ export async function getBridgeOutTransactions(cantoAccount?: string) {
         "/cosmos/tx/v1beta1/txs?events=fungible_token_packet.sender%3D'" +
         cantoAccount +
         "'",
-      // "'&acknowledge_packet.packet_src_channel%3D'channel-0'",
       globalFetchOptions
     )
   ).json();
@@ -149,15 +152,16 @@ export async function getBridgeOutTransactions(cantoAccount?: string) {
         )?.value;
         //"transfer/channel-0/gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" ~ return of denom
         const [type, channel, tokenAddress] = denom.split("/");
+        console.log(channel)
         if (
           type == "transfer" &&
           bridgeOutNetworks.includes(channel) &&
           sender == cantoAccount
         ) {
-          const token =
-            tokenAddress == "uatom"
-              ? findGravityToken(tokenAddress)
-              : findGravityToken(tokenAddress.slice(7));
+          const token = findBridgeOutToken(tokenAddress);
+          if (!token) {
+            console.log(tokenAddress)
+          }
           bridgeOutData.push({ token, amount, tx });
         }
       }
@@ -190,10 +194,17 @@ export async function getConvertTransactionsForUser(
   return [convertToERC20, convertToNative];
 }
 
+export function findBridgeOutToken(tokenName: string) {
+  return CONVERT_COIN_TOKENS.find(
+    (token) => token.nativeName.toLowerCase() == tokenName.toLowerCase()
+  );
+}
+
 export function findGravityToken(tokenAddress: string) {
   if (tokenAddress === "uatom") {
     return TOKENS.cantoMainnet.ATOM;
   }
+  // console.log(tokenAddress);
   return ETHMainnet.gravityTokens.find(
     (token) => token.address === tokenAddress
   );

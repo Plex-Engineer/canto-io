@@ -252,7 +252,7 @@ const BridgeOut = (props: BridgeOutProps) => {
                         bridgeOutAmount,
                         selectedNativeToken.decimals
                       ).toString(),
-                      selectedNativeToken.nativeName,
+                      selectedNativeToken.ibcDenom,
                       CantoMainnet.cosmosAPIEndpoint,
                       bridgeOutNetwork.endpoint,
                       ibcFee,

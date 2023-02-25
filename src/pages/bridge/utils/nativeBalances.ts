@@ -33,7 +33,7 @@ export async function getNativeCantoBalance(
       nativeBalance: BigNumber.from(
         result
           ? result.find(
-              (data: NativeTokenResponse) => data.denom == token.nativeName
+              (data: NativeTokenResponse) => data.denom == token.ibcDenom
             )?.amount ?? 0
           : 0
       ),

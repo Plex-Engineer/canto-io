@@ -91,7 +91,7 @@ export function useCustomBridgeInfo(): AllBridgeInfo {
             ...token,
             nativeBalance:
               convertNativeWithBalance.find(
-                (nativeToken) => nativeToken.nativeName === token.nativeName
+                (nativeToken) => nativeToken.ibcDenom === token.ibcDenom
               )?.nativeBalance ?? BigNumber.from(0),
           };
         })

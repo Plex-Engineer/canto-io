@@ -1,6 +1,11 @@
 import { Token, TOKENS } from "global/config/tokenInfo";
 import { NativeERC20Tokens } from "./interfaces";
 
+const ETH_GRAVITY_BRIDGE_IN_TOKENS: Token[] = [
+  TOKENS.ETHMainnet.USDC,
+  TOKENS.ETHMainnet.USDT,
+  TOKENS.ETHMainnet.WETH,
+];
 const ALL_IBC_DENOMS = {
   USDC: "ibc/17CD484EE7D9723B847D95015FA3EBD1572FD13BC84FB838F55B18A57450F25B",
   USDT: "ibc/4F6A2DEFEA52CD8D90966ADCB2BD0593D3993AB0DF7F6AEB3EFD6167D79237B0",
@@ -21,30 +26,84 @@ const ALL_IBC_DENOMS = {
     "ibc/B0ADAE6558A3E9B2B49FF2EA89A9AEA312431FEB51FCF73650C8C90589F5149B",
 };
 
-const ETH_GRAVITY_BRIDGE_IN_TOKENS: Token[] = [
-  TOKENS.ETHMainnet.USDC,
-  TOKENS.ETHMainnet.USDT,
-  TOKENS.ETHMainnet.WETH,
-];
+const ALL_IBC_TOKENS_WITH_DENOMS = {
+  USDT: {
+    ...TOKENS.cantoMainnet.USDT,
+    ibcDenom: ALL_IBC_DENOMS.USDT,
+    nativeName: "gravity" + TOKENS.ETHMainnet.USDT.address,
+  },
+  USDC: {
+    ...TOKENS.cantoMainnet.USDC,
+    ibcDenom: ALL_IBC_DENOMS.USDC,
+    nativeName: "gravity" + TOKENS.ETHMainnet.USDC.address,
+  },
+  ETH: {
+    ...TOKENS.cantoMainnet.ETH,
+    ibcDenom: ALL_IBC_DENOMS.ETH,
+    nativeName: "gravity" + TOKENS.ETHMainnet.WETH.address,
+  },
+  ATOM: {
+    ...TOKENS.cantoMainnet.ATOM,
+    ibcDenom: ALL_IBC_DENOMS.ATOM,
+    nativeName: "uatom",
+  },
+
+  SOMM: {
+    ...TOKENS.cantoMainnet.SOMM,
+    ibcDenom: ALL_IBC_DENOMS.SOMM,
+    nativeName: "usomm",
+  },
+  GRAV: {
+    ...TOKENS.cantoMainnet.GRAV,
+    ibcDenom: ALL_IBC_DENOMS.GRAV,
+    nativeName: "ugraviton",
+  },
+  AKASH: {
+    ...TOKENS.cantoMainnet.AKASH,
+    ibcDenom: ALL_IBC_DENOMS.AKASH,
+    nativeName: "uakt",
+  },
+  OSMOSIS: {
+    ...TOKENS.cantoMainnet.OSMOSIS,
+    ibcDenom: ALL_IBC_DENOMS.OSMOSIS,
+    nativeName: "uosmo",
+  },
+  CRESCENT: {
+    ...TOKENS.cantoMainnet.CRESCENT,
+    ibcDenom: ALL_IBC_DENOMS.CRESCENT,
+    nativeName: "ucre",
+  },
+  KAVA: {
+    ...TOKENS.cantoMainnet.KAVA,
+    ibcDenom: ALL_IBC_DENOMS.KAVA,
+    nativeName: "ukava",
+  },
+  INJECTIVE: {
+    ...TOKENS.cantoMainnet.INJECTIVE,
+    ibcDenom: ALL_IBC_DENOMS.INJECTIVE,
+    nativeName: "inj",
+  },
+  COMDEX: {
+    ...TOKENS.cantoMainnet.COMDEX,
+    ibcDenom: ALL_IBC_DENOMS.COMDEX,
+    nativeName: "ucmdx",
+  },
+};
 
 const CONVERT_COIN_TOKENS: NativeERC20Tokens[] = [
-  { ...TOKENS.cantoMainnet.USDT, nativeName: ALL_IBC_DENOMS.USDT },
-  { ...TOKENS.cantoMainnet.USDC, nativeName: ALL_IBC_DENOMS.USDC },
-  { ...TOKENS.cantoMainnet.ETH, nativeName: ALL_IBC_DENOMS.ETH },
-  { ...TOKENS.cantoMainnet.ATOM, nativeName: ALL_IBC_DENOMS.ATOM },
-  { ...TOKENS.cantoMainnet.SOMM, nativeName: ALL_IBC_DENOMS.SOMM },
+  ALL_IBC_TOKENS_WITH_DENOMS.USDT,
+  ALL_IBC_TOKENS_WITH_DENOMS.USDC,
+  ALL_IBC_TOKENS_WITH_DENOMS.ETH,
+  ALL_IBC_TOKENS_WITH_DENOMS.ATOM,
 
-  { ...TOKENS.cantoMainnet.GRAV, nativeName: ALL_IBC_DENOMS.GRAV },
-  { ...TOKENS.cantoMainnet.AKASH, nativeName: ALL_IBC_DENOMS.AKASH },
-  { ...TOKENS.cantoMainnet.OSMOSIS, nativeName: ALL_IBC_DENOMS.OSMOSIS },
-  { ...TOKENS.cantoMainnet.CRESCENT, nativeName: ALL_IBC_DENOMS.CRESCENT },
-  { ...TOKENS.cantoMainnet.KAVA, nativeName: ALL_IBC_DENOMS.KAVA },
-  { ...TOKENS.cantoMainnet.INJECTIVE, nativeName: ALL_IBC_DENOMS.INJECTIVE },
-  { ...TOKENS.cantoMainnet.COMDEX, nativeName: ALL_IBC_DENOMS.COMDEX },
-];
-
-const COSMOS_HUB_BRIDGE_OUT_TOKENS: NativeERC20Tokens[] = [
-  { ...TOKENS.cantoMainnet.ATOM, nativeName: ALL_IBC_DENOMS.ATOM },
+  ALL_IBC_TOKENS_WITH_DENOMS.SOMM,
+  ALL_IBC_TOKENS_WITH_DENOMS.GRAV,
+  ALL_IBC_TOKENS_WITH_DENOMS.AKASH,
+  ALL_IBC_TOKENS_WITH_DENOMS.OSMOSIS,
+  ALL_IBC_TOKENS_WITH_DENOMS.CRESCENT,
+  ALL_IBC_TOKENS_WITH_DENOMS.KAVA,
+  ALL_IBC_TOKENS_WITH_DENOMS.INJECTIVE,
+  ALL_IBC_TOKENS_WITH_DENOMS.COMDEX,
 ];
 
 const TEST_GRAVITY_TOKENS = [
@@ -56,6 +115,6 @@ const TEST_GRAVITY_TOKENS = [
 export {
   ETH_GRAVITY_BRIDGE_IN_TOKENS,
   CONVERT_COIN_TOKENS,
-  COSMOS_HUB_BRIDGE_OUT_TOKENS,
   TEST_GRAVITY_TOKENS,
+  ALL_IBC_TOKENS_WITH_DENOMS,
 };

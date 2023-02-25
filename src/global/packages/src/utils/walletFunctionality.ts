@@ -26,9 +26,9 @@ export async function addCantoToKeplr() {
           // The name of the chain to be displayed to the user.
           chainName: "Canto Mainnet",
           // RPC endpoint of the chain. In this case we are using blockapsis, as it's accepts connections from any host currently. No Cors limitations.
-          rpc: "http://164.90.154.41:26657",
+          rpc: "https://rpc.canto.nodestake.top",
           // REST endpoint of the chain.
-          rest: "http://164.90.154.41:1317",
+          rest: "https://api.canto.nodestake.top",
           // Staking coin information
           stakeCurrency: {
             // Coin denomination to be displayed to the user.
