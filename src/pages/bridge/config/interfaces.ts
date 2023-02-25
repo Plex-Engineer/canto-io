@@ -56,6 +56,7 @@ const emptyTokenData = {
 export const EmptySelectedConvertToken = {
   ...emptyTokenData,
   nativeName: "ibc/000",
+  ibcDenom: "",
   erc20Balance: BigNumber.from(-1),
   nativeBalance: BigNumber.from(0),
 };
@@ -67,6 +68,7 @@ export const EmptySelectedETHToken = {
 export const EmptySelectedNativeToken = {
   ...emptyTokenData,
   nativeName: "ibc/000",
+  ibcDenom: "",
   nativeBalance: BigNumber.from(0),
 };
 
