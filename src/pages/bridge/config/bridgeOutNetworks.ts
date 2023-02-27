@@ -10,6 +10,7 @@ export interface BridgeOutNetworkInfo {
   tokens: NativeERC20Tokens[];
   channel: string;
   endpoint: string;
+  latestBlockEndpoint?: string;
   addressBeginning: string;
   checkAddress: (address: string) => boolean;
 }
@@ -85,6 +86,18 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
       return addressCheck(address, this.addressBeginning);
     },
   },
+  [BridgeOutNetworks.INJECTIVE]: {
+    name: "injective",
+    icon: TOKENS.cantoMainnet.INJECTIVE.icon,
+    tokens: [ALL_IBC_TOKENS_WITH_DENOMS.INJECTIVE],
+    channel: "channel-8",
+    endpoint: "https://lcd.injective.network/", //TODO:
+    latestBlockEndpoint: "/cosmos/base/tendermint/v1beta1",
+    addressBeginning: "inj",
+    checkAddress: function (address) {
+      return addressCheck(address, this.addressBeginning);
+    },
+  },
   [BridgeOutNetworks.CRESCENT]: {
     name: "crescent",
     icon: TOKENS.cantoMainnet.CRESCENT.icon,
@@ -126,17 +139,6 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
     channel: "channel-13",
     endpoint: "https://api.data.kava.io/",
     addressBeginning: "kava",
-    checkAddress: function (address) {
-      return addressCheck(address, this.addressBeginning);
-    },
-  },
-  [BridgeOutNetworks.INJECTIVE]: {
-    name: "injective",
-    icon: TOKENS.cantoMainnet.INJECTIVE.icon,
-    tokens: [ALL_IBC_TOKENS_WITH_DENOMS.INJECTIVE],
-    channel: "channel-99",
-    endpoint: "https://k8s.global.mainnet.lcd.injective.network:443", //TODO:
-    addressBeginning: "inj",
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },

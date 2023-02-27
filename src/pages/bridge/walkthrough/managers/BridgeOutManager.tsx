@@ -195,6 +195,7 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
                   props.currentBridgeOutToken.ibcDenom,
                   CantoMainnet.cosmosAPIEndpoint,
                   props.currentBridgeOutNetwork.endpoint,
+                  props.currentBridgeOutNetwork.latestBlockEndpoint,
                   ibcFee,
                   chain,
                   memo

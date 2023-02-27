@@ -255,6 +255,7 @@ const BridgeOut = (props: BridgeOutProps) => {
                       selectedNativeToken.ibcDenom,
                       CantoMainnet.cosmosAPIEndpoint,
                       bridgeOutNetwork.endpoint,
+                      bridgeOutNetwork.latestBlockEndpoint,
                       ibcFee,
                       chain,
                       memo
