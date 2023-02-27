@@ -1,8 +1,8 @@
 import { parseUnits } from "ethers/lib/utils";
 import {
-  allBridgeOutNetworks,
+  ALL_BRIDGE_OUT_NETWORKS,
   BridgeOutNetworks,
-} from "pages/bridge/config/gravityBridgeTokens";
+} from "pages/bridge/config/bridgeOutNetworks";
 import {
   EmptySelectedConvertToken,
   EmptySelectedETHToken,
@@ -28,7 +28,7 @@ test("checking gravity address is valid", () => {
   ];
   const expected = [true, false, false, false, false];
   const testReturns = testCases.map((testCase) =>
-    allBridgeOutNetworks[BridgeOutNetworks.GRAVITY_BRIDGE].checkAddress(
+    ALL_BRIDGE_OUT_NETWORKS[BridgeOutNetworks.GRAVITY_BRIDGE].checkAddress(
       testCase
     )
   );
@@ -47,7 +47,7 @@ test("checking cosmos address is valid", () => {
   ];
   const expected = [false, false, false, false, true];
   const testReturns = testCases.map((testCase) =>
-    allBridgeOutNetworks[BridgeOutNetworks.COSMOS_HUB].checkAddress(testCase)
+    ALL_BRIDGE_OUT_NETWORKS[BridgeOutNetworks.COSMOS_HUB].checkAddress(testCase)
   );
   for (let i = 0; i < testCases.length; i++) {
     expect(testReturns[i]).toBe(expected[i]);

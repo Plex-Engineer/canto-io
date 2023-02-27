@@ -49,6 +49,7 @@ type Props = {
   onChange: (value: string) => void;
   value: string;
   icon: string;
+  tokenDecimals: number;
 };
 
 const Field = (props: Props) => {
@@ -100,7 +101,12 @@ const Field = (props: Props) => {
         <p>
           <Max
             onClick={() => {
-              props.onChange(props.limit.toString());
+              props.onChange(
+                truncateNumber(
+                  props.limit.toString(),
+                  props.tokenDecimals == 6 ? 4 : 8
+                )
+              );
             }}
           >
             max

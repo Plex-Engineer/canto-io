@@ -4,15 +4,15 @@ import styled from "@emotion/styled";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
 
 import ImageButton from "global/components/ImageButton";
-import { PrimaryButton, Text } from "global/packages/src";
+import { Text } from "global/packages/src";
 import { useBridgeStore } from "../stores/gravityStore";
 import LoadingBlip from "./LoadingBlip";
 import down from "assets/down.svg";
 import { StyledPopup } from "./TokenSelect";
 import NetworksModal from "./networksModal";
-import { allBridgeOutNetworks } from "../config/gravityBridgeTokens";
 import { useTokenStore } from "../stores/tokenStore";
 import { useRef } from "react";
+import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 
 interface Props {
   left: {
@@ -147,7 +147,7 @@ const SwitchBridging = (props: Props) => {
               }
             >
               <NetworksModal
-                networks={allBridgeOutNetworks}
+                networks={ALL_BRIDGE_OUT_NETWORKS}
                 onClose={(network) => {
                   if (networkSelectRef != null) {
                     //@ts-ignore

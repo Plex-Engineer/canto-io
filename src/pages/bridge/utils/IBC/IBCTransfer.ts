@@ -13,6 +13,7 @@ export async function txIBCTransfer(
   denom: any,
   nodeAddressIP: any,
   counterPartyChain: any,
+  latestBlockEndpoint: any,
   fee: any,
   chain: any,
   memo: any
@@ -31,18 +32,19 @@ export async function txIBCTransfer(
   });
   const account = accounts[0];
   const senderObj = await getSenderObj(account, nodeAddressIP);
-  console.log(account);
   //get revision number/height for construction of the timeout-height object (determines the last update of the counter-party IBC client)
   const ibcData = await getIBCData(counterPartyChain);
 
-  let timeoutTimestamp = await getBlockTimestamp(counterPartyChain);
+  let timeoutTimestamp = await getBlockTimestamp(
+    counterPartyChain,
+    latestBlockEndpoint
+  );
 
   //decrease precision of timeoutTimestamp to avoid errors in protobuf encoding
   timeoutTimestamp = timeoutTimestamp.slice(0, 9) + "0000000000";
 
   //set tolerance on revision height to be 1000 blocks, (timeoutHeight is 1000 blocks higher than client concensus state height)
   const revisionHeight = Number(ibcData["height"]["revision_height"]) + 1000;
-  console.log(revisionHeight);
 
   const params = {
     sourcePort: "transfer", // ibc transfers will always be sent to the transfer port of the counterparty client
@@ -82,8 +84,12 @@ export async function getIBCData(nodeAddress: string) {
 /**
  * @param {string} nodeAddress rest endpoint to request counter-party chain timestamp
  */
-export async function getBlockTimestamp(nodeAddress: string) {
-  const resp = await fetch(nodeAddress + "/blocks/latest", {
+export async function getBlockTimestamp(
+  nodeAddress: string,
+  latestBlockEndpoint?: string
+) {
+  const urlEnding = latestBlockEndpoint ?? "";
+  const resp = await fetch(nodeAddress + urlEnding + "/blocks/latest", {
     method: "GET",
     headers: {
       Accept: "application/json",

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import {
-  allBridgeOutNetworks,
+  ALL_BRIDGE_OUT_NETWORKS,
   BridgeOutNetworkInfo,
-} from "../config/gravityBridgeTokens";
+} from "../config/bridgeOutNetworks";
 import { UserNativeTokens } from "../config/interfaces";
 import { useTokenStore } from "../stores/tokenStore";
 import { getBridgeOutButtonText } from "../utils/reactiveButtonText";
@@ -21,7 +21,7 @@ export function useCustomCantoToCosmosInfo(
   selectedNativeToken: UserNativeTokens
 ): BridgeOutProps {
   const tokenStore = useTokenStore();
-  const bridgeOutNetwork = allBridgeOutNetworks[tokenStore.bridgeOutNetwork];
+  const bridgeOutNetwork = ALL_BRIDGE_OUT_NETWORKS[tokenStore.bridgeOutNetwork];
   const [amount, setAmount] = useState<string>("");
   const [userCosmosAddress, setUserCosmosAddress] = useState("");
 

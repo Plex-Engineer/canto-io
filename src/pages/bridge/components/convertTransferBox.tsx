@@ -102,7 +102,7 @@ export const ConvertTransferBox = (props: ConvertTransferBoxProps) => {
                 props.cantoToEVM
                   ? await txConvertCoin(
                       props.cantoAddress,
-                      props.activeToken.nativeName,
+                      props.activeToken.ibcDenom,
                       convertStringToBigNumber(
                         props.amount,
                         props.activeToken.decimals

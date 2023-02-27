@@ -24,14 +24,6 @@ const Footer = () => {
       </div>
 
       <div className="links">
-        <Text
-          style={{
-            color: "var(--primary-darker-color)",
-          }}
-          type="text"
-        >
-          all rights reserved 2021-2022
-        </Text>
         <div className="icon-links">
           <ImageButton
             src={discord}
