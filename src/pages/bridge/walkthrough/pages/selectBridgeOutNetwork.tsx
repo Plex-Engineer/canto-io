@@ -4,13 +4,13 @@ import { CInput } from "global/packages/src/components/atoms/Input";
 import {
   BridgeOutNetworkInfo,
   BridgeOutNetworks,
-  BridgeOutNetworkTokenData,
-} from "pages/bridge/config/gravityBridgeTokens";
+  BridgeOutNetworkData,
+} from "pages/bridge/config/bridgeOutNetworks";
 import TextSwitch from "../components/TextSwitch";
 import BaseStyled from "./layout";
 
 interface SelectBridgeProps {
-  networks: BridgeOutNetworkTokenData;
+  networks: BridgeOutNetworkData;
   activeNetwork: BridgeOutNetworkInfo;
   onSelect: (network: BridgeOutNetworks) => void;
   canContinue: boolean;

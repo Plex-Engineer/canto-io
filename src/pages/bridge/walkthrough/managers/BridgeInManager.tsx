@@ -216,7 +216,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
               async () =>
                 await txConvertCoin(
                   props.cantoAddress,
-                  props.currentConvertToken.nativeName,
+                  props.currentConvertToken.ibcDenom,
                   convertStringToBigNumber(
                     props.amount,
                     props.currentConvertToken.decimals

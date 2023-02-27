@@ -1,26 +1,8 @@
 import { BigNumber } from "ethers";
-
-export interface TokenData {
-  symbol: string;
-  name: string;
-  decimals: number;
-  address: string;
-  underlying: Underlying;
-}
-
-export interface Underlying {
-  symbol: string;
-  name: string;
-  decimals: number;
-  address: string;
-  isERC20: boolean;
-  isLP: boolean;
-  icon: string;
-  cTokenAddress: string;
-}
+import { CTOKEN } from "global/config/tokenInfo";
 
 export interface LMTokenDetails {
-  data: TokenData;
+  data: CTOKEN;
   cash: BigNumber;
   exchangeRate: BigNumber;
   collateralFactor: BigNumber;
@@ -76,7 +58,6 @@ export const EmptyActiveLMToken: UserLMTokenDetails = {
       isERC20: false,
       isLP: false,
       icon: "",
-      cTokenAddress: "",
     },
   },
   cash: BigNumber.from(0),

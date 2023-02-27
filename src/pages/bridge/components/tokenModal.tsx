@@ -14,32 +14,34 @@ const TokenModal = (props: Props) => {
   return (
     <Styled>
       <div className="token-list">
-        {props.tokens?.map((token) => (
-          <div
-            role="button"
-            tabIndex={0}
-            key={token.icon}
-            className="token-item"
-            onClick={() => {
-              props.onClose(token);
-            }}
-          >
-            <span>
-              <img src={token.icon} alt="" />
-              <p>{token.name}</p>
-            </span>
-            <p className="balance">
-              {props.balance
-                ? truncateNumber(
-                    formatUnits(
-                      BigNumber.from(token[props.balance]),
-                      token.decimals
+        {props.tokens
+          ?.sort((a, b) => Number(b[props.balance]) - Number(a[props.balance]))
+          .map((token) => (
+            <div
+              role="button"
+              tabIndex={0}
+              key={token.icon}
+              className="token-item"
+              onClick={() => {
+                props.onClose(token);
+              }}
+            >
+              <span>
+                <img src={token.icon} alt="" />
+                <p>{token.name}</p>
+              </span>
+              <p className="balance">
+                {props.balance
+                  ? truncateNumber(
+                      formatUnits(
+                        BigNumber.from(token[props.balance]),
+                        token.decimals
+                      )
                     )
-                  )
-                : ""}
-            </p>
-          </div>
-        ))}
+                  : ""}
+              </p>
+            </div>
+          ))}
       </div>
     </Styled>
   );
@@ -71,6 +73,8 @@ const Styled = styled.div`
   .token-list {
     scrollbar-color: var(--primary-color);
     scroll-behavior: smooth;
+    max-height: 200px;
+    overflow-y: scroll;
     /* width */
     padding: 8px;
     .token-item {

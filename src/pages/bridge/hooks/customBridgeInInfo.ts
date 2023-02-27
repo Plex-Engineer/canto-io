@@ -75,7 +75,10 @@ export function useBridgeEthToCantoInfo(
           "115792089237316195423570985008687907853269984665640564039457584007913129639935"
         )
       );
-    } else if (parsedAmount.gt(0)) {
+    } else if (
+      parsedAmount.gt(0) &&
+      networkInfo.cantoAddress.slice(0, 5) == "canto"
+    ) {
       mixpanelTrack(CantoTransactionType.BRIDGE_IN);
       sendCosmos(
         selectedETHToken.address,

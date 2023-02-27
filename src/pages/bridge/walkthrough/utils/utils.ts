@@ -1,5 +1,5 @@
 import { formatUnits } from "ethers/lib/utils";
-import { convertCoinTokens } from "pages/bridge/config/gravityBridgeTokens";
+import { CONVERT_COIN_TOKENS } from "pages/bridge/config/bridgingTokens";
 import {
   UserConvertToken,
   UserGravityBridgeTokens,
@@ -15,7 +15,7 @@ export function formatTokensAmountsbyChain(
   ethTokens: UserGravityBridgeTokens[],
   convertTokens: UserConvertToken[]
 ): TokenTableProps[] {
-  return convertCoinTokens.map((token) => {
+  return CONVERT_COIN_TOKENS.map((token) => {
     const ethToken = ethTokens.find((eTok) => eTok.name == token.name);
     const ethBalance = ethToken
       ? formatUnits(ethToken.balanceOf, ethToken.decimals)

@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 import { TransactionState } from "global/config/transactionTypes";
-import { BridgeOutNetworks } from "../config/gravityBridgeTokens";
+import { BridgeOutNetworks } from "../config/bridgeOutNetworks";
 import {
   BaseToken,
   UserGravityBridgeTokens,
