@@ -62,11 +62,17 @@ const Styled = styled.div`
     justify-content: center;
     align-items: center;
     gap: 2rem;
+    width: 100%;
     max-width: 410px;
     button {
-      width: 100vmax;
+      /* width: 100vmax; */
+      /* margin: 0 2rem; */
       max-width: 410px;
     }
+  }
+
+  @media (max-width: 1000px) {
+    width: 100vw;
   }
 `;
 export default NotConnected;
