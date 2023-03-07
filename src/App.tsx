@@ -21,7 +21,8 @@ const Container = styled.div`
   background-color: #111;
 `;
 //Lazy loading pages. will load in the required pages
-const Bridging = lazy(() => import("pages/bridge/Bridging"));
+const Bridge = lazy(() => import("pages/bridge/Bridging"));
+const Bridging = lazy(() => import("pages/bridging/Bridging"));
 const Dex = lazy(() => import("./pages/dexLP/Dex"));
 const Staking = lazy(() => import("./pages/staking/Staking"));
 const LendingMarket = lazy(() => import("./pages/lending/LendingMarket"));
