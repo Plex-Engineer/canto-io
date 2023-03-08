@@ -63,7 +63,6 @@ const BridgeIn = (props: BridgeInProps) => {
     props.setToken,
     props.gravityAddress
   );
-
   const {
     amount: convertAmount,
     setAmount: setConvertAmount,
