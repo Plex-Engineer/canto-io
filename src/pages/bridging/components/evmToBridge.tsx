@@ -1,10 +1,14 @@
 import styled from "@emotion/styled";
 import { PrimaryButton, Text } from "global/packages/src";
+import ethIcon from "assets/icons/ETH.svg";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
 import arrow from "../../../assets/next.svg";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { toastHandler } from "global/utils/toastHandler";
 import CopyIcon from "../../../assets/copy.svg";
+import ImageButton from "global/components/ImageButton";
+import LoadingBlip from "./LoadingBlip";
+import { CInput } from "global/packages/src/components/atoms/Input";
 
 interface Props {
   connected: boolean;
@@ -41,10 +45,63 @@ const EvmToBridge = (props: Props) => {
         Send funds to canto
       </Text>
 
-      <div className="icons-indicator"></div>
-      <div className="token-box"></div>
+      <div className="icons-indicator">
+        <div className="center">
+          <img
+            src={ethIcon}
+            alt="ethereum"
+            height={42}
+            style={{ marginBottom: "3px" }}
+          />
+          <Text type="title">Ethereum</Text>
+        </div>
+        <div className="loading">
+          <LoadingBlip active />
+        </div>
+        <div className="center">
+          <img
+            src={bridgeIcon}
+            alt={"canto (Bridge)"}
+            height={42}
+            style={{ marginBottom: "2px" }}
+          />
+          <Text type="title">Bridge</Text>
+        </div>
+      </div>
+      <div className="token-box">
+        <div className="token-select"></div>
+        <div className="balance">
+          <Text
+            style={{
+              color: "#848484",
+            }}
+            align="right"
+          >
+            balance : 3.4 ETH
+          </Text>
+        </div>
+      </div>
       <div className="amount-box">
-        <div className="amount"></div>
+        <div className="amount">
+          <Text
+            style={{
+              color: "#848484",
+              padding: "1rem",
+              width: "150px",
+            }}
+            align="right"
+          >
+            amount :
+          </Text>
+          <CInput
+            style={{
+              backgroundColor: "black",
+              width: "100%",
+              height: "54px",
+            }}
+            placeholder="0.00"
+          ></CInput>
+        </div>
         <PrimaryButton height="big" weight="bold" padding="lg">
           bridge
         </PrimaryButton>
@@ -131,14 +188,38 @@ const Styled = styled.div`
     border: 1px solid #252525;
     border-radius: 4px;
     margin: 1rem 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
   }
 
+  .center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  .token-select {
+    background-color: #252525;
+    width: 100%;
+    height: 100%;
+  }
+
+  .balance {
+    width: 70%;
+  }
   .token-box {
     height: 60px;
     width: 100%;
     border: 1px solid #252525;
     border-radius: 4px;
     margin: 1rem 0;
+    display: flex;
+    padding: 0 1rem;
+    justify-content: space-between;
+    align-items: center;
   }
   .amount-box {
     display: flex;
@@ -150,6 +231,8 @@ const Styled = styled.div`
     background: #060606;
     border: 1px solid #2e2d2d;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
   }
 
   .row {

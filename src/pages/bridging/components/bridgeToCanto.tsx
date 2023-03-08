@@ -13,13 +13,34 @@ const BridgeToCanto = () => {
         once the transaction is done, please click on complete to get the funds
         from bridge to canto (evm)
       </Text>
-      <div className="scrollable">
-        <MiniTransaction
-          origin="Ethereum"
-          amount={BigNumber.from("10234000000000000000")}
-          timeLeftInSecs={6}
-          token="USDT"
-        />
+      <div className="scroll-port">
+        <div className="scrollable">
+          <MiniTransaction
+            origin="Ethereum"
+            amount={BigNumber.from("10234000000000000000")}
+            timeLeftInSecs={6}
+            token="USDT"
+          />
+
+          <MiniTransaction
+            origin="Cosmos"
+            amount={BigNumber.from("034000000000000000")}
+            timeLeftInSecs={14}
+            token="USDT"
+          />
+          <MiniTransaction
+            origin="Cosmos"
+            amount={BigNumber.from("23443435000000000000000")}
+            timeLeftInSecs={0}
+            token="USDT"
+          />
+          <MiniTransaction
+            origin="Ethereum"
+            amount={BigNumber.from("23440000004000000000")}
+            timeLeftInSecs={0}
+            token="USDT"
+          />
+        </div>
       </div>
     </Styled>
   );
@@ -32,9 +53,17 @@ const Styled = styled.div`
   padding: 1rem 2rem;
   margin-top: 3rem;
 
+  .scroll-port {
+    margin-top: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+  }
   .scrollable {
     width: 100%;
     padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 `;
 export default BridgeToCanto;
