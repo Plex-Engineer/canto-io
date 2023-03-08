@@ -1,5 +1,6 @@
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { useEffect, useState } from "react";
+import { useBridgeTransactionPageStore } from "../stores/transactionHistoryStore";
 import {
   TransactionHistoryEvent,
   getBridgeInEventsWithStatus,
@@ -13,6 +14,7 @@ interface AllBridgeTxHistory {
 }
 export function useTransactionHistory(): AllBridgeTxHistory {
   const networkInfo = useNetworkInfo();
+  const txStore = useBridgeTransactionPageStore();
   const [bridgeOutTransactions, setBridgeOutTransactions] = useState<
     TransactionHistoryEvent[]
   >([]);
@@ -29,9 +31,11 @@ export function useTransactionHistory(): AllBridgeTxHistory {
       );
       setCompleteBridgeInTransactions(completed);
       setPendingBridgeInTransactions(pending);
-
-      setBridgeOutTransactions(
-        await getIBCOutTransactions(networkInfo.cantoAddress)
+      const ibcOut = await getIBCOutTransactions(networkInfo.cantoAddress);
+      setBridgeOutTransactions(ibcOut);
+      txStore.setNewTransactions(
+        completed.length + pending.length + ibcOut.length,
+        networkInfo.account
       );
     }
   }

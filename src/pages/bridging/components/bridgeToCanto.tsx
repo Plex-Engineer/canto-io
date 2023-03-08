@@ -1,9 +1,13 @@
 import styled from "@emotion/styled";
 import { BigNumber } from "ethers";
 import { Text } from "global/packages/src";
+import { ConvertTransaction } from "../config/interfaces";
 import MiniTransaction from "./miniTransaction";
 
-const BridgeToCanto = () => {
+interface BridgeToCantoProps {
+  transactions: ConvertTransaction[];
+}
+const BridgeToCanto = (props: BridgeToCantoProps) => {
   return (
     <Styled>
       <Text type="title" size="title2">
@@ -15,31 +19,9 @@ const BridgeToCanto = () => {
       </Text>
       <div className="scroll-port">
         <div className="scrollable">
-          <MiniTransaction
-            origin="Ethereum"
-            amount={BigNumber.from("10234000000000000000")}
-            timeLeftInSecs={6}
-            token="USDT"
-          />
-
-          <MiniTransaction
-            origin="Cosmos"
-            amount={BigNumber.from("034000000000000000")}
-            timeLeftInSecs={14}
-            token="USDT"
-          />
-          <MiniTransaction
-            origin="Cosmos"
-            amount={BigNumber.from("23443435000000000000000")}
-            timeLeftInSecs={0}
-            token="USDT"
-          />
-          <MiniTransaction
-            origin="Ethereum"
-            amount={BigNumber.from("23440000004000000000")}
-            timeLeftInSecs={0}
-            token="USDT"
-          />
+          {props.transactions.map((tx, index) => {
+            return <MiniTransaction key={index} transaction={tx} />;
+          })}
         </div>
       </div>
     </Styled>

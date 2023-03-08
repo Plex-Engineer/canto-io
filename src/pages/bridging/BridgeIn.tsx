@@ -1,30 +1,35 @@
 import styled from "@emotion/styled";
 import BridgeToCanto from "./components/bridgeToCanto";
 import EvmToBridge from "./components/evmToBridge";
-import cantoIcon from "assets/icons/canto-evm.svg";
 import ethIcon from "assets/icons/ETH.svg";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
+import { ConvertTransaction } from "./config/interfaces";
 
-const BridgeIn = () => {
+interface BridgeInProps {
+  ethAddress?: string;
+  cantoAddress?: string;
+  step2Transactions: ConvertTransaction[];
+}
+const BridgeIn = (props: BridgeInProps) => {
   return (
     <BridgeStyled>
       <div className="evmToBrige">
         <EvmToBridge
           connected
           from={{
-            address: "0x348984930248298429",
+            address: props.ethAddress,
             name: "ethereum",
             icon: ethIcon,
           }}
           to={{
-            address: "canto0x348984930248298429",
+            address: props.cantoAddress,
             name: "canto (bridge)",
             icon: bridgeIcon,
           }}
         />
       </div>
       <div className="bridgeToCanto">
-        <BridgeToCanto />
+        <BridgeToCanto transactions={props.step2Transactions} />
       </div>
     </BridgeStyled>
   );

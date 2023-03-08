@@ -26,3 +26,14 @@ export function findBridgeInToken(tokenAddress: string): Token | undefined {
     (token) => token.address.toLowerCase() === tokenAddress.toLowerCase()
   );
 }
+
+export function getNetworkFromTokenName(ibcDenom: string): string {
+  for (const [, value] of Object.entries(ALL_BRIDGE_OUT_NETWORKS)) {
+    for (const token of value.tokens) {
+      if (token.ibcDenom == ibcDenom) {
+        return value.name;
+      }
+    }
+  }
+  return "cosmos";
+}

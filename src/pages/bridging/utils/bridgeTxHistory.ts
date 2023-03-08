@@ -1,4 +1,4 @@
-import { Contract, ethers, Event } from "ethers";
+import { BigNumber, Contract, ethers } from "ethers";
 import { ADDRESSES } from "global/config/addresses";
 import { CantoMainnet } from "global/config/networks";
 import { Token } from "global/config/tokenInfo";
@@ -21,7 +21,7 @@ const globalFetchOptions = {
 export interface TransactionHistoryEvent {
   bridgeType: "in" | "out";
   token?: Token;
-  amount: string;
+  amount: BigNumber;
   timestamp: number;
   blockNumber: number;
   txHash: string;
@@ -64,7 +64,7 @@ export async function getBridgeInEventsWithStatus(
       ) {
         pendingEvents.push({
           ...event,
-          secondsToComplete: "0",
+          secondsToComplete: "-1",
           complete: false,
         });
       } else {
@@ -194,7 +194,7 @@ async function getIBCInTransactions(
           ibcInHistory.push({
             bridgeType: "in",
             token: findNativeToken(denom),
-            amount: amount ?? "0",
+            amount: BigNumber.from(amount ?? "0"),
             timestamp: tx.timestamp,
             blockNumber: Number(tx.height),
             txHash: tx.txHash,
@@ -239,7 +239,7 @@ export async function getIBCOutTransactions(
           bridgeOutData.push({
             bridgeType: "out",
             token,
-            amount,
+            amount: BigNumber.from(amount),
             timestamp: tx.timestamp,
             blockNumber: Number(tx.height),
             txHash: tx.txhash,

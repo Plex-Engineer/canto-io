@@ -1,15 +1,12 @@
 import styled from "@emotion/styled";
-import { formatCurrency } from "@usedapp/core/dist/esm/src/model";
-import { BigNumber } from "ethers";
-import { formatEther } from "ethers/lib/utils";
+import { formatUnits } from "ethers/lib/utils";
 import { PrimaryButton, Text } from "global/packages/src";
 import { formatBalance } from "global/utils/utils";
+import { ConvertTransaction } from "../config/interfaces";
+import { convertSecondsToString } from "../utils/utils";
 
 interface Props {
-  origin: "Ethereum" | "Cosmos";
-  timeLeftInSecs: number;
-  amount: BigNumber;
-  token: string;
+  transaction: ConvertTransaction;
 }
 const MiniTransaction = (props: Props) => {
   return (
@@ -18,7 +15,7 @@ const MiniTransaction = (props: Props) => {
         <Text size="text3" align="left">
           origin
         </Text>
-        <Text type="title">{props.origin}</Text>
+        <Text type="title">{props.transaction.origin}</Text>
       </div>
 
       <div className="dual-item">
@@ -26,9 +23,7 @@ const MiniTransaction = (props: Props) => {
           time left
         </Text>
         <Text type="title" size="text2">
-          {props.timeLeftInSecs === 0
-            ? "done "
-            : props.timeLeftInSecs + " mins left"}
+          {convertSecondsToString(props.transaction.timeLeft)}
         </Text>
       </div>
       <div className="dual-item">
@@ -36,8 +31,13 @@ const MiniTransaction = (props: Props) => {
           amount
         </Text>
         <Text type="title">
-          {formatBalance(formatEther(props.amount))}
-          {" " + props.token}
+          {formatBalance(
+            formatUnits(
+              props.transaction.amount,
+              props.transaction.token.decimals
+            )
+          )}
+          {" " + props.transaction.token.symbol}
         </Text>
       </div>
       <PrimaryButton
@@ -45,11 +45,11 @@ const MiniTransaction = (props: Props) => {
           maxWidth: "7rem",
         }}
         height="normal"
-        disabled={props.timeLeftInSecs !== 0}
+        disabled={props.transaction.timeLeft !== "0"}
         weight="bold"
         filled
       >
-        {props.timeLeftInSecs !== 0 ? "ongoing" : "complete"}
+        {props.transaction.timeLeft !== "0" ? "ongoing" : "complete"}
       </PrimaryButton>
     </Styled>
   );

@@ -45,3 +45,10 @@ export const EMPTY_CONVERT_TOKEN: UserConvertToken = {
   ...EMPTY_BRIDGE_OUT_TOKEN,
   erc20Balance: BigNumber.from(-1),
 };
+
+export interface ConvertTransaction {
+  origin: string;
+  timeLeft: string;
+  amount: BigNumber;
+  token: UserConvertToken;
+}
