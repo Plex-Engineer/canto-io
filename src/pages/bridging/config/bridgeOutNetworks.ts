@@ -1,7 +1,7 @@
 import cosmosIcon from "assets/icons/ATOM.svg";
 import GravitonGrey from "assets/icons/Graviton-Grey.svg";
 import { TOKENS } from "global/config/tokenInfo";
-import { ALL_IBC_TOKENS_WITH_DENOMS } from "pages/bridge/config/bridgingTokens";
+import { ALL_IBC_TOKENS_WITH_DENOMS } from "./bridgingTokens";
 import { NativeToken } from "./interfaces";
 
 export interface BridgeOutNetworkInfo {
