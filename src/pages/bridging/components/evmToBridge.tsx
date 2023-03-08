@@ -51,7 +51,7 @@ const EvmToBridge = (props: Props) => {
             src={ethIcon}
             alt="ethereum"
             height={42}
-            style={{ marginBottom: "3px" }}
+            style={{ marginBottom: "10px" }}
           />
           <Text type="title">Ethereum</Text>
         </div>
@@ -63,7 +63,7 @@ const EvmToBridge = (props: Props) => {
             src={bridgeIcon}
             alt={"canto (Bridge)"}
             height={42}
-            style={{ marginBottom: "2px" }}
+            style={{ marginBottom: "10px" }}
           />
           <Text type="title">Bridge</Text>
         </div>
@@ -95,7 +95,7 @@ const EvmToBridge = (props: Props) => {
           </Text>
           <CInput
             style={{
-              backgroundColor: "black",
+              backgroundColor: "transparent",
               width: "100%",
               height: "54px",
             }}
