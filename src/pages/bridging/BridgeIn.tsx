@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
 import BridgeToCanto from "./components/bridgeToCanto";
 import EvmToBridge from "./components/evmToBridge";
-import cantoIcon from "assets/icons/canto-evm.svg";
 import ethIcon from "assets/icons/ETH.svg";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
 
@@ -14,12 +13,10 @@ const BridgeIn = () => {
           from={{
             address: "0x348984930248298429",
             name: "ethereum",
-            icon: ethIcon,
           }}
           to={{
             address: "canto0x348984930248298429",
             name: "canto (bridge)",
-            icon: bridgeIcon,
           }}
         />
       </div>
