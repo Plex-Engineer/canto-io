@@ -6,13 +6,17 @@ import arrow from "../../../assets/next.svg";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { toastHandler } from "global/utils/toastHandler";
 import CopyIcon from "../../../assets/copy.svg";
-import ImageButton from "global/components/ImageButton";
 import LoadingBlip from "./LoadingBlip";
 import { CInput } from "global/packages/src/components/atoms/Input";
+import { useBridgeTokenInfo } from "../hooks/useBridgeTokenInfo";
+import { TokenWallet } from "pages/bridge/components/TokenSelect";
+import { SelectedTokens } from "../stores/bridgeTokenStore";
+import { formatUnits } from "ethers/lib/utils";
+import { truncateNumber } from "global/utils/utils";
 
 interface Props {
   connected: boolean;
-  //   tokenSelector: React.ReactNode;
+  // tokenSelector: React.ReactNode;
   //   networkName: string;
   //   button: React.ReactNode;
   //   max: string;
@@ -35,6 +39,9 @@ interface Props {
   //   AddressBoxPlaceholder?: string;
 }
 const EvmToBridge = (props: Props) => {
+  const tokenStore = useBridgeTokenInfo();
+  const ethToken = tokenStore.selectedTokens[SelectedTokens.ETHTOKEN];
+
   function copyAddress() {
     toastHandler("copied address", true, "0", 300);
   }
@@ -69,7 +76,20 @@ const EvmToBridge = (props: Props) => {
         </div>
       </div>
       <div className="token-box">
-        <div className="token-select"></div>
+        <div className="token-select">
+          {" "}
+          <TokenWallet
+            tokens={tokenStore.userBridgeInTokens}
+            balance="erc20Balance"
+            activeToken={ethToken}
+            onSelect={(value) => {
+              tokenStore.setSelectedToken(
+                value ?? ethToken,
+                SelectedTokens.ETHTOKEN
+              );
+            }}
+          />
+        </div>
         <div className="balance">
           <Text
             style={{
@@ -77,7 +97,10 @@ const EvmToBridge = (props: Props) => {
             }}
             align="right"
           >
-            balance : 3.4 ETH
+            balance :{" "}
+            {truncateNumber(
+              formatUnits(ethToken.erc20Balance, ethToken.decimals)
+            )}
           </Text>
         </div>
       </div>

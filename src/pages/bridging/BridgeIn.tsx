@@ -3,12 +3,17 @@ import BridgeToCanto from "./components/bridgeToCanto";
 import EvmToBridge from "./components/evmToBridge";
 import ethIcon from "assets/icons/ETH.svg";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
-import { ConvertTransaction } from "./config/interfaces";
+import { ConvertTransaction, UserBridgeInToken } from "./config/interfaces";
+import { TokenWallet } from "pages/bridge/components/TokenSelect";
+import { useBridgeTokenInfo } from "./hooks/useBridgeTokenInfo";
+import { SelectedTokens } from "./stores/bridgeTokenStore";
+import { EMPTY_BRIDGE_IN_TOKEN } from "./config/interfaces";
 
 interface BridgeInProps {
   ethAddress?: string;
   cantoAddress?: string;
   step2Transactions: ConvertTransaction[];
+  ethGBridgeTokens: UserBridgeInToken[];
 }
 const BridgeIn = (props: BridgeInProps) => {
   return (

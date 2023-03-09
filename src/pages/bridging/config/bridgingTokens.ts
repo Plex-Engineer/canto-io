@@ -1,4 +1,5 @@
 import { Token, TOKENS } from "global/config/tokenInfo";
+import { BridgeOutNetworks } from "./bridgeOutNetworks";
 import { NativeToken } from "./interfaces";
 
 const ETH_GRAVITY_BRIDGE_IN_TOKENS: Token[] = [
@@ -25,68 +26,81 @@ const ALL_IBC_DENOMS = {
   COMDEX:
     "ibc/B0ADAE6558A3E9B2B49FF2EA89A9AEA312431FEB51FCF73650C8C90589F5149B",
 };
-
-const ALL_IBC_TOKENS_WITH_DENOMS = {
+export type IBCTOKENS = {
+  [index: string]: NativeToken;
+};
+const ALL_IBC_TOKENS_WITH_DENOMS: IBCTOKENS = {
   USDT: {
     ...TOKENS.cantoMainnet.USDT,
     ibcDenom: ALL_IBC_DENOMS.USDT,
     nativeName: "gravity" + TOKENS.ETHMainnet.USDT.address,
+    supportedOutChannels: [BridgeOutNetworks.GRAVITY_BRIDGE],
   },
   USDC: {
     ...TOKENS.cantoMainnet.USDC,
     ibcDenom: ALL_IBC_DENOMS.USDC,
     nativeName: "gravity" + TOKENS.ETHMainnet.USDC.address,
+    supportedOutChannels: [BridgeOutNetworks.GRAVITY_BRIDGE],
   },
   ETH: {
     ...TOKENS.cantoMainnet.ETH,
     ibcDenom: ALL_IBC_DENOMS.ETH,
     nativeName: "gravity" + TOKENS.ETHMainnet.WETH.address,
+    supportedOutChannels: [BridgeOutNetworks.GRAVITY_BRIDGE],
   },
   ATOM: {
     ...TOKENS.cantoMainnet.ATOM,
     ibcDenom: ALL_IBC_DENOMS.ATOM,
     nativeName: "uatom",
+    supportedOutChannels: [BridgeOutNetworks.COSMOS_HUB],
   },
-
   SOMM: {
     ...TOKENS.cantoMainnet.SOMM,
     ibcDenom: ALL_IBC_DENOMS.SOMM,
     nativeName: "usomm",
+    supportedOutChannels: [BridgeOutNetworks.SOMMELIER],
   },
   GRAV: {
     ...TOKENS.cantoMainnet.GRAV,
     ibcDenom: ALL_IBC_DENOMS.GRAV,
     nativeName: "ugraviton",
+    supportedOutChannels: [BridgeOutNetworks.GRAVITY_BRIDGE],
   },
   AKASH: {
     ...TOKENS.cantoMainnet.AKASH,
     ibcDenom: ALL_IBC_DENOMS.AKASH,
     nativeName: "uakt",
+    supportedOutChannels: [BridgeOutNetworks.AKASH],
   },
   OSMOSIS: {
     ...TOKENS.cantoMainnet.OSMOSIS,
     ibcDenom: ALL_IBC_DENOMS.OSMOSIS,
     nativeName: "uosmo",
+    supportedOutChannels: [BridgeOutNetworks.OSMOSIS],
   },
   CRESCENT: {
     ...TOKENS.cantoMainnet.CRESCENT,
     ibcDenom: ALL_IBC_DENOMS.CRESCENT,
     nativeName: "ucre",
+    supportedOutChannels: [BridgeOutNetworks.CRESCENT],
   },
   KAVA: {
     ...TOKENS.cantoMainnet.KAVA,
     ibcDenom: ALL_IBC_DENOMS.KAVA,
     nativeName: "ukava",
+    supportedOutChannels: [BridgeOutNetworks.KAVA],
   },
   INJECTIVE: {
     ...TOKENS.cantoMainnet.INJECTIVE,
     ibcDenom: ALL_IBC_DENOMS.INJECTIVE,
     nativeName: "inj",
+    supportedOutChannels: [BridgeOutNetworks.INJECTIVE],
   },
   COMDEX: {
     ...TOKENS.cantoMainnet.COMDEX,
     ibcDenom: ALL_IBC_DENOMS.COMDEX,
     nativeName: "ucmdx",
+    supportedOutChannels: [BridgeOutNetworks.COMDEX],
   },
 };
 

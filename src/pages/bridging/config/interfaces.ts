@@ -1,6 +1,8 @@
 import { BigNumber } from "ethers";
 import { Token } from "global/config/tokenInfo";
 import emptyToken from "assets/empty.svg";
+import { BridgeTransaction } from "../hooks/useBridgingTransactions";
+import { BridgeOutNetworks } from "./bridgeOutNetworks";
 
 export interface BaseToken extends Token {
   [x: string | number | symbol]: unknown;
@@ -14,6 +16,7 @@ export interface UserBridgeInToken extends UserERC20Token {
 export interface NativeToken extends BaseToken {
   ibcDenom: string;
   nativeName: string;
+  supportedOutChannels: BridgeOutNetworks[];
 }
 export interface UserNativeToken extends NativeToken {
   nativeBalance: BigNumber;
@@ -40,6 +43,7 @@ export const EMPTY_BRIDGE_OUT_TOKEN: UserNativeToken = {
   nativeBalance: BigNumber.from(-1),
   nativeName: "none",
   ibcDenom: "ibc/000",
+  supportedOutChannels: [],
 };
 export const EMPTY_CONVERT_TOKEN: UserConvertToken = {
   ...EMPTY_BRIDGE_OUT_TOKEN,
@@ -51,4 +55,20 @@ export interface ConvertTransaction {
   timeLeft: string;
   amount: BigNumber;
   token: UserConvertToken;
+}
+export interface BridgeModal {
+  amount: BigNumber;
+  token: BaseToken;
+  max: BigNumber;
+  tx: BridgeTransaction;
+  txType: "BRIDGE_IN" | "CONVERT" | "BRIDGE_OUT";
+  from: {
+    chain: string;
+    address: string;
+  };
+  to: {
+    chain: string;
+    address: string;
+  };
+  onClose: () => void;
 }

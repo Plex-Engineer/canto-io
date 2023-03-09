@@ -11,22 +11,35 @@ import {
 import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/checkCosmosConfirmation";
 import { txIBCTransfer } from "../utils/IBC/IBCTransfer";
 import { BridgeOutNetworkInfo } from "../config/bridgeOutNetworks";
+import { ADDRESSES } from "global/config/addresses";
 
-interface BridgeTransaction {
+export interface BridgeTransaction {
   state: TransactionState;
-  send: (...args: any[]) => Promise<unknown>;
+  send: (amount: string) => Promise<unknown>;
   resetState: () => void;
 }
 interface BridgingTransactionsSelector {
   bridgeIn: {
     approveToken: (tokenAddress: string) => BridgeTransaction;
-    sendToCosmos: (gravityAddress: string) => BridgeTransaction;
+    sendToCosmos: (
+      gravityAddress: string,
+      tokenAddress: string,
+      cantoAddress: string
+    ) => BridgeTransaction;
   };
   convertCoin: {
-    convertTx: (tokenName: string, convertIn: boolean) => BridgeTransaction;
+    convertTx: (
+      tokenName: string,
+      cantoAddress: string,
+      convertIn: boolean
+    ) => BridgeTransaction;
   };
   bridgeOut: {
-    ibcOut: (tokenDenom: string) => BridgeTransaction;
+    ibcOut: (
+      tokenDenom: string,
+      cosmosAddress: string,
+      bridgeOutNetwork: BridgeOutNetworkInfo
+    ) => BridgeTransaction;
   };
 }
 
@@ -41,9 +54,19 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
         transactionName: "enable token",
       }
     );
-    return { state: state.status, send, resetState };
+    return {
+      state: state.status,
+      send: async (amount: string) => {
+        send(ADDRESSES.ETHMainnet.GravityBridge, amount);
+      },
+      resetState,
+    };
   }
-  function useSendToCosmos(gravityAddress: string) {
+  function useSendToCosmos(
+    gravityAddress: string,
+    tokenAddress: string,
+    cantoAddress: string
+  ) {
     const gBridgeInterface = new utils.Interface(gravityBridgeAbi);
     const contract = new Contract(gravityAddress, gBridgeInterface);
     const { state, send, resetState } = useContractFunction(
@@ -53,15 +76,25 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
         transactionName: "sending to cosmos",
       }
     );
-    return { state: state.status, send, resetState };
+    return {
+      state: state.status,
+      send: async (amount: string) => {
+        send(tokenAddress, cantoAddress, amount);
+      },
+      resetState,
+    };
   }
   /**
    * @notice If convertIn, tokenName must be its IBC denom
    * @notice If convertOut, tokenName must be its EVM address
    */
-  function useConvertCoin(tokenName: string, convertIn: boolean) {
+  function useConvertCoin(
+    tokenName: string,
+    cantoAddress: string,
+    convertIn: boolean
+  ) {
     const [convertState, setConvertState] = useState<TransactionState>("None");
-    const send = async (cantoAddress: string, amount: string) => {
+    const send = async (amount: string) => {
       setConvertState("PendingSignature");
       try {
         const tx = convertIn
@@ -96,13 +129,13 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
 
     return { state: convertState, send, resetState };
   }
-  function useIBCTransfer(tokenDenom: string) {
+  function useIBCTransfer(
+    tokenDenom: string,
+    cosmosAddress: string,
+    bridgeOutNetwork: BridgeOutNetworkInfo
+  ) {
     const [ibcState, setIbcState] = useState<TransactionState>("None");
-    const send = async (
-      cosmosAddress: string,
-      amount: string,
-      bridgeOutNetwork: BridgeOutNetworkInfo
-    ) => {
+    const send = async (amount: string) => {
       //check to make sure the address not null
       if (!bridgeOutNetwork.checkAddress(cosmosAddress)) {
         setIbcState("Exception");
