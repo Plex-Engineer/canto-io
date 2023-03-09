@@ -28,7 +28,7 @@ const MiniTransaction = (props: Props) => {
         <Text type="title" size="text2">
           {props.timeLeftInSecs === 0
             ? "done "
-            : props.timeLeftInSecs + " mins left"}
+            : props.timeLeftInSecs + " mins"}
         </Text>
       </div>
       <div className="dual-item">
