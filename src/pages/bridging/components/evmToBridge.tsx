@@ -24,12 +24,10 @@ interface Props {
   from: {
     name: string;
     address?: string;
-    icon?: string;
   };
   to: {
     name: string;
     address?: string;
-    icon?: string;
   };
   //   onSwitch: () => void;
   //   onChange: (s: string) => void;

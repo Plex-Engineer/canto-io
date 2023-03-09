@@ -1,6 +1,5 @@
 import { useBridgeTokenInfo } from "./hooks/useBridgeTokenInfo";
 import CantoTabs from "global/components/tabs";
-import { Text } from "global/packages/src";
 import BridgeIn from "./BridgeIn";
 import BridgeOut from "./BridgeOut";
 import Transactions from "./Transactions";

@@ -24,12 +24,10 @@ const BridgeIn = (props: BridgeInProps) => {
           from={{
             address: props.ethAddress,
             name: "ethereum",
-            icon: ethIcon,
           }}
           to={{
             address: props.cantoAddress,
             name: "canto (bridge)",
-            icon: bridgeIcon,
           }}
         />
       </div>
