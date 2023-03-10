@@ -1,14 +1,19 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
-import { ConvertTransaction } from "../config/interfaces";
+import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
+import { BridgeOutNetworkInfo, ConvertTransaction } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import MiniTransaction from "./miniTransaction";
 
-interface BridgeToCantoProps {
+interface IBCOutProps {
   transactions: ConvertTransaction[];
-  txHook: (tokenName: string) => BridgeTransaction;
+  txHook: (
+    tokenName: string,
+    cosmosAddress: string,
+    bridgeOutNetwork: BridgeOutNetworkInfo
+  ) => BridgeTransaction;
 }
-const BridgeToCanto = (props: BridgeToCantoProps) => {
+const IBCOut = (props: IBCOutProps) => {
   return (
     <Styled>
       <Text type="title" size="title2">
@@ -25,7 +30,13 @@ const BridgeToCanto = (props: BridgeToCantoProps) => {
               <MiniTransaction
                 key={index}
                 transaction={tx}
-                txFactory={() => props.txHook(tx.token.ibcDenom)}
+                txFactory={() =>
+                  props.txHook(
+                    tx.token.ibcDenom,
+                    "gravity1qqzky5czd8jtxp7k96w0d9th2vjxcxaeyxgjqz", //TODO: user must have their own address here
+                    ALL_BRIDGE_OUT_NETWORKS[tx.token.supportedOutChannels[0]]
+                  )
+                }
               />
             );
           })}
@@ -55,4 +66,4 @@ const Styled = styled.div`
     gap: 1rem;
   }
 `;
-export default BridgeToCanto;
+export default IBCOut;

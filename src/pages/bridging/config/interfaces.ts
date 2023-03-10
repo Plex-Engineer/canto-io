@@ -63,7 +63,7 @@ const EMPTY_TOKEN: Token = {
 export const EMPTY_BRIDGE_IN_TOKEN: UserBridgeInToken = {
   ...EMPTY_TOKEN,
   erc20Balance: BigNumber.from(0),
-  allowance: BigNumber.from(0),
+  allowance: BigNumber.from(-1),
 };
 export const EMPTY_BRIDGE_OUT_TOKEN: UserNativeToken = {
   ...EMPTY_TOKEN,

@@ -8,6 +8,7 @@ import {
 } from "./config/interfaces";
 import Step1TxBox from "./components/step1TxBox";
 import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
+import { ADDRESSES } from "global/config/addresses";
 
 interface BridgeInProps {
   ethAddress?: string;
@@ -30,18 +31,20 @@ const BridgeIn = (props: BridgeInProps) => {
           selectedToken={props.selectedEthToken}
           selectToken={props.selectEthToken}
           tokenBalanceProp="erc20Balance"
+          txHook={() => {
+            const selectedToken = props.selectedEthToken;
+            if (selectedToken.allowance.lt(selectedToken.erc20Balance)) {
+              return transactionHooks.bridgeIn.approveToken(
+                selectedToken.address
+              );
+            }
+            return transactionHooks.bridgeIn.sendToCosmos(
+              ADDRESSES.ETHMainnet.GravityBridge,
+              selectedToken.address,
+              props.cantoAddress ?? ""
+            );
+          }}
         />
-        {/* <EvmToBridge
-          connected
-          from={{
-            address: props.ethAddress,
-            name: "ethereum",
-          }}
-          to={{
-            address: props.cantoAddress,
-            name: "canto (bridge)",
-          }}
-        /> */}
       </div>
       <div className="bridgeToCanto">
         <BridgeToCanto

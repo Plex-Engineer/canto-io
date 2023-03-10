@@ -10,10 +10,13 @@ import LoadingBlip from "./LoadingBlip";
 import { TokenWallet } from "pages/bridge/components/TokenSelect";
 import { truncateNumber } from "global/utils/utils";
 import { formatUnits } from "ethers/lib/utils";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import { toastHandler } from "global/utils/toastHandler";
 import CopyToClipboard from "react-copy-to-clipboard";
+import { BridgeTransaction } from "../hooks/useBridgingTransactions";
+import { useState } from "react";
+import { convertStringToBigNumber, getStep1ButtonText } from "../utils/utils";
 
 interface Step1TxBoxProps {
   fromAddress?: string;
@@ -23,6 +26,7 @@ interface Step1TxBoxProps {
   selectedToken: BaseToken;
   selectToken: (token: BaseToken) => void;
   tokenBalanceProp: "erc20Balance" | "nativeBalance";
+  txHook: () => BridgeTransaction;
 }
 const Step1TxBox = (props: Step1TxBoxProps) => {
   function copyAddress() {
@@ -31,6 +35,16 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
   const currentTokenBalance =
     (props.selectedToken[props.tokenBalanceProp] as BigNumber) ??
     BigNumber.from(0);
+  const txProps = props.txHook();
+  const [amount, setAmount] = useState("");
+  const [buttonText, buttonDisabled] = getStep1ButtonText(
+    convertStringToBigNumber(amount, props.selectedToken.decimals),
+    currentTokenBalance,
+    BigNumber.from(
+      props.selectedToken.allowance ?? ethers.constants.MaxUint256
+    ),
+    props.bridgeIn
+  );
   return (
     <Styled>
       {" "}
@@ -105,10 +119,26 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
               height: "54px",
             }}
             placeholder="0.00"
+            onChange={(val) => {
+              setAmount(val.target.value);
+            }}
           ></CInput>
         </div>
-        <PrimaryButton height="big" weight="bold" padding="lg">
-          bridge
+        <PrimaryButton
+          height="big"
+          weight="bold"
+          padding="lg"
+          disabled={buttonDisabled}
+          onClick={() => {
+            txProps.send(
+              convertStringToBigNumber(
+                amount,
+                props.selectedToken.decimals
+              ).toString()
+            );
+          }}
+        >
+          {buttonText}
         </PrimaryButton>
       </div>
       <div className="address-nodes">

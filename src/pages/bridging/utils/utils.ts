@@ -1,3 +1,6 @@
+import { BigNumber } from "ethers";
+import { parseUnits } from "ethers/lib/utils";
+import { truncateNumber } from "global/utils/utils";
 import { ConvertTransaction, UserConvertToken } from "../config/interfaces";
 import { TransactionHistoryEvent } from "./bridgeTxHistory";
 import { getNetworkFromTokenName } from "./findTokens";
@@ -42,4 +45,32 @@ export function convertSecondsToString(seconds: string) {
   }
   const minutes = Math.ceil(Number(seconds) / 60);
   return minutes + " min";
+}
+
+export function convertStringToBigNumber(amount: string, decimals: number) {
+  if (!amount || isNaN(Number(amount)) || Number(amount) < 0) {
+    return BigNumber.from(0);
+  }
+  return parseUnits(truncateNumber(amount, decimals), decimals);
+}
+
+//returns button text and if it is disabled
+export function getStep1ButtonText(
+  amount: BigNumber,
+  max: BigNumber,
+  currentAllowance: BigNumber,
+  bridgeIn: boolean
+): [string, boolean] {
+  const bText = bridgeIn ? "bridge in" : "bridge out";
+  if (currentAllowance.eq(-1)) {
+    return ["select token", true];
+  } else if (currentAllowance.lt(max)) {
+    return ["approve", false];
+  } else if (amount.isZero()) {
+    return [bText, true];
+  } else if (amount.gt(max)) {
+    return [bText, true];
+  } else {
+    return [bText, false];
+  }
 }
