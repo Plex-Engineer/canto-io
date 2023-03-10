@@ -2,7 +2,7 @@ import { useBridgeTokenInfo } from "./hooks/useBridgeTokenInfo";
 import CantoTabs from "global/components/tabs";
 import BridgeIn from "./BridgeIn";
 import BridgeOut from "./BridgeOut";
-import Transactions from "./Transactions";
+import Transactions from "./TransactionHistory";
 import { useTransactionHistory } from "./hooks/useTransactionHistory";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { createConvertTransactions } from "./utils/utils";
@@ -12,18 +12,18 @@ import { BaseToken } from "./config/interfaces";
 const Bridging = () => {
   const networkInfo = useNetworkInfo();
   const bridgingTokens = useBridgeTokenInfo();
-  const bridgingTxs = useTransactionHistory();
+  const bridgingHistory = useTransactionHistory();
   return (
     <div>
       <CantoTabs
-        names={["bridge In", "bridge Out", "Transactions"]}
+        names={["bridge In", "bridge Out", "transactions"]}
         panels={[
           <BridgeIn
             key={"in"}
             ethAddress={networkInfo.account}
             cantoAddress={networkInfo.cantoAddress}
             step2Transactions={createConvertTransactions(
-              bridgingTxs.pendingBridgeInTransactions,
+              bridgingHistory.pendingBridgeInTransactions,
               bridgingTokens.userConvertTokens
             )}
             ethGBridgeTokens={bridgingTokens.userBridgeInTokens}
@@ -50,7 +50,10 @@ const Bridging = () => {
               bridgingTokens.setSelectedToken(token, SelectedTokens.CONVERTOUT)
             }
           />,
-          <Transactions key={"transaction"} />,
+          <Transactions
+            key={"transaction"}
+            allTransactions={bridgingHistory}
+          />,
         ]}
       />
     </div>

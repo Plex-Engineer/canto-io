@@ -81,7 +81,6 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
     name: "crescent",
     icon: TOKENS.cantoMainnet.CRESCENT.icon,
     tokens: [ALL_IBC_TOKENS_WITH_DENOMS.CRESCENT],
-
     channel: "channel-9",
     endpoint: "https://mainnet.crescent.network:1317",
     addressBeginning: "cre",

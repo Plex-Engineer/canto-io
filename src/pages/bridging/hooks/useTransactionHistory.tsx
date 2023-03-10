@@ -7,7 +7,7 @@ import {
   getIBCOutTransactions,
 } from "../utils/bridgeTxHistory";
 
-interface AllBridgeTxHistory {
+export interface AllBridgeTxHistory {
   bridgeOutTransactions: TransactionHistoryEvent[];
   completeBridgeInTransactions: TransactionHistoryEvent[];
   pendingBridgeInTransactions: TransactionHistoryEvent[];

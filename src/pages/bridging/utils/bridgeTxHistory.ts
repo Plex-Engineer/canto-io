@@ -29,6 +29,7 @@ export interface TransactionHistoryEvent {
   secondsToComplete: string;
   from: string;
   to: string;
+  blockExplorerUrl: string;
 }
 
 export async function getBridgeInEventsWithStatus(
@@ -59,7 +60,7 @@ export async function getBridgeInEventsWithStatus(
     } else {
       //if within 5 minutes, the event might not be seen by the gbridge contract yet, so it cannot be completed yet
       if (
-        event.timestamp * 1000 + 60000 * 5 >
+        event.timestamp + 60000 * 5 >
         new Date(new Date().toUTCString()).getTime()
       ) {
         pendingEvents.push({
@@ -98,7 +99,8 @@ async function getEthGBridgeInEvents(
         bridgeType: "in",
         token: findBridgeInToken(tokenAddress),
         amount,
-        timestamp: (await provider.getBlock(event.blockNumber)).timestamp,
+        timestamp:
+          (await provider.getBlock(event.blockNumber)).timestamp * 1000,
         blockNumber: event.blockNumber,
         txHash: event.transactionHash,
         from: "eth",
@@ -106,6 +108,7 @@ async function getEthGBridgeInEvents(
         //don't know yet, but can place default values
         complete: true,
         secondsToComplete: "0",
+        blockExplorerUrl: "https://etherscan.io/tx/",
       };
     })
   );
@@ -197,11 +200,12 @@ async function getIBCInTransactions(
             amount: BigNumber.from(amount ?? "0"),
             timestamp: tx.timestamp,
             blockNumber: Number(tx.height),
-            txHash: tx.txHash,
+            txHash: tx.txhash,
             complete: true,
             secondsToComplete: "0",
             from: getNetworkFromAddress(sender),
             to: "canto",
+            blockExplorerUrl: "https://www.mintscan.io/canto/txs/",
           });
         }
       }
@@ -247,6 +251,7 @@ export async function getIBCOutTransactions(
             secondsToComplete: "0",
             from: "canto",
             to: getNetworkFromAddress(receiver),
+            blockExplorerUrl: "https://www.mintscan.io/canto/txs/",
           });
         }
       }
