@@ -166,10 +166,7 @@ export const BridgeOutWalkthroughSteps: WalkthroughTracker = {
     prev: BridgeOutStep.SWITCH_TO_CANTO_2,
     next: BridgeOutStep.SELECT_NATIVE_TOKEN,
     checkFunction: (network: BridgeOutNetworks, cosmosAddress: string) => {
-      return (
-        [0, 1].includes(network) &&
-        ALL_BRIDGE_OUT_NETWORKS[network].checkAddress(cosmosAddress)
-      );
+      return ALL_BRIDGE_OUT_NETWORKS[network].checkAddress(cosmosAddress);
     },
   },
   [BridgeOutStep.SELECT_NATIVE_TOKEN]: {
