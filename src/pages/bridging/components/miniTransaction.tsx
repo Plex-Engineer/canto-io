@@ -3,12 +3,15 @@ import { formatUnits } from "ethers/lib/utils";
 import { PrimaryButton, Text } from "global/packages/src";
 import { formatBalance } from "global/utils/utils";
 import { ConvertTransaction } from "../config/interfaces";
+import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import { convertSecondsToString } from "../utils/utils";
 
 interface Props {
   transaction: ConvertTransaction;
+  txFactory: () => BridgeTransaction;
 }
 const MiniTransaction = (props: Props) => {
+  const txStats = props.txFactory();
   return (
     <Styled>
       <div className="dual-item">
@@ -48,9 +51,14 @@ const MiniTransaction = (props: Props) => {
         disabled={props.transaction.timeLeft !== "0"}
         weight="bold"
         filled
+        onClick={() => {
+          txStats.send(props.transaction.amount.toString());
+        }}
       >
         {props.transaction.timeLeft !== "0" ? "ongoing" : "complete"}
       </PrimaryButton>
+      <button onClick={() => txStats.resetState()}>reset</button>
+      {txStats.state}
     </Styled>
   );
 };

@@ -1,25 +1,37 @@
 import styled from "@emotion/styled";
 import BridgeToCanto from "./components/bridgeToCanto";
 import EvmToBridge from "./components/evmToBridge";
-import ethIcon from "assets/icons/ETH.svg";
-import bridgeIcon from "assets/icons/canto-bridge.svg";
-import { ConvertTransaction, UserBridgeInToken } from "./config/interfaces";
-import { TokenWallet } from "pages/bridge/components/TokenSelect";
-import { useBridgeTokenInfo } from "./hooks/useBridgeTokenInfo";
-import { SelectedTokens } from "./stores/bridgeTokenStore";
-import { EMPTY_BRIDGE_IN_TOKEN } from "./config/interfaces";
+import {
+  BaseToken,
+  ConvertTransaction,
+  UserBridgeInToken,
+} from "./config/interfaces";
+import Step1TxBox from "./components/step1TxBox";
+import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
 
 interface BridgeInProps {
   ethAddress?: string;
   cantoAddress?: string;
   step2Transactions: ConvertTransaction[];
   ethGBridgeTokens: UserBridgeInToken[];
+  selectedEthToken: UserBridgeInToken;
+  selectEthToken: (token: BaseToken) => void;
 }
 const BridgeIn = (props: BridgeInProps) => {
+  const transactionHooks = useBridgingTransactions();
   return (
     <BridgeStyled>
       <div className="evmToBrige">
-        <EvmToBridge
+        <Step1TxBox
+          fromAddress={props.ethAddress}
+          toAddress={props.cantoAddress}
+          bridgeIn={true}
+          tokens={props.ethGBridgeTokens}
+          selectedToken={props.selectedEthToken}
+          selectToken={props.selectEthToken}
+          tokenBalanceProp="erc20Balance"
+        />
+        {/* <EvmToBridge
           connected
           from={{
             address: props.ethAddress,
@@ -29,10 +41,19 @@ const BridgeIn = (props: BridgeInProps) => {
             address: props.cantoAddress,
             name: "canto (bridge)",
           }}
-        />
+        /> */}
       </div>
       <div className="bridgeToCanto">
-        <BridgeToCanto transactions={props.step2Transactions} />
+        <BridgeToCanto
+          transactions={props.step2Transactions}
+          txHook={(tokenName: string) =>
+            transactionHooks.convertCoin.convertTx(
+              tokenName,
+              props.cantoAddress ?? "",
+              true
+            )
+          }
+        />
       </div>
     </BridgeStyled>
   );

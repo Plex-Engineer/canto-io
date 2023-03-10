@@ -1,9 +1,9 @@
 import { BigNumber } from "ethers";
 import create from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { BridgeOutNetworks } from "../config/bridgeOutNetworks";
 import {
   BaseToken,
+  BridgeOutNetworks,
   EMPTY_BRIDGE_IN_TOKEN,
   EMPTY_BRIDGE_OUT_TOKEN,
   EMPTY_CONVERT_TOKEN,

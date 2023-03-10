@@ -1,14 +1,13 @@
 import { BigNumber } from "ethers";
 import { ADDRESSES } from "global/config/addresses";
-import { CantoMainnet } from "global/config/networks";
+import { CantoMainnet, ETHMainnet } from "global/config/networks";
 import { useNetworkInfo } from "global/stores/networkInfo";
+import { useEffect, useState } from "react";
+import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 import {
   CONVERT_COIN_TOKENS,
   ETH_GRAVITY_BRIDGE_IN_TOKENS,
-} from "pages/bridge/config/bridgingTokens";
-import { ETHMainnet } from "pages/bridge/config/networks";
-import { useEffect, useState } from "react";
-import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
+} from "../config/bridgingTokens";
 import {
   BaseToken,
   UserBridgeInToken,

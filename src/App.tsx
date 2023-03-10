@@ -29,7 +29,6 @@ const LendingMarket = lazy(() => import("./pages/lending/LendingMarket"));
 const Governance = lazy(() => import("./pages/governance/governance"));
 const Proposal = lazy(() => import("./pages/governance/proposal"));
 const HomePage = lazy(() => import("./pages/home/homepage"));
-const TestPage = lazy(() => import("./pages/bridging/Bridging"));
 
 // const HomePage = lazy(() => import("./pages/landing/Landing"));
 
@@ -86,7 +85,6 @@ function App() {
                   key={"changelog   "}
                   element={<ChangeLog />}
                 />
-                <Route path="/test" key={"fsdfds"} element={<TestPage />} />
                 <Route
                   path="*"
                   key={"404"}

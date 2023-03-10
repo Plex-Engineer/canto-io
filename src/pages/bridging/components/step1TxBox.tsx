@@ -2,63 +2,50 @@ import styled from "@emotion/styled";
 import { PrimaryButton, Text } from "global/packages/src";
 import ethIcon from "assets/icons/ETH.svg";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
-import arrow from "../../../assets/next.svg";
-import CopyToClipboard from "react-copy-to-clipboard";
-import { toastHandler } from "global/utils/toastHandler";
+import cantoIcon from "assets/icons/canto-evm.svg";
 import CopyIcon from "../../../assets/copy.svg";
+import arrow from "../../../assets/next.svg";
+import { BaseToken } from "../config/interfaces";
 import LoadingBlip from "./LoadingBlip";
-import { CInput } from "global/packages/src/components/atoms/Input";
-import { useBridgeTokenInfo } from "../hooks/useBridgeTokenInfo";
 import { TokenWallet } from "pages/bridge/components/TokenSelect";
-import { SelectedTokens } from "../stores/bridgeTokenStore";
-import { formatUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
+import { formatUnits } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
+import { CInput } from "global/packages/src/components/atoms/Input";
+import { toastHandler } from "global/utils/toastHandler";
+import CopyToClipboard from "react-copy-to-clipboard";
 
-interface Props {
-  connected: boolean;
-  // tokenSelector: React.ReactNode;
-  //   networkName: string;
-  //   button: React.ReactNode;
-  //   max: string;
-  //   amount: string;
-  from: {
-    name: string;
-    address?: string;
-  };
-  to: {
-    name: string;
-    address?: string;
-  };
-  //   onSwitch: () => void;
-  //   onChange: (s: string) => void;
-  //   //if we need to send to specific address
-  //   needAddressBox: boolean;
-  //   onAddressChange?: (s: string) => void;
-  //   AddressBoxPlaceholder?: string;
+interface Step1TxBoxProps {
+  fromAddress?: string;
+  toAddress?: string;
+  bridgeIn: boolean;
+  tokens: BaseToken[];
+  selectedToken: BaseToken;
+  selectToken: (token: BaseToken) => void;
+  tokenBalanceProp: "erc20Balance" | "nativeBalance";
 }
-const EvmToBridge = (props: Props) => {
-  const tokenStore = useBridgeTokenInfo();
-  const ethToken = tokenStore.selectedTokens[SelectedTokens.ETHTOKEN];
-
+const Step1TxBox = (props: Step1TxBoxProps) => {
   function copyAddress() {
     toastHandler("copied address", true, "0", 300);
   }
-
+  const currentTokenBalance =
+    (props.selectedToken[props.tokenBalanceProp] as BigNumber) ??
+    BigNumber.from(0);
   return (
     <Styled>
+      {" "}
       <Text type="title" size="title2">
-        Send funds to canto
+        send funds {props.bridgeIn ? "to" : "from"} canto
       </Text>
-
       <div className="icons-indicator">
         <div className="center">
           <img
-            src={ethIcon}
-            alt="ethereum"
+            src={props.bridgeIn ? ethIcon : cantoIcon}
+            alt={props.bridgeIn ? "ethereum" : "canto"}
             height={42}
             style={{ marginBottom: "10px" }}
           />
-          <Text type="title">Ethereum</Text>
+          <Text type="title">{props.bridgeIn ? "Ethereum" : "Canto"}</Text>
         </div>
         <div className="loading">
           <LoadingBlip active />
@@ -77,14 +64,11 @@ const EvmToBridge = (props: Props) => {
         <div className="token-select">
           {" "}
           <TokenWallet
-            tokens={tokenStore.userBridgeInTokens}
+            tokens={props.tokens}
             balance="erc20Balance"
-            activeToken={ethToken}
+            activeToken={props.selectedToken}
             onSelect={(value) => {
-              tokenStore.setSelectedToken(
-                value ?? ethToken,
-                SelectedTokens.ETHTOKEN
-              );
+              props.selectToken(value ?? props.selectedToken);
             }}
           />
         </div>
@@ -97,7 +81,7 @@ const EvmToBridge = (props: Props) => {
           >
             balance :{" "}
             {truncateNumber(
-              formatUnits(ethToken.erc20Balance ?? "0", ethToken.decimals)
+              formatUnits(currentTokenBalance, props.selectedToken.decimals)
             )}
           </Text>
         </div>
@@ -128,69 +112,64 @@ const EvmToBridge = (props: Props) => {
         </PrimaryButton>
       </div>
       <div className="address-nodes">
-        {props.connected && (
-          <div className="row">
-            <CopyToClipboard
-              text={props.from.address ?? ""}
-              onCopy={copyAddress}
+        <div className="row">
+          <CopyToClipboard text={props.fromAddress ?? ""} onCopy={copyAddress}>
+            <Text
+              type="text"
+              color="primary"
+              align="left"
+              size="text3"
+              style={{ cursor: "pointer" }}
             >
-              <Text
-                type="text"
-                color="primary"
-                align="left"
-                size="text3"
-                style={{ cursor: "pointer" }}
-              >
-                {props.from.address
-                  ? props.from.address.slice(0, 5) +
-                    "..." +
-                    props.from.address.slice(-4)
-                  : "retrieving wallet"}
-                <img
-                  src={CopyIcon}
-                  style={{
-                    height: "22px",
-                    position: "relative",
-                    top: "5px",
-                    left: "4px",
-                  }}
-                />
-              </Text>
-            </CopyToClipboard>
-            <img
-              style={{
-                flex: "0",
-              }}
-              src={arrow}
-              alt="right arrow"
-              height={12}
-            />
-            <CopyToClipboard text={props.to.address ?? ""} onCopy={copyAddress}>
-              <Text
-                type="text"
-                color="primary"
-                align="right"
-                size="text3"
-                style={{ cursor: "pointer" }}
-              >
-                {props.to.address
-                  ? props.to.address.slice(0, 5) +
-                    "..." +
-                    props.to.address.slice(-4)
-                  : "retrieving wallet"}{" "}
-                <img
-                  src={CopyIcon}
-                  style={{
-                    height: "22px",
-                    marginLeft: "-6px",
-                    position: "relative",
-                    top: "5px",
-                  }}
-                />
-              </Text>
-            </CopyToClipboard>
-          </div>
-        )}
+              {props.fromAddress
+                ? props.fromAddress.slice(0, 5) +
+                  "..." +
+                  props.fromAddress.slice(-4)
+                : "retrieving wallet"}
+              <img
+                src={CopyIcon}
+                style={{
+                  height: "22px",
+                  position: "relative",
+                  top: "5px",
+                  left: "4px",
+                }}
+              />
+            </Text>
+          </CopyToClipboard>
+          <img
+            style={{
+              flex: "0",
+            }}
+            src={arrow}
+            alt="right arrow"
+            height={12}
+          />
+          <CopyToClipboard text={props.toAddress ?? ""} onCopy={copyAddress}>
+            <Text
+              type="text"
+              color="primary"
+              align="right"
+              size="text3"
+              style={{ cursor: "pointer" }}
+            >
+              {props.toAddress
+                ? props.toAddress.slice(0, 5) +
+                  "..." +
+                  props.toAddress.slice(-4)
+                : "retrieving wallet"}{" "}
+              <img
+                src={CopyIcon}
+                style={{
+                  height: "22px",
+                  marginLeft: "-6px",
+                  position: "relative",
+                  top: "5px",
+                }}
+              />
+            </Text>
+          </CopyToClipboard>
+        </div>
       </div>
     </Styled>
   );
@@ -274,5 +253,4 @@ const Styled = styled.div`
     margin-bottom: 0.4rem;
   }
 `;
-
-export default EvmToBridge;
+export default Step1TxBox;

@@ -10,8 +10,8 @@ import {
 } from "../utils/convertCoin/convertTransactions";
 import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/checkCosmosConfirmation";
 import { txIBCTransfer } from "../utils/IBC/IBCTransfer";
-import { BridgeOutNetworkInfo } from "../config/bridgeOutNetworks";
 import { ADDRESSES } from "global/config/addresses";
+import { BridgeOutNetworkInfo } from "../config/interfaces";
 
 export interface BridgeTransaction {
   state: TransactionState;

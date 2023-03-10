@@ -1,6 +1,5 @@
 import { Token, TOKENS } from "global/config/tokenInfo";
-import { BridgeOutNetworks } from "./bridgeOutNetworks";
-import { NativeToken } from "./interfaces";
+import { BridgeOutNetworks, NativeToken } from "./interfaces";
 
 const ETH_GRAVITY_BRIDGE_IN_TOKENS: Token[] = [
   TOKENS.ETHMainnet.USDC,
@@ -26,7 +25,8 @@ const ALL_IBC_DENOMS = {
   COMDEX:
     "ibc/B0ADAE6558A3E9B2B49FF2EA89A9AEA312431FEB51FCF73650C8C90589F5149B",
 };
-export type IBCTOKENS = {
+
+type IBCTOKENS = {
   [index: string]: NativeToken;
 };
 const ALL_IBC_TOKENS_WITH_DENOMS: IBCTOKENS = {

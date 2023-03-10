@@ -2,10 +2,12 @@ import styled from "@emotion/styled";
 import { BigNumber } from "ethers";
 import { Text } from "global/packages/src";
 import { ConvertTransaction } from "../config/interfaces";
+import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import MiniTransaction from "./miniTransaction";
 
 interface BridgeToCantoProps {
   transactions: ConvertTransaction[];
+  txHook: (tokenName: string) => BridgeTransaction;
 }
 const BridgeToCanto = (props: BridgeToCantoProps) => {
   return (
@@ -20,7 +22,13 @@ const BridgeToCanto = (props: BridgeToCantoProps) => {
       <div className="scroll-port">
         <div className="scrollable">
           {props.transactions.map((tx, index) => {
-            return <MiniTransaction key={index} transaction={tx} />;
+            return (
+              <MiniTransaction
+                key={index}
+                transaction={tx}
+                txFactory={() => props.txHook(tx.token.ibcDenom)}
+              />
+            );
           })}
         </div>
       </div>

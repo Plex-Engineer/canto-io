@@ -2,33 +2,12 @@ import cosmosIcon from "assets/icons/ATOM.svg";
 import GravitonGrey from "assets/icons/Graviton-Grey.svg";
 import { TOKENS } from "global/config/tokenInfo";
 import { ALL_IBC_TOKENS_WITH_DENOMS } from "./bridgingTokens";
-import { NativeToken } from "./interfaces";
+import { BridgeOutNetworkInfo, BridgeOutNetworks } from "./interfaces";
 
-export interface BridgeOutNetworkInfo {
-  name: string;
-  icon: string;
-  tokens: NativeToken[];
-  channel: string;
-  endpoint: string;
-  latestBlockEndpoint?: string;
-  addressBeginning: string;
-  checkAddress: (address: string) => boolean;
-}
-export type BridgeOutNetworkData = {
+type BridgeOutNetworkData = {
   [key in BridgeOutNetworks]: BridgeOutNetworkInfo;
 };
 
-export enum BridgeOutNetworks {
-  GRAVITY_BRIDGE,
-  COSMOS_HUB,
-  COMDEX,
-  OSMOSIS,
-  SOMMELIER,
-  INJECTIVE,
-  KAVA,
-  AKASH,
-  CRESCENT,
-}
 function addressCheck(address: string, addressBeginning: string) {
   return (
     address.slice(0, addressBeginning.length) == addressBeginning &&
@@ -91,7 +70,7 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
     icon: TOKENS.cantoMainnet.INJECTIVE.icon,
     tokens: [ALL_IBC_TOKENS_WITH_DENOMS.INJECTIVE],
     channel: "channel-8",
-    endpoint: "https://lcd.injective.network/", //TODO:
+    endpoint: "https://lcd.injective.network/",
     latestBlockEndpoint: "/cosmos/base/tendermint/v1beta1",
     addressBeginning: "inj",
     checkAddress: function (address) {
