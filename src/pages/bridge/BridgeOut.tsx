@@ -258,7 +258,8 @@ const BridgeOut = (props: BridgeOutProps) => {
                       bridgeOutNetwork.latestBlockEndpoint,
                       ibcFee,
                       chain,
-                      memo
+                      memo,
+                      bridgeOutNetwork.extraEndpoints
                     ),
                   BridgeTransactionType.BRIDGE_OUT,
                   bridgeTxStore.setTransactionStatus,

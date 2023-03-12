@@ -16,7 +16,8 @@ export async function txIBCTransfer(
   latestBlockEndpoint: any,
   fee: any,
   chain: any,
-  memo: any
+  memo: any,
+  extraEndpoints?: string[]
 ) {
   // check metamask
   //@ts-ignore
@@ -33,10 +34,10 @@ export async function txIBCTransfer(
   const account = accounts[0];
   const senderObj = await getSenderObj(account, nodeAddressIP);
   //get revision number/height for construction of the timeout-height object (determines the last update of the counter-party IBC client)
-  const ibcData = await getIBCData(counterPartyChain);
-
+  const ibcData = await getIBCData(counterPartyChain, extraEndpoints);
   let timeoutTimestamp = await getBlockTimestamp(
     counterPartyChain,
+    extraEndpoints,
     latestBlockEndpoint
   );
 
@@ -70,15 +71,53 @@ export async function txIBCTransfer(
   );
 }
 
-export async function getIBCData(nodeAddress: string) {
-  const resp = await fetch(nodeAddress + generateEndpointIBCChannels(), {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-    },
-  }).catch((error) => console.log("getIBCData::error: ", error));
-  //@ts-ignore
-  return resp.json();
+async function tryEndpoint(endpoint: string) {
+  try {
+    const res = await fetch(endpoint, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+    if (res.ok) {
+      return [await res.json(), true];
+    } else {
+      return [null, false];
+    }
+  } catch (err) {
+    console.error(err);
+    return [null, false];
+  }
+}
+async function tryMultipleEndpoints(
+  allEndpoints: string[],
+  endpointAddon: string
+) {
+  let endpointUp = false;
+  let data = null;
+  let endpointAttempt = 0;
+  while (!endpointUp && endpointAttempt < allEndpoints.length) {
+    const [endpointData, okay] = await tryEndpoint(
+      allEndpoints[endpointAttempt] + endpointAddon
+    );
+    endpointAttempt++;
+    endpointUp = okay;
+    data = endpointData;
+  }
+  return data;
+}
+
+export async function getIBCData(
+  nodeAddress: string,
+  extraEndpoints?: string[]
+) {
+  const allEndpoints = extraEndpoints
+    ? [nodeAddress, ...extraEndpoints]
+    : [nodeAddress];
+  return await tryMultipleEndpoints(
+    allEndpoints,
+    generateEndpointIBCChannels()
+  );
 }
 
 /**
@@ -86,21 +125,33 @@ export async function getIBCData(nodeAddress: string) {
  */
 export async function getBlockTimestamp(
   nodeAddress: string,
+  extraEndpoints?: string[],
   latestBlockEndpoint?: string
 ) {
   const urlEnding = latestBlockEndpoint ?? "";
-  const resp = await fetch(nodeAddress + urlEnding + "/blocks/latest", {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-    },
-  }).catch((error) => console.log("getBlockTimestamp::error: ", error));
-  //@ts-ignore
-  const obj = await resp.json();
-  // get iso formatted time stamp from latest block
-  const ts = obj["block"]["header"]["time"];
-  // parse string into microseconds UTC
-  const ms = Date.parse(ts);
-  // return as nano-seconds
-  return Number(ms * 1e7 + 600 * 1e9).toString();
+  const allEndpoints = extraEndpoints
+    ? [nodeAddress, ...extraEndpoints]
+    : [nodeAddress];
+  const data = await tryMultipleEndpoints(
+    allEndpoints,
+    urlEnding + "/blocks/latest"
+  );
+  // const resp = await fetch(nodeAddress + urlEnding + "/blocks/latest", {
+  //   method: "GET",
+  //   headers: {
+  //     Accept: "application/json",
+  //   },
+  // }).catch((error) => console.log("getBlockTimestamp::error: ", error));
+  // //@ts-ignore
+  // const obj = await resp.json();
+
+  if (data) {
+    // get iso formatted time stamp from latest block
+    const ts = data["block"]["header"]["time"];
+    // parse string into microseconds UTC
+    const ms = Date.parse(ts);
+    // return as nano-seconds
+    return Number(ms * 1e7 + 600 * 1e9).toString();
+  }
+  throw Error("no timestamp");
 }

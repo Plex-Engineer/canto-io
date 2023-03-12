@@ -11,6 +11,7 @@ export interface BridgeOutNetworkInfo {
   channel: string;
   endpoint: string;
   latestBlockEndpoint?: string;
+  extraEndpoints?: string[];
   addressBeginning: string;
   checkAddress: (address: string) => boolean;
 }
@@ -48,6 +49,7 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
     ],
     channel: "channel-0",
     endpoint: "https://gravitychain.io:1317",
+    extraEndpoints: ["https://gravity-api.polkachu.com"],
     addressBeginning: "gravity",
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
