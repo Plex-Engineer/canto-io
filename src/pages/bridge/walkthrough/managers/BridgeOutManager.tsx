@@ -198,7 +198,8 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
                   props.currentBridgeOutNetwork.latestBlockEndpoint,
                   ibcFee,
                   chain,
-                  memo
+                  memo,
+                  props.currentBridgeOutNetwork.extraEndpoints
                 ),
               BridgeTransactionType.BRIDGE_OUT,
               props.setCosmosTxStatus,
