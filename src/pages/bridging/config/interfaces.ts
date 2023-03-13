@@ -93,12 +93,11 @@ export interface ConvertTransaction {
 export interface BridgeModal {
   amount: BigNumber;
   token: BaseToken;
-  max: BigNumber;
   tx: BridgeTransaction;
-  txType: "BRIDGE_IN" | "CONVERT" | "BRIDGE_OUT";
   from: {
     chain: string;
     address: string;
+    chainId: number;
   };
   to: {
     chain: string;

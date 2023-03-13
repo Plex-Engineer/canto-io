@@ -20,6 +20,9 @@ import {
   copyAddress,
   getStep1ButtonText,
 } from "../utils/utils";
+import Modal from "global/packages/src/components/molecules/Modal";
+import ConfirmationModal from "./modals/confirmationModal";
+import { CantoMainnet, ETHMainnet } from "global/config/networks";
 
 interface Step1TxBoxProps {
   fromAddress?: string;
@@ -30,10 +33,12 @@ interface Step1TxBoxProps {
   selectToken: (token: BaseToken) => void;
   tokenBalanceProp: "erc20Balance" | "nativeBalance";
   txHook: () => BridgeTransaction;
+  needAllowance: boolean;
 }
 const Step1TxBox = (props: Step1TxBoxProps) => {
-  const txProps = props.txHook();
+  const [isModalOpen, setModalOpen] = useState(false);
   const [amount, setAmount] = useState("");
+  const txProps = props.txHook();
 
   const currentTokenBalance =
     (props.selectedToken[props.tokenBalanceProp] as BigNumber) ??
@@ -49,7 +54,35 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
   );
   return (
     <Styled>
-      {" "}
+      <Modal
+        title="confirmation"
+        open={isModalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          txProps.resetState();
+        }}
+      >
+        <ConfirmationModal
+          amount={convertStringToBigNumber(
+            amount,
+            props.selectedToken.decimals
+          )}
+          token={props.selectedToken}
+          tx={txProps}
+          from={{
+            chain: props.bridgeIn ? ETHMainnet.name : CantoMainnet.name,
+            address: props.fromAddress ?? "",
+            chainId: props.bridgeIn ? ETHMainnet.chainId : CantoMainnet.chainId,
+          }}
+          to={{
+            chain: "canto bridge",
+            address: props.toAddress ?? "",
+          }}
+          onClose={() => {
+            setModalOpen(false);
+          }}
+        />
+      </Modal>
       <Text type="title" size="title2">
         send funds {props.bridgeIn ? "to" : "from"} canto
       </Text>
@@ -106,10 +139,8 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           <Text
             style={{
               color: "#848484",
-              padding: "1rem",
-              width: "150px",
+              width: "180px",
             }}
-            align="right"
           >
             amount :
           </Text>
@@ -120,10 +151,27 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
               height: "54px",
             }}
             placeholder="0.00"
+            value={amount}
             onChange={(val) => {
               setAmount(val.target.value);
             }}
           ></CInput>
+          <button
+            className="maxBtn"
+            onClick={() => {
+              setAmount(
+                truncateNumber(
+                  formatUnits(
+                    currentTokenBalance,
+                    props.selectedToken.decimals
+                  ),
+                  6
+                )
+              );
+            }}
+          >
+            <Text>max</Text>
+          </button>
         </div>
         <PrimaryButton
           height="big"
@@ -131,12 +179,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           padding="lg"
           disabled={buttonDisabled}
           onClick={() => {
-            txProps.send(
-              convertStringToBigNumber(
-                amount,
-                props.selectedToken.decimals
-              ).toString()
-            );
+            setModalOpen(true);
           }}
         >
           {buttonText}
@@ -213,6 +256,17 @@ const Styled = styled.div`
   width: 600px;
   padding: 1rem 2rem;
 
+  .maxBtn {
+    height: 100%;
+    width: 6rem;
+    margin-left: 3px;
+    background-color: #333;
+    border: none;
+    &:hover {
+      background-color: #252525;
+      cursor: pointer;
+    }
+  }
   .icons-indicator {
     height: 120px;
     width: 100%;

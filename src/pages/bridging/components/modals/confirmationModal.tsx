@@ -1,86 +1,91 @@
 import styled from "@emotion/styled";
-import { TransactionState, useEthers } from "@usedapp/core";
+import { useEthers } from "@usedapp/core";
 import { formatUnits } from "ethers/lib/utils";
 import LoadingModal from "global/components/modals/loading2";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
-import { ConvertTransaction } from "pages/bridging/config/interfaces";
+import { truncateNumber } from "global/utils/utils";
+import { BridgeModal } from "pages/bridging/config/interfaces";
+import { formatAddress } from "pages/bridging/utils/utils";
 
-interface Props {
-  activeToken: ConvertTransaction;
-  state: TransactionState;
-  onConfirm: () => void;
-  networkID: number;
-}
-const ConfirmationModal = (props: Props) => {
+const ConfirmationModal = (props: BridgeModal) => {
   const networkID = useEthers().chainId;
   const { switchNetwork } = useEthers();
   return (
     <Styled>
-      {props.networkID != networkID && (
+      {props.from.chainId != networkID && (
         <div className="network-change">
           <Text type="title">Oops, you seem to be on a wrong network.</Text>
           <PrimaryButton
             onClick={() => {
-              switchNetwork(props.networkID);
+              switchNetwork(props.from.chainId);
             }}
           >
             Switch Network
           </PrimaryButton>
         </div>
       )}
-      {props.state != "None" &&
-        (props.networkID == networkID || networkID == undefined) && (
+      {props.tx.state != "None" &&
+        (props.from.chainId == networkID || networkID == undefined) && (
           <LoadingModal
-            status={props.state}
+            status={props.tx.state}
             transactionType={CantoTransactionType.CONVERT_TO_COSMOS}
             onClose={() => {
               false;
             }}
           />
         )}
-      {props.state == "None" &&
-        (props.networkID == networkID || networkID == undefined) && (
+      {props.tx.state == "None" &&
+        (props.from.chainId == networkID || networkID == undefined) && (
           <>
             <Text type="title">Please confirm the transaction </Text>
             <div className="expanded">
-              <img
-                height={50}
-                src={props.activeToken.token.icon}
-                alt={props.activeToken.token.name}
-              />
+              <img height={50} src={props.token.icon} alt={props.token.name} />
             </div>
-
             <div className="transactions">
               <div className="row">
-                <div className="header">name :</div>
+                <div className="header">tx :</div>
                 <div className="value">
-                  <Text type="title">{props.activeToken.token.name}</Text>
+                  <Text type="title">{props.tx.txName}</Text>
                 </div>
               </div>
               <div className="row">
-                <div className="header">from :</div>
+                <div className="header">token :</div>
                 <div className="value">
-                  <Text type="title">{props.activeToken.origin}</Text>
+                  <Text type="title">{props.token.name}</Text>
                 </div>
               </div>
-              <div className="row">
-                <div className="header">to :</div>
-                <div className="value">
-                  <Text type="title">bridge</Text>
-                </div>
-              </div>
-              <div className="row">
-                <div className="header">amount :</div>
-                <div className="value">
-                  <Text type="title">
-                    {formatUnits(
-                      props.activeToken.amount,
-                      props.activeToken.token.decimals
-                    )}
-                  </Text>
-                </div>
-              </div>
+              {props.tx.txName != "approve token" && (
+                <>
+                  {" "}
+                  <div className="row">
+                    <div className="header">from :</div>
+                    <div className="value">
+                      <Text type="title">{`${props.from.chain} (${formatAddress(
+                        props.from.address
+                      )})`}</Text>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="header">to :</div>
+                    <div className="value">
+                      <Text type="title">{`${props.to.chain} (${formatAddress(
+                        props.to.address
+                      )})`}</Text>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="header">amount :</div>
+                    <div className="value">
+                      <Text type="title">
+                        {truncateNumber(
+                          formatUnits(props.amount, props.token.decimals)
+                        )}
+                      </Text>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             <Text size="text4" align="left" style={{ color: "#474747" }}>
@@ -92,7 +97,9 @@ const ConfirmationModal = (props: Props) => {
               filled
               height="big"
               weight="bold"
-              onClick={props.onConfirm}
+              onClick={() => {
+                props.tx.send(props.amount.toString());
+              }}
             >
               confirm
             </PrimaryButton>

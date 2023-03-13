@@ -1,7 +1,9 @@
 import { NativeToken } from "../config/interfaces";
-import { CONVERT_COIN_TOKENS } from "../config/bridgingTokens";
+import {
+  CONVERT_COIN_TOKENS,
+  ETH_GRAVITY_BRIDGE_IN_TOKENS,
+} from "../config/bridgingTokens";
 import { Token, TOKENS } from "global/config/tokenInfo";
-import { ETHMainnet } from "pages/bridge/config/networks";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 
 export function findNativeToken(nativeName: string): NativeToken | undefined {
@@ -22,7 +24,7 @@ export function findBridgeInToken(tokenAddress: string): Token | undefined {
   if (tokenAddress === "uatom") {
     return TOKENS.cantoMainnet.ATOM;
   }
-  return ETHMainnet.gravityTokens.find(
+  return ETH_GRAVITY_BRIDGE_IN_TOKENS.find(
     (token) => token.address.toLowerCase() === tokenAddress.toLowerCase()
   );
 }

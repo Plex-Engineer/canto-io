@@ -37,6 +37,7 @@ const BridgeOut = (props: BridgeOutProps) => {
               false
             )
           }
+          needAllowance={false}
         />
       </div>
       <div className="bridgeToCanto">

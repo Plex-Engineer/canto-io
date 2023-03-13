@@ -1,7 +1,5 @@
 import styled from "@emotion/styled";
 import { formatUnits } from "ethers/lib/utils";
-import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { CantoMainnet } from "global/providers";
@@ -15,10 +13,13 @@ import ConfirmationModal from "./modals/confirmationModal";
 interface Props {
   transaction: ConvertTransaction;
   txFactory: () => BridgeTransaction;
+  cantoAddress: string;
+  ethAddress: string;
 }
 const MiniTransaction = (props: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const txStats = props.txFactory();
+  const isIBCTransfer = txStats.txName == "ibc transfer";
 
   function getTxStatus(): string {
     switch (txStats.state) {
@@ -44,17 +45,24 @@ const MiniTransaction = (props: Props) => {
         title="confirmation"
         open={isModalOpen}
         onClose={() => {
-          if (txStats.state != "Mining" && txStats.state != "PendingSignature")
-            txStats.resetState();
           setModalOpen(false);
         }}
       >
         <ConfirmationModal
-          networkID={CantoMainnet.chainId}
-          activeToken={props.transaction}
-          state={txStats.state}
-          onConfirm={() => {
-            txStats.send(props.transaction.amount.toString());
+          amount={props.transaction.amount}
+          token={props.transaction.token}
+          tx={txStats}
+          from={{
+            chain: "canto bridge",
+            address: props.cantoAddress,
+            chainId: CantoMainnet.chainId,
+          }}
+          to={{
+            chain: isIBCTransfer ? "ibc network" : "canto",
+            address: isIBCTransfer ? "cosmos address" : props.ethAddress,
+          }}
+          onClose={() => {
+            setModalOpen(false);
           }}
         />
       </Modal>
@@ -100,10 +108,12 @@ const MiniTransaction = (props: Props) => {
           weight="bold"
           filled
           onClick={() => {
+            if (txStats.state == "Exception" || txStats.state == "Fail")
+              txStats.resetState();
             setModalOpen(true);
           }}
         >
-          {props.transaction.timeLeft !== "0" ? "ongoing" : getTxStatus()}
+          {getTxStatus()}
         </PrimaryButton>
       )}
     </Styled>

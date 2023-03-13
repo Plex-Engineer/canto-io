@@ -7,6 +7,8 @@ import MiniTransaction from "./miniTransaction";
 interface BridgeToCantoProps {
   transactions: ConvertTransaction[];
   txHook: (tokenName: string) => BridgeTransaction;
+  cantoAddress: string;
+  ethAddress: string;
 }
 const BridgeToCanto = (props: BridgeToCantoProps) => {
   return (
@@ -31,6 +33,8 @@ const BridgeToCanto = (props: BridgeToCantoProps) => {
                 key={index}
                 transaction={tx}
                 txFactory={() => props.txHook(tx.token.ibcDenom)}
+                cantoAddress={props.cantoAddress}
+                ethAddress={props.ethAddress}
               />
             );
           })}

@@ -35,7 +35,7 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
   const tokenStore = useBridgeTokenStore();
 
   //bridge in tokens
-  const { tokens: userBridgeInTokens } = useTokenBalances(
+  const { tokens: userBridgeInTokens, fail: ethFail } = useTokenBalances(
     networkInfo.account,
     ETH_GRAVITY_BRIDGE_IN_TOKENS,
     ETHMainnet.chainId,
@@ -90,7 +90,12 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
 
   //reset all selected tokens to match new updates
   function resetAllSelectedTokens() {
-    if (networkInfo.account && networkInfo.cantoAddress) {
+    if (
+      networkInfo.account &&
+      networkInfo.cantoAddress &&
+      !nativeERC20Fail &&
+      !ethFail
+    ) {
       //reselecting the tokens so it is the most updated version
       tokenStore.resetSelectedToken(
         SelectedTokens.ETHTOKEN,

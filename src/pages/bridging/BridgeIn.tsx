@@ -20,6 +20,11 @@ interface BridgeInProps {
 }
 const BridgeIn = (props: BridgeInProps) => {
   const transactionHooks = useBridgingTransactions();
+  const selectedToken = props.selectedEthToken;
+  const needAllowance =
+    selectedToken.symbol !== "choose token" &&
+    (selectedToken.allowance.lt(selectedToken.erc20Balance) ||
+      selectedToken.allowance.isZero());
   return (
     <BridgeStyled>
       <div className="evmToBrige">
@@ -32,11 +37,7 @@ const BridgeIn = (props: BridgeInProps) => {
           selectToken={props.selectEthToken}
           tokenBalanceProp="erc20Balance"
           txHook={() => {
-            const selectedToken = props.selectedEthToken;
-            if (
-              selectedToken.symbol !== "choose token" &&
-              selectedToken.allowance.lt(selectedToken.erc20Balance)
-            ) {
+            if (needAllowance) {
               return transactionHooks.bridgeIn.approveToken(
                 selectedToken.address
               );
@@ -48,6 +49,7 @@ const BridgeIn = (props: BridgeInProps) => {
               props.cantoAddress ?? ""
             );
           }}
+          needAllowance
         />
       </div>
       <div className="bridgeToCanto">
@@ -60,6 +62,8 @@ const BridgeIn = (props: BridgeInProps) => {
               true
             )
           }
+          cantoAddress={props.cantoAddress ?? ""}
+          ethAddress={props.ethAddress ?? ""}
         />
       </div>
     </BridgeStyled>

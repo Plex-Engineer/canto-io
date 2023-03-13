@@ -1,9 +1,8 @@
 import { BigNumber, Contract, ethers } from "ethers";
+import { gravityBridgeAbi } from "global/config/abi";
 import { ADDRESSES } from "global/config/addresses";
-import { CantoMainnet } from "global/config/networks";
+import { CantoMainnet, ETHMainnet } from "global/config/networks";
 import { Token } from "global/config/tokenInfo";
-import { gravityabi } from "pages/bridge/config/gravityBridgeAbi";
-import { ETHMainnet } from "pages/bridge/config/networks";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 import {
   findBridgeInToken,
@@ -84,7 +83,7 @@ async function getEthGBridgeInEvents(
   const provider = new ethers.providers.JsonRpcProvider(ETHMainnet.rpcUrl);
   const gBridgeContract = new Contract(
     ADDRESSES.ETHMainnet.GravityBridge,
-    gravityabi,
+    gravityBridgeAbi,
     provider
   );
   const eventFilters = gBridgeContract.filters.SendToCosmosEvent(

@@ -1,5 +1,5 @@
 import { TransactionState, useContractFunction } from "@usedapp/core";
-import { Contract, utils } from "ethers";
+import { Contract, ethers, utils } from "ethers";
 import { ERC20Abi, gravityBridgeAbi } from "global/config/abi";
 import { chain, convertFee, ibcFee, memo } from "global/config/cosmosConstants";
 import { CantoMainnet } from "global/config/networks";
@@ -18,6 +18,7 @@ export interface BridgeTransaction {
   state: TransactionState;
   send: (amount: string) => Promise<unknown>;
   resetState: () => void;
+  txName: string;
 }
 interface BridgingTransactionsSelector {
   bridgeIn: {
@@ -58,9 +59,10 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
     return {
       state: state.status,
       send: async (amount: string) => {
-        send(ADDRESSES.ETHMainnet.GravityBridge, amount);
+        send(ADDRESSES.ETHMainnet.GravityBridge, ethers.constants.MaxUint256);
       },
       resetState,
+      txName: "approve token",
     };
   }
   function useSendToCosmos(
@@ -85,6 +87,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
         }
       },
       resetState,
+      txName: "send to cosmos",
     };
   }
   /**
@@ -130,7 +133,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
     };
     const resetState = () => setConvertState("None");
 
-    return { state: convertState, send, resetState };
+    return { state: convertState, send, resetState, txName: "convert" };
   }
   function useIBCTransfer(
     tokenDenom: string,
@@ -168,7 +171,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
       }
     };
     const resetState = () => setIbcState("None");
-    return { state: ibcState, send, resetState };
+    return { state: ibcState, send, resetState, txName: "ibc transfer" };
   }
 
   return {

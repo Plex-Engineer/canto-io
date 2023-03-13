@@ -58,6 +58,10 @@ export function convertStringToBigNumber(amount: string, decimals: number) {
   return parseUnits(truncateNumber(amount, decimals), decimals);
 }
 
+export function formatAddress(address: string) {
+  return address.slice(0, 4) + "..." + address.slice(-4);
+}
+
 //returns button text and if it is disabled
 export function getStep1ButtonText(
   amount: BigNumber,
@@ -68,7 +72,7 @@ export function getStep1ButtonText(
   const bText = bridgeIn ? "bridge in" : "bridge out";
   if (currentAllowance.eq(-1)) {
     return ["select token", true];
-  } else if (currentAllowance.lt(max)) {
+  } else if (currentAllowance.lt(max) || currentAllowance.isZero()) {
     return ["approve", false];
   } else if (amount.isZero()) {
     return [bText, true];
