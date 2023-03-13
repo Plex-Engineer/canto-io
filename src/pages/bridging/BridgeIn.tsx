@@ -33,11 +33,16 @@ const BridgeIn = (props: BridgeInProps) => {
           tokenBalanceProp="erc20Balance"
           txHook={() => {
             const selectedToken = props.selectedEthToken;
-            if (selectedToken.allowance.lt(selectedToken.erc20Balance)) {
+
+            if (
+              selectedToken.symbol !== "choose token" &&
+              selectedToken.allowance.lt(selectedToken.erc20Balance)
+            ) {
               return transactionHooks.bridgeIn.approveToken(
                 selectedToken.address
               );
             }
+
             return transactionHooks.bridgeIn.sendToCosmos(
               ADDRESSES.ETHMainnet.GravityBridge,
               selectedToken.address,
