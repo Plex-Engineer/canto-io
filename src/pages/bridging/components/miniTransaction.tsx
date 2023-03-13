@@ -4,6 +4,7 @@ import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
+import { CantoMainnet } from "global/providers";
 import { formatBalance } from "global/utils/utils";
 import { useState } from "react";
 import { ConvertTransaction } from "../config/interfaces";
@@ -49,6 +50,7 @@ const MiniTransaction = (props: Props) => {
         }}
       >
         <ConfirmationModal
+          networkID={CantoMainnet.chainId}
           activeToken={props.transaction}
           state={txStats.state}
           onConfirm={() => {
