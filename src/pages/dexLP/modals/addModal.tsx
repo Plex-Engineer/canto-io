@@ -228,9 +228,9 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
           mixPanelEventInfo={mixPanelInfoObject}
         />
       </DexLoadingOverlay>
-      <div className="title">
+      {/* <div className="title">
         {openSettings ? "Transaction Settings" : "Add Liquidity"}
-      </div>
+      </div> */}
       {/* <div className="logo">
         <img src={logo} height={30} />
       </div> */}
@@ -247,7 +247,7 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
       <div
         style={{
           position: "absolute",
-          left: "10px",
+          right: "60px",
           top: "15px",
           zIndex: "10",
         }}

@@ -19,21 +19,20 @@ const Max = styled.span`
 
 const IconName = styled.div<styleProps>`
   display: flex;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 6px;
   align-items: center;
   justify-content: center;
-  padding: 0.4rem;
-  width: 100%;
-  margin-bottom: 0px;
+  width: 100px;
   border: 2px solid #191919;
   border-bottom: none;
   background-color: black;
-  border-bottom: 1px solid
-    ${(props) => (props.focused ? primaryColor : "black")};
+  border-radius: 4px;
+  /* border-bottom: 1px solid
+    ${(props) => (props.focused ? primaryColor : "black")}; */
   /* background-color: #8bff8945; */
   p {
     color: ${(props) => (props.focused ? primaryColor : "#efefef")};
-
     padding: 0;
     margin: 0;
   }
@@ -94,6 +93,8 @@ const Field = (props: Props) => {
       <div
         style={{
           display: "flex",
+          position: "absolute",
+          right: "30px",
           justifyContent: "space-between",
         }}
       >
