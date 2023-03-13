@@ -6,6 +6,8 @@ import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import MiniTransaction from "./miniTransaction";
 
 interface IBCOutProps {
+  ethAddress?: string;
+  cantoAddress?: string;
   transactions: ConvertTransaction[];
   txHook: (
     tokenName: string,
@@ -37,6 +39,8 @@ const IBCOut = (props: IBCOutProps) => {
                     ALL_BRIDGE_OUT_NETWORKS[tx.token.supportedOutChannels[0]]
                   )
                 }
+                cantoAddress={props.cantoAddress ?? ""}
+                ethAddress={props.ethAddress ?? ""}
               />
             );
           })}
