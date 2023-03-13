@@ -14,6 +14,17 @@ function addressCheck(address: string, addressBeginning: string) {
     address.length == 39 + addressBeginning.length
   );
 }
+export const CANTO_IBC_NETWORK: BridgeOutNetworkInfo = {
+  name: "canto",
+  icon: TOKENS.cantoMainnet.CANTO.icon,
+  tokens: [],
+  channel: "",
+  endpoint: "",
+  addressBeginning: "canto",
+  checkAddress: function (address) {
+    return addressCheck(address, this.addressBeginning);
+  },
+};
 export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
   [BridgeOutNetworks.GRAVITY_BRIDGE]: {
     name: "gravity bridge",

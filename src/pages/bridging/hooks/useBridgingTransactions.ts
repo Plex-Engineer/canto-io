@@ -12,6 +12,7 @@ import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/checkC
 import { txIBCTransfer } from "../utils/IBC/IBCTransfer";
 import { ADDRESSES } from "global/config/addresses";
 import { BridgeOutNetworkInfo } from "../config/interfaces";
+import { CANTO_IBC_NETWORK } from "../config/bridgeOutNetworks";
 
 export interface BridgeTransaction {
   state: TransactionState;
@@ -79,7 +80,9 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
     return {
       state: state.status,
       send: async (amount: string) => {
-        send(tokenAddress, cantoAddress, amount);
+        if (CANTO_IBC_NETWORK.checkAddress(cantoAddress)) {
+          send(tokenAddress, cantoAddress, amount);
+        }
       },
       resetState,
     };
