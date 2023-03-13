@@ -17,6 +17,7 @@ import CopyToClipboard from "react-copy-to-clipboard";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import { useState } from "react";
 import { convertStringToBigNumber, getStep1ButtonText } from "../utils/utils";
+import ImageButton from "global/components/ImageButton";
 
 interface Step1TxBoxProps {
   fromAddress?: string;
@@ -104,10 +105,8 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           <Text
             style={{
               color: "#848484",
-              padding: "1rem",
-              width: "150px",
+              width: "180px",
             }}
-            align="right"
           >
             amount :
           </Text>
@@ -122,6 +121,14 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
               setAmount(val.target.value);
             }}
           ></CInput>
+          <button
+            className="maxBtn"
+            onClick={() => {
+              setAmount(currentTokenBalance.toString());
+            }}
+          >
+            <Text>max</Text>
+          </button>
         </div>
         <PrimaryButton
           height="big"
@@ -211,6 +218,17 @@ const Styled = styled.div`
   width: 600px;
   padding: 1rem 2rem;
 
+  .maxBtn {
+    height: 100%;
+    width: 6rem;
+    margin-left: 3px;
+    background-color: #333;
+    border: none;
+    &:hover {
+      background-color: #252525;
+      cursor: pointer;
+    }
+  }
   .icons-indicator {
     height: 120px;
     width: 100%;
