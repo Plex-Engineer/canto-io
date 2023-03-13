@@ -33,7 +33,6 @@ const BridgeIn = (props: BridgeInProps) => {
           tokenBalanceProp="erc20Balance"
           txHook={() => {
             const selectedToken = props.selectedEthToken;
-
             if (
               selectedToken.symbol !== "choose token" &&
               selectedToken.allowance.lt(selectedToken.erc20Balance)

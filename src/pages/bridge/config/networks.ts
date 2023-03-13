@@ -11,7 +11,7 @@ export const ETHMainnet = {
   chainId: 1,
   addresses: ADDRESSES.ETHMainnet,
   gravityTokens: ETH_GRAVITY_BRIDGE_IN_TOKENS,
-  rpcUrl: import.meta.env.VITE_MAINNET_RPC,
+  rpcUrl: "import.meta.env.VITE_MAINNET_RPC",
   isTestChain: false,
   blockExplorerUrl: "https://www.nothing.com",
 };

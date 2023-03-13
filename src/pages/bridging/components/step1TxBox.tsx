@@ -12,11 +12,14 @@ import { truncateNumber } from "global/utils/utils";
 import { formatUnits } from "ethers/lib/utils";
 import { BigNumber, ethers } from "ethers";
 import { CInput } from "global/packages/src/components/atoms/Input";
-import { toastHandler } from "global/utils/toastHandler";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import { useState } from "react";
-import { convertStringToBigNumber, getStep1ButtonText } from "../utils/utils";
+import {
+  convertStringToBigNumber,
+  copyAddress,
+  getStep1ButtonText,
+} from "../utils/utils";
 
 interface Step1TxBoxProps {
   fromAddress?: string;
@@ -29,14 +32,13 @@ interface Step1TxBoxProps {
   txHook: () => BridgeTransaction;
 }
 const Step1TxBox = (props: Step1TxBoxProps) => {
-  function copyAddress() {
-    toastHandler("copied address", true, "0", 300);
-  }
+  const txProps = props.txHook();
+  const [amount, setAmount] = useState("");
+
   const currentTokenBalance =
     (props.selectedToken[props.tokenBalanceProp] as BigNumber) ??
     BigNumber.from(0);
-  const txProps = props.txHook();
-  const [amount, setAmount] = useState("");
+
   const [buttonText, buttonDisabled] = getStep1ButtonText(
     convertStringToBigNumber(amount, props.selectedToken.decimals),
     currentTokenBalance,

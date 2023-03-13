@@ -1,5 +1,6 @@
 import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
+import { toastHandler } from "global/utils/toastHandler";
 import { truncateNumber } from "global/utils/utils";
 import { ConvertTransaction, UserConvertToken } from "../config/interfaces";
 import { TransactionHistoryEvent } from "./bridgeTxHistory";
@@ -31,6 +32,9 @@ export function createConvertTransactions(
     }
   }
   return allConverts;
+}
+export function copyAddress() {
+  toastHandler("copied address", true, "0", 300);
 }
 
 export function convertSecondsToString(seconds: string) {

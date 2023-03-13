@@ -2,8 +2,12 @@ import { BridgeOutNetworks } from "pages/bridging/config/interfaces";
 import { CONVERT_COIN_TOKENS } from "pages/bridging/config/bridgingTokens";
 import { BigNumber } from "ethers";
 import { truncateNumber } from "global/utils/utils";
-import { convertStringToBigNumber } from "pages/bridging/utils/utils";
+import {
+  convertStringToBigNumber,
+  getStep1ButtonText,
+} from "pages/bridging/utils/utils";
 import { ALL_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
+import { parseUnits } from "ethers/lib/utils";
 
 test("check cosmos address is valid", () => {
   const testCases: { case: string; validFor: BridgeOutNetworks[] }[] = [
@@ -164,12 +168,81 @@ test("converting string to big number for token decimals", () => {
     for (const token of CONVERT_COIN_TOKENS) {
       const expectedResult = !testCase.valid
         ? BigNumber.from(0)
-        : BigNumber.from(truncateNumber(testCase.case, token.decimals));
+        : parseUnits(
+            truncateNumber(testCase.case, token.decimals),
+            token.decimals
+          );
       expect(
         convertStringToBigNumber(testCase.case, token.decimals).eq(
           expectedResult
         )
       );
     }
+  }
+});
+
+test("step 1 buttonText", () => {
+  const bridgeText = (bIn: boolean) => `bridge ${bIn ? "in" : "out"}`;
+  const testCases = [
+    {
+      amount: parseUnits("10", 18),
+      max: parseUnits("10", 18),
+      currentAllowance: parseUnits("10", 18),
+      bridgeIn: true,
+      expectedResult: {
+        disabled: false,
+        text: bridgeText(true),
+      },
+    },
+    {
+      amount: parseUnits("10", 18),
+      max: parseUnits("9", 18),
+      currentAllowance: parseUnits("1", 18),
+      bridgeIn: true,
+      expectedResult: {
+        disabled: false,
+        text: "approve",
+      },
+    },
+    {
+      amount: BigNumber.from("-1"),
+      max: parseUnits("10", 18),
+      currentAllowance: BigNumber.from("-1"),
+      bridgeIn: true,
+      expectedResult: {
+        disabled: true,
+        text: "select token",
+      },
+    },
+    {
+      amount: parseUnits("10", 18),
+      max: parseUnits("5", 18),
+      currentAllowance: parseUnits("10", 18),
+      bridgeIn: false,
+      expectedResult: {
+        disabled: true,
+        text: bridgeText(false),
+      },
+    },
+    {
+      amount: parseUnits("10", 18),
+      max: parseUnits("10", 18),
+      currentAllowance: parseUnits("10", 18),
+      bridgeIn: false,
+      expectedResult: {
+        disabled: false,
+        text: bridgeText(false),
+      },
+    },
+  ];
+  for (const testCase of testCases) {
+    const [testText, testDisabled] = getStep1ButtonText(
+      testCase.amount,
+      testCase.max,
+      testCase.currentAllowance,
+      testCase.bridgeIn
+    );
+    expect(testText).toBe(testCase.expectedResult.text);
+    expect(testDisabled).toBe(testCase.expectedResult.disabled);
   }
 });
