@@ -81,7 +81,6 @@ export const StyledPopup = styled(Popup)`
 `;
 
 const Styled = styled.div`
-  background-color: #222222;
   padding: 1rem 1.4rem;
   color: var(--primary-color);
   display: flex;
@@ -94,6 +93,6 @@ const Styled = styled.div`
   /* border: 1px solid black; */
   &:hover {
     /* border: 1px solid var(--primary-color); */
-    background-color: #333333;
+    background-color: #111;
   }
 `;

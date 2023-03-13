@@ -76,7 +76,6 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
       </div>
       <div className="token-box">
         <div className="token-select">
-          {" "}
           <TokenWallet
             tokens={props.tokens}
             balance="erc20Balance"
@@ -232,7 +231,6 @@ const Styled = styled.div`
   }
 
   .token-select {
-    background-color: #252525;
     width: 100%;
     height: 100%;
   }
