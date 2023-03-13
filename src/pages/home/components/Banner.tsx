@@ -16,7 +16,7 @@ export const Banner = () => {
       <div className="spacer"></div>
       <OutlinedButton
         onClick={() => {
-          window.open("https://twitter.com/theCOH_");
+          window.open("https://thecoh.build/");
         }}
       >
         Apply to hack &gt;

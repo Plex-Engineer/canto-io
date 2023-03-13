@@ -7,7 +7,6 @@ const IconPair = (props: DualType) => {
     <span
       style={{
         display: "flex",
-
         alignContent: "center",
         alignItems: "center",
       }}
@@ -18,7 +17,6 @@ const IconPair = (props: DualType) => {
         height={35}
         style={{
           marginLeft: "-0.7rem",
-          paddingRight: "1rem",
         }}
       />
     </span>

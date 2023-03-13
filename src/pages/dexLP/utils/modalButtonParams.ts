@@ -1,6 +1,24 @@
 import { BigNumber } from "ethers";
 
 //returns button text and function it will perform onClick
+export function getEnableTokenText(
+  token1Symbol: string,
+  token2Symbol: string,
+  token1Allowance: BigNumber,
+  token2Allowance: BigNumber
+): string {
+  if (token1Allowance.gt(0) && token2Allowance.gt(0)) {
+    return "enabled";
+  } else if (token1Allowance.gt(0)) {
+    return `enable ${token2Symbol} token`;
+  } else if (token2Allowance.gt(0)) {
+    return `enable ${token1Symbol} token`;
+  } else {
+    return `enable ${token1Symbol} / ${token2Symbol} tokens`;
+  }
+}
+
+//returns button text and function it will perform onClick
 export function getEnableButtonTextAndOnClick(
   token1Symbol: string,
   token2Symbol: string,
@@ -22,7 +40,7 @@ export function getEnableButtonTextAndOnClick(
     return [`enable ${token1Symbol}`, addAllowance1];
   } else {
     return [
-      `enable ${token1Symbol} & ${token2Symbol}`,
+      `enable ${token1Symbol} / ${token2Symbol} tokens`,
       () => {
         addAllowance1();
         addAllowance2();

@@ -20,6 +20,11 @@ const BridgeToCanto = (props: BridgeToCantoProps) => {
       </Text>
       <div className="scroll-port">
         <div className="scrollable">
+          {props.transactions.length == 0 && (
+            <div className="empty-records">
+              <Text>No transactions available right now</Text>
+            </div>
+          )}
           {props.transactions.map((tx, index) => {
             return (
               <MiniTransaction
@@ -46,6 +51,16 @@ const Styled = styled.div`
     margin-top: 1rem;
     max-height: 300px;
     overflow-y: auto;
+  }
+
+  .empty-records {
+    border: 1px solid #333;
+    background-color: #111;
+    border-radius: 4px;
+    padding: 1rem;
+    p {
+      color: #777;
+    }
   }
   .scrollable {
     width: 100%;
