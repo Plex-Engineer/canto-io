@@ -178,6 +178,9 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           weight="bold"
           padding="lg"
           disabled={buttonDisabled}
+          style={{
+            width: "14rem",
+          }}
           onClick={() => {
             setModalOpen(true);
           }}
