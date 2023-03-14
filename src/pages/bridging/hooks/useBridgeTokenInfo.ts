@@ -132,7 +132,7 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
       await setAllData();
     }, 6000);
     return () => clearInterval(interval);
-  }, []);
+  }, [ethFail, nativeERC20Fail]);
 
   //useEffect to get tokens quick after user makes changes
   useEffect(() => {

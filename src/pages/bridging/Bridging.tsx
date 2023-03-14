@@ -13,6 +13,7 @@ const Bridging = () => {
   const networkInfo = useNetworkInfo();
   const bridgingTokens = useBridgeTokenInfo();
   const bridgingHistory = useTransactionHistory();
+
   return (
     <div>
       <CantoTabs
