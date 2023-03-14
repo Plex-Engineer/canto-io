@@ -17,7 +17,7 @@ const ConfirmationModal = (props: BridgeModal) => {
     props.ibcData.selectedNetwork.checkAddress(props.ibcData.userInputAddress);
   return (
     <Styled>
-      {props.from.chainId != networkID && (
+      {props.from.chainId != networkID && networkID != undefined && (
         <div className="network-change">
           <Text type="title">Oops, you seem to be on a wrong network.</Text>
           <PrimaryButton
@@ -90,15 +90,36 @@ const ConfirmationModal = (props: BridgeModal) => {
                   </div>
                 </>
               )}
-              {props.ibcData && (
-                <CInput
-                  value={props.ibcData.userInputAddress}
-                  onChange={(val) => {
-                    props.ibcData?.setUserInputAddress(val.target.value);
-                  }}
-                />
-              )}
             </div>
+
+            {props.ibcData && (
+              <div className="transactions">
+                <div
+                  className="row"
+                  style={{
+                    margin: "8px 0",
+                  }}
+                >
+                  <div className="header">address :</div>
+                  <div className="value">
+                    <CInput
+                      style={{
+                        border: "1px solid #282828",
+                        backgroundColor: "transparent",
+                        width: "16rem",
+                      }}
+                      placeholder={
+                        props.ibcData.selectedNetwork.addressBeginning + "1..."
+                      }
+                      value={props.ibcData.userInputAddress}
+                      onChange={(val) => {
+                        props.ibcData?.setUserInputAddress(val.target.value);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             <Text size="text4" align="left" style={{ color: "#474747" }}>
               We can show some of the optional text, to info the user about the
@@ -131,7 +152,7 @@ const ConfirmationModal = (props: BridgeModal) => {
 };
 
 const Styled = styled.div`
-  height: 36rem;
+  min-height: 36rem;
   width: 30rem;
   display: flex;
   flex-direction: column;
@@ -139,10 +160,12 @@ const Styled = styled.div`
   justify-content: start;
   padding: 0 40px;
   padding-bottom: 2rem;
-  gap: 2rem;
+  gap: 1rem;
 
   .expanded {
     flex-grow: 2;
+    display: grid;
+    place-items: center;
   }
 
   .network-change {
@@ -150,6 +173,7 @@ const Styled = styled.div`
     flex-direction: column;
     gap: 2rem;
     height: 100%;
+    flex-grow: 1;
     justify-content: center;
     align-items: center;
   }
