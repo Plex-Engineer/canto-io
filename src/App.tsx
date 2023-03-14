@@ -11,7 +11,7 @@ import { PAGES } from "global/config/pageList";
 import Loading from "global/components/Loading";
 import PageNotFound from "global/components/pageNotFound";
 import ChangeLog from "pages/changelog/changeLog";
-import Walkthrough from "pages/bridge/walkthrough/Walkthrough";
+import Walkthrough from "pages/bridging/walkthrough/Walkthrough";
 
 //Styling
 const Container = styled.div`

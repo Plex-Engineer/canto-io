@@ -7,7 +7,6 @@ import CopyIcon from "../../../assets/copy.svg";
 import arrow from "../../../assets/next.svg";
 import { BaseToken } from "../config/interfaces";
 import LoadingBlip from "./LoadingBlip";
-import { TokenWallet } from "pages/bridge/components/TokenSelect";
 import { truncateNumber } from "global/utils/utils";
 import { formatUnits } from "ethers/lib/utils";
 import { BigNumber, ethers } from "ethers";
@@ -23,6 +22,7 @@ import {
 import Modal from "global/packages/src/components/molecules/Modal";
 import ConfirmationModal from "./modals/confirmationModal";
 import { CantoMainnet, ETHMainnet } from "global/config/networks";
+import { TokenWallet } from "./tokenSelect";
 
 interface Step1TxBoxProps {
   fromAddress?: string;

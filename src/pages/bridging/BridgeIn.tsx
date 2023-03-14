@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
 import BridgeToCanto from "./components/bridgeToCanto";
-import EvmToBridge from "./components/evmToBridge";
 import {
   BaseToken,
   ConvertTransaction,

@@ -9,10 +9,10 @@ import CopyIcon from "../../../assets/copy.svg";
 import LoadingBlip from "./LoadingBlip";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import { useBridgeTokenInfo } from "../hooks/useBridgeTokenInfo";
-import { TokenWallet } from "pages/bridge/components/TokenSelect";
 import { SelectedTokens } from "../stores/bridgeTokenStore";
 import { formatUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
+import { TokenWallet } from "./tokenSelect";
 
 interface Props {
   connected: boolean;
