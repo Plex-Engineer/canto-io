@@ -30,7 +30,7 @@ const BridgeToCanto = (props: BridgeToCantoProps) => {
           {props.transactions.map((tx, index) => {
             return (
               <MiniTransaction
-                key={index}
+                key={tx.token.address}
                 transaction={tx}
                 txFactory={() => props.txHook(tx.token.ibcDenom)}
                 cantoAddress={props.cantoAddress}
