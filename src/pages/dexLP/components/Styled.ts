@@ -160,6 +160,11 @@ export const AddRemoveContainer = styled(DexModalContainer)`
     margin-top: 1rem;
     gap: 0.6rem;
   }
+  .btns {
+    display: flex;
+    flex-direction: row;
+    gap: 0.6rem;
+  }
 `;
 
 interface showProps {

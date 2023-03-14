@@ -112,6 +112,24 @@ export function convertFromScientificNotation(value: string) {
   return value;
 }
 
+export function getShortTxStatusFromState(state: TransactionState): string {
+  switch (state) {
+    case "None":
+      return "complete";
+    case "Mining":
+      return "ongoing";
+    case "PendingSignature":
+      return "signing";
+    case "Success":
+      return "done";
+    case "Exception":
+    case "Fail":
+      return "error";
+    default:
+      return "complete";
+  }
+}
+
 export function getTransactionStatusString(
   action: string,
   inAction: string,
