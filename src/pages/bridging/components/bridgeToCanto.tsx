@@ -43,6 +43,7 @@ const BridgeToCanto = (props: BridgeToCantoProps) => {
     </Styled>
   );
 };
+
 const Styled = styled.div`
   background: #090909;
   border: 1px solid #3a3a3a;
