@@ -31,13 +31,15 @@ const ConfirmationModal = (props: BridgeModal) => {
       )}
       {props.tx.state != "None" &&
         (props.from.chainId == networkID || networkID == undefined) && (
-          <LoadingModal
-            status={props.tx.state}
-            transactionType={CantoTransactionType.CONVERT_TO_COSMOS}
-            onClose={() => {
-              false;
-            }}
-          />
+          <div className="loading">
+            <LoadingModal
+              status={props.tx.state}
+              transactionType={CantoTransactionType.CONVERT_TO_COSMOS}
+              onClose={() => {
+                false;
+              }}
+            />
+          </div>
         )}
       {props.tx.state == "None" &&
         (props.from.chainId == networkID || networkID == undefined) && (
@@ -162,6 +164,12 @@ const Styled = styled.div`
   padding-bottom: 2rem;
   gap: 1rem;
 
+  .loading {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   .expanded {
     flex-grow: 2;
     display: grid;

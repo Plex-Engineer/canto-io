@@ -85,28 +85,25 @@ const MiniTransaction = (props: Props) => {
         />
       </Modal>
 
-      <div className="dual-item">
+      <div
+        className="dual-item"
+        style={{
+          width: "120%",
+        }}
+      >
         <Text size="text3" align="left">
           origin
         </Text>
-        <Text type="title">{props.transaction.origin}</Text>
+        <Text type="title" align="left">
+          {props.transaction.origin}
+        </Text>
       </div>
 
-      {props.transaction.timeLeft != "0" && (
-        <div className="dual-item">
-          <Text size="text3" align="left">
-            time left
-          </Text>
-          <Text type="title" size="text2">
-            {convertSecondsToString(props.transaction.timeLeft)}
-          </Text>
-        </div>
-      )}
       <div className="dual-item">
         <Text size="text3" align="left">
           amount
         </Text>
-        <Text type="title">
+        <Text type="title" align="left">
           {formatBalance(
             formatUnits(
               props.transaction.amount,
@@ -116,23 +113,35 @@ const MiniTransaction = (props: Props) => {
           {" " + props.transaction.token.symbol}
         </Text>
       </div>
+      {props.transaction.timeLeft != "0" && (
+        <div className="dual-item">
+          <Text size="text3" align="left">
+            time left
+          </Text>
+          <Text type="title" align="left" size="text2">
+            {convertSecondsToString(props.transaction.timeLeft)}
+          </Text>
+        </div>
+      )}
       {props.transaction.timeLeft == "0" && (
-        <PrimaryButton
-          style={{
-            maxWidth: "7rem",
-          }}
-          height="normal"
-          disabled={props.transaction.timeLeft !== "0"}
-          weight="bold"
-          filled
-          onClick={() => {
-            if (txStats.state == "Exception" || txStats.state == "Fail")
-              txStats.resetState();
-            setModalOpen(true);
-          }}
-        >
-          {getTxStatus()}
-        </PrimaryButton>
+        <div className="dual-item">
+          <PrimaryButton
+            style={{
+              maxWidth: "7rem",
+            }}
+            height="normal"
+            disabled={props.transaction.timeLeft !== "0"}
+            weight="bold"
+            filled
+            onClick={() => {
+              if (txStats.state == "Exception" || txStats.state == "Fail")
+                txStats.resetState();
+              setModalOpen(true);
+            }}
+          >
+            {getTxStatus()}
+          </PrimaryButton>
+        </div>
       )}
     </Styled>
   );
@@ -145,9 +154,18 @@ const Styled = styled.div`
   padding: 0 16px;
   justify-content: space-between;
   align-items: center;
-  background: #010101;
+  background-color: #010101;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 4px;
+
+  .dual-item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .dual-item:last-child {
+    max-width: 6rem;
+  }
 `;
 
 export default MiniTransaction;
