@@ -44,7 +44,7 @@ const BridgingPage = () => {
           <NotConnected
             title="Wallet is not connected"
             subtext="to use bridge you need to connect a wallet through metamask"
-            buttonText="connnect wallet"
+            buttonText="connect wallet"
             bgFilled
             onClick={() => {
               activateBrowserWallet();
