@@ -26,7 +26,7 @@ const MiniTransaction = (props: Props) => {
   const tokenNetworks: BridgeOutNetworks[] =
     props.transaction.token.supportedOutChannels;
   const [selectedNetwork, setSelectedNetwork] = useState(
-    ALL_BRIDGE_OUT_NETWORKS[tokenNetworks[0]]
+    ALL_BRIDGE_OUT_NETWORKS[tokenNetworks ? tokenNetworks[0] : 0]
   );
 
   function getTxStatus(): string {

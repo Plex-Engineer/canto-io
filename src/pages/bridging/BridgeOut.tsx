@@ -1,6 +1,6 @@
 import { BridgeStyled } from "./BridgeIn";
-import IBCOut from "./components/ibcOut";
 import Step1TxBox from "./components/step1TxBox";
+import Step2TxBox from "./components/step2TxBox";
 import {
   BaseToken,
   ConvertTransaction,
@@ -41,10 +41,12 @@ const BridgeOut = (props: BridgeOutProps) => {
         />
       </div>
       <div className="bridgeToCanto">
-        <IBCOut
+        <Step2TxBox
+          bridgeIn={false}
           transactions={props.step2Transactions}
           txHook={(tokenName) => transactionHooks.bridgeOut.ibcOut(tokenName)}
-          cantoAddress={props.cantoAddress}
+          cantoAddress={props.cantoAddress ?? ""}
+          ethAddress={props.ethAddress ?? ""}
         />
       </div>
     </BridgeStyled>

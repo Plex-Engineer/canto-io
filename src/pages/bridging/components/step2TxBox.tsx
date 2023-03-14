@@ -4,21 +4,24 @@ import { ConvertTransaction } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import MiniTransaction from "./miniTransaction";
 
-interface BridgeToCantoProps {
+interface Step2TxBoxProps {
   transactions: ConvertTransaction[];
   txHook: (tokenName: string) => BridgeTransaction;
   cantoAddress: string;
   ethAddress: string;
+  bridgeIn: boolean;
 }
-const BridgeToCanto = (props: BridgeToCantoProps) => {
+const Step2TxBox = (props: Step2TxBoxProps) => {
   return (
     <Styled>
       <Text type="title" size="title2">
         Transactions
       </Text>
       <Text type="text" size="text3">
-        once the transaction is done, please click on complete to get the funds
-        from bridge to canto (evm)
+        {props.bridgeIn
+          ? `once the transaction is done, please click on complete to get the funds
+        from bridge to canto (evm)`
+          : "once the transactions is done, please click on complete to get the funds to the desired cosmos network"}
       </Text>
       <div className="scroll-port">
         <div className="scrollable">
@@ -27,17 +30,19 @@ const BridgeToCanto = (props: BridgeToCantoProps) => {
               <Text>No transactions available right now</Text>
             </div>
           )}
-          {props.transactions.map((tx, index) => {
-            return (
-              <MiniTransaction
-                key={index}
-                transaction={tx}
-                txFactory={() => props.txHook(tx.token.ibcDenom)}
-                cantoAddress={props.cantoAddress}
-                ethAddress={props.ethAddress}
-              />
-            );
-          })}
+          {props.transactions
+            .sort((a, b) => (a.origin > b.origin ? 1 : -1))
+            .map((tx, index) => {
+              return (
+                <MiniTransaction
+                  key={index}
+                  transaction={tx}
+                  txFactory={() => props.txHook(tx.token.ibcDenom)}
+                  cantoAddress={props.cantoAddress}
+                  ethAddress={props.ethAddress}
+                />
+              );
+            })}
         </div>
       </div>
     </Styled>
@@ -75,4 +80,4 @@ const Styled = styled.div`
     gap: 1rem;
   }
 `;
-export default BridgeToCanto;
+export default Step2TxBox;
