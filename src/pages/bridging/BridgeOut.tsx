@@ -1,20 +1,16 @@
 import { BridgeStyled } from "./BridgeIn";
 import Step1TxBox from "./components/step1TxBox";
 import Step2TxBox from "./components/step2TxBox";
-import {
-  BaseToken,
-  ConvertTransaction,
-  UserConvertToken,
-} from "./config/interfaces";
+import { NativeTransaction, UserERC20BridgeToken } from "./config/interfaces";
 import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
 
 interface BridgeOutProps {
   ethAddress?: string;
   cantoAddress?: string;
-  step2Transactions: ConvertTransaction[];
-  convertTokens: UserConvertToken[];
-  selectedConvertToken: UserConvertToken;
-  selectToken: (token: BaseToken) => void;
+  bridgeOutTokens: UserERC20BridgeToken[];
+  selectedBridgeOutToken: UserERC20BridgeToken;
+  selectToken: (token: UserERC20BridgeToken) => void;
+  step2Transactions: NativeTransaction[];
 }
 const BridgeOut = (props: BridgeOutProps) => {
   const transactionHooks = useBridgingTransactions();
@@ -26,18 +22,16 @@ const BridgeOut = (props: BridgeOutProps) => {
           fromAddress={props.ethAddress}
           toAddress={props.cantoAddress}
           bridgeIn={false}
-          tokens={props.convertTokens}
-          selectedToken={props.selectedConvertToken}
+          tokens={props.bridgeOutTokens}
+          selectedToken={props.selectedBridgeOutToken}
           selectToken={props.selectToken}
-          tokenBalanceProp="erc20Balance"
           txHook={() =>
             transactionHooks.convertCoin.convertTx(
-              props.selectedConvertToken.address,
+              props.selectedBridgeOutToken.address,
               props.cantoAddress ?? "",
               false
             )
           }
-          needAllowance={false}
         />
       </div>
       <div className="bridgeToCanto">

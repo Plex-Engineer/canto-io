@@ -2,51 +2,43 @@ import { BigNumber } from "ethers";
 import create from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import {
-  BaseToken,
-  BridgeOutNetworks,
-  EMPTY_BRIDGE_IN_TOKEN,
-  EMPTY_BRIDGE_OUT_TOKEN,
-  EMPTY_CONVERT_TOKEN,
-  UserBridgeInToken,
-  UserConvertToken,
-  UserNativeToken,
+  EMPTY_ERC20_BRIDGE_TOKEN,
+  UserERC20BridgeToken,
 } from "../config/interfaces";
 
 export enum SelectedTokens {
   ETHTOKEN,
-  CONVERTIN,
   CONVERTOUT,
-  BRIDGEOUT,
 }
 export interface TokenStore {
   selectedTokens: {
-    [SelectedTokens.ETHTOKEN]: UserBridgeInToken;
-    [SelectedTokens.CONVERTIN]: UserConvertToken;
-    [SelectedTokens.CONVERTOUT]: UserConvertToken;
-    [SelectedTokens.BRIDGEOUT]: UserNativeToken;
+    [SelectedTokens.ETHTOKEN]: UserERC20BridgeToken;
+    [SelectedTokens.CONVERTOUT]: UserERC20BridgeToken;
   };
-  setSelectedToken: (token: BaseToken, selectedFrom: SelectedTokens) => void;
+  setSelectedToken: (
+    token: UserERC20BridgeToken,
+    selectedFrom: SelectedTokens
+  ) => void;
   //used to refresh the selected token, since token info could change between blocks
   resetSelectedToken: (
     tokenType: SelectedTokens,
-    tokenList: BaseToken[]
+    tokenList: UserERC20BridgeToken[]
   ) => void;
   lastTokenSelect: number;
   checkTimeAndResetTokens: () => void;
-  bridgeOutNetwork: BridgeOutNetworks;
-  setBridgeOutNetwork: (network: BridgeOutNetworks) => void;
 }
 export const useBridgeTokenStore = create<TokenStore>()(
   devtools(
     persist(
       (set, get) => ({
         selectedTokens: {
-          [SelectedTokens.ETHTOKEN]: EMPTY_BRIDGE_IN_TOKEN,
-          [SelectedTokens.CONVERTIN]: EMPTY_CONVERT_TOKEN,
-          [SelectedTokens.CONVERTOUT]: EMPTY_CONVERT_TOKEN,
-          [SelectedTokens.BRIDGEOUT]: EMPTY_BRIDGE_OUT_TOKEN,
+          [SelectedTokens.ETHTOKEN]: EMPTY_ERC20_BRIDGE_TOKEN,
+          [SelectedTokens.CONVERTOUT]: EMPTY_ERC20_BRIDGE_TOKEN,
         },
-        setSelectedToken: (token: BaseToken, selectedFrom: SelectedTokens) => {
+        setSelectedToken: (
+          token: UserERC20BridgeToken,
+          selectedFrom: SelectedTokens
+        ) => {
           set({
             lastTokenSelect: new Date().getTime(),
             selectedTokens: {
@@ -69,21 +61,11 @@ export const useBridgeTokenStore = create<TokenStore>()(
           if (get().lastTokenSelect + 60000 < new Date().getTime()) {
             set({
               selectedTokens: {
-                [SelectedTokens.ETHTOKEN]: EMPTY_BRIDGE_IN_TOKEN,
-                [SelectedTokens.CONVERTIN]: EMPTY_CONVERT_TOKEN,
-                [SelectedTokens.CONVERTOUT]: EMPTY_CONVERT_TOKEN,
-                [SelectedTokens.BRIDGEOUT]: EMPTY_BRIDGE_OUT_TOKEN,
+                [SelectedTokens.ETHTOKEN]: EMPTY_ERC20_BRIDGE_TOKEN,
+                [SelectedTokens.CONVERTOUT]: EMPTY_ERC20_BRIDGE_TOKEN,
               },
             });
           }
-        },
-        bridgeOutNetwork: BridgeOutNetworks.GRAVITY_BRIDGE,
-        setBridgeOutNetwork: (network: BridgeOutNetworks) => {
-          get().setSelectedToken(
-            EMPTY_BRIDGE_OUT_TOKEN,
-            SelectedTokens.BRIDGEOUT
-          );
-          set({ bridgeOutNetwork: network });
         },
       }),
       {
@@ -95,20 +77,21 @@ export const useBridgeTokenStore = create<TokenStore>()(
           const parsedState = JSON.parse(state);
           const selectedTokens = parsedState?.state?.selectedTokens;
           if (selectedTokens) {
-            selectedTokens[0].allowance = BigNumber.from(
-              selectedTokens[0].allowance?.hex ?? 0
+            selectedTokens[SelectedTokens.ETHTOKEN].allowance = BigNumber.from(
+              selectedTokens[SelectedTokens.ETHTOKEN].allowance?.hex ?? 0
             );
-            selectedTokens[0].balanceOf = BigNumber.from(
-              selectedTokens[0].balanceOf?.hex ?? 0
-            );
-            for (let i = 1; i < 4; i++) {
-              selectedTokens[i].nativeBalance = BigNumber.from(
-                selectedTokens[i]?.nativeBalance ?? 0
+            selectedTokens[SelectedTokens.ETHTOKEN].erc20Balance =
+              BigNumber.from(
+                selectedTokens[SelectedTokens.ETHTOKEN].erc20Balance?.hex ?? 0
               );
-              selectedTokens[i].erc20Balance = BigNumber.from(
-                selectedTokens[i]?.erc20Balance ?? 0
+            selectedTokens[SelectedTokens.CONVERTOUT].allowance =
+              BigNumber.from(
+                selectedTokens[SelectedTokens.CONVERTOUT].allowance?.hex ?? 0
               );
-            }
+            selectedTokens[SelectedTokens.CONVERTOUT].erc20Balance =
+              BigNumber.from(
+                selectedTokens[SelectedTokens.CONVERTOUT].erc20Balance?.hex ?? 0
+              );
           }
           return {
             ...parsedState,

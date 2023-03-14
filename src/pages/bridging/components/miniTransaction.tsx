@@ -6,13 +6,13 @@ import { CantoMainnet } from "global/providers";
 import { formatBalance } from "global/utils/utils";
 import { useState } from "react";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
-import { BridgeOutNetworks, ConvertTransaction } from "../config/interfaces";
+import { BridgeOutNetworks, NativeTransaction } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import { convertSecondsToString } from "../utils/utils";
 import ConfirmationModal from "./modals/confirmationModal";
 
 interface Props {
-  transaction: ConvertTransaction;
+  transaction: NativeTransaction;
   txFactory: () => BridgeTransaction;
   cantoAddress: string;
   ethAddress: string;

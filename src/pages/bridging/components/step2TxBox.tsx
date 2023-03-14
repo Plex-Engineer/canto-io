@@ -1,11 +1,11 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
-import { ConvertTransaction } from "../config/interfaces";
+import { NativeTransaction } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import MiniTransaction from "./miniTransaction";
 
 interface Step2TxBoxProps {
-  transactions: ConvertTransaction[];
+  transactions: NativeTransaction[];
   txHook: (tokenName: string) => BridgeTransaction;
   cantoAddress: string;
   ethAddress: string;
@@ -35,7 +35,7 @@ const Step2TxBox = (props: Step2TxBoxProps) => {
             .map((tx, index) => {
               return (
                 <MiniTransaction
-                  key={index}
+                  key={tx.token.address}
                   transaction={tx}
                   txFactory={() => props.txHook(tx.token.ibcDenom)}
                   cantoAddress={props.cantoAddress}

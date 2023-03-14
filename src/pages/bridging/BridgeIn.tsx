@@ -1,10 +1,6 @@
 import styled from "@emotion/styled";
 import Step2TxBox from "./components/step2TxBox";
-import {
-  BaseToken,
-  ConvertTransaction,
-  UserBridgeInToken,
-} from "./config/interfaces";
+import { NativeTransaction, UserERC20BridgeToken } from "./config/interfaces";
 import Step1TxBox from "./components/step1TxBox";
 import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
 import { ADDRESSES } from "global/config/addresses";
@@ -12,10 +8,10 @@ import { ADDRESSES } from "global/config/addresses";
 interface BridgeInProps {
   ethAddress?: string;
   cantoAddress?: string;
-  step2Transactions: ConvertTransaction[];
-  ethGBridgeTokens: UserBridgeInToken[];
-  selectedEthToken: UserBridgeInToken;
-  selectEthToken: (token: BaseToken) => void;
+  ethGBridgeTokens: UserERC20BridgeToken[];
+  selectedEthToken: UserERC20BridgeToken;
+  selectEthToken: (token: UserERC20BridgeToken) => void;
+  step2Transactions: NativeTransaction[];
 }
 const BridgeIn = (props: BridgeInProps) => {
   const transactionHooks = useBridgingTransactions();
@@ -33,7 +29,6 @@ const BridgeIn = (props: BridgeInProps) => {
         tokens={props.ethGBridgeTokens}
         selectedToken={props.selectedEthToken}
         selectToken={props.selectEthToken}
-        tokenBalanceProp="erc20Balance"
         txHook={() => {
           if (needAllowance) {
             return transactionHooks.bridgeIn.approveToken(
@@ -46,7 +41,6 @@ const BridgeIn = (props: BridgeInProps) => {
             props.cantoAddress ?? ""
           );
         }}
-        needAllowance
       />
       <Step2TxBox
         bridgeIn

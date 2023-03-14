@@ -2,22 +2,22 @@ import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import { toastHandler } from "global/utils/toastHandler";
 import { truncateNumber } from "global/utils/utils";
-import { ConvertTransaction, UserConvertToken } from "../config/interfaces";
+import { NativeTransaction, UserNativeToken } from "../config/interfaces";
 import { TransactionHistoryEvent } from "./bridgeTxHistory";
 import { getNetworkFromTokenName } from "./findTokens";
 
 export function createConvertTransactions(
   pendingIn: TransactionHistoryEvent[],
-  nativeTokens: UserConvertToken[]
-): ConvertTransaction[] {
-  const allConverts: ConvertTransaction[] = [];
+  nativeTokens: UserNativeToken[]
+): NativeTransaction[] {
+  const allConverts: NativeTransaction[] = [];
   for (const pending of pendingIn) {
     if (pending.token) {
       allConverts.push({
         origin: pending.from,
         timeLeft: pending.secondsToComplete,
         amount: pending.amount,
-        token: pending.token as UserConvertToken,
+        token: pending.token as UserNativeToken,
       });
     }
   }
@@ -70,9 +70,7 @@ export function getStep1ButtonText(
   bridgeIn: boolean
 ): [string, boolean] {
   const bText = bridgeIn ? "bridge in" : "bridge out";
-  if (currentAllowance.eq(-1)) {
-    return ["select token", true];
-  } else if (currentAllowance.lt(max) || currentAllowance.isZero()) {
+  if (currentAllowance.lt(max) || currentAllowance.isZero()) {
     return ["approve", false];
   } else if (amount.isZero()) {
     return [bText, true];

@@ -1,32 +1,15 @@
 import { CallResult, useCalls } from "@usedapp/core";
-import { BigNumber, Contract } from "ethers";
+import { BigNumber, Contract, ethers } from "ethers";
 import { ERC20Abi } from "global/config/abi";
 import { Token } from "global/config/tokenInfo";
-import {
-  UserBridgeInToken,
-  UserERC20Token,
-} from "pages/bridging/config/interfaces";
-
-//function signatures so we know the return type
-export function useTokenBalances(
-  account: string | undefined,
-  tokens: Token[],
-  chainId: number,
-  allowanceFrom: undefined
-): { tokens: UserERC20Token[]; fail: boolean };
-export function useTokenBalances(
-  account: string | undefined,
-  tokens: Token[],
-  chainId: number,
-  allowanceFrom: string
-): { tokens: UserBridgeInToken[]; fail: boolean };
+import { UserERC20BridgeToken } from "pages/bridging/config/interfaces";
 
 export function useTokenBalances(
   account: string | undefined,
   tokens: Token[],
   chainId: number,
   allowanceFrom?: string
-): { tokens: UserBridgeInToken[] | UserERC20Token[]; fail: boolean } {
+): { tokens: UserERC20BridgeToken[]; fail: boolean } {
   const needAllowance = !!allowanceFrom;
   const calls = tokens.map((token) => {
     const ERC20Contract = new Contract(token.address, ERC20Abi);
@@ -90,6 +73,7 @@ export function useTokenBalances(
         return {
           ...tokens[idx],
           erc20Balance: tokenData[0][0],
+          allowance: BigNumber.from(ethers.constants.MaxUint256),
         };
       }
     });
@@ -106,6 +90,7 @@ export function useTokenBalances(
       return {
         ...token,
         erc20Balance: BigNumber.from(0),
+        allowance: BigNumber.from(ethers.constants.MaxUint256),
       };
     }
   });
