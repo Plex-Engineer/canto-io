@@ -4,6 +4,7 @@ import { formatUnits } from "ethers/lib/utils";
 import LoadingModal from "global/components/modals/loading2";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
+import { CInput } from "global/packages/src/components/atoms/Input";
 import { truncateNumber } from "global/utils/utils";
 import { BridgeModal } from "pages/bridging/config/interfaces";
 import { formatAddress } from "pages/bridging/utils/utils";
@@ -11,6 +12,9 @@ import { formatAddress } from "pages/bridging/utils/utils";
 const ConfirmationModal = (props: BridgeModal) => {
   const networkID = useEthers().chainId;
   const { switchNetwork } = useEthers();
+  const canConfirm =
+    !props.ibcData ||
+    props.ibcData.selectedNetwork.checkAddress(props.ibcData.userInputAddress);
   return (
     <Styled>
       {props.from.chainId != networkID && (
@@ -86,6 +90,14 @@ const ConfirmationModal = (props: BridgeModal) => {
                   </div>
                 </>
               )}
+              {props.ibcData && (
+                <CInput
+                  value={props.ibcData.userInputAddress}
+                  onChange={(val) => {
+                    props.ibcData?.setUserInputAddress(val.target.value);
+                  }}
+                />
+              )}
             </div>
 
             <Text size="text4" align="left" style={{ color: "#474747" }}>
@@ -98,8 +110,17 @@ const ConfirmationModal = (props: BridgeModal) => {
               height="big"
               weight="bold"
               onClick={() => {
-                props.tx.send(props.amount.toString());
+                if (props.ibcData) {
+                  props.tx.send(
+                    props.amount.toString(),
+                    props.ibcData.userInputAddress,
+                    props.ibcData.selectedNetwork
+                  );
+                } else {
+                  props.tx.send(props.amount.toString());
+                }
               }}
+              disabled={!canConfirm}
             >
               confirm
             </PrimaryButton>

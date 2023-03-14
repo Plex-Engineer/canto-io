@@ -5,7 +5,8 @@ import Modal from "global/packages/src/components/molecules/Modal";
 import { CantoMainnet } from "global/providers";
 import { formatBalance } from "global/utils/utils";
 import { useState } from "react";
-import { ConvertTransaction } from "../config/interfaces";
+import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
+import { BridgeOutNetworks, ConvertTransaction } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import { convertSecondsToString } from "../utils/utils";
 import ConfirmationModal from "./modals/confirmationModal";
@@ -20,6 +21,13 @@ const MiniTransaction = (props: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const txStats = props.txFactory();
   const isIBCTransfer = txStats.txName == "ibc transfer";
+  //just for ibc out
+  const [userInputAddress, setUserInputAddress] = useState("");
+  const tokenNetworks: BridgeOutNetworks[] =
+    props.transaction.token.supportedOutChannels;
+  const [selectedNetwork, setSelectedNetwork] = useState(
+    ALL_BRIDGE_OUT_NETWORKS[tokenNetworks[0]]
+  );
 
   function getTxStatus(): string {
     switch (txStats.state) {
@@ -58,12 +66,22 @@ const MiniTransaction = (props: Props) => {
             chainId: CantoMainnet.chainId,
           }}
           to={{
-            chain: isIBCTransfer ? "ibc network" : "canto",
-            address: isIBCTransfer ? "cosmos address" : props.ethAddress,
+            chain: isIBCTransfer ? selectedNetwork.name : "canto",
+            address: isIBCTransfer ? userInputAddress : props.ethAddress,
           }}
           onClose={() => {
             setModalOpen(false);
           }}
+          ibcData={
+            isIBCTransfer
+              ? {
+                  userInputAddress,
+                  setUserInputAddress,
+                  selectedNetwork,
+                  setSelectedNetwork,
+                }
+              : undefined
+          }
         />
       </Modal>
 

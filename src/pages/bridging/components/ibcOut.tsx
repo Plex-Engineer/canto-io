@@ -1,19 +1,13 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
-import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
-import { BridgeOutNetworkInfo, ConvertTransaction } from "../config/interfaces";
+import { ConvertTransaction } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import MiniTransaction from "./miniTransaction";
 
 interface IBCOutProps {
-  ethAddress?: string;
   cantoAddress?: string;
   transactions: ConvertTransaction[];
-  txHook: (
-    tokenName: string,
-    cosmosAddress: string,
-    bridgeOutNetwork: BridgeOutNetworkInfo
-  ) => BridgeTransaction;
+  txHook: (tokenName: string) => BridgeTransaction;
 }
 const IBCOut = (props: IBCOutProps) => {
   return (
@@ -32,15 +26,9 @@ const IBCOut = (props: IBCOutProps) => {
               <MiniTransaction
                 key={index}
                 transaction={tx}
-                txFactory={() =>
-                  props.txHook(
-                    tx.token.ibcDenom,
-                    "gravity1qqzky5czd8jtxp7k96w0d9th2vjxcxaeyxgjqz", //TODO: user must have their own address here
-                    ALL_BRIDGE_OUT_NETWORKS[tx.token.supportedOutChannels[0]]
-                  )
-                }
+                txFactory={() => props.txHook(tx.token.ibcDenom)}
                 cantoAddress={props.cantoAddress ?? ""}
-                ethAddress={props.ethAddress ?? ""}
+                ethAddress={""}
               />
             );
           })}

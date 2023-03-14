@@ -104,4 +104,10 @@ export interface BridgeModal {
     address: string;
   };
   onClose: () => void;
+  ibcData?: {
+    userInputAddress: string;
+    setUserInputAddress: (s: string) => void;
+    selectedNetwork: BridgeOutNetworkInfo;
+    setSelectedNetwork: (n: BridgeOutNetworkInfo) => void;
+  };
 }

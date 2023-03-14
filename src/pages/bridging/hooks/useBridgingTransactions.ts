@@ -16,7 +16,7 @@ import { CANTO_IBC_NETWORK } from "../config/bridgeOutNetworks";
 
 export interface BridgeTransaction {
   state: TransactionState;
-  send: (amount: string) => Promise<unknown>;
+  send: (...args: any[]) => Promise<unknown>;
   resetState: () => void;
   txName: string;
 }
@@ -37,11 +37,7 @@ interface BridgingTransactionsSelector {
     ) => BridgeTransaction;
   };
   bridgeOut: {
-    ibcOut: (
-      tokenDenom: string,
-      cosmosAddress: string,
-      bridgeOutNetwork: BridgeOutNetworkInfo
-    ) => BridgeTransaction;
+    ibcOut: (tokenDenom: string) => BridgeTransaction;
   };
 }
 
@@ -135,13 +131,13 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
 
     return { state: convertState, send, resetState, txName: "convert" };
   }
-  function useIBCTransfer(
-    tokenDenom: string,
-    cosmosAddress: string,
-    bridgeOutNetwork: BridgeOutNetworkInfo
-  ) {
+  function useIBCTransfer(tokenDenom: string) {
     const [ibcState, setIbcState] = useState<TransactionState>("None");
-    const send = async (amount: string) => {
+    const send = async (
+      amount: string,
+      cosmosAddress: string,
+      bridgeOutNetwork: BridgeOutNetworkInfo
+    ) => {
       //check to make sure the address not null
       if (!bridgeOutNetwork.checkAddress(cosmosAddress)) {
         setIbcState("Exception");

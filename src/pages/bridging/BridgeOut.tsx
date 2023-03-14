@@ -43,13 +43,8 @@ const BridgeOut = (props: BridgeOutProps) => {
       <div className="bridgeToCanto">
         <IBCOut
           transactions={props.step2Transactions}
-          txHook={(tokenName, cosmosAddress, bridgeOutNetwork) =>
-            transactionHooks.bridgeOut.ibcOut(
-              tokenName,
-              cosmosAddress,
-              bridgeOutNetwork
-            )
-          }
+          txHook={(tokenName) => transactionHooks.bridgeOut.ibcOut(tokenName)}
+          cantoAddress={props.cantoAddress}
         />
       </div>
     </BridgeStyled>
