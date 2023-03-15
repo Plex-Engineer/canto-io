@@ -7,48 +7,52 @@ import { useTransactionHistory } from "./hooks/useTransactionHistory";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { createConvertTransactions } from "./utils/utils";
 import { SelectedTokens } from "./stores/bridgeTokenStore";
-import { BaseToken } from "./config/interfaces";
 
 const Bridging = () => {
   const networkInfo = useNetworkInfo();
   const bridgingTokens = useBridgeTokenInfo();
   const bridgingHistory = useTransactionHistory();
+
   return (
     <div>
       <CantoTabs
-        names={["bridge In", "bridge Out", "transactions"]}
+        names={["bridge in", "bridge out", "tx history"]}
         panels={[
           <BridgeIn
             key={"in"}
             ethAddress={networkInfo.account}
             cantoAddress={networkInfo.cantoAddress}
+            ethGBridgeTokens={bridgingTokens.userBridgeInTokens}
+            selectedEthToken={bridgingTokens.selectedTokens.bridgeInToken}
+            selectEthToken={(token) =>
+              bridgingTokens.setSelectedToken(
+                token.address,
+                SelectedTokens.ETHTOKEN
+              )
+            }
             step2Transactions={createConvertTransactions(
               bridgingHistory.pendingBridgeInTransactions,
-              bridgingTokens.userConvertTokens
+              bridgingTokens.userNativeTokens
             )}
-            ethGBridgeTokens={bridgingTokens.userBridgeInTokens}
-            selectedEthToken={
-              bridgingTokens.selectedTokens[SelectedTokens.ETHTOKEN]
-            }
-            selectEthToken={(token: BaseToken) =>
-              bridgingTokens.setSelectedToken(token, SelectedTokens.ETHTOKEN)
-            }
           />,
           <BridgeOut
             key={"out"}
             ethAddress={networkInfo.account}
             cantoAddress={networkInfo.cantoAddress}
+            bridgeOutTokens={bridgingTokens.userBridgeOutTokens}
+            selectedBridgeOutToken={
+              bridgingTokens.selectedTokens.bridgeOutToken
+            }
+            selectToken={(token) =>
+              bridgingTokens.setSelectedToken(
+                token.address,
+                SelectedTokens.CONVERTOUT
+              )
+            }
             step2Transactions={createConvertTransactions(
               [],
-              bridgingTokens.userConvertTokens
+              bridgingTokens.userNativeTokens
             )}
-            convertTokens={bridgingTokens.userConvertTokens}
-            selectedConvertToken={
-              bridgingTokens.selectedTokens[SelectedTokens.CONVERTOUT]
-            }
-            selectToken={(token: BaseToken) =>
-              bridgingTokens.setSelectedToken(token, SelectedTokens.CONVERTOUT)
-            }
           />,
           <Transactions
             key={"transaction"}

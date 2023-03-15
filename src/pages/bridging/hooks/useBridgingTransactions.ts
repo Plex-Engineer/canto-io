@@ -13,12 +13,14 @@ import { txIBCTransfer } from "../utils/IBC/IBCTransfer";
 import { ADDRESSES } from "global/config/addresses";
 import { BridgeOutNetworkInfo } from "../config/interfaces";
 import { CANTO_IBC_NETWORK } from "../config/bridgeOutNetworks";
+import { CantoTransactionType } from "global/config/transactionTypes";
 
 export interface BridgeTransaction {
   state: TransactionState;
   send: (...args: any[]) => Promise<unknown>;
   resetState: () => void;
   txName: string;
+  txType: CantoTransactionType;
 }
 interface BridgingTransactionsSelector {
   bridgeIn: {
@@ -59,6 +61,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
       },
       resetState,
       txName: "approve token",
+      txType: CantoTransactionType.ENABLE,
     };
   }
   function useSendToCosmos(
@@ -83,7 +86,8 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
         }
       },
       resetState,
-      txName: "send to cosmos",
+      txName: "send to canto",
+      txType: CantoTransactionType.BRIDGE_IN,
     };
   }
   /**
@@ -129,7 +133,15 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
     };
     const resetState = () => setConvertState("None");
 
-    return { state: convertState, send, resetState, txName: "convert" };
+    return {
+      state: convertState,
+      send,
+      resetState,
+      txName: "convert",
+      txType: convertIn
+        ? CantoTransactionType.CONVERT_TO_EVM
+        : CantoTransactionType.CONVERT_TO_NATIVE,
+    };
   }
   function useIBCTransfer(tokenDenom: string) {
     const [ibcState, setIbcState] = useState<TransactionState>("None");
@@ -167,7 +179,13 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
       }
     };
     const resetState = () => setIbcState("None");
-    return { state: ibcState, send, resetState, txName: "ibc transfer" };
+    return {
+      state: ibcState,
+      send,
+      resetState,
+      txName: "ibc transfer",
+      txType: CantoTransactionType.IBC_OUT,
+    };
   }
 
   return {

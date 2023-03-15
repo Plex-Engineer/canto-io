@@ -5,53 +5,49 @@ import bridgeIcon from "assets/icons/canto-bridge.svg";
 import cantoIcon from "assets/icons/canto-evm.svg";
 import CopyIcon from "../../../assets/copy.svg";
 import arrow from "../../../assets/next.svg";
-import { BaseToken } from "../config/interfaces";
+import { UserERC20BridgeToken } from "../config/interfaces";
 import LoadingBlip from "./LoadingBlip";
-import { TokenWallet } from "pages/bridge/components/TokenSelect";
 import { truncateNumber } from "global/utils/utils";
 import { formatUnits } from "ethers/lib/utils";
-import { BigNumber, ethers } from "ethers";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   convertStringToBigNumber,
   copyAddress,
   getStep1ButtonText,
+  toastBridgeTx,
 } from "../utils/utils";
 import Modal from "global/packages/src/components/molecules/Modal";
 import ConfirmationModal from "./modals/confirmationModal";
 import { CantoMainnet, ETHMainnet } from "global/config/networks";
+import { TokenWallet } from "./tokenSelect";
 
 interface Step1TxBoxProps {
   fromAddress?: string;
   toAddress?: string;
   bridgeIn: boolean;
-  tokens: BaseToken[];
-  selectedToken: BaseToken;
-  selectToken: (token: BaseToken) => void;
-  tokenBalanceProp: "erc20Balance" | "nativeBalance";
+  tokens: UserERC20BridgeToken[];
+  selectedToken: UserERC20BridgeToken;
+  selectToken: (token: UserERC20BridgeToken) => void;
   txHook: () => BridgeTransaction;
-  needAllowance: boolean;
 }
 const Step1TxBox = (props: Step1TxBoxProps) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const txProps = props.txHook();
 
-  const currentTokenBalance =
-    (props.selectedToken[props.tokenBalanceProp] as BigNumber) ??
-    BigNumber.from(0);
-
+  const currentTokenBalance = props.selectedToken.erc20Balance;
   const [buttonText, buttonDisabled] = getStep1ButtonText(
     convertStringToBigNumber(amount, props.selectedToken.decimals),
     currentTokenBalance,
-    BigNumber.from(
-      props.selectedToken.allowance ?? ethers.constants.MaxUint256
-    ),
+    props.selectedToken.allowance,
     props.bridgeIn
   );
+  useEffect(() => {
+    toastBridgeTx(txProps.state, txProps.txName);
+  }, [txProps.state]);
   return (
     <Styled>
       <Modal
@@ -113,7 +109,6 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         <div className="token-select">
           <TokenWallet
             tokens={props.tokens}
-            balance="erc20Balance"
             activeToken={props.selectedToken}
             onSelect={(value) => {
               props.selectToken(value ?? props.selectedToken);

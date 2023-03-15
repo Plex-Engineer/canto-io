@@ -3,16 +3,16 @@ import { formatUnits } from "ethers/lib/utils";
 import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { CantoMainnet } from "global/providers";
-import { formatBalance } from "global/utils/utils";
-import { useState } from "react";
+import { getShortTxStatusFromState, truncateNumber } from "global/utils/utils";
+import { useEffect, useState } from "react";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
-import { BridgeOutNetworks, ConvertTransaction } from "../config/interfaces";
+import { BridgeOutNetworks, NativeTransaction } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
-import { convertSecondsToString } from "../utils/utils";
+import { convertSecondsToString, toastBridgeTx } from "../utils/utils";
 import ConfirmationModal from "./modals/confirmationModal";
 
 interface Props {
-  transaction: ConvertTransaction;
+  transaction: NativeTransaction;
   txFactory: () => BridgeTransaction;
   cantoAddress: string;
   ethAddress: string;
@@ -26,26 +26,12 @@ const MiniTransaction = (props: Props) => {
   const tokenNetworks: BridgeOutNetworks[] =
     props.transaction.token.supportedOutChannels;
   const [selectedNetwork, setSelectedNetwork] = useState(
-    ALL_BRIDGE_OUT_NETWORKS[tokenNetworks[0]]
+    ALL_BRIDGE_OUT_NETWORKS[tokenNetworks ? tokenNetworks[0] : 0]
   );
 
-  function getTxStatus(): string {
-    switch (txStats.state) {
-      case "None":
-        return "complete";
-      case "Mining":
-        return "ongoing";
-      case "PendingSignature":
-        return "signing";
-      case "Success":
-        return "done";
-      case "Exception":
-      case "Fail":
-        return "error";
-      default:
-        return "complete";
-    }
-  }
+  useEffect(() => {
+    toastBridgeTx(txStats.state, txStats.txName);
+  }, [txStats.state]);
 
   return (
     <Styled>
@@ -92,7 +78,7 @@ const MiniTransaction = (props: Props) => {
         }}
       >
         <Text size="text3" align="left">
-          origin
+          {isIBCTransfer ? "destination" : "origin"}
         </Text>
         <Text type="title" align="left">
           {props.transaction.origin}
@@ -104,11 +90,12 @@ const MiniTransaction = (props: Props) => {
           amount
         </Text>
         <Text type="title" align="left">
-          {formatBalance(
+          {truncateNumber(
             formatUnits(
               props.transaction.amount,
               props.transaction.token.decimals
-            )
+            ),
+            2
           )}
           {" " + props.transaction.token.symbol}
         </Text>
@@ -139,7 +126,7 @@ const MiniTransaction = (props: Props) => {
               setModalOpen(true);
             }}
           >
-            {getTxStatus()}
+            {getShortTxStatusFromState(txStats.state)}
           </PrimaryButton>
         </div>
       )}

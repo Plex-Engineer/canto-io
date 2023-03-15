@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import { useEthers } from "@usedapp/core";
 import { formatUnits } from "ethers/lib/utils";
 import LoadingModal from "global/components/modals/loading2";
-import { CantoTransactionType } from "global/config/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import { truncateNumber } from "global/utils/utils";
@@ -33,8 +32,9 @@ const ConfirmationModal = (props: BridgeModal) => {
         (props.from.chainId == networkID || networkID == undefined) && (
           <div className="loading">
             <LoadingModal
+              transactionType={props.tx.txType}
               status={props.tx.state}
-              transactionType={CantoTransactionType.CONVERT_TO_COSMOS}
+              tokenName={props.token.name}
               onClose={() => {
                 false;
               }}
@@ -49,47 +49,29 @@ const ConfirmationModal = (props: BridgeModal) => {
               <img height={50} src={props.token.icon} alt={props.token.name} />
             </div>
             <div className="transactions">
-              <div className="row">
-                <div className="header">tx :</div>
-                <div className="value">
-                  <Text type="title">{props.tx.txName}</Text>
-                </div>
-              </div>
-              <div className="row">
-                <div className="header">token :</div>
-                <div className="value">
-                  <Text type="title">{props.token.name}</Text>
-                </div>
-              </div>
+              <ConfirmationRow title="tx" value={props.tx.txName} />
+              <ConfirmationRow title="token" value={props.token.name} />
+
               {props.tx.txName != "approve token" && (
                 <>
-                  {" "}
-                  <div className="row">
-                    <div className="header">from :</div>
-                    <div className="value">
-                      <Text type="title">{`${props.from.chain} (${formatAddress(
-                        props.from.address
-                      )})`}</Text>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="header">to :</div>
-                    <div className="value">
-                      <Text type="title">{`${props.to.chain} (${formatAddress(
-                        props.to.address
-                      )})`}</Text>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="header">amount :</div>
-                    <div className="value">
-                      <Text type="title">
-                        {truncateNumber(
-                          formatUnits(props.amount, props.token.decimals)
-                        )}
-                      </Text>
-                    </div>
-                  </div>
+                  <ConfirmationRow
+                    title="from"
+                    value={`${props.from.chain} (${formatAddress(
+                      props.from.address
+                    )})`}
+                  />
+                  <ConfirmationRow
+                    title="to"
+                    value={`${props.to.chain} (${formatAddress(
+                      props.to.address
+                    )})`}
+                  />
+                  <ConfirmationRow
+                    title="amount"
+                    value={truncateNumber(
+                      formatUnits(props.amount, props.token.decimals)
+                    )}
+                  />
                 </>
               )}
             </div>
@@ -153,6 +135,20 @@ const ConfirmationModal = (props: BridgeModal) => {
   );
 };
 
+interface ConfirmationRowProps {
+  title: string;
+  value: string;
+}
+const ConfirmationRow = ({ title, value }: ConfirmationRowProps) => {
+  return (
+    <div className="row">
+      <div className="header">{title} :</div>
+      <div className="value">
+        <Text type="title">{value}</Text>
+      </div>
+    </div>
+  );
+};
 const Styled = styled.div`
   min-height: 36rem;
   width: 30rem;

@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { Token } from "global/config/tokenInfo";
 import emptyToken from "assets/empty.svg";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
@@ -34,10 +34,9 @@ export enum BridgeOutNetworks {
 export interface BaseToken extends Token {
   [x: string | number | symbol]: unknown;
 }
-export interface UserERC20Token extends BaseToken {
+
+export interface UserERC20BridgeToken extends BaseToken {
   erc20Balance: BigNumber;
-}
-export interface UserBridgeInToken extends UserERC20Token {
   allowance: BigNumber;
 }
 export interface NativeToken extends BaseToken {
@@ -48,7 +47,15 @@ export interface NativeToken extends BaseToken {
 export interface UserNativeToken extends NativeToken {
   nativeBalance: BigNumber;
 }
+
+//THESE TYPES ARE ONLY USED IN THE WALKTHROUGH
+export interface UserERC20Token extends BaseToken {
+  erc20Balance: BigNumber;
+}
 export interface UserConvertToken extends UserNativeToken, UserERC20Token {}
+export interface UserBridgeInToken extends UserERC20Token {
+  allowance: BigNumber;
+}
 
 //Empty token data for initialization
 const EMPTY_TOKEN: Token = {
@@ -60,31 +67,20 @@ const EMPTY_TOKEN: Token = {
   icon: emptyToken,
   name: "choose token",
 };
-export const EMPTY_BRIDGE_IN_TOKEN: UserBridgeInToken = {
+export const EMPTY_ERC20_BRIDGE_TOKEN: UserERC20BridgeToken = {
   ...EMPTY_TOKEN,
   erc20Balance: BigNumber.from(0),
-  allowance: BigNumber.from(-1),
-};
-export const EMPTY_BRIDGE_OUT_TOKEN: UserNativeToken = {
-  ...EMPTY_TOKEN,
-  nativeBalance: BigNumber.from(0),
-  nativeName: "none",
-  ibcDenom: "ibc/000",
-  supportedOutChannels: [],
-};
-export const EMPTY_CONVERT_TOKEN: UserConvertToken = {
-  ...EMPTY_BRIDGE_OUT_TOKEN,
-  erc20Balance: BigNumber.from(0),
+  allowance: BigNumber.from(ethers.constants.MaxUint256),
 };
 
 /**
  * TRANSACTION INTERFACES
  */
-export interface ConvertTransaction {
+export interface NativeTransaction {
   origin: string;
   timeLeft: string;
   amount: BigNumber;
-  token: UserConvertToken;
+  token: UserNativeToken;
 }
 
 /**

@@ -11,7 +11,7 @@ import { PAGES } from "global/config/pageList";
 import Loading from "global/components/Loading";
 import PageNotFound from "global/components/pageNotFound";
 import ChangeLog from "pages/changelog/changeLog";
-import Walkthrough from "pages/bridge/walkthrough/Walkthrough";
+// import Walkthrough from "pages/bridging/walkthrough/Walkthrough";
 
 //Styling
 const Container = styled.div`
@@ -44,11 +44,11 @@ function App() {
             <Suspense fallback={<Loading />}>
               <Routes>
                 <Route path="/" key={"home"} element={<HomePage />} />
-                <Route
+                {/* <Route
                   path="/bridge/walkthrough"
                   key={"guide"}
                   element={<Walkthrough />}
-                />
+                /> */}
                 <Route
                   path={PAGES.bridge.link}
                   key={"bridge"}

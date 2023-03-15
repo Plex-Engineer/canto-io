@@ -238,6 +238,30 @@ export const transactionStatusActions = (
         inAction: "casting vote",
         postAction: "casted vote",
       };
+    case CantoTransactionType.BRIDGE_IN:
+      return {
+        action: "bridge in",
+        inAction: "bridging in",
+        postAction: "bridged in",
+      };
+    case CantoTransactionType.IBC_OUT:
+      return {
+        action: "bridge out",
+        inAction: "bridging out",
+        postAction: "bridged out",
+      };
+    case CantoTransactionType.CONVERT_TO_EVM:
+      return {
+        action: "convert token to evm",
+        inAction: "converting token",
+        postAction: "converted token",
+      };
+    case CantoTransactionType.CONVERT_TO_NATIVE:
+      return {
+        action: "convert token to canto bridge",
+        inAction: "converting token",
+        postAction: "converted token",
+      };
     default:
       return {
         action: "confirm",
