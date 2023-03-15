@@ -6,10 +6,13 @@ import {
   CONVERT_COIN_TOKENS,
   ETH_GRAVITY_BRIDGE_IN_TOKENS,
 } from "../config/bridgingTokens";
-import { UserERC20BridgeToken, UserNativeToken } from "../config/interfaces";
+import {
+  EMPTY_ERC20_BRIDGE_TOKEN,
+  UserERC20BridgeToken,
+  UserNativeToken,
+} from "../config/interfaces";
 import {
   SelectedTokens,
-  TokenStore,
   useBridgeTokenStore,
 } from "../stores/bridgeTokenStore";
 import { getNativeCantoBalances } from "../utils/nativeBalances";
@@ -19,11 +22,11 @@ interface BridgeTokenInfo {
   userBridgeInTokens: UserERC20BridgeToken[];
   userBridgeOutTokens: UserERC20BridgeToken[];
   userNativeTokens: UserNativeToken[];
-  selectedTokens: TokenStore["selectedTokens"];
-  setSelectedToken: (
-    selectedToken: UserERC20BridgeToken,
-    type: SelectedTokens
-  ) => void;
+  selectedTokens: {
+    bridgeInToken: UserERC20BridgeToken;
+    bridgeOutToken: UserERC20BridgeToken;
+  };
+  setSelectedToken: (selectedToken: string, type: SelectedTokens) => void;
 }
 
 export function useBridgeTokenInfo(): BridgeTokenInfo {
@@ -59,40 +62,6 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
     );
   }
 
-  //reset all selected tokens to match new updates
-  function resetAllSelectedTokens() {
-    if (
-      networkInfo.account &&
-      networkInfo.cantoAddress &&
-      !cantoERC20Fail &&
-      !ethERC20Fail
-    ) {
-      //reselecting the tokens so it is the most updated version
-      tokenStore.resetSelectedToken(
-        SelectedTokens.ETHTOKEN,
-        userEthBridgeInTokens
-      );
-      tokenStore.resetSelectedToken(
-        SelectedTokens.CONVERTOUT,
-        userCantoBridgeOutTokens
-      );
-    }
-  }
-
-  // const updatedEthToken = userEthBridgeInTokens.find(
-  //   (token) =>
-  //     tokenStore.selectedTokens[SelectedTokens.ETHTOKEN].address ==
-  //     token.address
-  // )?.erc20Balance;
-  // const updatedCantoToken = userCantoBridgeOutTokens.find(
-  //   (token) =>
-  //     tokenStore.selectedTokens[SelectedTokens.CONVERTOUT].address ==
-  //     token.address
-  // )?.erc20Balance;
-  // useEffect(() => {
-  //   resetAllSelectedTokens();
-  // }, [updatedEthToken, updatedCantoToken]);
-
   //initialize data on sign in
   useEffect(() => {
     getAllNativeTokens();
@@ -101,7 +70,6 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
   //call data per block
   useEffect(() => {
     const interval = setInterval(async () => {
-      resetAllSelectedTokens();
       await getAllNativeTokens();
     }, 6000);
     return () => clearInterval(interval);
@@ -111,7 +79,19 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
     userBridgeInTokens: userEthBridgeInTokens,
     userBridgeOutTokens: userCantoBridgeOutTokens,
     userNativeTokens: userNativeTokens,
-    selectedTokens: tokenStore.selectedTokens,
+    selectedTokens: {
+      bridgeInToken:
+        userEthBridgeInTokens.find(
+          (token) =>
+            token.address == tokenStore.selectedTokens[SelectedTokens.ETHTOKEN]
+        ) ?? EMPTY_ERC20_BRIDGE_TOKEN,
+      bridgeOutToken:
+        userCantoBridgeOutTokens.find(
+          (token) =>
+            token.address ==
+            tokenStore.selectedTokens[SelectedTokens.CONVERTOUT]
+        ) ?? EMPTY_ERC20_BRIDGE_TOKEN,
+    },
     setSelectedToken: tokenStore.setSelectedToken,
   };
 }

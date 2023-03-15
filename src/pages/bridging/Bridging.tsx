@@ -23,11 +23,12 @@ const Bridging = () => {
             ethAddress={networkInfo.account}
             cantoAddress={networkInfo.cantoAddress}
             ethGBridgeTokens={bridgingTokens.userBridgeInTokens}
-            selectedEthToken={
-              bridgingTokens.selectedTokens[SelectedTokens.ETHTOKEN]
-            }
+            selectedEthToken={bridgingTokens.selectedTokens.bridgeInToken}
             selectEthToken={(token) =>
-              bridgingTokens.setSelectedToken(token, SelectedTokens.ETHTOKEN)
+              bridgingTokens.setSelectedToken(
+                token.address,
+                SelectedTokens.ETHTOKEN
+              )
             }
             step2Transactions={createConvertTransactions(
               bridgingHistory.pendingBridgeInTransactions,
@@ -40,10 +41,13 @@ const Bridging = () => {
             cantoAddress={networkInfo.cantoAddress}
             bridgeOutTokens={bridgingTokens.userBridgeOutTokens}
             selectedBridgeOutToken={
-              bridgingTokens.selectedTokens[SelectedTokens.CONVERTOUT]
+              bridgingTokens.selectedTokens.bridgeOutToken
             }
             selectToken={(token) =>
-              bridgingTokens.setSelectedToken(token, SelectedTokens.CONVERTOUT)
+              bridgingTokens.setSelectedToken(
+                token.address,
+                SelectedTokens.CONVERTOUT
+              )
             }
             step2Transactions={createConvertTransactions(
               [],
