@@ -27,7 +27,7 @@ const BridgeToCanto = (props: BridgeToCantoProps) => {
               <Text>No transactions available right now</Text>
             </div>
           )}
-          {props.transactions.map((tx, index) => {
+          {props.transactions.map((tx) => {
             return (
               <MiniTransaction
                 key={tx.token.address}
