@@ -1,3 +1,4 @@
+import { TransactionState } from "@usedapp/core";
 import { BigNumber } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import { toastHandler } from "global/utils/toastHandler";
@@ -36,10 +37,17 @@ export function createConvertTransactions(
 export function copyAddress() {
   toastHandler("copied address", true, "0", 300);
 }
+export function toastBridgeTx(txState: TransactionState, txName: string) {
+  if (txState == "Fail" || txState == "Success") {
+    const success = txState == "Success";
+    const msg = success ? " successful" : " unsuccessful";
+    toastHandler(txName + msg, success, txName);
+  }
+}
 
 export function convertSecondsToString(seconds: string) {
   if (Number(seconds) < 0) {
-    return "pending verification...";
+    return "pending...";
   }
   if (Number(seconds) == 0) {
     return "done";

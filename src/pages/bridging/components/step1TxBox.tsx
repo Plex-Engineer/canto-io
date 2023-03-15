@@ -12,11 +12,12 @@ import { formatUnits } from "ethers/lib/utils";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   convertStringToBigNumber,
   copyAddress,
   getStep1ButtonText,
+  toastBridgeTx,
 } from "../utils/utils";
 import Modal from "global/packages/src/components/molecules/Modal";
 import ConfirmationModal from "./modals/confirmationModal";
@@ -44,6 +45,9 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
     props.selectedToken.allowance,
     props.bridgeIn
   );
+  useEffect(() => {
+    toastBridgeTx(txProps.state, txProps.txName);
+  }, [txProps.state]);
   return (
     <Styled>
       <Modal

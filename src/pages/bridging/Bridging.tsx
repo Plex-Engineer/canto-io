@@ -16,7 +16,7 @@ const Bridging = () => {
   return (
     <div>
       <CantoTabs
-        names={["bridge In", "bridge Out", "transactions"]}
+        names={["bridge in", "bridge out", "tx history"]}
         panels={[
           <BridgeIn
             key={"in"}

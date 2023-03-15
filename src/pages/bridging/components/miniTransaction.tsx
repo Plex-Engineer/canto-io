@@ -3,12 +3,12 @@ import { formatUnits } from "ethers/lib/utils";
 import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { CantoMainnet } from "global/providers";
-import { formatBalance } from "global/utils/utils";
-import { useState } from "react";
+import { truncateNumber } from "global/utils/utils";
+import { useEffect, useState } from "react";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 import { BridgeOutNetworks, NativeTransaction } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
-import { convertSecondsToString } from "../utils/utils";
+import { convertSecondsToString, toastBridgeTx } from "../utils/utils";
 import ConfirmationModal from "./modals/confirmationModal";
 
 interface Props {
@@ -46,6 +46,9 @@ const MiniTransaction = (props: Props) => {
         return "complete";
     }
   }
+  useEffect(() => {
+    toastBridgeTx(txStats.state, txStats.txName);
+  }, [txStats.state]);
 
   return (
     <Styled>
@@ -92,7 +95,7 @@ const MiniTransaction = (props: Props) => {
         }}
       >
         <Text size="text3" align="left">
-          origin
+          {isIBCTransfer ? "destination" : "origin"}
         </Text>
         <Text type="title" align="left">
           {props.transaction.origin}
@@ -104,11 +107,12 @@ const MiniTransaction = (props: Props) => {
           amount
         </Text>
         <Text type="title" align="left">
-          {formatBalance(
+          {truncateNumber(
             formatUnits(
               props.transaction.amount,
               props.transaction.token.decimals
-            )
+            ),
+            2
           )}
           {" " + props.transaction.token.symbol}
         </Text>

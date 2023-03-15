@@ -83,7 +83,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
         }
       },
       resetState,
-      txName: "send to cosmos",
+      txName: "send to canto",
     };
   }
   /**
