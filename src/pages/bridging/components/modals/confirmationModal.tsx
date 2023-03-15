@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import { useEthers } from "@usedapp/core";
 import { formatUnits } from "ethers/lib/utils";
 import LoadingModal from "global/components/modals/loading2";
-import { CantoTransactionType } from "global/config/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import { truncateNumber } from "global/utils/utils";
@@ -33,8 +32,9 @@ const ConfirmationModal = (props: BridgeModal) => {
         (props.from.chainId == networkID || networkID == undefined) && (
           <div className="loading">
             <LoadingModal
+              transactionType={props.tx.txType}
               status={props.tx.state}
-              transactionType={CantoTransactionType.CONVERT_TO_COSMOS}
+              tokenName={props.token.name}
               onClose={() => {
                 false;
               }}

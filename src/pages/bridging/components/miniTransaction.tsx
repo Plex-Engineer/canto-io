@@ -3,7 +3,7 @@ import { formatUnits } from "ethers/lib/utils";
 import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { CantoMainnet } from "global/providers";
-import { truncateNumber } from "global/utils/utils";
+import { getShortTxStatusFromState, truncateNumber } from "global/utils/utils";
 import { useEffect, useState } from "react";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 import { BridgeOutNetworks, NativeTransaction } from "../config/interfaces";
@@ -29,23 +29,6 @@ const MiniTransaction = (props: Props) => {
     ALL_BRIDGE_OUT_NETWORKS[tokenNetworks ? tokenNetworks[0] : 0]
   );
 
-  function getTxStatus(): string {
-    switch (txStats.state) {
-      case "None":
-        return "complete";
-      case "Mining":
-        return "ongoing";
-      case "PendingSignature":
-        return "signing";
-      case "Success":
-        return "done";
-      case "Exception":
-      case "Fail":
-        return "error";
-      default:
-        return "complete";
-    }
-  }
   useEffect(() => {
     toastBridgeTx(txStats.state, txStats.txName);
   }, [txStats.state]);
@@ -143,7 +126,7 @@ const MiniTransaction = (props: Props) => {
               setModalOpen(true);
             }}
           >
-            {getTxStatus()}
+            {getShortTxStatusFromState(txStats.state)}
           </PrimaryButton>
         </div>
       )}

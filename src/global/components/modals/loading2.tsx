@@ -12,11 +12,9 @@ import {
   TransactionState,
 } from "global/config/transactionTypes";
 import { ReactNode, useEffect, useState } from "react";
-import close from "assets/close.svg";
 import { Mixpanel } from "mixpanel";
 
 interface Props {
-  //used for mix panel
   transactionType: CantoTransactionType;
   status: TransactionState;
   tokenName?: string;
@@ -24,6 +22,7 @@ interface Props {
   additionalMessage?: string | ReactNode;
   txHash?: string;
   onClose: () => void;
+  //used for mix panel
   mixPanelEventInfo?: object;
 }
 
