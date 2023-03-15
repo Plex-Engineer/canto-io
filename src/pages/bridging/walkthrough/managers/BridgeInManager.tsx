@@ -174,7 +174,9 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           tokenList={props.convertTokens}
           activeToken={props.currentConvertToken}
           tokenBalance="nativeBalance"
-          onSelect={(token) => props.setToken(token, SelectedTokens.CONVERTIN)}
+          onSelect={(token) => {
+            return;
+          }}
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}

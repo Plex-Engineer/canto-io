@@ -79,32 +79,19 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
     }
   }
 
-  useEffect(() => {
-    if (
-      !(
-        userEthBridgeInTokens
-          .find(
-            (token) =>
-              tokenStore.selectedTokens[SelectedTokens.ETHTOKEN].address ==
-              token.address
-          )
-          ?.erc20Balance.eq(
-            tokenStore.selectedTokens[SelectedTokens.ETHTOKEN].erc20Balance
-          ) &&
-        userCantoBridgeOutTokens
-          .find(
-            (token) =>
-              tokenStore.selectedTokens[SelectedTokens.CONVERTOUT].address ==
-              token.address
-          )
-          ?.erc20Balance.eq(
-            tokenStore.selectedTokens[SelectedTokens.CONVERTOUT].erc20Balance
-          )
-      )
-    ) {
-      resetAllSelectedTokens();
-    }
-  }, [userEthBridgeInTokens, userCantoBridgeOutTokens]);
+  // const updatedEthToken = userEthBridgeInTokens.find(
+  //   (token) =>
+  //     tokenStore.selectedTokens[SelectedTokens.ETHTOKEN].address ==
+  //     token.address
+  // )?.erc20Balance;
+  // const updatedCantoToken = userCantoBridgeOutTokens.find(
+  //   (token) =>
+  //     tokenStore.selectedTokens[SelectedTokens.CONVERTOUT].address ==
+  //     token.address
+  // )?.erc20Balance;
+  // useEffect(() => {
+  //   resetAllSelectedTokens();
+  // }, [updatedEthToken, updatedCantoToken]);
 
   //initialize data on sign in
   useEffect(() => {
@@ -114,6 +101,7 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
   //call data per block
   useEffect(() => {
     const interval = setInterval(async () => {
+      resetAllSelectedTokens();
       await getAllNativeTokens();
     }, 6000);
     return () => clearInterval(interval);

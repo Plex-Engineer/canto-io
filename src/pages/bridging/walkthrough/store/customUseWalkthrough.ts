@@ -84,198 +84,194 @@ interface Props {
     setNetwork: (network: BridgeOutNetworks) => void;
   };
 }
-export function useCustomWalkthrough(): Props {
-  //all stores we needed here:
-  const networkInfo = useNetworkInfo();
-  const bridgingTokens = useBridgeTokenInfo();
-  const completedBridgeInTxs =
-    useTransactionHistory().completeBridgeInTransactions;
-  const walkthroughStore = useBridgeWalkthroughStore();
-  const bridgeOutNetworkStore = useBridgeTokenStore();
-  const ethBalance = useEtherBalance(networkInfo.account, { chainId: 1 });
+// export function useCustomWalkthrough(): Props {
+//   //all stores we needed here:
+//   const networkInfo = useNetworkInfo();
+//   const bridgingTokens = useBridgeTokenInfo();
+//   const completedBridgeInTxs =
+//     useTransactionHistory().completeBridgeInTransactions;
+//   const walkthroughStore = useBridgeWalkthroughStore();
+//   const bridgeOutNetworkStore = useBridgeTokenStore();
+//   const ethBalance = useEtherBalance(networkInfo.account, { chainId: 1 });
 
-  //tx hooks for all transactions
-  const transactionHooks = useBridgingTransactions();
+//   //tx hooks for all transactions
+//   const transactionHooks = useBridgingTransactions();
 
-  //constants to stop reference repetition
-  const bridgeInToken = bridgingTokens.selectedTokens[SelectedTokens.ETHTOKEN];
-  const convertInToken =
-    bridgingTokens.selectedTokens[SelectedTokens.CONVERTIN];
-  const bridgeOutToken =
-    bridgingTokens.selectedTokens[SelectedTokens.BRIDGEOUT];
-  const convertOutToken =
-    bridgingTokens.selectedTokens[SelectedTokens.CONVERTOUT];
+//   //constants to stop reference repetition
+//   const bridgeInToken = bridgingTokens.selectedTokens[SelectedTokens.ETHTOKEN];
+//   const convertOutToken =
+//     bridgingTokens.selectedTokens[SelectedTokens.CONVERTOUT];
 
-  //amount will be the same value across the walkthrough
-  const [pubKeyStatus, setPubKeyStatus] = useState("None");
-  const [amount, setAmount] = useState("");
-  const [userCosmosSendAddress, setUserCosmosSendAddress] = useState("");
-  const gravityAddress = ADDRESSES.ETHMainnet.GravityBridge;
+//   //amount will be the same value across the walkthrough
+//   const [pubKeyStatus, setPubKeyStatus] = useState("None");
+//   const [amount, setAmount] = useState("");
+//   const [userCosmosSendAddress, setUserCosmosSendAddress] = useState("");
+//   const gravityAddress = ADDRESSES.ETHMainnet.GravityBridge;
 
-  //all transactions object
-  const allTransactionsObject = {
-    approve: transactionHooks.bridgeIn.approveToken(bridgeInToken.address),
-    sendCosmos: transactionHooks.bridgeIn.sendToCosmos(
-      gravityAddress,
-      bridgeInToken.address,
-      networkInfo.cantoAddress
-    ),
-    convertIn: transactionHooks.convertCoin.convertTx(
-      convertInToken.ibcDenom,
-      networkInfo.cantoAddress,
-      true
-    ),
-    convertOut: transactionHooks.convertCoin.convertTx(
-      convertOutToken.ibcDenom,
-      networkInfo.cantoAddress,
-      false
-    ),
-    bridgeOut: transactionHooks.bridgeOut.ibcOut(bridgeOutToken.ibcDenom),
-    pubKey: {
-      state: pubKeyStatus,
-      send: () => generatePubKey(networkInfo.account, setPubKeyStatus),
-    },
-  };
+//   //all transactions object
+//   const allTransactionsObject = {
+//     approve: transactionHooks.bridgeIn.approveToken(bridgeInToken.address),
+//     sendCosmos: transactionHooks.bridgeIn.sendToCosmos(
+//       gravityAddress,
+//       bridgeInToken.address,
+//       networkInfo.cantoAddress
+//     ),
+//     convertIn: transactionHooks.convertCoin.convertTx(
+//       convertInToken.ibcDenom,
+//       networkInfo.cantoAddress,
+//       true
+//     ),
+//     convertOut: transactionHooks.convertCoin.convertTx(
+//       convertOutToken.ibcDenom,
+//       networkInfo.cantoAddress,
+//       false
+//     ),
+//     bridgeOut: transactionHooks.bridgeOut.ibcOut(bridgeOutToken.ibcDenom),
+//     pubKey: {
+//       state: pubKeyStatus,
+//       send: () => generatePubKey(networkInfo.account, setPubKeyStatus),
+//     },
+//   };
 
-  //check if the current step is complete
-  function checkIfCanContinue() {
-    const currentType = walkthroughStore.currentBridgeType;
-    if (currentType === "IN") {
-      return didPassBridgeInWalkthroughCheck(
-        walkthroughStore.bridgeInStep,
-        Number(networkInfo.chainId),
-        bridgeInToken,
-        convertStringToBigNumber(amount, bridgeInToken.decimals),
-        bridgeInToken.erc20Balance,
-        "",
-        completedBridgeInTxs,
-        convertInToken,
-        allTransactionsObject.convertIn.state
-      );
-    } else if (currentType === "OUT") {
-      return didPassBridgeOutWalkthroughCheck(
-        walkthroughStore.bridgeOutStep,
-        Number(networkInfo.chainId),
-        convertOutToken,
-        convertStringToBigNumber(amount, convertOutToken.decimals),
-        convertOutToken.erc20Balance,
-        allTransactionsObject.convertOut.state,
-        bridgeOutNetworkStore.bridgeOutNetwork,
-        bridgeOutToken,
-        allTransactionsObject.bridgeOut.state,
-        userCosmosSendAddress
-      );
-    }
-    return false;
-  }
+//   //check if the current step is complete
+//   function checkIfCanContinue() {
+//     const currentType = walkthroughStore.currentBridgeType;
+//     if (currentType === "IN") {
+//       return didPassBridgeInWalkthroughCheck(
+//         walkthroughStore.bridgeInStep,
+//         Number(networkInfo.chainId),
+//         bridgeInToken,
+//         convertStringToBigNumber(amount, bridgeInToken.decimals),
+//         bridgeInToken.erc20Balance,
+//         "",
+//         completedBridgeInTxs,
+//         convertInToken,
+//         allTransactionsObject.convertIn.state
+//       );
+//     } else if (currentType === "OUT") {
+//       return didPassBridgeOutWalkthroughCheck(
+//         walkthroughStore.bridgeOutStep,
+//         Number(networkInfo.chainId),
+//         convertOutToken,
+//         convertStringToBigNumber(amount, convertOutToken.decimals),
+//         convertOutToken.erc20Balance,
+//         allTransactionsObject.convertOut.state,
+//         bridgeOutNetworkStore.bridgeOutNetwork,
+//         bridgeOutToken,
+//         allTransactionsObject.bridgeOut.state,
+//         userCosmosSendAddress
+//       );
+//     }
+//     return false;
+//   }
 
-  //check if user has native balance to skip ahead
-  function checkIfCanSkip(convertTokens: UserConvertToken[]) {
-    for (const token in convertTokens) {
-      if (convertTokens[token].nativeBalance.gt(0)) {
-        return true;
-      }
-    }
-    return false;
-  }
+//   //check if user has native balance to skip ahead
+//   function checkIfCanSkip(convertTokens: UserConvertToken[]) {
+//     for (const token in convertTokens) {
+//       if (convertTokens[token].nativeBalance.gt(0)) {
+//         return true;
+//       }
+//     }
+//     return false;
+//   }
 
-  function checkIfCanClickPrevious() {
-    const currentType = walkthroughStore.currentBridgeType;
-    if (currentType == "IN") {
-      return !BridgeInWalkthroughSteps[walkthroughStore.bridgeInStep]
-        .isCheckpoint;
-    } else if (currentType == "OUT") {
-      return !BridgeOutWalkthroughSteps[walkthroughStore.bridgeOutStep]
-        .isCheckpoint;
-    }
-    return true;
-  }
+//   function checkIfCanClickPrevious() {
+//     const currentType = walkthroughStore.currentBridgeType;
+//     if (currentType == "IN") {
+//       return !BridgeInWalkthroughSteps[walkthroughStore.bridgeInStep]
+//         .isCheckpoint;
+//     } else if (currentType == "OUT") {
+//       return !BridgeOutWalkthroughSteps[walkthroughStore.bridgeOutStep]
+//         .isCheckpoint;
+//     }
+//     return true;
+//   }
 
-  //constants to let walkthrough know if user has funds to perform this bridge
-  const canBridgeIn = () => {
-    for (const token of bridgingTokens.userBridgeInTokens) {
-      if (token.erc20Balance.gt(0)) return true;
-    }
-    for (const token of bridgingTokens.userConvertTokens) {
-      if (token.nativeBalance.gt(0)) return true;
-    }
-    return false;
-  };
-  const canBridgeOut = () => {
-    for (const token of bridgingTokens.userBridgeOutTokens) {
-      if (token.nativeBalance.gt(0)) return true;
-    }
-    for (const token of bridgingTokens.userConvertTokens) {
-      if (token.erc20Balance.gt(0)) return true;
-    }
-    return false;
-  };
+//   //constants to let walkthrough know if user has funds to perform this bridge
+//   const canBridgeIn = () => {
+//     for (const token of bridgingTokens.userBridgeInTokens) {
+//       if (token.erc20Balance.gt(0)) return true;
+//     }
+//     for (const token of bridgingTokens.userConvertTokens) {
+//       if (token.nativeBalance.gt(0)) return true;
+//     }
+//     return false;
+//   };
+//   const canBridgeOut = () => {
+//     for (const token of bridgingTokens.userBridgeOutTokens) {
+//       if (token.nativeBalance.gt(0)) return true;
+//     }
+//     for (const token of bridgingTokens.userConvertTokens) {
+//       if (token.erc20Balance.gt(0)) return true;
+//     }
+//     return false;
+//   };
 
-  const canPubKey =
-    (ethBalance?.gt(parseUnits("0.01")) ||
-      networkInfo.balance?.gt(parseUnits("0.5"))) ??
-    true;
-  return {
-    networkInfo: {
-      chainId: Number(networkInfo.chainId),
-      cantoAddress: networkInfo.cantoAddress,
-      notEnoughCantoBalance: networkInfo.balance.lt(parseEther("3")),
-      needPubKey: !networkInfo.hasPubKey,
-      canPubKey,
-      gravityAddress: gravityAddress ?? ADDRESSES.ETHMainnet.GravityBridge,
-    },
-    walkthroughInfo: {
-      canContinue: checkIfCanContinue(),
-      canGoBack: checkIfCanClickPrevious(),
-      canSkip: checkIfCanSkip(bridgingTokens.userConvertTokens),
-      canBridgeIn: canBridgeIn(),
-      canBridgeOut: canBridgeOut(),
-    },
-    transactions: {
-      approve: transactionHooks.bridgeIn.approveToken(bridgeInToken.address),
-      sendCosmos: transactionHooks.bridgeIn.sendToCosmos(
-        gravityAddress,
-        bridgeInToken.address,
-        networkInfo.cantoAddress
-      ),
-      convertIn: transactionHooks.convertCoin.convertTx(
-        convertInToken.ibcDenom,
-        networkInfo.cantoAddress,
-        true
-      ),
-      convertOut: transactionHooks.convertCoin.convertTx(
-        convertOutToken.ibcDenom,
-        networkInfo.cantoAddress,
-        false
-      ),
-      bridgeOut: transactionHooks.bridgeOut.ibcOut(bridgeOutToken.ibcDenom),
-      pubKey: {
-        state: pubKeyStatus,
-        send: () => generatePubKey(networkInfo.account, setPubKeyStatus),
-      },
-    },
-    tokens: {
-      allUserTokens: {
-        convertTokens: bridgingTokens.userConvertTokens,
-        bridgeInTokens: bridgingTokens.userBridgeInTokens,
-        bridgeOutTokens: bridgingTokens.userBridgeOutTokens,
-      },
-      selectedTokens: {
-        convertInToken,
-        convertOutToken,
-        bridgeInToken,
-        bridgeOutToken,
-      },
-      setTokens: bridgingTokens.setSelectedToken,
-    },
-    userInputs: {
-      amount,
-      setAmount,
-      address: userCosmosSendAddress,
-      setAddress: setUserCosmosSendAddress,
-      selectedNetwork:
-        ALL_BRIDGE_OUT_NETWORKS[bridgeOutNetworkStore.bridgeOutNetwork],
-      setNetwork: bridgeOutNetworkStore.setBridgeOutNetwork,
-    },
-  };
-}
+//   const canPubKey =
+//     (ethBalance?.gt(parseUnits("0.01")) ||
+//       networkInfo.balance?.gt(parseUnits("0.5"))) ??
+//     true;
+//   return {
+//     networkInfo: {
+//       chainId: Number(networkInfo.chainId),
+//       cantoAddress: networkInfo.cantoAddress,
+//       notEnoughCantoBalance: networkInfo.balance.lt(parseEther("3")),
+//       needPubKey: !networkInfo.hasPubKey,
+//       canPubKey,
+//       gravityAddress: gravityAddress ?? ADDRESSES.ETHMainnet.GravityBridge,
+//     },
+//     walkthroughInfo: {
+//       canContinue: checkIfCanContinue(),
+//       canGoBack: checkIfCanClickPrevious(),
+//       canSkip: checkIfCanSkip(bridgingTokens.userConvertTokens),
+//       canBridgeIn: canBridgeIn(),
+//       canBridgeOut: canBridgeOut(),
+//     },
+//     transactions: {
+//       approve: transactionHooks.bridgeIn.approveToken(bridgeInToken.address),
+//       sendCosmos: transactionHooks.bridgeIn.sendToCosmos(
+//         gravityAddress,
+//         bridgeInToken.address,
+//         networkInfo.cantoAddress
+//       ),
+//       convertIn: transactionHooks.convertCoin.convertTx(
+//         convertInToken.ibcDenom,
+//         networkInfo.cantoAddress,
+//         true
+//       ),
+//       convertOut: transactionHooks.convertCoin.convertTx(
+//         convertOutToken.ibcDenom,
+//         networkInfo.cantoAddress,
+//         false
+//       ),
+//       bridgeOut: transactionHooks.bridgeOut.ibcOut(bridgeOutToken.ibcDenom),
+//       pubKey: {
+//         state: pubKeyStatus,
+//         send: () => generatePubKey(networkInfo.account, setPubKeyStatus),
+//       },
+//     },
+//     tokens: {
+//       allUserTokens: {
+//         convertTokens: bridgingTokens.userConvertTokens,
+//         bridgeInTokens: bridgingTokens.userBridgeInTokens,
+//         bridgeOutTokens: bridgingTokens.userBridgeOutTokens,
+//       },
+//       selectedTokens: {
+//         convertInToken,
+//         convertOutToken,
+//         bridgeInToken,
+//         bridgeOutToken,
+//       },
+//       setTokens: bridgingTokens.setSelectedToken,
+//     },
+//     userInputs: {
+//       amount,
+//       setAmount,
+//       address: userCosmosSendAddress,
+//       setAddress: setUserCosmosSendAddress,
+//       selectedNetwork:
+//         ALL_BRIDGE_OUT_NETWORKS[bridgeOutNetworkStore.bridgeOutNetwork],
+//       setNetwork: bridgeOutNetworkStore.setBridgeOutNetwork,
+//     },
+//   };
+// }

@@ -141,7 +141,9 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           tokenList={props.bridgeOutTokens}
           activeToken={props.currentBridgeOutToken}
           tokenBalance="nativeBalance"
-          onSelect={(token) => props.setToken(token, SelectedTokens.BRIDGEOUT)}
+          onSelect={(token) => {
+            return;
+          }}
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}

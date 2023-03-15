@@ -1,7 +1,10 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { TokenWallet } from "pages/bridging/components/tokenSelect";
-import { BaseToken } from "pages/bridging/config/interfaces";
+import {
+  BaseToken,
+  UserERC20BridgeToken,
+} from "pages/bridging/config/interfaces";
 import BaseStyled from "../layout";
 
 interface SelectTokenProps {
@@ -35,10 +38,9 @@ const SelectTokenPage = (props: SelectTokenProps) => {
       <section>
         <div className="wallet">
           <TokenWallet
-            tokens={props.tokenList}
-            activeToken={props.activeToken}
+            tokens={props.tokenList as UserERC20BridgeToken[]}
+            activeToken={props.activeToken as UserERC20BridgeToken}
             onSelect={(token) => props.onSelect(token ?? props.activeToken)}
-            balance={props.tokenBalance}
           />
         </div>
       </section>
