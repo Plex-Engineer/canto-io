@@ -9,7 +9,8 @@ import { getNetworkFromTokenName } from "./findTokens";
 
 export function createConvertTransactions(
   pendingIn: TransactionHistoryEvent[],
-  nativeTokens: UserNativeToken[]
+  nativeTokens: UserNativeToken[],
+  bridgeIn: boolean
 ): NativeTransaction[] {
   const allConverts: NativeTransaction[] = [];
   for (const pending of pendingIn) {
@@ -25,7 +26,7 @@ export function createConvertTransactions(
   for (const native of nativeTokens) {
     if (native.nativeBalance.gt(0)) {
       allConverts.push({
-        origin: getNetworkFromTokenName(native.ibcDenom),
+        origin: getNetworkFromTokenName(native.ibcDenom, bridgeIn),
         timeLeft: "0",
         amount: native.nativeBalance,
         token: native,

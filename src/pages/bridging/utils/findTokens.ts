@@ -1,5 +1,6 @@
 import { NativeToken } from "../config/interfaces";
 import {
+  ALL_IBC_TOKENS_WITH_DENOMS,
   CONVERT_COIN_TOKENS,
   ETH_GRAVITY_BRIDGE_IN_TOKENS,
 } from "../config/bridgingTokens";
@@ -29,7 +30,17 @@ export function findBridgeInToken(tokenAddress: string): Token | undefined {
   );
 }
 
-export function getNetworkFromTokenName(ibcDenom: string): string {
+export function getNetworkFromTokenName(
+  ibcDenom: string,
+  bridgeIn: boolean
+): string {
+  const ibcEthList = [
+    ALL_IBC_TOKENS_WITH_DENOMS.USDC.ibcDenom,
+    ALL_IBC_TOKENS_WITH_DENOMS.USDT.ibcDenom,
+    ALL_IBC_TOKENS_WITH_DENOMS.ETH.ibcDenom,
+  ];
+  if (ibcEthList.includes(ibcDenom) && bridgeIn) return "ETH";
+
   for (const [, value] of Object.entries(ALL_BRIDGE_OUT_NETWORKS)) {
     for (const token of value.tokens) {
       if (token.ibcDenom == ibcDenom) {

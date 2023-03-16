@@ -32,7 +32,8 @@ const Bridging = () => {
             }
             step2Transactions={createConvertTransactions(
               bridgingHistory.pendingBridgeInTransactions,
-              bridgingTokens.userNativeTokens
+              bridgingTokens.userNativeTokens,
+              true
             )}
           />,
           <BridgeOut
@@ -51,7 +52,8 @@ const Bridging = () => {
             }
             step2Transactions={createConvertTransactions(
               [],
-              bridgingTokens.userNativeTokens
+              bridgingTokens.userNativeTokens,
+              false
             )}
           />,
           <Transactions
