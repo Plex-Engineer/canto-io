@@ -10,7 +10,7 @@ import { ALL_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks
 import { parseUnits } from "ethers/lib/utils";
 
 test("check cosmos address is valid", () => {
-  const testCases: { case: string; validFor: BridgeOutNetworks[] }[] = [
+  const testCases: { case?: string; validFor: BridgeOutNetworks[] }[] = [
     {
       case: "cosmos1qqzky5czd8jtxp7k96w0d9th2vjxcxaeqk6292",
       validFor: [BridgeOutNetworks.COSMOS_HUB],
@@ -61,6 +61,10 @@ test("check cosmos address is valid", () => {
     },
     {
       case: "gravity",
+      validFor: [],
+    },
+    {
+      case: undefined,
       validFor: [],
     },
   ];

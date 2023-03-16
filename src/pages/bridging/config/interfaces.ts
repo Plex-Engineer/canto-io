@@ -14,7 +14,7 @@ export interface BridgeOutNetworkInfo {
   endpoint: string;
   latestBlockEndpoint?: string;
   addressBeginning: string;
-  checkAddress: (address: string) => boolean;
+  checkAddress: (address?: string) => boolean;
 }
 export enum BridgeOutNetworks {
   GRAVITY_BRIDGE,
