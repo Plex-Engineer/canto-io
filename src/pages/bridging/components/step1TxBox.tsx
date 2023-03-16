@@ -118,7 +118,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         <div className="balance">
           <Text
             style={{
-              color: "#848484",
+              color: "#888",
             }}
             align="right"
           >
@@ -291,6 +291,7 @@ const Styled = styled.div`
 
   .balance {
     width: 70%;
+    opacity: 0.4;
   }
   .token-box {
     height: 60px;
