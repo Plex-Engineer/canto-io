@@ -44,33 +44,41 @@ const ConfirmationModal = (props: BridgeModal) => {
       {props.tx.state == "None" &&
         (props.from.chainId == networkID || networkID == undefined) && (
           <>
-            <Text type="title">Please confirm the transaction </Text>
+            <Text type="title" size="title2">
+              {props.tx.txName}{" "}
+            </Text>
             <div className="expanded">
-              <img height={50} src={props.token.icon} alt={props.token.name} />
+              <>
+                <img
+                  height={50}
+                  src={props.token.icon}
+                  alt={props.token.name}
+                />
+                <Text type="title" size="title3">
+                  {props.token.name}
+                </Text>
+              </>
             </div>
             <div className="transactions">
-              <ConfirmationRow title="tx" value={props.tx.txName} />
-              <ConfirmationRow title="token" value={props.token.name} />
-
               {props.tx.txName != "approve token" && (
                 <>
                   <ConfirmationRow
                     title="from"
-                    value={`${props.from.chain} (${formatAddress(
-                      props.from.address
-                    )})`}
+                    value={`${formatAddress(props.from.address)}`}
                   />
                   <ConfirmationRow
                     title="to"
-                    value={`${props.to.chain} (${formatAddress(
-                      props.to.address
-                    )})`}
+                    value={`${formatAddress(props.to.address)}`}
                   />
                   <ConfirmationRow
                     title="amount"
-                    value={truncateNumber(
-                      formatUnits(props.amount, props.token.decimals)
-                    )}
+                    value={
+                      truncateNumber(
+                        formatUnits(props.amount, props.token.decimals)
+                      ) +
+                      " " +
+                      props.token.symbol
+                    }
                   />
                 </>
               )}

@@ -8,7 +8,10 @@ type BridgeOutNetworkData = {
   [key in BridgeOutNetworks]: BridgeOutNetworkInfo;
 };
 
-function addressCheck(address: string, addressBeginning: string) {
+function addressCheck(address: string | undefined, addressBeginning: string) {
+  if (!address) {
+    return false;
+  }
   return (
     address.slice(0, addressBeginning.length) == addressBeginning &&
     address.length == 39 + addressBeginning.length

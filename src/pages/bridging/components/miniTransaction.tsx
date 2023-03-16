@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { formatUnits } from "ethers/lib/utils";
+import { CantoTransactionType } from "global/config/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { CantoMainnet } from "global/providers";
@@ -20,7 +21,7 @@ interface Props {
 const MiniTransaction = (props: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const txStats = props.txFactory();
-  const isIBCTransfer = txStats.txName == "ibc transfer";
+  const isIBCTransfer = txStats.txType == CantoTransactionType.IBC_OUT;
   //just for ibc out
   const [userInputAddress, setUserInputAddress] = useState("");
   const tokenNetworks: BridgeOutNetworks[] =

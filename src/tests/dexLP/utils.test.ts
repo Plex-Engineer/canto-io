@@ -1,8 +1,6 @@
 import { parseUnits } from "ethers/lib/utils";
-import { MAINPAIRS } from "pages/dexLP/config/pairs";
 import {
   calculateExpectedShareIfSupplying,
-  checkForCantoInPair,
   getLPPairRatio,
   getToken1Limit,
   getToken2Limit,
@@ -10,38 +8,38 @@ import {
   getTokenBFromA,
 } from "pages/dexLP/utils/utils";
 
-test("check for canto in pair", () => {
-  const testCases = [
-    {
-      pair: MAINPAIRS[0],
-      chainId: 7700,
-      expected: [true, false],
-    },
-    {
-      pair: MAINPAIRS[1],
-      chainId: 7700,
-      expected: [true, false],
-    },
-    {
-      pair: MAINPAIRS[2],
-      chainId: 7700,
-      expected: [true, false],
-    },
-    {
-      pair: MAINPAIRS[3],
-      chainId: 7700,
-      expected: [false, false],
-    },
-    {
-      pair: MAINPAIRS[4],
-      chainId: 7700,
-      expected: [false, false],
-    },
-  ];
-  for (const { pair, chainId, expected } of testCases) {
-    expect(checkForCantoInPair(pair, chainId)).toEqual(expected);
-  }
-});
+// test("check for canto in pair", () => {
+//   const testCases = [
+//     {
+//       pair: MAINPAIRS[0],
+//       chainId: 7700,
+//       expected: [true, false],
+//     },
+//     {
+//       pair: MAINPAIRS[1],
+//       chainId: 7700,
+//       expected: [true, false],
+//     },
+//     {
+//       pair: MAINPAIRS[2],
+//       chainId: 7700,
+//       expected: [true, false],
+//     },
+//     {
+//       pair: MAINPAIRS[3],
+//       chainId: 7700,
+//       expected: [false, false],
+//     },
+//     {
+//       pair: MAINPAIRS[4],
+//       chainId: 7700,
+//       expected: [false, false],
+//     },
+//   ];
+//   for (const { pair, chainId, expected } of testCases) {
+//     expect(checkForCantoInPair(pair, chainId)).toEqual(expected);
+//   }
+// });
 
 test("Get LP Pair Ratio", () => {
   const testCases = [

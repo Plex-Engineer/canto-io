@@ -9,17 +9,14 @@ import { useState } from "react";
 import useModals from "../hooks/useModals";
 import { PrimaryButton } from "global/packages/src";
 import { truncateNumber } from "global/utils/utils";
-import {
-  checkForCantoInPair,
-  getCurrentBlockTimestamp,
-  getReserveRatioAtoB,
-  getTokenValueFromPercent,
-} from "../utils/utils";
+import { getReserveRatioAtoB, getTokenValueFromPercent } from "../utils/utils";
 import { UserLPPairInfo } from "../config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
 import { DexModalContainer } from "../components/Styled";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
+import { getCurrentBlockTimestamp } from "global/utils/blockInfo";
+import { checkForCantoInPair } from "../utils/pairCheck";
 
 interface RemoveConfirmationProps {
   pair: UserLPPairInfo;
