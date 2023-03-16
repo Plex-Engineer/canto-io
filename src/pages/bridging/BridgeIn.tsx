@@ -25,7 +25,30 @@ const BridgeIn = (props: BridgeInProps) => {
   return (
     <BridgeStyled>
       <div className="left">
-        <QBoxList />
+        <QBoxList
+          QA={[
+            {
+              question: "How long does it take?",
+              answer:
+                "Sending tokens from Ethereum to the bridge (Step 1) takes 20-30 minutes to reach the bridge. IBC transactions usually complete in a few seconds.",
+            },
+            {
+              question: "Where are my tokens?",
+              answer:
+                "If you can’t find your tokens, first check to see if the pending transaction is complete at the bottom half of the page. If the transaction is complete, you can click the “Balances” button to see a table of your token balances on Ethereum, the bridge, and Canto’s EVM.",
+            },
+            {
+              question: "Send Funds to Canto",
+              answer:
+                "If you want to bridge tokens that are currently on the Ethereum mainnet, start at the top and send tokens to the Canto Bridge. If you want to bridge Cosmos tokens using IBC, first send the tokens over (see the docs for instructions), and then proceed to the pending transaction list to complete the bridging process.",
+            },
+            {
+              question: "Complete Pending Transactions",
+              answer:
+                "If you have previously sent tokens to the bridge, you should see a pending transaction in the list on the bottom half of this page. The “Complete” button will be clickable once the tokens arrive at the Canto Bridge. Click the “Complete” button to move the tokens from the bridge to Canto’s EVM.",
+            },
+          ]}
+        />
       </div>
       <div className="center">
         <Step1TxBox

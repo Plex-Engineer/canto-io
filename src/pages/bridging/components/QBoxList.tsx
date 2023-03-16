@@ -2,7 +2,14 @@ import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
 import QBox from "./QBox";
 
-const QBoxList = () => {
+interface Props {
+  QA: {
+    question: string;
+    answer: string;
+  }[];
+}
+
+const QBoxList = ({ QA }: Props) => {
   return (
     <Styled>
       <div
@@ -15,14 +22,9 @@ const QBoxList = () => {
           F.A.Q
         </Text>
       </div>
-      <QBox
-        question="what is a test ?"
-        answer="A test is a simple thing we do to get accurate and scientific responses on the stuff we know"
-      />
-      <QBox
-        question="This is a multiple line test to determine"
-        answer="A test is a simple thing we do to get accurate and scientific responses on the stuff we know"
-      />
+      {QA.map((qa, idx) => (
+        <QBox key={idx} question={qa.question} answer={qa.answer} />
+      ))}
     </Styled>
   );
 };
