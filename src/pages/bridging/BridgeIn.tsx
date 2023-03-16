@@ -29,13 +29,38 @@ const BridgeIn = (props: BridgeInProps) => {
           QA={[
             {
               question: "Step 1: Send Funds to Canto",
-              answer:
-                "If you want to bridge tokens that are currently on Ethereum mainnet, start at the top and send tokens to the Canto Bridge. If you want to bridge Cosmos tokens using IBC, first send the tokens over (see the docs for instructions), and then proceed to the pending transaction list to complete the bridging process.",
+              answer: (
+                <>
+                  If you want to bridge tokens that are currently on Ethereum
+                  mainnet, start at the top to initiate bridging. This first
+                  step takes roughly 20 minutes. If you want to bridge Cosmos
+                  tokens using IBC, first send the tokens over (
+                  <a
+                    role="button"
+                    tabIndex={0}
+                    onClick={() =>
+                      window.open(
+                        "https://docs.canto.io/user-guides/bridging-assets/to-canto#from-cosmos-hub-or-other-ibc-enabled-chain",
+                        "_blank"
+                      )
+                    }
+                    style={{
+                      color: "var(--primary-color)",
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    see the docs for instructions
+                  </a>
+                  ) and then proceed to the queued transaction list to complete
+                  the bridging process.
+                </>
+              ),
             },
             {
-              question: "Step 2: Complete Pending Transactions",
+              question: "Step 2: Complete Queued Transactions",
               answer:
-                "If you have previously sent tokens to the bridge, you should see a pending transaction in the list on the bottom half of this page. The “Complete” button will be clickable once the tokens arrive at the Canto Bridge. Click the “Complete” button to move the tokens from the bridge to Canto’s EVM.",
+                "Once you send tokens to Canto you should see a transaction in the bridge queue on the bottom half of this page. The “Complete” button will appear once the tokens arrive at the Canto native chain. Click the “Complete” button to move the tokens from the Canto native chain to Canto’s EVM.",
             },
           ]}
         />
@@ -45,12 +70,12 @@ const BridgeIn = (props: BridgeInProps) => {
             {
               question: "How long does it take?",
               answer:
-                "Sending tokens from Ethereum to the bridge (Step 1) takes 20-30 minutes to reach the bridge. IBC transactions usually complete in a few seconds.",
+                "Sending tokens from Ethereum to the Canto native chain (Step 1) takes 20-30 minutes. IBC transactions usually complete in a few seconds. Completing a queued transaction (Step 2) usually takes a few seconds.",
             },
             {
               question: "Where are my tokens?",
               answer:
-                "If you can’t find your tokens, first check to see if the pending transaction is complete at the bottom half of the page. If the transaction is complete, you can click the “Balances” button to see a table of your token balances on Ethereum, the bridge, and Canto’s EVM.",
+                "If you can’t find your tokens, first check to see if the queued transaction is complete at the bottom half of the page. If the transaction is complete, you can click the “Balances” button to see a table of your token balances that are either queued or on Ethereum or Canto.",
             },
           ]}
         />

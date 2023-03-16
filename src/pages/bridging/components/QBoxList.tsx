@@ -1,11 +1,12 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
+import { ReactNode } from "react";
 import QBox from "./QBox";
 
 interface Props {
   QA: {
     question: string;
-    answer: string;
+    answer: ReactNode;
   }[];
   title: string;
 }

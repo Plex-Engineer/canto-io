@@ -23,14 +23,37 @@ const BridgeOut = (props: BridgeOutProps) => {
           title="instructions"
           QA={[
             {
-              question: "Step 1: Send Funds to Canto",
+              question: "Step 1: Send Funds from Canto",
               answer:
-                "If you want to bridge tokens that are currently on the canto network, start at the top and send tokens to the Canto Bridge.",
+                "This first step initiates bridging out, select the token and the amount you want to bridge out to add a transaction to the bridging queue. This first step usually completes in a few seconds.",
             },
             {
-              question: "Step 2: Complete Pending Transactions",
-              answer:
-                "If you have previously sent tokens to the bridge, you should see a pending transaction in the list on the bottom half of this page. The “Complete” button will be clickable once the tokens arrive at the Canto Bridge. Click the “Complete” button to move the tokens from the bridge to Canto’s EVM.",
+              question: "Step 2: Complete Queued Transactions",
+              answer: (
+                <>
+                  After completing the first step, the token you want to bridge
+                  out will appear in the queue. Click the “Complete” button to
+                  bridge the tokens out to their native chain. You’ll need the
+                  address you want to send tokens to.{" "}
+                  <a
+                    role="button"
+                    tabIndex={0}
+                    onClick={() =>
+                      window.open(
+                        " https://docs.canto.io/user-guides/bridging-assets/from-canto",
+                        "_blank"
+                      )
+                    }
+                    style={{
+                      color: "var(--primary-color)",
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    click here to learn more.
+                  </a>
+                </>
+              ),
             },
           ]}
         />
@@ -38,14 +61,9 @@ const BridgeOut = (props: BridgeOutProps) => {
           title="F.A.Q."
           QA={[
             {
-              question: "How long does it take?",
-              answer:
-                "Sending tokens from Ethereum to the bridge (Step 1) takes 20-30 minutes to reach the bridge. IBC transactions usually complete in a few seconds.",
-            },
-            {
               question: "Where are my tokens?",
               answer:
-                "If you can’t find your tokens, first check to see if the pending transaction is complete at the bottom half of the page. If the transaction is complete, you can click the “Balances” button to see a table of your token balances on Ethereum, the bridge, and Canto’s EVM.",
+                "If you can’t find your tokens, first check to see if the queued transaction is complete at the bottom half of the page. If the transaction is complete, you can click the “Balances” button to see a table of your token balances that are either queued or on Ethereum or Canto.",
             },
           ]}
         />

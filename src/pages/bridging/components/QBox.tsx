@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
-import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, ReactNode } from "react";
 
 interface Props {
   question: string;
-  answer: string;
+  answer: ReactNode;
 }
 const QBox = ({ question, answer }: Props) => {
   const [expanded, setExpanded] = useState(false);
