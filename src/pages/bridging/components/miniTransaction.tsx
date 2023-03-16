@@ -9,7 +9,11 @@ import { useEffect, useState } from "react";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 import { BridgeOutNetworks, NativeTransaction } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
-import { convertSecondsToString, toastBridgeTx } from "../utils/utils";
+import {
+  convertSecondsToString,
+  formatAddress,
+  toastBridgeTx,
+} from "../utils/utils";
 import ConfirmationModal from "./modals/confirmationModal";
 
 interface Props {
@@ -68,6 +72,62 @@ const MiniTransaction = (props: Props) => {
                   setSelectedNetwork,
                 }
               : undefined
+          }
+          extraDetails={
+            isIBCTransfer ? (
+              <>
+                {`by completing bridge out, you are transferring your assets from your canto native address (${formatAddress(
+                  props.cantoAddress,
+                  6
+                )}) to your address on the ${selectedNetwork.name} network. `}
+                Read more about this{" "}
+                <a
+                  role="button"
+                  tabIndex={0}
+                  onClick={() =>
+                    window.open(
+                      "https://docs.canto.io/user-guides/bridging-assets/from-canto",
+                      "_blank"
+                    )
+                  }
+                  style={{
+                    color: "var(--primary-color)",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                >
+                  here.
+                </a>{" "}
+              </>
+            ) : (
+              <>
+                {`by completing bridge in, you are transferring your assets from your canto native address (${formatAddress(
+                  props.cantoAddress,
+                  6
+                )}) to your canto EVM address (${formatAddress(
+                  props.ethAddress,
+                  6
+                )}). `}
+                Read more about this{" "}
+                <a
+                  role="button"
+                  tabIndex={0}
+                  onClick={() =>
+                    window.open(
+                      "https://docs.canto.io/user-guides/converting-assets",
+                      "_blank"
+                    )
+                  }
+                  style={{
+                    color: "var(--primary-color)",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                >
+                  here.
+                </a>{" "}
+              </>
+            )
           }
         />
       </Modal>

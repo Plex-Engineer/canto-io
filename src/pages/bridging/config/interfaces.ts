@@ -2,6 +2,7 @@ import { BigNumber, ethers } from "ethers";
 import { Token } from "global/config/tokenInfo";
 import emptyToken from "assets/empty.svg";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
+import { ReactNode } from "react";
 
 /**
  * NETWORK INTERFACES
@@ -106,4 +107,5 @@ export interface BridgeModal {
     selectedNetwork: BridgeOutNetworkInfo;
     setSelectedNetwork: (n: BridgeOutNetworkInfo) => void;
   };
+  extraDetails?: ReactNode;
 }

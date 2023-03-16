@@ -64,11 +64,11 @@ const ConfirmationModal = (props: BridgeModal) => {
                 <>
                   <ConfirmationRow
                     title="from"
-                    value={`${formatAddress(props.from.address)}`}
+                    value={`${formatAddress(props.from.address, 6)}`}
                   />
                   <ConfirmationRow
                     title="to"
-                    value={`${formatAddress(props.to.address)}`}
+                    value={`${formatAddress(props.to.address, 6)}`}
                   />
                   <ConfirmationRow
                     title="amount"
@@ -112,11 +112,11 @@ const ConfirmationModal = (props: BridgeModal) => {
                 </div>
               </div>
             )}
-
-            <Text size="text4" align="left" style={{ color: "#474747" }}>
-              We can show some of the optional text, to info the user about the
-              changes they are about to make.
-            </Text>
+            {!!props.extraDetails && (
+              <Text size="text4" align="left" style={{ color: "#474747" }}>
+                {props.extraDetails}
+              </Text>
+            )}
 
             <PrimaryButton
               filled

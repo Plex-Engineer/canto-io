@@ -66,8 +66,8 @@ export function convertStringToBigNumber(amount: string, decimals: number) {
   return parseUnits(truncateNumber(amount, decimals), decimals);
 }
 
-export function formatAddress(address: string) {
-  return address.slice(0, 6) + "..." + address.slice(-6);
+export function formatAddress(address: string, show: number) {
+  return address.slice(0, show) + "..." + address.slice(-show);
 }
 
 //returns button text and if it is disabled

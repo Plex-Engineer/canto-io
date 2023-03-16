@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import {
   convertStringToBigNumber,
   copyAddress,
+  formatAddress,
   getStep1ButtonText,
   toastBridgeTx,
 } from "../utils/utils";
@@ -77,6 +78,23 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           onClose={() => {
             setModalOpen(false);
           }}
+          extraDetails={
+            props.bridgeIn
+              ? `by bridging in, you are transferring your assets from your ethereum EVM address (${formatAddress(
+                  props.fromAddress ?? "",
+                  6
+                )}) to your canto native address (${formatAddress(
+                  props.toAddress ?? "",
+                  6
+                )}) through gravity bridge. `
+              : `by bridging out, you are transferring your assets from your canto EVM address (${formatAddress(
+                  props.fromAddress ?? "",
+                  6
+                )}) to your canto native address (${formatAddress(
+                  props.toAddress ?? "",
+                  6
+                )}). `
+          }
         />
       </Modal>
       <Text type="title" size="title2">
