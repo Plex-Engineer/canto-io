@@ -5,23 +5,50 @@ import NotConnected from "global/packages/src/components/molecules/NotConnected"
 import { useNavigate } from "react-router-dom";
 import TransactionHistoryBox from "./components/transactionHistoryBox";
 import { AllBridgeTxHistory } from "./hooks/useTransactionHistory";
-
+import Select from "react-select";
+import { Selected } from "pages/staking/modals/redelgationModal";
+import { useState } from "react";
 interface TransactionHistoryProps {
   allTransactions: AllBridgeTxHistory;
 }
 const Transactions = (props: TransactionHistoryProps) => {
   const navigate = useNavigate();
-  const completeTransactions = [
-    ...props.allTransactions.completeBridgeInTransactions,
-    ...props.allTransactions.bridgeOutTransactions,
+  const noTransactions: boolean =
+    props.allTransactions.completeBridgeInTransactions.length +
+      props.allTransactions.bridgeOutTransactions.length +
+      props.allTransactions.pendingBridgeInTransactions.length ==
+    0;
+  const [userDisplayOption, setUserDisplayOption] = useState(1);
+  const displayTxOptions = [
+    {
+      label: "all",
+      value: 1,
+    },
+    {
+      label: "bridge in",
+      value: 2,
+    },
+    {
+      label: "bridge out",
+      value: 3,
+    },
   ];
+  const completeBridgeIn =
+    userDisplayOption !== 3
+      ? props.allTransactions.completeBridgeInTransactions
+      : [];
+  const completeBridgeOut =
+    userDisplayOption !== 2 ? props.allTransactions.bridgeOutTransactions : [];
+
+  const completeTransactions = [...completeBridgeIn, ...completeBridgeOut];
+  const pendingTx =
+    userDisplayOption !== 3
+      ? props.allTransactions.pendingBridgeInTransactions
+      : [];
   return (
     <Styled>
       {" "}
-      {props.allTransactions.completeBridgeInTransactions.length +
-        props.allTransactions.bridgeOutTransactions.length +
-        props.allTransactions.pendingBridgeInTransactions.length ==
-        0 && (
+      {noTransactions && (
         <NotConnected
           title="No Transactions"
           subtext="You haven't made any transactions using bridging yet."
@@ -33,12 +60,35 @@ const Transactions = (props: TransactionHistoryProps) => {
           icon={warningIcon}
         />
       )}
-      {props.allTransactions.pendingBridgeInTransactions.length != 0 && (
+      <Selected
+        style={{
+          width: "18rem",
+        }}
+      >
+        <Select
+          className="react-select-container"
+          styles={{
+            dropdownIndicator: (baseStyles) => ({
+              ...baseStyles,
+              color: "var(--primary-color)",
+            }),
+          }}
+          classNamePrefix="react-select"
+          options={displayTxOptions}
+          onChange={(val) => {
+            setUserDisplayOption(val?.value ?? 1);
+          }}
+          isSearchable={false}
+          defaultValue={displayTxOptions[0]}
+          placeholder="view options"
+        />
+      </Selected>
+      {pendingTx.length != 0 && (
         <>
           <Text type="title" color="primary" size="title2">
             In Progress
           </Text>
-          {props.allTransactions.pendingBridgeInTransactions
+          {pendingTx
             .sort((a, b) =>
               new Date(a.timestamp) > new Date(b.timestamp) ? -1 : 1
             )

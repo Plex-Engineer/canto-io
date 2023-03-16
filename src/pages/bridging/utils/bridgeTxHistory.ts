@@ -192,10 +192,14 @@ async function getIBCInTransactions(
       if (event.type === "fungible_token_packet") {
         const [denom, amount, sender, receiver, success] =
           parseFungibleTokenPacket(event);
-        if (receiver == cantoAccount && success == "true") {
+        //check to make sure that we can find the token and its not already accounted for in the sendToCosmosEvent
+        const token = findNativeToken(denom);
+        const doNotShow =
+          !token || ["USDC", "USDT", "WETH"].includes(token.symbol);
+        if (receiver == cantoAccount && success == "true" && !doNotShow) {
           ibcInHistory.push({
             bridgeType: "in",
-            token: findNativeToken(denom),
+            token: token,
             amount: BigNumber.from(amount ?? "0"),
             timestamp: tx.timestamp,
             blockNumber: Number(tx.height),
@@ -235,8 +239,8 @@ export async function getIBCOutTransactions(
         if (
           type == "transfer" &&
           bridgeOutNetworks.includes(channel) &&
-          sender == cantoAccount &&
-          success == "true"
+          sender == cantoAccount
+          // success == "true"
         ) {
           const token = findNativeToken(tokenDenom);
           bridgeOutData.push({
@@ -256,6 +260,7 @@ export async function getIBCOutTransactions(
       }
     }
   }
+  // console.log("bridge out", bridgeOutData);
   return bridgeOutData;
 }
 
