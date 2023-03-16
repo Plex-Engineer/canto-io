@@ -29,14 +29,22 @@ export function useTransactionHistory(): AllBridgeTxHistory {
         networkInfo.account,
         networkInfo.cantoAddress
       );
-      setCompleteBridgeInTransactions(completed);
-      setPendingBridgeInTransactions(pending);
       const ibcOut = await getIBCOutTransactions(networkInfo.cantoAddress);
-      setBridgeOutTransactions(ibcOut);
-      txStore.setNewTransactions(
-        completed.length + pending.length + ibcOut.length,
-        networkInfo.account
-      );
+      let actualTxs = 0;
+      //must check that the api does not return nothing. Only take the max
+      if (completed.length >= completeBridgeInTransactions.length) {
+        setCompleteBridgeInTransactions(completed);
+        actualTxs += completed.length;
+      }
+      if (pending.length >= pendingBridgeInTransactions.length) {
+        setPendingBridgeInTransactions(pending);
+        actualTxs += pending.length;
+      }
+      if (ibcOut.length >= bridgeOutTransactions.length) {
+        setBridgeOutTransactions(ibcOut);
+        actualTxs += ibcOut.length;
+      }
+      txStore.setNewTransactions(actualTxs, networkInfo.account);
     }
   }
   useEffect(() => {

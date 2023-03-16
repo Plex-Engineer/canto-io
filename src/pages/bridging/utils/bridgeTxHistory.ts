@@ -260,7 +260,7 @@ export async function getIBCOutTransactions(
       }
     }
   }
-  // console.log("bridge out", bridgeOutData);
+  console.log("bridge out", bridgeOutData);
   return bridgeOutData;
 }
 
