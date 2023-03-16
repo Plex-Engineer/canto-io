@@ -23,7 +23,7 @@ const Step2TxBox = (props: Step2TxBoxProps) => {
   return (
     <Styled>
       <Text type="title" size="title2">
-        Transactions
+        Bridge Queue
       </Text>
       <Text type="text" size="text3">
         {props.bridgeIn

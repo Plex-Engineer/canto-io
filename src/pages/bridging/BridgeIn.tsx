@@ -4,7 +4,6 @@ import { NativeTransaction, UserERC20BridgeToken } from "./config/interfaces";
 import Step1TxBox from "./components/step1TxBox";
 import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
 import { ADDRESSES } from "global/config/addresses";
-import QBox from "./components/QBox";
 import QBoxList from "./components/QBoxList";
 
 interface BridgeInProps {
@@ -26,6 +25,22 @@ const BridgeIn = (props: BridgeInProps) => {
     <BridgeStyled>
       <div className="left">
         <QBoxList
+          title="instructions"
+          QA={[
+            {
+              question: "Step 1: Send Funds to Canto",
+              answer:
+                "If you want to bridge tokens that are currently on Ethereum mainnet, start at the top and send tokens to the Canto Bridge. If you want to bridge Cosmos tokens using IBC, first send the tokens over (see the docs for instructions), and then proceed to the pending transaction list to complete the bridging process.",
+            },
+            {
+              question: "Step 2: Complete Pending Transactions",
+              answer:
+                "If you have previously sent tokens to the bridge, you should see a pending transaction in the list on the bottom half of this page. The “Complete” button will be clickable once the tokens arrive at the Canto Bridge. Click the “Complete” button to move the tokens from the bridge to Canto’s EVM.",
+            },
+          ]}
+        />
+        <QBoxList
+          title="F.A.Q."
           QA={[
             {
               question: "How long does it take?",
@@ -36,16 +51,6 @@ const BridgeIn = (props: BridgeInProps) => {
               question: "Where are my tokens?",
               answer:
                 "If you can’t find your tokens, first check to see if the pending transaction is complete at the bottom half of the page. If the transaction is complete, you can click the “Balances” button to see a table of your token balances on Ethereum, the bridge, and Canto’s EVM.",
-            },
-            {
-              question: "Send Funds to Canto",
-              answer:
-                "If you want to bridge tokens that are currently on the Ethereum mainnet, start at the top and send tokens to the Canto Bridge. If you want to bridge Cosmos tokens using IBC, first send the tokens over (see the docs for instructions), and then proceed to the pending transaction list to complete the bridging process.",
-            },
-            {
-              question: "Complete Pending Transactions",
-              answer:
-                "If you have previously sent tokens to the bridge, you should see a pending transaction in the list on the bottom half of this page. The “Complete” button will be clickable once the tokens arrive at the Canto Bridge. Click the “Complete” button to move the tokens from the bridge to Canto’s EVM.",
             },
           ]}
         />

@@ -7,9 +7,10 @@ interface Props {
     question: string;
     answer: string;
   }[];
+  title: string;
 }
 
-const QBoxList = ({ QA }: Props) => {
+const QBoxList = ({ QA, title }: Props) => {
   return (
     <Styled>
       <div
@@ -19,7 +20,7 @@ const QBoxList = ({ QA }: Props) => {
         }}
       >
         <Text type="title" align="left">
-          F.A.Q
+          {title}
         </Text>
       </div>
       {QA.map((qa, idx) => (
@@ -36,7 +37,7 @@ const Styled = styled.div`
   justify-self: flex-start;
   align-items: center;
   gap: 1rem;
-  height: 100%;
+  /* height: 100%; */
 
   .noselect {
     -webkit-touch-callout: none; /* iOS Safari */

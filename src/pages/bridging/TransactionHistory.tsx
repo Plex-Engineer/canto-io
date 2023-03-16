@@ -60,29 +60,31 @@ const Transactions = (props: TransactionHistoryProps) => {
           icon={warningIcon}
         />
       )}
-      <Selected
-        style={{
-          width: "18rem",
-        }}
-      >
-        <Select
-          className="react-select-container"
-          styles={{
-            dropdownIndicator: (baseStyles) => ({
-              ...baseStyles,
-              color: "var(--primary-color)",
-            }),
+      {!noTransactions && (
+        <Selected
+          style={{
+            width: "18rem",
           }}
-          classNamePrefix="react-select"
-          options={displayTxOptions}
-          onChange={(val) => {
-            setUserDisplayOption(val?.value ?? 1);
-          }}
-          isSearchable={false}
-          defaultValue={displayTxOptions[0]}
-          placeholder="view options"
-        />
-      </Selected>
+        >
+          <Select
+            className="react-select-container"
+            styles={{
+              dropdownIndicator: (baseStyles) => ({
+                ...baseStyles,
+                color: "var(--primary-color)",
+              }),
+            }}
+            classNamePrefix="react-select"
+            options={displayTxOptions}
+            onChange={(val) => {
+              setUserDisplayOption(val?.value ?? 1);
+            }}
+            isSearchable={false}
+            defaultValue={displayTxOptions[0]}
+            placeholder="view options"
+          />
+        </Selected>
+      )}
       {pendingTx.length != 0 && (
         <>
           <Text type="title" color="primary" size="title2">
