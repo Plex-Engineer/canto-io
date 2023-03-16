@@ -155,8 +155,7 @@ const MiniTransaction = (props: Props) => {
             formatUnits(
               props.transaction.amount,
               props.transaction.token.decimals
-            ),
-            2
+            )
           )}
           {" " + props.transaction.token.symbol}
         </Text>
