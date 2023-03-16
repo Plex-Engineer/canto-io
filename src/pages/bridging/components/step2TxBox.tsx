@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
+import { useEffect, useState } from "react";
 import { NativeTransaction } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import MiniTransaction from "./miniTransaction";
@@ -12,6 +13,13 @@ interface Step2TxBoxProps {
   bridgeIn: boolean;
 }
 const Step2TxBox = (props: Step2TxBoxProps) => {
+  //used to keep completed transactions on the screen until the user refreshes
+  const [storedTxs, setStoredTxs] = useState(props.transactions);
+  useEffect(() => {
+    if (props.transactions.length >= storedTxs.length) {
+      setStoredTxs(props.transactions);
+    }
+  }, [props.transactions.length]);
   return (
     <Styled>
       <Text type="title" size="title2">
@@ -25,12 +33,12 @@ const Step2TxBox = (props: Step2TxBoxProps) => {
       </Text>
       <div className="scroll-port">
         <div className="scrollable">
-          {props.transactions.length == 0 && (
+          {storedTxs.length == 0 && (
             <div className="empty-records">
               <Text>No transactions available right now</Text>
             </div>
           )}
-          {props.transactions
+          {storedTxs
             .sort((a, b) => (a.origin > b.origin ? 1 : -1))
             .map((tx, index) => {
               return (
