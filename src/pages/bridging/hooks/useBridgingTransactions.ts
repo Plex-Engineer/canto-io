@@ -86,7 +86,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
         }
       },
       resetState,
-      txName: "send to canto",
+      txName: "bridge to canto",
       txType: CantoTransactionType.BRIDGE_IN,
     };
   }
@@ -137,7 +137,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
       state: convertState,
       send,
       resetState,
-      txName: "convert",
+      txName: convertIn ? "complete bridge in" : "bridge out",
       txType: convertIn
         ? CantoTransactionType.CONVERT_TO_EVM
         : CantoTransactionType.CONVERT_TO_NATIVE,
@@ -183,7 +183,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
       state: ibcState,
       send,
       resetState,
-      txName: "ibc transfer",
+      txName: "complete bridge out",
       txType: CantoTransactionType.IBC_OUT,
     };
   }
