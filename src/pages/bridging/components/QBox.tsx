@@ -10,12 +10,14 @@ const QBox = ({ question, answer }: Props) => {
 
   const [height, setHeight] = useState(0);
 
+  const ref = useRef(null);
+
   useLayoutEffect(() => {
     //@ts-ignore
     setHeight(ref.current.clientHeight);
-  });
+    //@ts-ignore
+  }, []);
 
-  const ref = useRef(null);
   return (
     <Styled
       height={height}
@@ -38,7 +40,6 @@ const Styled = styled.div<{ height: number; expanded: boolean }>`
   border: 1px solid #505050;
   border-radius: 4px;
   padding: 1rem;
-
   transition: max-height 0.5s;
   max-height: ${({ height, expanded }) =>
     expanded ? "18rem" : height + 31 + "px"};
