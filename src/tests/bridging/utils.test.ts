@@ -210,8 +210,8 @@ test("step 1 buttonText", () => {
       currentAllowance: BigNumber.from("-1"),
       bridgeIn: true,
       expectedResult: {
-        disabled: true,
-        text: "select token",
+        disabled: false,
+        text: "approve",
       },
     },
     {

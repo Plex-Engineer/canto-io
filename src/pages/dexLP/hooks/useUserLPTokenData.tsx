@@ -5,8 +5,8 @@ import { cERC20Abi, ERC20Abi, routerAbi } from "global/config/abi";
 import { LPPairInfo, UserLPPairInfo } from "../config/interfaces";
 import { getSupplyBalanceFromCTokens } from "pages/lending/utils/utils";
 import { formatUnits } from "ethers/lib/utils";
-import { checkForCantoInPair } from "../utils/utils";
 import { ADDRESSES } from "global/config/addresses";
+import { checkForCantoInPair } from "../utils/pairCheck";
 
 const useUserLPTokenInfo = (
   LPTokens: LPPairInfo[],
