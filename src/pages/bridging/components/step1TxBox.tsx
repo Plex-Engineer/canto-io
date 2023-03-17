@@ -221,6 +221,21 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           </button>
         </div>
       </div>
+      {buttonDisabled &&
+        convertStringToBigNumber(amount, props.selectedToken.decimals).gt(
+          currentTokenBalance
+        ) && (
+          <Text
+            type="text"
+            size="text4"
+            align="center"
+            style={{ paddingTop: "10px", color: "red" }}
+          >
+            {`you have exceeded the maximum amount! (current balance: ${truncateNumber(
+              formatUnits(currentTokenBalance, props.selectedToken.decimals)
+            )})`}
+          </Text>
+        )}
       <PrimaryButton
         height="big"
         weight="bold"
