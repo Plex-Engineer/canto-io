@@ -25,10 +25,6 @@ export function formatTokensAmountsbyChain(
     const bridgeBalance = nativeToken
       ? formatUnits(nativeToken.nativeBalance, nativeToken.decimals)
       : "0.0";
-    const nativeToken = nativeTokens.find((cTok) => cTok.name == token.name);
-    const bridgeBalance = nativeToken
-      ? formatUnits(nativeToken.nativeBalance, nativeToken.decimals)
-      : "0.0";
     const cantoToken = cantoTokens.find((cTok) => cTok.name == token.name);
     const evmBalance = cantoToken
       ? formatUnits(cantoToken.erc20Balance, cantoToken.decimals)
