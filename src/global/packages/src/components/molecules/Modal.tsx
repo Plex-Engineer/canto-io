@@ -42,7 +42,7 @@ const Modal = (props: Props) => {
           </Text>
         </div>
       ) : null}
-      {props.children}
+      <div className="scrollview">{props.children}</div>
     </StyledPopup>
   );
 };
@@ -64,6 +64,7 @@ const StyledPopup = styled(Popup)`
       }
     }
   }
+
   // use your custom style for ".popup-content"
   &-content {
     position: relative;
@@ -71,6 +72,8 @@ const StyledPopup = styled(Popup)`
     scroll-behavior: smooth;
     border-radius: 4px;
     animation: fadein 0.5s 1;
+    max-height: 45rem;
+
     @keyframes fadein {
       0% {
         opacity: 0;
@@ -84,6 +87,11 @@ const StyledPopup = styled(Popup)`
       }
     }
 
+    .scrollview {
+      max-height: 37rem;
+      overflow-y: scroll;
+      margin-bottom: 1rem;
+    }
     .modal-title {
       width: 90%;
       border-bottom: 1px solid #222;

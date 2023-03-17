@@ -1,9 +1,9 @@
+import {
+  UserERC20BridgeToken,
+  UserNativeToken,
+} from "./../../config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
 import { CONVERT_COIN_TOKENS } from "pages/bridging/config/bridgingTokens";
-import {
-  UserBridgeInToken,
-  UserConvertToken,
-} from "pages/bridging/config/interfaces";
 
 interface TokenTableProps {
   name: string;
@@ -12,20 +12,22 @@ interface TokenTableProps {
   canto: string;
 }
 export function formatTokensAmountsbyChain(
-  ethTokens: UserBridgeInToken[],
-  convertTokens: UserConvertToken[]
+  ethTokens: UserERC20BridgeToken[],
+  cantoTokens: UserERC20BridgeToken[],
+  nativeTokens: UserNativeToken[]
 ): TokenTableProps[] {
   return CONVERT_COIN_TOKENS.map((token) => {
     const ethToken = ethTokens.find((eTok) => eTok.name == token.name);
     const ethBalance = ethToken
       ? formatUnits(ethToken.erc20Balance, ethToken.decimals)
+      : "-1";
+    const nativeToken = nativeTokens.find((cTok) => cTok.name == token.name);
+    const bridgeBalance = nativeToken
+      ? formatUnits(nativeToken.nativeBalance, nativeToken.decimals)
       : "0.0";
-    const convertToken = convertTokens.find((cTok) => cTok.name == token.name);
-    const bridgeBalance = convertToken
-      ? formatUnits(convertToken.nativeBalance, convertToken.decimals)
-      : "0.0";
-    const evmBalance = convertToken
-      ? formatUnits(convertToken.erc20Balance, convertToken.decimals)
+    const cantoToken = cantoTokens.find((cTok) => cTok.name == token.name);
+    const evmBalance = cantoToken
+      ? formatUnits(cantoToken.erc20Balance, cantoToken.decimals)
       : "0.0";
     return {
       name: token.name,

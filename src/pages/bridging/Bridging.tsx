@@ -11,6 +11,8 @@ import walletIcon from "assets/wallet.svg";
 import { useEthers } from "@usedapp/core";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
+import BalanceTableModal from "./walkthrough/components/modals/BalanceTableModal";
+import styled from "@emotion/styled";
 
 const Bridging = () => {
   const networkInfo = useNetworkInfo();
@@ -37,9 +39,20 @@ const Bridging = () => {
     }
     return tabs;
   };
-
   return (
-    <div>
+    <Styled>
+      <div
+        className="diff"
+        style={{
+          position: "relative",
+        }}
+      >
+        <BalanceTableModal
+          ethTokens={bridgingTokens.userBridgeInTokens}
+          cantoTokens={bridgingTokens.userBridgeOutTokens}
+          nativeTokens={bridgingTokens.userNativeTokens}
+        />
+      </div>
       <CantoTabs
         names={["bridge in", "bridge out", "tx history"]}
         panels={
@@ -91,8 +104,10 @@ const Bridging = () => {
               ]
         }
       />
-    </div>
+    </Styled>
   );
 };
+
+const Styled = styled.div``;
 
 export default Bridging;

@@ -282,13 +282,9 @@ const Styled = styled.div`
   }
 
   .warning {
-    /* position: absolute;
-    bottom: 5rem;
-    left: 50%; */
     width: 100%;
     height: 14px;
     margin: 8px;
-    /* transform: translateX(-50%); */
   }
   .icons-indicator {
     height: 140px;
