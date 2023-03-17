@@ -30,7 +30,7 @@ interface Step1TxBoxProps {
   bridgeIn: boolean;
   tokens: UserERC20BridgeToken[];
   selectedToken: UserERC20BridgeToken;
-  selectToken: (token: UserERC20BridgeToken) => void;
+  selectToken: (tokenAddress: string) => void;
   txHook: () => BridgeTransaction;
 }
 const Step1TxBox = (props: Step1TxBoxProps) => {
@@ -177,8 +177,9 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             tokens={props.tokens}
             activeToken={props.selectedToken}
             onSelect={(value) => {
-              props.selectToken(value ?? props.selectedToken);
+              props.selectToken(value?.address ?? props.selectedToken.address);
             }}
+            balanceString="erc20Balance"
           />
         </div>
         <div className="amount">

@@ -3,12 +3,10 @@ import { formatUnits } from "ethers/lib/utils";
 import { CantoMainnet, ETHMainnet } from "global/config/networks";
 import { switchNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import {
-  BaseToken,
-  UserBridgeInToken,
-  UserConvertToken,
+  UserERC20BridgeToken,
+  UserNativeToken,
 } from "pages/bridging/config/interfaces";
 import { BridgeTransaction } from "pages/bridging/hooks/useBridgingTransactions";
-import { SelectedTokens } from "pages/bridging/stores/bridgeTokenStore";
 import { convertStringToBigNumber } from "pages/bridging/utils/utils";
 import { useState } from "react";
 import BarIndicator from "../components/barIndicator";
@@ -19,6 +17,7 @@ import SelectTokenPage from "../components/pages/selectToken";
 import SwitchNetworkPage from "../components/pages/switchNetwork";
 import { WaitForGbridge } from "../components/pages/waitForGbridge";
 import { BridgeInStep } from "../config/interfaces";
+import { WalkthroughSelectedTokens } from "../store/customUseWalkthrough";
 
 interface BridgeInManagerProps {
   networkInfo: {
@@ -39,11 +38,11 @@ interface BridgeInManagerProps {
   canGoBack: boolean;
   onPrev: () => void;
   onNext: () => void;
-  currentBridgeInToken: UserBridgeInToken;
-  bridgeInTokens: UserBridgeInToken[];
-  setToken: (token: BaseToken, type: SelectedTokens) => void;
-  currentConvertToken: UserConvertToken;
-  convertTokens: UserConvertToken[];
+  currentBridgeInToken: UserERC20BridgeToken;
+  bridgeInTokens: UserERC20BridgeToken[];
+  setToken: (token: string, type: WalkthroughSelectedTokens) => void;
+  currentConvertToken: UserNativeToken;
+  convertTokens: UserNativeToken[];
   amount: string;
   setAmount: (amount: string) => void;
   restartWalkthrough: () => void;
@@ -68,8 +67,12 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           bridgeType="IN"
           tokenList={props.bridgeInTokens}
           activeToken={props.currentBridgeInToken}
-          tokenBalance="balanceOf"
-          onSelect={(token) => props.setToken(token, SelectedTokens.ETHTOKEN)}
+          onSelect={(token) =>
+            props.setToken(
+              token.address,
+              WalkthroughSelectedTokens.ETH_BRIDGE_IN
+            )
+          }
           canContinue={props.canContinue}
           onNext={() => {
             props.onNext();
@@ -82,6 +85,7 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           }}
           onPrev={props.onPrev}
           canGoBack={props.canGoBack}
+          balanceString={"erc20Balance"}
         />
       )}
       {props.currentStep == BridgeInStep.NEED_ALLOWANCE && !hasAllowance && (
@@ -173,14 +177,14 @@ export const BridgeInManager = (props: BridgeInManagerProps) => {
           bridgeType="IN"
           tokenList={props.convertTokens}
           activeToken={props.currentConvertToken}
-          tokenBalance="nativeBalance"
-          onSelect={(token) => {
-            return;
-          }}
+          onSelect={(token) =>
+            props.setToken(token.address, WalkthroughSelectedTokens.CONVERT_IN)
+          }
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
           canGoBack={props.canGoBack}
+          balanceString={"nativeBalance"}
         />
       )}
       {props.currentStep === BridgeInStep.CONVERT && (

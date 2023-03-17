@@ -1,20 +1,22 @@
 import styled from "@emotion/styled";
 import down from "assets/down.svg";
 import { useRef } from "react";
-import { UserERC20BridgeToken } from "../config/interfaces";
+import { BaseToken } from "../config/interfaces";
 import Popup from "reactjs-popup";
 import TokenModal from "./modals/tokenModal";
 
 interface ITokenSelect {
-  tokens: UserERC20BridgeToken[] | undefined;
-  activeToken: UserERC20BridgeToken;
-  onSelect: (value: UserERC20BridgeToken | undefined) => void;
+  tokens: BaseToken[] | undefined;
+  activeToken: BaseToken;
+  onSelect: (value: BaseToken | undefined) => void;
+  balanceString: string;
 }
 
 export const TokenWallet = ({
   onSelect,
   tokens,
   activeToken,
+  balanceString,
 }: ITokenSelect) => {
   const ref = useRef(null);
   return (
@@ -56,6 +58,7 @@ export const TokenWallet = ({
             onSelect(value);
           }
         }}
+        balanceString={balanceString}
       />
     </StyledPopup>
   );

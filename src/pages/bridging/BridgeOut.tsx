@@ -10,7 +10,7 @@ interface BridgeOutProps {
   cantoAddress?: string;
   bridgeOutTokens: UserERC20BridgeToken[];
   selectedBridgeOutToken: UserERC20BridgeToken;
-  selectToken: (token: UserERC20BridgeToken) => void;
+  selectToken: (tokenAddress: string) => void;
   step2Transactions: NativeTransaction[];
 }
 const BridgeOut = (props: BridgeOutProps) => {

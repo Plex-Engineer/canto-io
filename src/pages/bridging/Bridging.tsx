@@ -24,9 +24,9 @@ const Bridging = () => {
             cantoAddress={networkInfo.cantoAddress}
             ethGBridgeTokens={bridgingTokens.userBridgeInTokens}
             selectedEthToken={bridgingTokens.selectedTokens.bridgeInToken}
-            selectEthToken={(token) =>
+            selectEthToken={(tokenAddress) =>
               bridgingTokens.setSelectedToken(
-                token.address,
+                tokenAddress,
                 SelectedTokens.ETHTOKEN
               )
             }
@@ -44,9 +44,9 @@ const Bridging = () => {
             selectedBridgeOutToken={
               bridgingTokens.selectedTokens.bridgeOutToken
             }
-            selectToken={(token) =>
+            selectToken={(tokenAddress) =>
               bridgingTokens.setSelectedToken(
-                token.address,
+                tokenAddress,
                 SelectedTokens.CONVERTOUT
               )
             }

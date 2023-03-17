@@ -120,7 +120,6 @@ const SelectBridgeOutNetwork = (props: SelectBridgeProps) => {
 const Styled = styled(BaseStyled)`
   padding: 2rem;
   justify-content: center;
-
   span {
     display: flex;
     align-items: center;
@@ -133,9 +132,18 @@ const Styled = styled(BaseStyled)`
   .network-list {
     padding: 8px;
     flex-grow: 1;
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 20rem);
     gap: 2rem;
     align-items: center;
+  }
+  @media (max-width: 1000px) {
+    .network-list {
+      display: grid;
+      align-items: center;
+      justify-content: center;
+      grid-template-columns: repeat(1, 20rem);
+    }
   }
 `;
 

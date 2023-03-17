@@ -83,13 +83,14 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
       bridgeInToken:
         userEthBridgeInTokens.find(
           (token) =>
-            token.address == tokenStore.selectedTokens[SelectedTokens.ETHTOKEN]
+            token.address.toLowerCase() ==
+            tokenStore.selectedTokens[SelectedTokens.ETHTOKEN].toLowerCase()
         ) ?? EMPTY_ERC20_BRIDGE_TOKEN,
       bridgeOutToken:
         userCantoBridgeOutTokens.find(
           (token) =>
-            token.address ==
-            tokenStore.selectedTokens[SelectedTokens.CONVERTOUT]
+            token.address.toLowerCase() ==
+            tokenStore.selectedTokens[SelectedTokens.CONVERTOUT].toLowerCase()
         ) ?? EMPTY_ERC20_BRIDGE_TOKEN,
     },
     setSelectedToken: tokenStore.setSelectedToken,

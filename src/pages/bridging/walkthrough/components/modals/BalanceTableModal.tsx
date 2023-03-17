@@ -3,16 +3,17 @@ import { StyledPopup } from "global/components/Styled";
 import { Text } from "global/packages/src";
 import Tooltip from "global/packages/src/components/molecules/Tooltip";
 import { useState } from "react";
-import {
-  UserBridgeInToken,
-  UserConvertToken,
-} from "pages/bridging/config/interfaces";
 import TokenTable from "./tokenTable";
 import { formatTokensAmountsbyChain } from "../../utils/utils";
+import {
+  UserERC20BridgeToken,
+  UserNativeToken,
+} from "pages/bridging/config/interfaces";
 
 interface Props {
-  ethTokens: UserBridgeInToken[];
-  convertTokens: UserConvertToken[];
+  ethTokens: UserERC20BridgeToken[];
+  cantoTokens: UserERC20BridgeToken[];
+  nativeTokens: UserNativeToken[];
 }
 const BalanceTableModal = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,7 +47,8 @@ const BalanceTableModal = (props: Props) => {
           <TokenTable
             tokens={formatTokensAmountsbyChain(
               props.ethTokens,
-              props.convertTokens
+              props.cantoTokens,
+              props.nativeTokens
             )}
             onClose={() => {
               setIsOpen(false);

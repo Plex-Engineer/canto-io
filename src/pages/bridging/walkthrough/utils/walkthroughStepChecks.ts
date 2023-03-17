@@ -1,10 +1,8 @@
 import { TransactionState } from "@usedapp/core";
 import { BigNumber } from "ethers";
 import {
-  BaseToken,
   BridgeOutNetworks,
-  UserBridgeInToken,
-  UserConvertToken,
+  UserERC20BridgeToken,
   UserNativeToken,
 } from "pages/bridging/config/interfaces";
 import { TransactionHistoryEvent } from "pages/bridging/utils/bridgeTxHistory";
@@ -18,7 +16,7 @@ import {
 export function didPassBridgeOutWalkthroughCheck(
   currentStep: BridgeOutStep,
   chainId: number,
-  convertToken: BaseToken,
+  convertToken: UserERC20BridgeToken,
   convertOutAmount: BigNumber,
   maxConvertOutAmount: BigNumber,
   convertTxState: TransactionState,
@@ -58,12 +56,12 @@ export function didPassBridgeOutWalkthroughCheck(
 export function didPassBridgeInWalkthroughCheck(
   currentStep: BridgeInStep,
   chainId: number,
-  ethGToken: UserBridgeInToken,
+  ethGToken: UserERC20BridgeToken,
   bridgeInAmount: BigNumber,
   maxBridgeInAmount: BigNumber,
   bridgeInTxHash: string | undefined,
   completedBridgeInTxs: TransactionHistoryEvent[],
-  convertToken: UserConvertToken,
+  convertToken: UserNativeToken,
   convertTxState: TransactionState
 ): boolean {
   const currentCheckFunction =
