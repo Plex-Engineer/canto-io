@@ -1,9 +1,9 @@
+import { formatUnits } from "ethers/lib/utils";
+import { CONVERT_COIN_TOKENS } from "pages/bridging/config/bridgingTokens";
 import {
   UserERC20BridgeToken,
   UserNativeToken,
-} from "./../../config/interfaces";
-import { formatUnits } from "ethers/lib/utils";
-import { CONVERT_COIN_TOKENS } from "pages/bridging/config/bridgingTokens";
+} from "pages/bridging/config/interfaces";
 
 interface TokenTableProps {
   name: string;
@@ -21,6 +21,10 @@ export function formatTokensAmountsbyChain(
     const ethBalance = ethToken
       ? formatUnits(ethToken.erc20Balance, ethToken.decimals)
       : "-1";
+    const nativeToken = nativeTokens.find((cTok) => cTok.name == token.name);
+    const bridgeBalance = nativeToken
+      ? formatUnits(nativeToken.nativeBalance, nativeToken.decimals)
+      : "0.0";
     const nativeToken = nativeTokens.find((cTok) => cTok.name == token.name);
     const bridgeBalance = nativeToken
       ? formatUnits(nativeToken.nativeBalance, nativeToken.decimals)

@@ -1,9 +1,5 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
-import {
-  UserBridgeInToken,
-  UserConvertToken,
-} from "pages/bridging/config/interfaces";
 import { useNavigate } from "react-router-dom";
 import BaseStyled from "../layout";
 import TextSwitch from "../TextSwitch";
@@ -17,8 +13,6 @@ interface IntroPageProps {
   onNext: () => void;
   canBridgeIn: boolean;
   canBridgeOut: boolean;
-  ethTokens: UserBridgeInToken[];
-  convertTokens: UserConvertToken[];
 }
 const IntroPage = (props: IntroPageProps) => {
   const navigate = useNavigate();

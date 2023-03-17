@@ -1,5 +1,4 @@
 import { formatUnits } from "ethers/lib/utils";
-import { chain, convertFee, ibcFee, memo } from "global/config/cosmosConstants";
 import { CantoMainnet } from "global/config/networks";
 import { switchNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import BarIndicator from "../components/barIndicator";
@@ -11,15 +10,14 @@ import SwitchNetworkPage from "../components/pages/switchNetwork";
 import { BridgeTransaction } from "pages/bridging/hooks/useBridgingTransactions";
 import { BridgeOutStep } from "../config/interfaces";
 import {
-  BaseToken,
   BridgeOutNetworkInfo,
   BridgeOutNetworks,
-  UserConvertToken,
+  UserERC20BridgeToken,
   UserNativeToken,
 } from "pages/bridging/config/interfaces";
-import { SelectedTokens } from "pages/bridging/stores/bridgeTokenStore";
 import { convertStringToBigNumber } from "pages/bridging/utils/utils";
 import SelectBridgeOutNetwork from "../components/pages/selectBridgeOutNetwork";
+import { WalkthroughSelectedTokens } from "../store/customUseWalkthrough";
 
 interface BridgeOutManagerProps {
   networkInfo: {
@@ -47,11 +45,11 @@ interface BridgeOutManagerProps {
   canGoBack: boolean;
   onPrev: () => void;
   onNext: () => void;
-  currentConvertToken: UserConvertToken;
-  convertTokens: UserConvertToken[];
+  currentConvertToken: UserERC20BridgeToken;
+  convertTokens: UserERC20BridgeToken[];
   currentBridgeOutToken: UserNativeToken;
   bridgeOutTokens: UserNativeToken[];
-  setToken: (token: BaseToken, type: SelectedTokens) => void;
+  setToken: (token: string, type: WalkthroughSelectedTokens) => void;
   restartWalkthrough: () => void;
 }
 export const BridgeOutManager = (props: BridgeOutManagerProps) => {
@@ -74,8 +72,10 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           bridgeType="OUT"
           tokenList={props.convertTokens}
           activeToken={props.currentConvertToken}
-          tokenBalance="erc20Balance"
-          onSelect={(token) => props.setToken(token, SelectedTokens.CONVERTOUT)}
+          balanceString="erc20Balance"
+          onSelect={(token) =>
+            props.setToken(token.address, WalkthroughSelectedTokens.CONVERT_OUT)
+          }
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}
@@ -140,10 +140,10 @@ export const BridgeOutManager = (props: BridgeOutManagerProps) => {
           bridgeType="OUT"
           tokenList={props.bridgeOutTokens}
           activeToken={props.currentBridgeOutToken}
-          tokenBalance="nativeBalance"
-          onSelect={(token) => {
-            return;
-          }}
+          balanceString="nativeBalance"
+          onSelect={(token) =>
+            props.setToken(token.address, WalkthroughSelectedTokens.BRIDGE_OUT)
+          }
           canContinue={props.canContinue}
           onNext={props.onNext}
           onPrev={props.onPrev}

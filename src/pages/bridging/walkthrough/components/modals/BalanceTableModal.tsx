@@ -3,14 +3,14 @@ import { StyledPopup } from "global/components/Styled";
 import { Text } from "global/packages/src";
 import Tooltip from "global/packages/src/components/molecules/Tooltip";
 import { useState } from "react";
-import {
-  UserBridgeInToken,
-  UserERC20BridgeToken,
-  UserNativeToken,
-} from "pages/bridging/config/interfaces";
+
 import TokenTable from "./tokenTable";
 import { formatTokensAmountsbyChain } from "../../utils/utils";
 import Modal from "global/packages/src/components/molecules/Modal";
+import {
+  UserERC20BridgeToken,
+  UserNativeToken,
+} from "pages/bridging/config/interfaces";
 
 interface Props {
   ethTokens: UserERC20BridgeToken[];

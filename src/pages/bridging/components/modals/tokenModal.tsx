@@ -1,11 +1,13 @@
 import styled from "@emotion/styled";
+import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
-import { UserERC20BridgeToken } from "pages/bridging/config/interfaces";
+import { BaseToken } from "pages/bridging/config/interfaces";
 
 interface Props {
-  onClose: (value?: UserERC20BridgeToken) => void;
-  tokens: UserERC20BridgeToken[] | undefined;
+  onClose: (value?: BaseToken) => void;
+  tokens: BaseToken[] | undefined;
+  balanceString: string;
 }
 
 const TokenModal = (props: Props) => {
@@ -13,7 +15,10 @@ const TokenModal = (props: Props) => {
     <Styled>
       <div className="token-list">
         {props.tokens
-          ?.sort((a, b) => (b.erc20Balance.gt(a.erc20Balance) ? 1 : -1))
+          ?.sort(
+            (a, b) =>
+              Number(b[props.balanceString]) - Number(a[props.balanceString])
+          )
           .map((token) => (
             <div
               role="button"
@@ -29,9 +34,14 @@ const TokenModal = (props: Props) => {
                 <p>{token.name}</p>
               </span>
               <p className="balance">
-                {truncateNumber(
-                  formatUnits(token.erc20Balance, token.decimals)
-                )}
+                {props.balanceString
+                  ? truncateNumber(
+                      formatUnits(
+                        BigNumber.from(token[props.balanceString]),
+                        token.decimals
+                      )
+                    )
+                  : ""}
               </p>
             </div>
           ))}

@@ -11,7 +11,7 @@ interface BridgeInProps {
   cantoAddress?: string;
   ethGBridgeTokens: UserERC20BridgeToken[];
   selectedEthToken: UserERC20BridgeToken;
-  selectEthToken: (token: UserERC20BridgeToken) => void;
+  selectEthToken: (tokenAddress: string) => void;
   step2Transactions: NativeTransaction[];
 }
 const BridgeIn = (props: BridgeInProps) => {

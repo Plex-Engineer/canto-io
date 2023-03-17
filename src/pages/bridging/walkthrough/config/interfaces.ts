@@ -4,8 +4,7 @@ import { CantoMainnet, ETHMainnet } from "global/config/networks";
 import { ALL_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
 import {
   BridgeOutNetworks,
-  UserBridgeInToken,
-  UserConvertToken,
+  UserERC20BridgeToken,
   UserNativeToken,
 } from "pages/bridging/config/interfaces";
 import { TransactionHistoryEvent } from "pages/bridging/utils/bridgeTxHistory";
@@ -56,13 +55,13 @@ export const BridgeInWalkthroughSteps: WalkthroughTracker = {
     isCheckpoint: false,
     prev: BridgeInStep.SWTICH_TO_ETH,
     next: BridgeInStep.NEED_ALLOWANCE,
-    checkFunction: (token: UserBridgeInToken) => !token.erc20Balance.lte(0),
+    checkFunction: (token: UserERC20BridgeToken) => !token.erc20Balance.lte(0),
   },
   [BridgeInStep.NEED_ALLOWANCE]: {
     isCheckpoint: false,
     prev: BridgeInStep.SELECT_ERC20_TOKEN,
     next: BridgeInStep.SELECT_ERC20_AMOUNT,
-    checkFunction: (token: UserBridgeInToken, max: BigNumber) =>
+    checkFunction: (token: UserERC20BridgeToken, max: BigNumber) =>
       !token.allowance.lte(max),
   },
   [BridgeInStep.SELECT_ERC20_AMOUNT]: {
@@ -104,7 +103,7 @@ export const BridgeInWalkthroughSteps: WalkthroughTracker = {
     isCheckpoint: false,
     prev: BridgeInStep.SWITCH_TO_CANTO,
     next: BridgeInStep.CONVERT,
-    checkFunction: (token: UserConvertToken) => !token.nativeBalance.lte(0),
+    checkFunction: (token: UserNativeToken) => !token.nativeBalance.lte(0),
   },
   //   [BridgeInStep.SELECT_CONVERT_TOKEN_AMOUNT]: {
   //     isCheckpoint: false,
@@ -139,7 +138,7 @@ export const BridgeOutWalkthroughSteps: WalkthroughTracker = {
     isCheckpoint: false,
     prev: BridgeOutStep.SWITCH_TO_CANTO,
     next: BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT,
-    checkFunction: (token: UserConvertToken) => !token.erc20Balance.lte(0),
+    checkFunction: (token: UserERC20BridgeToken) => !token.erc20Balance.lte(0),
   },
   [BridgeOutStep.SELECT_CONVERT_TOKEN_AMOUNT]: {
     isCheckpoint: false,

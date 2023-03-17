@@ -49,15 +49,6 @@ export interface UserNativeToken extends NativeToken {
   nativeBalance: BigNumber;
 }
 
-//THESE TYPES ARE ONLY USED IN THE WALKTHROUGH
-export interface UserERC20Token extends BaseToken {
-  erc20Balance: BigNumber;
-}
-export interface UserConvertToken extends UserNativeToken, UserERC20Token {}
-export interface UserBridgeInToken extends UserERC20Token {
-  allowance: BigNumber;
-}
-
 //Empty token data for initialization
 const EMPTY_TOKEN: Token = {
   isERC20: false,
@@ -72,6 +63,13 @@ export const EMPTY_ERC20_BRIDGE_TOKEN: UserERC20BridgeToken = {
   ...EMPTY_TOKEN,
   erc20Balance: BigNumber.from(0),
   allowance: BigNumber.from(ethers.constants.MaxUint256),
+};
+export const EMPTY_NATIVE_TOKEN: UserNativeToken = {
+  ...EMPTY_TOKEN,
+  ibcDenom: "",
+  nativeName: "",
+  supportedOutChannels: [],
+  nativeBalance: BigNumber.from(0),
 };
 
 /**
