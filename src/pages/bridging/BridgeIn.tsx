@@ -21,6 +21,7 @@ const BridgeIn = (props: BridgeInProps) => {
     selectedToken.symbol !== "choose token" &&
     (selectedToken.allowance.lt(selectedToken.erc20Balance) ||
       selectedToken.allowance.isZero());
+
   return (
     <BridgeStyled>
       <div className="left">
