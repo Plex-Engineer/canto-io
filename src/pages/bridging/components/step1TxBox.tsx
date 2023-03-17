@@ -183,7 +183,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           />
         </div>
         <div className="amount">
-          <Text
+          {/* <Text
             style={{
               color: "#848484",
               width: "180px",
@@ -191,19 +191,22 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             }}
           >
             amount :
-          </Text>
+          </Text> */}
           <CInput
             style={{
               backgroundColor: "transparent",
               width: "100%",
               height: "54px",
             }}
-            placeholder="0.00"
+            placeholder={`amount :  ${truncateNumber(
+              formatUnits(currentTokenBalance, props.selectedToken.decimals),
+              6
+            )} `}
             value={amount}
             onChange={(val) => {
               setAmount(val.target.value);
             }}
-          ></CInput>
+          />
           <button
             className="maxBtn"
             onClick={() => {
