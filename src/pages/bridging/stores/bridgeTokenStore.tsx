@@ -48,7 +48,7 @@ export const useBridgeTokenStore = create<TokenStore>()(
         },
       }),
       {
-        name: "bridge-token-store",
+        name: "bridge-token-select-store",
         // getStorage: () => localStorage,
         serialize: (state) => JSON.stringify(state),
       }

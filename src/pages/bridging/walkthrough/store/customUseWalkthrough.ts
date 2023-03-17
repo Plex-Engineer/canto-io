@@ -1,5 +1,4 @@
 import { useEtherBalance } from "@usedapp/core";
-import { BigNumber } from "ethers";
 import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
 import { ADDRESSES } from "global/config/addresses";
 import { useNetworkInfo } from "global/stores/networkInfo";
