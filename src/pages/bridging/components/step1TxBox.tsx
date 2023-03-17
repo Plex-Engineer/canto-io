@@ -221,30 +221,28 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           </button>
         </div>
       </div>
-      {buttonDisabled &&
-        convertStringToBigNumber(amount, props.selectedToken.decimals).gt(
-          currentTokenBalance
-        ) && (
-          <Text
-            type="text"
-            size="text4"
-            align="center"
-            style={{ paddingTop: "10px", color: "red" }}
-          >
-            {`you have exceeded the maximum amount! (current balance: ${truncateNumber(
-              formatUnits(currentTokenBalance, props.selectedToken.decimals)
-            )})`}
-          </Text>
-        )}
+      <Text
+        type="text"
+        size="text4"
+        align="center"
+        className="warning"
+        style={{ color: "#ff4141" }}
+      >
+        {buttonDisabled &&
+          convertStringToBigNumber(amount, props.selectedToken.decimals).gt(
+            currentTokenBalance
+          ) &&
+          `you have exceeded the maximum amount! (current balance: ${truncateNumber(
+            formatUnits(currentTokenBalance, props.selectedToken.decimals)
+          )})`}
+      </Text>
+
       <PrimaryButton
         height="big"
         weight="bold"
         padding="lg"
         filled
         disabled={buttonDisabled}
-        style={{
-          marginTop: "1rem",
-        }}
         onClick={() => {
           setModalOpen(true);
         }}
@@ -261,6 +259,7 @@ const Styled = styled.div`
   border-radius: 4px;
   width: 600px;
   padding: 1rem 2rem;
+  position: relative;
 
   .maxBtn {
     height: 100%;
@@ -280,6 +279,16 @@ const Styled = styled.div`
     p {
       color: #999;
     }
+  }
+
+  .warning {
+    /* position: absolute;
+    bottom: 5rem;
+    left: 50%; */
+    width: 100%;
+    height: 14px;
+    margin: 8px;
+    /* transform: translateX(-50%); */
   }
   .icons-indicator {
     height: 140px;
