@@ -3,8 +3,7 @@ import { PrimaryButton, Text } from "global/packages/src";
 import ethIcon from "assets/icons/ETH.svg";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
 import cantoIcon from "assets/icons/canto-evm.svg";
-import CopyIcon from "../../../assets/copy.svg";
-import arrow from "../../../assets/next.svg";
+import CopyIcon from "assets/copy.svg";
 import { UserERC20BridgeToken } from "../config/interfaces";
 import LoadingBlip from "./LoadingBlip";
 import { truncateNumber } from "global/utils/utils";
@@ -101,7 +100,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         send funds {props.bridgeIn ? "to" : "from"} canto
       </Text>
       <div className="icons-indicator">
-        <div className="center">
+        <div className="center-element">
           <img
             src={props.bridgeIn ? ethIcon : cantoIcon}
             alt={props.bridgeIn ? "ethereum" : "canto"}
@@ -109,22 +108,71 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             style={{ marginBottom: "10px" }}
           />
           <Text type="title">{props.bridgeIn ? "Ethereum" : "Canto"}</Text>
+          <CopyToClipboard text={props.fromAddress ?? ""} onCopy={copyAddress}>
+            <Text
+              type="text"
+              color="primary"
+              align="left"
+              size="text4"
+              style={{ cursor: "pointer", color: "#717171" }}
+            >
+              {props.fromAddress
+                ? props.fromAddress.slice(0, 5) +
+                  "..." +
+                  props.fromAddress.slice(-4)
+                : "retrieving wallet"}
+              <img
+                src={CopyIcon}
+                style={{
+                  height: "18px",
+                  position: "relative",
+                  top: "5px",
+                  left: "4px",
+                }}
+              />
+            </Text>
+          </CopyToClipboard>
         </div>
         <div className="loading">
           <LoadingBlip active />
         </div>
-        <div className="center">
+        <div className="center-element">
           <img
-            src={bridgeIcon}
-            alt={"canto (Bridge)"}
+            src={props.bridgeIn ? cantoIcon : bridgeIcon}
+            alt={props.bridgeIn ? "canto" : "bridge"}
             height={42}
             style={{ marginBottom: "10px" }}
           />
-          <Text type="title">Bridge</Text>
+          <Text type="title">{props.bridgeIn ? "Canto" : "Bridge"}</Text>
+          <CopyToClipboard text={props.toAddress ?? ""} onCopy={copyAddress}>
+            <Text
+              type="text"
+              color="primary"
+              align="right"
+              size="text4"
+              style={{ cursor: "pointer", color: "#717171" }}
+            >
+              {props.toAddress
+                ? props.toAddress.slice(0, 5) +
+                  "..." +
+                  props.toAddress.slice(-4)
+                : "retrieving wallet"}{" "}
+              <img
+                src={CopyIcon}
+                style={{
+                  height: "18px",
+                  marginLeft: "-6px",
+                  position: "relative",
+                  top: "5px",
+                }}
+              />
+            </Text>
+          </CopyToClipboard>
         </div>
       </div>
-      <div className="token-box">
-        <div className="token-select">
+
+      <div className="amount-box">
+        <div className="token-box">
           <TokenWallet
             tokens={props.tokens}
             activeToken={props.selectedToken}
@@ -133,26 +181,12 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             }}
           />
         </div>
-        <div className="balance">
-          <Text
-            style={{
-              color: "#888",
-            }}
-            align="right"
-          >
-            balance :{" "}
-            {truncateNumber(
-              formatUnits(currentTokenBalance, props.selectedToken.decimals)
-            )}
-          </Text>
-        </div>
-      </div>
-      <div className="amount-box">
         <div className="amount">
           <Text
             style={{
               color: "#848484",
               width: "180px",
+              marginLeft: "6px",
             }}
           >
             amount :
@@ -186,81 +220,22 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             <Text>max</Text>
           </button>
         </div>
-        <PrimaryButton
-          height="big"
-          weight="bold"
-          padding="lg"
-          disabled={buttonDisabled}
-          style={{
-            width: "14rem",
-          }}
-          onClick={() => {
-            setModalOpen(true);
-          }}
-        >
-          {buttonText}
-        </PrimaryButton>
       </div>
-      <div className="address-nodes">
-        <div className="row">
-          <CopyToClipboard text={props.fromAddress ?? ""} onCopy={copyAddress}>
-            <Text
-              type="text"
-              color="primary"
-              align="left"
-              size="text3"
-              style={{ cursor: "pointer" }}
-            >
-              {props.fromAddress
-                ? props.fromAddress.slice(0, 5) +
-                  "..." +
-                  props.fromAddress.slice(-4)
-                : "retrieving wallet"}
-              <img
-                src={CopyIcon}
-                style={{
-                  height: "22px",
-                  position: "relative",
-                  top: "5px",
-                  left: "4px",
-                }}
-              />
-            </Text>
-          </CopyToClipboard>
-          <img
-            style={{
-              flex: "0",
-            }}
-            src={arrow}
-            alt="right arrow"
-            height={12}
-          />
-          <CopyToClipboard text={props.toAddress ?? ""} onCopy={copyAddress}>
-            <Text
-              type="text"
-              color="primary"
-              align="right"
-              size="text3"
-              style={{ cursor: "pointer" }}
-            >
-              {props.toAddress
-                ? props.toAddress.slice(0, 5) +
-                  "..." +
-                  props.toAddress.slice(-4)
-                : "retrieving wallet"}{" "}
-              <img
-                src={CopyIcon}
-                style={{
-                  height: "22px",
-                  marginLeft: "-6px",
-                  position: "relative",
-                  top: "5px",
-                }}
-              />
-            </Text>
-          </CopyToClipboard>
-        </div>
-      </div>
+      <PrimaryButton
+        height="big"
+        weight="bold"
+        padding="lg"
+        filled
+        disabled={buttonDisabled}
+        style={{
+          marginTop: "1rem",
+        }}
+        onClick={() => {
+          setModalOpen(true);
+        }}
+      >
+        {buttonText}
+      </PrimaryButton>
     </Styled>
   );
 };
@@ -274,17 +249,25 @@ const Styled = styled.div`
 
   .maxBtn {
     height: 100%;
-    width: 6rem;
+    width: 7rem;
     margin-left: 3px;
-    background-color: #333;
+    background-color: #252525;
+
     border: none;
     &:hover {
-      background-color: #252525;
+      background-color: #333;
       cursor: pointer;
+      p {
+        color: white;
+      }
+    }
+
+    p {
+      color: #999;
     }
   }
   .icons-indicator {
-    height: 120px;
+    height: 140px;
     width: 100%;
     border: 1px solid #252525;
     border-radius: 4px;
@@ -292,9 +275,17 @@ const Styled = styled.div`
     display: flex;
     justify-content: space-around;
     align-items: center;
+
+    /* .loading {
+      display: flex;
+      height: 5rem;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    } */
   }
 
-  .center {
+  .center-element {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -302,38 +293,36 @@ const Styled = styled.div`
     width: 100%;
   }
 
-  .token-select {
-    width: 100%;
-    height: 100%;
-  }
-
   .balance {
     width: 70%;
     opacity: 0.4;
   }
   .token-box {
-    height: 60px;
+    height: 58px;
     width: 100%;
     border: 1px solid #252525;
     border-radius: 4px;
-    margin: 1rem 0;
     display: flex;
-    padding: 0 1rem;
     justify-content: space-between;
     align-items: center;
   }
+
+  .address-nodes {
+    width: 100%;
+  }
   .amount-box {
     display: flex;
-    gap: 18px;
+    gap: 1rem;
   }
   .amount {
-    height: 56px;
-    width: 100%;
+    height: 58px;
     background: #060606;
     border: 1px solid #2e2d2d;
     border-radius: 4px;
     display: flex;
     align-items: center;
+    min-width: 18rem;
+    width: 100%;
   }
 
   .row {

@@ -17,7 +17,7 @@ const QBoxList = ({ QA, title }: Props) => {
       <div
         style={{
           width: "100%",
-          padding: "4rem 1rem 0",
+          paddingTop: "1rem",
         }}
       >
         <Text type="title" align="left">
@@ -34,9 +34,11 @@ const QBoxList = ({ QA, title }: Props) => {
 const Styled = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: calc(100% - 2rem);
   justify-self: flex-start;
   align-items: center;
+  justify-content: center;
+  margin: 0 auto;
   gap: 1rem;
   /* height: 100%; */
 

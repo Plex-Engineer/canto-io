@@ -24,6 +24,12 @@ const BridgeIn = (props: BridgeInProps) => {
   return (
     <BridgeStyled>
       <div className="left">
+        <div
+          className="spacer"
+          style={{
+            marginTop: "3rem",
+          }}
+        ></div>
         <QBoxList
           title="instructions"
           QA={[
