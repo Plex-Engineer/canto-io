@@ -136,7 +136,10 @@ export const BridgeStyled = styled.div`
   & > * {
     width: 100%;
   }
-
+  .left {
+    height: calc(100% - 1rem);
+    overflow-y: auto;
+  }
   .center {
     display: flex;
     flex-direction: column;
