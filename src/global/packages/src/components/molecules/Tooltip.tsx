@@ -25,7 +25,7 @@ export declare type PopupPosition =
   | "center center";
 
 const Tooltip = (props: Props) => {
-  const [isDone, setIsDone] = useState(false);
+  const [isDone, setIsDone] = useState(!props.autoShow);
   useEffect(() => {
     if (props.autoShow) {
       setTimeout(() => {
