@@ -31,7 +31,8 @@ import { useBridgeEthToCantoInfo } from "./hooks/customBridgeInInfo";
 import { useCustomConvertInfo } from "./hooks/customConvertInfo";
 import { useBridgeInChecklistSetter } from "./hooks/useBridgeInChecklistSetter";
 import { useNavigate } from "react-router-dom";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
+import { setSafeConnector } from "global/components/cantoNav";
 
 interface BridgeInProps {
   userEthTokens: UserGravityBridgeTokens[];
@@ -78,7 +79,10 @@ const BridgeIn = (props: BridgeInProps) => {
     convertDisabled
   );
   const navigate = useNavigate();
-
+  const [inSafe, setInSafe]= useState(false);
+  setSafeConnector().then((value)=>{
+    setInSafe(value);
+  })
   return (
     <FadeIn wrapperTag={BridgeStyled}>
       <div className="title">
@@ -188,7 +192,7 @@ const BridgeIn = (props: BridgeInProps) => {
           }}
           networkName="ethereum"
           onSwitch={() => {
-            activateBrowserWallet();
+            inSafe? activateBrowserWallet({ type: "safe" }) : activateBrowserWallet({ type: "metamask" })
             switchNetwork(1);
           }}
           connected={1 == Number(chainId)}
@@ -238,7 +242,7 @@ const BridgeIn = (props: BridgeInProps) => {
           amount={convertAmount}
           onChange={(amount: string) => setConvertAmount(amount)}
           onSwitch={() => {
-            activateBrowserWallet();
+            inSafe? activateBrowserWallet({ type: "safe" }) : activateBrowserWallet({ type: "metamask" })
             addNetwork();
           }}
           convertButtonText={convertButtonText}

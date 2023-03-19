@@ -6,6 +6,8 @@ import tally from "assets/wallets/tally.svg";
 import coinBase from "assets/wallets/coinbase.svg";
 import ledger from "assets/wallets/ledger.svg";
 import { useEthers } from "@usedapp/core";
+import { useState } from "react";
+import { setSafeConnector } from "global/components/cantoNav";
 
 const Container = styled.div`
   display: flex;
@@ -102,7 +104,10 @@ interface IProps {
 const WalletModal = ({ onClose }: IProps) => {
   const { account, activateBrowserWallet, isLoading } = useEthers();
   const isConnected = account !== undefined;
-
+  const [inSafe, setInSafe]= useState(false);
+  setSafeConnector().then((value)=>{
+    setInSafe(value);
+  })
   if (isConnected) {
     onClose();
   }
@@ -135,7 +140,7 @@ const WalletModal = ({ onClose }: IProps) => {
           <div
             className="wallet-item"
             onClick={() => {
-              activateBrowserWallet();
+              inSafe? activateBrowserWallet({ type: "safe" }) : activateBrowserWallet({ type: "metamask" })
               //TODO: fix on cancel go back
             }}
           >

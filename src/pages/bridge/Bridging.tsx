@@ -15,11 +15,13 @@ import { StyledPopup } from "global/components/Styled";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { useCustomBridgeInfo } from "./hooks/useCustomBridgeInfo";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { setSafeConnector } from "global/components/cantoNav";
 
 const BridgingPage = () => {
   //all stores needed
+  const [inSafe, setInSafe]= useState(false);
   const bridgeTxStore = useBridgeTxStore();
   const navigate = useNavigate();
   const transactionStore = useBridgeTransactionPageStore();
@@ -35,7 +37,9 @@ const BridgingPage = () => {
     setSelectedToken,
     bridgeInUserStatus,
   } = useCustomBridgeInfo();
-
+  setSafeConnector().then((value)=>{
+    setInSafe(value);
+  })
   const notConnectedTabs = () => {
     const tabs = [];
     for (let i = 0; i < 3; i++) {
@@ -47,7 +51,7 @@ const BridgingPage = () => {
             buttonText="connect wallet"
             bgFilled
             onClick={() => {
-              activateBrowserWallet();
+              inSafe? activateBrowserWallet({ type: "safe" }) : activateBrowserWallet({ type: "metamask" })
               addNetwork();
             }}
             icon={walletIcon}

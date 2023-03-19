@@ -39,6 +39,8 @@ import { BridgeOutChecklistFunctionTracker } from "./config/transactionChecklist
 import { useCustomConvertInfo } from "./hooks/customConvertInfo";
 import { useBridgeOutChecklistSetter } from "./hooks/useBridgeOutChecklistSetter";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { setSafeConnector } from "global/components/cantoNav";
 
 interface BridgeOutProps {
   userConvertERC20Tokens: UserConvertToken[];
@@ -79,6 +81,10 @@ const BridgeOut = (props: BridgeOutProps) => {
       convertDisabled
     );
   const navigate = useNavigate();
+  const [inSafe, setInSafe]= useState(false);
+  setSafeConnector().then((value)=>{
+    setInSafe(value);
+  })
   return (
     <FadeIn wrapperTag={BridgeStyled}>
       <ClosedCheckbox
@@ -177,7 +183,7 @@ const BridgeOut = (props: BridgeOutProps) => {
           amount={convertAmount}
           onChange={(amount: string) => setConvertAmount(amount)}
           onSwitch={() => {
-            activateBrowserWallet();
+            inSafe? activateBrowserWallet({ type: "safe" }) : activateBrowserWallet({ type: "metamask" })
             addNetwork();
           }}
           convertButtonText={convertButtonText}
@@ -217,7 +223,7 @@ const BridgeOut = (props: BridgeOutProps) => {
           }}
           networkName="canto"
           onSwitch={() => {
-            activateBrowserWallet();
+            inSafe? activateBrowserWallet({ type: "safe" }) : activateBrowserWallet({ type: "metamask" })
             addNetwork();
           }}
           connected={CantoMainnet.chainId == Number(chainId)}

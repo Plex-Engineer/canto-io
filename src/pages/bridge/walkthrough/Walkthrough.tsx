@@ -15,10 +15,12 @@ import walletIcon from "assets/wallet.svg";
 import warningIcon from "assets/warning.svg";
 import { useNavigate } from "react-router-dom";
 import BalanceTableModal from "./components/BalanceTableModal";
+import { setSafeConnector } from "global/components/cantoNav";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
   const { active: isConnected, activateBrowserWallet } = useEthers();
+  const [inSafe, setInSafe]= useState(false);
   const navigate = useNavigate();
   const {
     canSkip,
@@ -72,6 +74,9 @@ const Walkthrough = () => {
 
   const hasFunds = canBridgeIn || canBridgeOut;
 
+  setSafeConnector().then((value)=>{
+    setInSafe(value);
+  })
   if (!isConnected) {
     return (
       <Styled>
@@ -80,7 +85,7 @@ const Walkthrough = () => {
           title="Wallet is not connected"
           subtext="to use the bridge guide you need to connect a wallet through metamask"
           icon={walletIcon}
-          onClick={activateBrowserWallet}
+          onClick={()=>{inSafe? activateBrowserWallet({ type: "safe" }) : activateBrowserWallet({ type: "metamask" })}}
         />
       </Styled>
     );
