@@ -1,4 +1,5 @@
 import { BigNumber, Contract, ethers } from "ethers";
+import { _toEscapedUtf8String } from "ethers/lib/utils";
 import { gravityBridgeAbi } from "global/config/abi";
 import { ADDRESSES } from "global/config/addresses";
 import { CantoMainnet, ETHMainnet } from "global/config/networks";
@@ -161,7 +162,9 @@ async function getIBCTxs(ibcIn: boolean, cantoAccount?: string) {
     )
   ).json();
 }
-function parseFungibleTokenPacket(event: IBCEvent) {
+function parseFungibleTokenPacket(
+  event: IBCEvent
+): [string, string, string, string, boolean] {
   const denom =
     event.attributes.find((att: Attribute) => att.key === "denom")?.value ?? "";
   const amount =
@@ -174,9 +177,22 @@ function parseFungibleTokenPacket(event: IBCEvent) {
   const receiver =
     event.attributes.find((att: Attribute) => att.key === "receiver")?.value ??
     "";
+  //success is returned differently depending on the event type
+  const successObject = event.attributes.find(
+    (att: Attribute) => att.key === "success"
+  );
+
+  //might be an escape character in the success string
   const success =
-    event.attributes.find((att: Attribute) => att.key === "success")?.value ??
-    "";
+    (successObject?.value == "true" ||
+      (successObject &&
+        successObject?.value.length == 1 &&
+        Number(
+          JSON.parse(JSON.stringify(successObject ?? "").replace(/\\u/g, ""))
+            .value
+        ) == 1)) ??
+    false;
+
   return [denom, amount, sender, receiver, success];
 }
 
@@ -196,7 +212,7 @@ async function getIBCInTransactions(
         const token = findNativeToken(denom);
         const doNotShow =
           !token || ["USDC", "USDT", "WETH"].includes(token.symbol);
-        if (receiver == cantoAccount && success == "true" && !doNotShow) {
+        if (receiver == cantoAccount && success && !doNotShow) {
           ibcInHistory.push({
             bridgeType: "in",
             token: token,
@@ -239,8 +255,8 @@ export async function getIBCOutTransactions(
         if (
           type == "transfer" &&
           bridgeOutNetworks.includes(channel) &&
-          sender == cantoAccount
-          // success == "true"
+          sender == cantoAccount &&
+          success
         ) {
           const token = findNativeToken(tokenDenom);
           bridgeOutData.push({
