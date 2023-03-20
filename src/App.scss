@@ -50,16 +50,16 @@ input[type="number"] {
   color: black;
   background: var(--primary-color);
 }
-::-webkit-scrollbar {
-  width: 3px;
-  height: 6px;
-}
-
-// ::-webkit-scrollbar:hover {
-//   width: 6px;
+// ::-webkit-scrollbar {
+//   width: 3px;
 //   height: 6px;
 // }
-// /* Track */
+
+::-webkit-scrollbar:hover {
+  width: 6px;
+  height: 6px;
+}
+/* Track */
 ::-webkit-scrollbar-track {
   background: #151515;
 }
@@ -71,7 +71,7 @@ input[type="number"] {
   background: #07e48c;
 }
 
-// /* Handle on hover */
+/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #07e48c;
 }
@@ -94,6 +94,11 @@ input[type="number"] {
     flex-direction: column;
     flex-grow: 2;
   }
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @keyframes fadeIn {

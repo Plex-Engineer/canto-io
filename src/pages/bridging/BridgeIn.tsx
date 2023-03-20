@@ -136,7 +136,14 @@ export const BridgeStyled = styled.div`
   & > * {
     width: 100%;
   }
-
+  .left {
+    height: calc(100% - 1rem);
+    overflow-y: auto;
+    ::-webkit-scrollbar {
+      width: 3px;
+      height: 6px;
+    }
+  }
   .center {
     display: flex;
     flex-direction: column;
