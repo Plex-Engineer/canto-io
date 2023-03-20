@@ -55,7 +55,7 @@ const TokenTable = ({ tokens, onClose }: Props) => {
             borderColor: "#333",
           }}
         >
-          bridge
+          queued
         </Text>{" "}
         <Text
           type="text"
@@ -101,7 +101,7 @@ const TokenTable = ({ tokens, onClose }: Props) => {
               marginTop: "2rem",
             }}
           >
-            Native Tokens
+            Cosmos Tokens
           </Text>
           <div
             className="table"
