@@ -42,7 +42,7 @@ const Styled = styled.div<{ height: number; expanded: boolean }>`
   padding: 1rem;
   transition: max-height 0.5s;
   max-height: ${({ height, expanded }) =>
-    expanded ? "18rem" : height + 31 + "px"};
+    expanded ? "19rem" : height + 31 + "px"};
   overflow-y: hidden;
   padding: ${({ expanded }) => (expanded ? "1rem" : "16px")};
   &:hover {
