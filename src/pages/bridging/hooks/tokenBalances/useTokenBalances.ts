@@ -2,6 +2,7 @@ import { CallResult, useCalls } from "@usedapp/core";
 import { BigNumber, Contract, ethers } from "ethers";
 import { ERC20Abi } from "global/config/abi";
 import { Token } from "global/config/tokenInfo";
+import { checkMultiCallForUndefined } from "global/utils/utils";
 import { UserERC20BridgeToken } from "pages/bridging/config/interfaces";
 
 export function useTokenBalances(
@@ -57,22 +58,22 @@ export function useTokenBalances(
   };
   if (
     chuckSize > 0 &&
-    results?.[0] != undefined &&
-    !results?.[0].error &&
+    checkMultiCallForUndefined(results) &&
     account != undefined
   ) {
     processedTokens = array_chunks(results, chuckSize);
     const userTokens = processedTokens.map((tokenData, idx) => {
+      //must perform a safety check to make sure we are not trying to index undefined values
       if (needAllowance) {
         return {
           ...tokens[idx],
-          erc20Balance: tokenData[0][0],
-          allowance: tokenData[1][0],
+          erc20Balance: tokenData[0][0] ?? BigNumber.from(0),
+          allowance: tokenData[1][0] ?? BigNumber.from(0),
         };
       } else {
         return {
           ...tokens[idx],
-          erc20Balance: tokenData[0][0],
+          erc20Balance: tokenData[0][0] ?? BigNumber.from(0),
           allowance: BigNumber.from(ethers.constants.MaxUint256),
         };
       }

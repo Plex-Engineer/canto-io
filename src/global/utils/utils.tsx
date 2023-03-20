@@ -1,4 +1,5 @@
-import { BigNumber } from "ethers";
+import { CallResult } from "@usedapp/core";
+import { BigNumber, Contract } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import {
   CantoTransactionType,
@@ -270,3 +271,15 @@ export const transactionStatusActions = (
       };
   }
 };
+
+//check to make sure that the multicall values are accetable
+export function checkMultiCallForUndefined(
+  results: CallResult<Contract, string>[]
+) {
+  for (const result of results) {
+    if (!result || !result?.value || result?.error) {
+      return false;
+    }
+  }
+  return true;
+}

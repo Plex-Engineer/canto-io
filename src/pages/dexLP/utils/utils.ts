@@ -4,9 +4,12 @@ import { truncateNumber } from "global/utils/utils";
 
 //ratio that returns is scaled to 1e18 for accuracy
 export function getLPPairRatio(
-  reserveA: BigNumber,
-  reserveB: BigNumber
+  reserveA?: BigNumber,
+  reserveB?: BigNumber
 ): [BigNumber, boolean] {
+  if (!reserveA || !reserveB) {
+    return [BigNumber.from(1), true];
+  }
   if (reserveA.gte(reserveB)) {
     return [reserveA.mul(BigNumber.from(10).pow(18)).div(reserveB), true];
   } else {
