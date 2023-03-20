@@ -5,6 +5,7 @@ import Step1TxBox from "./components/step1TxBox";
 import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
 import { ADDRESSES } from "global/config/addresses";
 import QBoxList from "./components/QBoxList";
+import { NATIVE_COMSOS_TOKENS } from "./config/bridgingTokens";
 
 interface BridgeInProps {
   ethAddress?: string;
@@ -107,8 +108,13 @@ const BridgeIn = (props: BridgeInProps) => {
             return transactionHooks.bridgeIn.sendToCosmos(
               ADDRESSES.ETHMainnet.GravityBridge,
               selectedToken.address,
-              props.cantoAddress ?? ""
+              props.cantoAddress ?? "ibc"
             );
+          }}
+          extraTokenData={{
+            tokens: NATIVE_COMSOS_TOKENS,
+            balance: "ibc",
+            onSelect: () => true,
           }}
         />
         <Step2TxBox

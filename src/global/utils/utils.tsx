@@ -253,13 +253,13 @@ export const transactionStatusActions = (
       };
     case CantoTransactionType.CONVERT_TO_EVM:
       return {
-        action: "convert token to evm",
-        inAction: "converting token",
-        postAction: "converted token",
+        action: "complete bridge in",
+        inAction: "bridging in",
+        postAction: "completed bridge in",
       };
     case CantoTransactionType.CONVERT_TO_NATIVE:
       return {
-        action: "convert token to canto bridge",
+        action: "convert token to canto native",
         inAction: "converting token",
         postAction: "converted token",
       };

@@ -10,6 +10,11 @@ interface ITokenSelect {
   activeToken: BaseToken;
   onSelect: (value: BaseToken | undefined) => void;
   balanceString: string;
+  extraTokenData?: {
+    tokens: BaseToken[];
+    balance: string;
+    onSelect: (value: BaseToken) => void;
+  };
 }
 
 export const TokenWallet = ({
@@ -17,6 +22,7 @@ export const TokenWallet = ({
   tokens,
   activeToken,
   balanceString,
+  extraTokenData,
 }: ITokenSelect) => {
   const ref = useRef(null);
   return (
@@ -59,6 +65,7 @@ export const TokenWallet = ({
           }
         }}
         balanceString={balanceString}
+        extraTokenData={extraTokenData}
       />
     </StyledPopup>
   );

@@ -222,7 +222,7 @@ export async function getIBCOutTransactions(
   const bridgeOutNetworks = Object.keys(ALL_BRIDGE_OUT_NETWORKS).map(
     (key, network) =>
       ALL_BRIDGE_OUT_NETWORKS[network as keyof typeof ALL_BRIDGE_OUT_NETWORKS]
-        .channel
+        .cantoChannel
   );
   const bridgeOutData: TransactionHistoryEvent[] = [];
   const ibcOut = await getIBCTxs(false, cantoAccount);

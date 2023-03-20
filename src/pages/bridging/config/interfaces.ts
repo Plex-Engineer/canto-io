@@ -7,11 +7,17 @@ import { ReactNode } from "react";
 /**
  * NETWORK INTERFACES
  */
+
+/**
+ * cantoChannel is the channel that you must use to ibc FROM canto
+ * networkChannel is the channel that you must use from the respective chain TO canto
+ */
 export interface BridgeOutNetworkInfo {
   name: string;
   icon: string;
   tokens: NativeToken[];
-  channel: string;
+  cantoChannel: string;
+  networkChannel: string;
   endpoint: string;
   latestBlockEndpoint?: string;
   addressBeginning: string;
