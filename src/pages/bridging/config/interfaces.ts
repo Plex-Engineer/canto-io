@@ -19,6 +19,7 @@ export interface BridgeOutNetworkInfo {
   cantoChannel: string;
   networkChannel: string;
   endpoint: string;
+  extraEndpoints?: string[];
   latestBlockEndpoint?: string;
   addressBeginning: string;
   checkAddress: (address?: string) => boolean;

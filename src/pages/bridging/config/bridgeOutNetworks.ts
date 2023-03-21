@@ -4,7 +4,7 @@ import { TOKENS } from "global/config/tokenInfo";
 import { ALL_IBC_TOKENS_WITH_DENOMS } from "./bridgingTokens";
 import { BridgeOutNetworkInfo, BridgeOutNetworks } from "./interfaces";
 
-type BridgeOutNetworkData = {
+export type BridgeOutNetworkData = {
   [key in BridgeOutNetworks]: BridgeOutNetworkInfo;
 };
 
@@ -43,6 +43,7 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
     cantoChannel: "channel-0",
     networkChannel: "channel-88",
     endpoint: "https://gravitychain.io:1317",
+    extraEndpoints: ["https://gravity-api.polkachu.com"],
     addressBeginning: "gravity",
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
