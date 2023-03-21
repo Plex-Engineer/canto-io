@@ -7,6 +7,7 @@ import { LPPairInfo } from "../config/interfaces";
 import { getLPPairRatio } from "../utils/utils";
 import { ADDRESSES } from "global/config/addresses";
 import { CTOKENS } from "global/config/tokenInfo";
+import { checkMultiCallForUndefined } from "global/utils/utils";
 
 const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
   const onCanto =
@@ -94,7 +95,7 @@ const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
   if (!PAIRS) {
     return [];
   }
-  if (chuckSize > 0 && results?.[0] != undefined && !results?.[0].error) {
+  if (chuckSize > 0 && checkMultiCallForUndefined(results)) {
     processedTokens = array_chunks(results, chuckSize);
     return processedTokens.map((tokenData, idx) => {
       const totalSupply = tokenData[0][0];

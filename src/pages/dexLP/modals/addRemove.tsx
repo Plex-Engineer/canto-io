@@ -93,7 +93,7 @@ const AddRemoveModal = ({ activePair }: Props) => {
           </p>
         </div>
       </div>
-      <div className="fields">
+      <div className="btns">
         <OutlinedButton
           style={{ width: "9rem" }}
           onClick={() => {

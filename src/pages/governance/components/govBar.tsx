@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { Text } from "global/packages/src";
 import { VoteStatus } from "../config/interfaces";
 import { convertDateToString } from "../utils/formattingStrings";
 
@@ -12,50 +13,44 @@ const GovBar = (props: barProps) => {
         }}
       >
         <p className="number">#{props.proposalID}</p>
-        <p className="number">
+        <Text type="title" className="number">
           {props.status == "PROPOSAL_STATUS_VOTING_PERIOD"
             ? "Voting"
             : props.status == "PROPOSAL_STATUS_PASSED"
             ? "Passed"
             : "Rejected"}
-        </p>
+        </Text>
       </div>
-      <h1>{props.name}</h1>
+      <Text type="title" size="title3" align="left">
+        {props.name}
+      </Text>
 
-      <div className="options">
-        <div className="details options-1">
-          {props.status == VoteStatus.votingOngoing ? (
-            <>
-              <p>start {convertDateToString(props.startDate, true)}</p>{" "}
-              <p> &nbsp;→&nbsp; </p>
-              <p>end {convertDateToString(props.endDate, true)}</p>
-            </>
-          ) : (
-            <>vote ended {convertDateToString(props.endDate, false)}</>
-          )}
-        </div>
-
-        <div className="details options-2">
-          <div
-            style={{
-              display: "flex",
-              gap: "1rem",
-            }}
-          >
-            <BlobText color="#06fc99">
-              yes {props.yesPecterage.toFixed(2)}%
-            </BlobText>
-            <BlobText color="#ff4646">
-              no {props.noPecterage.toFixed(2)}%
-            </BlobText>
-            <BlobText color="#710808">
-              no with veto {props.vetoPecterage.toFixed(2)}%
-            </BlobText>
-            <BlobText color="#fbea51">
-              abstain {props.abstainPecterage.toFixed(2)}%
-            </BlobText>
-          </div>
-        </div>
+      <div className="options-1">
+        {props.status == VoteStatus.votingOngoing ? (
+          <>
+            <p>start {convertDateToString(props.startDate, true)}</p>{" "}
+            <p> &nbsp;→&nbsp; </p>
+            <p>end {convertDateToString(props.endDate, true)}</p>
+          </>
+        ) : (
+          <>vote ended {convertDateToString(props.endDate, false)}</>
+        )}
+      </div>
+      <div className="votes-grp">
+        <BlobText color="#06fc99">
+          <span className="label">yes :</span> {props.yesPecterage.toFixed(2)}%
+        </BlobText>
+        <BlobText color="#ff4646">
+          <span className="label">no :</span> {props.noPecterage.toFixed(2)}%
+        </BlobText>
+        <BlobText color="#710808">
+          <span className="label">veto :</span> {props.vetoPecterage.toFixed(2)}
+          %
+        </BlobText>
+        <BlobText color="#fbea51">
+          <span className="label">abstain :</span>{" "}
+          {props.abstainPecterage.toFixed(2)}%
+        </BlobText>
       </div>
       <GraphBar {...props} />
     </Styled>
@@ -70,53 +65,51 @@ const Styled = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  position: relative;
+  &:hover {
+    border: 1px solid #444;
+    border-radius: 4px;
+    cursor: pointer;
+  }
   .number {
     color: #707070;
   }
 
-  h1 {
-    font-weight: 300;
-    font-size: 1.4rem;
-    letter-spacing: -0.05em;
-    max-height: 3rem;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-  }
-
   .details {
-    position: absolute;
-    top: 0px;
     display: flex;
     color: #7f7f7f;
-    margin: 0.5rem 0 -0.5rem 0;
+    background-color: red;
+    text-align: right;
+    align-items: flex-end;
     justify-content: space-between;
   }
 
-  .options {
-    position: relative;
-    height: 4rem;
-  }
   .options-1 {
     display: flex;
-    opacity: 1;
+    align-items: center;
     transition: all 0.2s ease-in-out;
   }
-  .options-2 {
-    display: flex;
+  .votes-grp {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: absolute;
+    row-gap: 2rem;
+    column-gap: 4rem;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    border-radius: 4px;
+    justify-content: space-between;
+    /* transition: all 0.2s ease-in 0.2s; */
+    background-color: black;
+    padding: 2rem;
+    padding-left: 4rem;
     opacity: 0;
 
-    justify-content: space-between;
-    transition: all 0.2s ease-in-out;
-  }
-  &:hover {
-    border: 1px solid var(--primary-color);
-    cursor: pointer;
-    .options-1 {
-      opacity: 0;
-    }
-
-    .options-2 {
+    &:hover {
       opacity: 1;
+      transition-delay: 0.1s;
     }
   }
 `;
@@ -180,13 +173,22 @@ interface blobProp {
 }
 const BlobText = styled.p<blobProp>`
   display: flex;
+  /* flex-direction: column; */
   align-items: center;
+  font-family: "Silkscreen";
+
+  span {
+    font-family: "Silkscreen";
+    margin-right: 8px;
+    /* color: ${(props) => props.color}; */
+  }
+
   &::before {
     content: " ";
     display: flex;
-    height: 10px;
+    height: 20px;
     width: 10px;
-    border-radius: 50%;
+    border-radius: 10px;
     margin-right: 0.5rem;
     background-color: ${(props) => props.color};
   }

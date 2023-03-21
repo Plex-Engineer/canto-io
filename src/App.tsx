@@ -11,7 +11,7 @@ import { PAGES } from "global/config/pageList";
 import Loading from "global/components/Loading";
 import PageNotFound from "global/components/pageNotFound";
 import ChangeLog from "pages/changelog/changeLog";
-import Walkthrough from "pages/bridge/walkthrough/Walkthrough";
+import Walkthrough from "pages/bridging/walkthrough/Walkthrough";
 
 //Styling
 const Container = styled.div`
@@ -21,13 +21,14 @@ const Container = styled.div`
   background-color: #111;
 `;
 //Lazy loading pages. will load in the required pages
-const Bridging = lazy(() => import("pages/bridge/Bridging"));
+const Bridging = lazy(() => import("pages/bridging/Bridging"));
 const Dex = lazy(() => import("./pages/dexLP/Dex"));
 const Staking = lazy(() => import("./pages/staking/Staking"));
 const LendingMarket = lazy(() => import("./pages/lending/LendingMarket"));
 const Governance = lazy(() => import("./pages/governance/governance"));
 const Proposal = lazy(() => import("./pages/governance/proposal"));
 const HomePage = lazy(() => import("./pages/home/homepage"));
+
 // const HomePage = lazy(() => import("./pages/landing/Landing"));
 
 function App() {
