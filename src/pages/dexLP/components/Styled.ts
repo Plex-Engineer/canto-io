@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 export const DexModalContainer = styled.div`
   background-color: #040404;
-  height: 42rem;
+  height: 40rem;
   width: 30rem;
   display: flex;
   flex-direction: column;
@@ -102,7 +102,7 @@ export const DexModalContainer = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-    gap: 0.3rem;
+    gap: 0.8rem;
   }
 
   .rowCell {
@@ -115,6 +115,12 @@ export const DexModalContainer = styled.div`
     }
   }
 
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
   .tableName {
     width: 80%;
     display: flex;
@@ -202,7 +208,6 @@ export const SettingsPopIn = styled.div<showProps>`
 export const DexContainer = styled.div`
   display: flex;
   flex-direction: column;
-
   .tableName {
     width: 1200px;
     margin: 0 auto;

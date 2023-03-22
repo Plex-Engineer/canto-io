@@ -22,7 +22,7 @@ import {
   SettingsPopIn,
   DexLoadingOverlay,
 } from "../components/Styled";
-import { PrimaryButton } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { TransactionState } from "@usedapp/core";
@@ -84,6 +84,8 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
   return (
     <PrimaryButton
       disabled={disabled}
+      height="big"
+      filled
       onClick={() => {
         setConfirmationValues({
           amount1: bnValue1,
@@ -190,12 +192,26 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
       <div
         style={{
           marginTop: "1rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <IconPair
           iconLeft={activePair.basePairInfo.token1.icon}
           iconRight={activePair.basePairInfo.token2.icon}
         />
+      </div>
+
+      <div
+        className="row"
+        style={{
+          marginBottom: "2rem",
+        }}
+      >
+        <Text type="title">{activePair.basePairInfo.token1.symbol}</Text>
+        <Text type="title">/</Text>
+        <Text type="title">{activePair.basePairInfo.token2.symbol}</Text>
       </div>
       <div
         style={{
@@ -322,29 +338,36 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
           />
         </div>
       </div>
-      <div style={{ color: "white" }}>
+      <div style={{ color: "white", marginTop: "4rem" }}>
         {
-          <p style={{ textAlign: "right" }}>
-            <a>reserve ratio: </a> 1 {activePair.basePairInfo.token1.symbol} ={" "}
-            {truncateNumber(displayReserveRatio.toString())}{" "}
-            {activePair.basePairInfo.token2.symbol}
-          </p>
+          <div className="row">
+            <Text type="title">reserve ratio : </Text>
+            <Text color="white">
+              1 {activePair.basePairInfo.token1.symbol} ={" "}
+              {truncateNumber(displayReserveRatio.toString())}{" "}
+              {activePair.basePairInfo.token2.symbol}
+            </Text>
+          </div>
         }
         <br />
         {activePair.basePairInfo.stable ? (
-          <p style={{ textAlign: "right" }}>
-            <a style={{ textAlign: "left" }}>price: </a> 1{" "}
-            {activePair.basePairInfo.token1.symbol} ={" "}
-            {truncateNumber(
-              formatUnits(
-                valueInNote(
-                  parseUnits("1", activePair.basePairInfo.token2.decimals),
-                  activePair.prices.token2
+          <div className="row">
+            <Text style={{ textAlign: "left" }} type="title">
+              price :
+            </Text>{" "}
+            <Text style={{ textAlign: "right" }} color="white">
+              1 {activePair.basePairInfo.token1.symbol} ={" "}
+              {truncateNumber(
+                formatUnits(
+                  valueInNote(
+                    parseUnits("1", activePair.basePairInfo.token2.decimals),
+                    activePair.prices.token2
+                  )
                 )
-              )
-            )}{" "}
-            {activePair.basePairInfo.token2.symbol}
-          </p>
+              )}{" "}
+              {activePair.basePairInfo.token2.symbol}
+            </Text>
+          </div>
         ) : (
           ""
         )}
