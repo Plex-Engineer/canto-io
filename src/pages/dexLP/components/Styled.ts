@@ -93,7 +93,7 @@ export const DexModalContainer = styled.div`
     margin-bottom: 1.2rem;
   }
   .box {
-    width: 80%;
+    width: 100%;
     display: flex;
     flex-direction: column;
   }
