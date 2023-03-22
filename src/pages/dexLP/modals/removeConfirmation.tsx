@@ -157,12 +157,7 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
       </div>
       <p id="position">you will receive</p>
       {/* <IconPair iconLeft={props.pair.basePairInfo.token1.icon} iconRight={props.pair.basePairInfo.token2.icon} /> */}
-      <div
-        style={{
-          gap: "1rem",
-          display: "flex",
-        }}
-      >
+      <div className="row">
         <img src={props.pair.basePairInfo.token1.icon} height={50} />
         <img src={props.pair.basePairInfo.token2.icon} height={50} />
       </div>
@@ -238,7 +233,9 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
       </div>
       <PrimaryButton
         style={{ marginTop: "1.5rem" }}
-        size="lg"
+        filled
+        height="big"
+        weight="bold"
         disabled={currentBlockTimeStamp == 0}
         onClick={() => {
           if (isToken1Canto) {

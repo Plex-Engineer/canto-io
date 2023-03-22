@@ -46,7 +46,6 @@ export const DexModalContainer = styled.div`
   }
 
   .tokenBox {
-    margin: 0 2rem !important;
     background-color: #131313;
     border: 1px solid #606060;
     padding: 1rem;
