@@ -72,6 +72,7 @@ const StyledPopup = styled(Popup)`
     scroll-behavior: smooth;
     border-radius: 4px;
     animation: fadein 0.5s 1;
+    min-height: 42rem;
     max-height: 45rem;
 
     @keyframes fadein {
@@ -88,9 +89,10 @@ const StyledPopup = styled(Popup)`
     }
 
     .scrollview {
-      max-height: 37rem;
+      max-height: 43rem;
       overflow-y: scroll;
       margin-bottom: 1rem;
+      height: 100%;
     }
     .modal-title {
       width: 90%;

@@ -5,11 +5,8 @@ export const DexModalContainer = styled.div`
   width: 30rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: start;
   gap: 1rem;
   padding: 0 2rem;
-
   //! marked for deletion
   .title {
     width: 100%;
@@ -45,6 +42,7 @@ export const DexModalContainer = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    flex-grow: 1;
   }
 
   .tokenBox {

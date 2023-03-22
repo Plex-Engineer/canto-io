@@ -16,6 +16,7 @@ import { userMaximumWithdrawal } from "pages/lending/utils/supplyWithdrawLimits"
 import { SupplyBorrowContainer, ModalWallet } from "../components/Styled";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
+import { Text } from "global/packages/src";
 interface IProps {
   position: UserLMPosition;
   onClose: () => void;
@@ -279,22 +280,15 @@ const SupplyModal = ({ position, onClose }: IProps) => {
       <div className="title">
         <img
           style={{
-            width: "26px",
-            height: "26px",
+            width: "30px",
+            height: "30px",
           }}
           src={token.data.underlying.icon}
           alt={token.data.underlying.name}
         />
-        <p
-          style={{
-            fontWeight: "300",
-            fontSize: "18px",
-            letterSpacing: "-0.03em",
-            color: "white",
-          }}
-        >
+        <Text type="title" size="title2">
           {token.data.underlying.name}
-        </p>
+        </Text>
       </div>
       <Tabs
         disabledTabClassName="disabled"
@@ -309,7 +303,7 @@ const SupplyModal = ({ position, onClose }: IProps) => {
               setIsWithdrawing(false);
             }}
           >
-            supply
+            <Text type="title">Supply</Text>
           </Tab>
           <Tab
             className={"tab"}
@@ -318,12 +312,11 @@ const SupplyModal = ({ position, onClose }: IProps) => {
               setIsWithdrawing(true);
             }}
           >
-            withdraw
+            <Text type="title">withdraw</Text>
           </Tab>
         </TabList>
         {SupplyTab()}
 
-        {/* New Tab ================================== */}
         {WithdrawTab()}
       </Tabs>
     </SupplyBorrowContainer>
