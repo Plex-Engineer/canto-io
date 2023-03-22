@@ -108,61 +108,67 @@ const ReactiveButton = ({
     token.data.underlying.symbol
   );
   return (
-    <PrimaryButton
-      disabled={disabled}
-      height="big"
-      filled
-      weight="bold"
-      onClick={async () => {
-        if (
-          state == InputState.ENABLE ||
-          state == InputState.INCREASE_ALLOWANCE
-        ) {
-          enableSend(
-            token.data.address,
-            BigNumber.from(ethers.constants.MaxUint256)
-          );
-        } else {
-          switch (transactionType) {
-            case CantoTransactionType.SUPPLY:
-              if (isEth) {
-                const gas = max ? parseUnits("1", "17") : BigNumber.from(0);
-                supplySendEth({
-                  to: token.data.address,
-                  value: BNAmount.sub(gas),
-                });
-              } else {
-                supplySend(BNAmount);
-              }
-              break;
-            case CantoTransactionType.BORROW:
-              borrowSend(BNAmount);
-              break;
-            case CantoTransactionType.REPAY:
-              if (isEth) {
-                repaySendEth({
-                  to: token.data.address,
-                  data: "0x4e4d9fea",
-                  value: BNAmount,
-                });
-              } else {
-                repaySend(
-                  max &&
-                    Number(token.balanceOf) >
-                      Number(token.borrowBalance) + 0.001
-                    ? "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-                    : BNAmount
-                );
-              }
-              break;
-            case CantoTransactionType.WITHDRAW:
-              redeemSend(BNAmount);
-          }
-        }
+    <div
+      style={{
+        marginTop: "16px",
       }}
     >
-      {buttonText}
-    </PrimaryButton>
+      <PrimaryButton
+        disabled={disabled}
+        height="big"
+        filled
+        weight="bold"
+        onClick={async () => {
+          if (
+            state == InputState.ENABLE ||
+            state == InputState.INCREASE_ALLOWANCE
+          ) {
+            enableSend(
+              token.data.address,
+              BigNumber.from(ethers.constants.MaxUint256)
+            );
+          } else {
+            switch (transactionType) {
+              case CantoTransactionType.SUPPLY:
+                if (isEth) {
+                  const gas = max ? parseUnits("1", "17") : BigNumber.from(0);
+                  supplySendEth({
+                    to: token.data.address,
+                    value: BNAmount.sub(gas),
+                  });
+                } else {
+                  supplySend(BNAmount);
+                }
+                break;
+              case CantoTransactionType.BORROW:
+                borrowSend(BNAmount);
+                break;
+              case CantoTransactionType.REPAY:
+                if (isEth) {
+                  repaySendEth({
+                    to: token.data.address,
+                    data: "0x4e4d9fea",
+                    value: BNAmount,
+                  });
+                } else {
+                  repaySend(
+                    max &&
+                      Number(token.balanceOf) >
+                        Number(token.borrowBalance) + 0.001
+                      ? "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                      : BNAmount
+                  );
+                }
+                break;
+              case CantoTransactionType.WITHDRAW:
+                redeemSend(BNAmount);
+            }
+          }
+        }}
+      >
+        {buttonText}
+      </PrimaryButton>
+    </div>
   );
 };
 

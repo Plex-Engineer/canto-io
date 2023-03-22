@@ -16,6 +16,7 @@ import { BigNumber } from "ethers";
 import { SupplyBorrowContainer, ModalWallet } from "../components/Styled";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
+import { Text } from "global/packages/src";
 interface IProps {
   onClose: () => void;
   position: UserLMPosition;
@@ -169,7 +170,7 @@ const BorrowModal = ({ position, onClose }: IProps) => {
           }}
         />
 
-        {WalletForBorrow()}
+        {/* {WalletForBorrow()} */}
       </TabPanel>
     );
   };
@@ -243,7 +244,7 @@ const BorrowModal = ({ position, onClose }: IProps) => {
           }
         />
 
-        {WalletForRepay()}
+        {/* {WalletForRepay()}   */}
       </TabPanel>
     );
   };
@@ -310,7 +311,7 @@ const BorrowModal = ({ position, onClose }: IProps) => {
               setIsRepaying(false);
             }}
           >
-            borrow
+            <Text type="title">borrow</Text>
           </Tab>
           <Tab
             className={"tab"}
@@ -319,7 +320,7 @@ const BorrowModal = ({ position, onClose }: IProps) => {
               setIsRepaying(true);
             }}
           >
-            repay
+            <Text type="title">Repay</Text>
           </Tab>
         </TabList>
         {BorrowTab()}

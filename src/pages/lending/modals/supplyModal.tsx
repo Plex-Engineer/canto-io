@@ -166,7 +166,7 @@ const SupplyModal = ({ position, onClose }: IProps) => {
           amount={userAmount}
         />
 
-        {WalletForSupply()}
+        {/* {WalletForSupply()} */}
       </TabPanel>
     );
   };
@@ -241,7 +241,7 @@ const SupplyModal = ({ position, onClose }: IProps) => {
           transactionType={CantoTransactionType.WITHDRAW}
         />
 
-        {WalletForWithdraw()}
+        {/* {WalletForWithdraw()} */}
       </TabPanel>
     );
   };
