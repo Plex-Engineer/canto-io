@@ -159,7 +159,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
       try {
         const tx = await txIBCTransfer(
           cosmosAddress,
-          bridgeOutNetwork.channel,
+          bridgeOutNetwork.cantoChannel,
           amount,
           tokenDenom,
           CantoMainnet.cosmosAPIEndpoint,

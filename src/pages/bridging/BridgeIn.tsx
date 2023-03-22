@@ -5,6 +5,7 @@ import Step1TxBox from "./components/step1TxBox";
 import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
 import { ADDRESSES } from "global/config/addresses";
 import QBoxList from "./components/QBoxList";
+import { NATIVE_COMSOS_TOKENS } from "./config/bridgingTokens";
 
 interface BridgeInProps {
   ethAddress?: string;
@@ -40,8 +41,11 @@ const BridgeIn = (props: BridgeInProps) => {
                 <>
                   If you want to bridge tokens that are currently on Ethereum
                   mainnet, start at the top to initiate bridging. This first
-                  step takes roughly 20 minutes. If you want to bridge Cosmos
-                  tokens using IBC, first send the tokens over (
+                  step takes roughly 20 minutes.
+                  <br />
+                  <br />
+                  If you want to bridge Cosmos tokens using IBC, first send the
+                  tokens over (
                   <a
                     role="button"
                     tabIndex={0}
@@ -104,8 +108,13 @@ const BridgeIn = (props: BridgeInProps) => {
             return transactionHooks.bridgeIn.sendToCosmos(
               ADDRESSES.ETHMainnet.GravityBridge,
               selectedToken.address,
-              props.cantoAddress ?? ""
+              props.cantoAddress ?? "ibc"
             );
+          }}
+          extraTokenData={{
+            tokens: NATIVE_COMSOS_TOKENS,
+            balance: "ibc",
+            onSelect: () => true,
           }}
         />
         <Step2TxBox

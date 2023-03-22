@@ -1,4 +1,5 @@
-import { BigNumber } from "ethers";
+import { CallResult } from "@usedapp/core";
+import { BigNumber, Contract } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import {
   CantoTransactionType,
@@ -252,13 +253,13 @@ export const transactionStatusActions = (
       };
     case CantoTransactionType.CONVERT_TO_EVM:
       return {
-        action: "convert token to evm",
-        inAction: "converting token",
-        postAction: "converted token",
+        action: "complete bridge in",
+        inAction: "bridging in",
+        postAction: "completed bridge in",
       };
     case CantoTransactionType.CONVERT_TO_NATIVE:
       return {
-        action: "convert token to canto bridge",
+        action: "convert token to canto native",
         inAction: "converting token",
         postAction: "converted token",
       };
@@ -270,3 +271,15 @@ export const transactionStatusActions = (
       };
   }
 };
+
+//check to make sure that the multicall values are accetable
+export function checkMultiCallForUndefined(
+  results: CallResult<Contract, string>[]
+) {
+  for (const result of results) {
+    if (!result || !result?.value || result?.error) {
+      return false;
+    }
+  }
+  return true;
+}

@@ -8,6 +8,11 @@ interface Props {
   onClose: (value?: BaseToken) => void;
   tokens: BaseToken[] | undefined;
   balanceString: string;
+  extraTokenData?: {
+    tokens: BaseToken[];
+    balance: string;
+    onSelect: (value: BaseToken) => void;
+  };
 }
 
 const TokenModal = (props: Props) => {
@@ -45,6 +50,26 @@ const TokenModal = (props: Props) => {
               </p>
             </div>
           ))}
+        {props.extraTokenData &&
+          props.extraTokenData.tokens
+            ?.sort((a, b) => (b.symbol > a.symbol ? -1 : 1))
+            .map((token) => (
+              <div
+                role="button"
+                tabIndex={0}
+                key={token.icon}
+                className="token-item"
+                onClick={() => {
+                  props.extraTokenData?.onSelect(token);
+                }}
+              >
+                <span>
+                  <img src={token.icon} alt="" />
+                  <p>{token.name}</p>
+                </span>
+                <p className="balance">{props.extraTokenData?.balance}</p>
+              </div>
+            ))}
       </div>
     </Styled>
   );

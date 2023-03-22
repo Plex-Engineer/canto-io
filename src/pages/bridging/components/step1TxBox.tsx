@@ -4,7 +4,12 @@ import ethIcon from "assets/icons/ETH.svg";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
 import cantoIcon from "assets/icons/canto-evm.svg";
 import CopyIcon from "assets/copy.svg";
-import { UserERC20BridgeToken } from "../config/interfaces";
+import {
+  BaseToken,
+  EMPTY_NATIVE_TOKEN,
+  NativeToken,
+  UserERC20BridgeToken,
+} from "../config/interfaces";
 import LoadingBlip from "./LoadingBlip";
 import { truncateNumber } from "global/utils/utils";
 import { formatUnits } from "ethers/lib/utils";
@@ -23,6 +28,7 @@ import Modal from "global/packages/src/components/molecules/Modal";
 import ConfirmationModal from "./modals/confirmationModal";
 import { CantoMainnet, ETHMainnet } from "global/config/networks";
 import { TokenWallet } from "./tokenSelect";
+import IBCGuideModal from "./modals/ibcGuideModal";
 
 interface Step1TxBoxProps {
   fromAddress?: string;
@@ -32,9 +38,17 @@ interface Step1TxBoxProps {
   selectedToken: UserERC20BridgeToken;
   selectToken: (tokenAddress: string) => void;
   txHook: () => BridgeTransaction;
+  extraTokenData?: {
+    tokens: BaseToken[];
+    balance: string;
+    onSelect: (value: BaseToken) => void;
+  };
 }
 const Step1TxBox = (props: Step1TxBoxProps) => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isIBCModalOpen, setisIBCModalOpen] = useState(false);
+  const [selectedIBCToken, setSelectedIBCToken] =
+    useState<NativeToken>(EMPTY_NATIVE_TOKEN);
   const [amount, setAmount] = useState("");
   const txProps = props.txHook();
 
@@ -50,6 +64,16 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
   }, [txProps.state]);
   return (
     <Styled>
+      <Modal
+        title="ibc transfer"
+        open={isIBCModalOpen}
+        onClose={() => setisIBCModalOpen(false)}
+      >
+        <IBCGuideModal
+          token={selectedIBCToken}
+          cantoAddress={props.toAddress ?? ""}
+        />
+      </Modal>
       <Modal
         title="confirmation"
         open={isModalOpen}
@@ -180,6 +204,17 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
               props.selectToken(value?.address ?? props.selectedToken.address);
             }}
             balanceString="erc20Balance"
+            extraTokenData={
+              props.extraTokenData
+                ? {
+                    ...props.extraTokenData,
+                    onSelect: (value: BaseToken) => {
+                      setSelectedIBCToken(value as NativeToken);
+                      setisIBCModalOpen(true);
+                    },
+                  }
+                : undefined
+            }
           />
         </div>
         <div className="amount">
