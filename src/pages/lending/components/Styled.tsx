@@ -226,11 +226,7 @@ export const ToolTipL = styled.div`
 
 export const SupplyBorrowContainer = styled.div`
   display: flex;
-  max-height: 45.6rem;
-  height: 90vh;
-  width: 400px;
   flex-direction: column;
-  align-items: stretch;
   position: relative;
   .title {
     display: flex;
@@ -257,6 +253,7 @@ export const SupplyBorrowContainer = styled.div`
       padding: 0.5rem;
       text-align: center;
       transition: all 0.2s ease-in-out;
+      padding: 20px 0;
       &:hover:not(.selected) {
         background: #a7efd218;
       }
@@ -304,44 +301,38 @@ export const EnableCollateralContainer = styled(SupplyBorrowContainer)`
   }
 `;
 export const RewardsContainer = styled.div`
-  background-color: #040404;
   height: 36rem;
-  width: 26rem;
+  width: 30rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: start;
-  /* padding: 1rem; */
-  .title {
-    font-style: normal;
-    font-weight: 300;
-    font-size: 22px;
-    line-height: 130%;
-    text-align: center;
-    letter-spacing: -0.1em;
-    text-transform: lowercase;
-    color: var(--primary-color);
-    margin-bottom: 2rem;
-    /* margin-top: 0.3rem; */
-    width: 100%;
-    background-color: #06fc991a;
-    padding: 1rem;
-    border-bottom: 1px solid var(--primary-color);
+  padding: 0 40px;
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: center;
+    flex-grow: 2;
+    height: 100;
   }
+
   .balances {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     justify-content: end;
-    width: 21rem;
+    width: 100%;
   }
   .bal {
     display: flex;
     justify-content: space-between;
-    padding: 1rem;
+    padding: 1rem 0;
   }
   .type {
-    color: #8b8b8b;
+    /* color: #ccc !important; */
+    color: #06fc9ab0 !important;
   }
   .value {
     color: var(--primary-color);
@@ -350,29 +341,15 @@ export const RewardsContainer = styled.div`
     border-bottom: 1px solid #222;
   }
   .logo {
-    /* padding: 1rem; */
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid var(--primary-color);
+    /* border: 1px solid var(--primary-color); */
     height: 60px;
     width: 60px;
+    background-color: #222;
     border-radius: 50%;
     margin-bottom: 1.2rem;
-  }
-  .mainBalance {
-    color: white;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 20px;
-    line-height: 120%;
-    margin-bottom: 0.4rem;
-  }
-  .secondaryBalance {
-    font-weight: 300;
-    font-size: 16px;
-    line-height: 120%;
-    color: #cdcdcd;
   }
 
   @media (max-width: 1000px) {
@@ -386,6 +363,7 @@ export const ModalWallet = styled.div`
   margin: 2rem 0 1.3rem 0;
   border-top: 1px solid #222;
   padding-top: 1rem;
+  width: 30rem;
   p:first-of-type {
     font-weight: 300;
     font-size: 16px;

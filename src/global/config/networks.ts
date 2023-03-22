@@ -1,5 +1,6 @@
 import { ADDRESSES } from "./addresses";
 
+const emptyBlockExplorerLink = "https://www.nothing.com";
 export const CantoMainnet = {
   name: "Canto Mainnet",
   symbol: "CANTO",
@@ -21,9 +22,30 @@ export const CantoTestnet = {
   rpcUrl: "https://canto-testnet.plexnode.wtf",
   cosmosAPIEndpoint: "https://api-testnet.plexnode.wtf",
   isTestChain: true,
-  blockExplorerUrl: "https://www.nothing.com",
+  blockExplorerUrl: emptyBlockExplorerLink,
   multicall1Address: "0xe536cF7B00069894da25faC787d7aD9D211a2C1A",
   multicall2Address: "0x0e356B86FA2aE1bEB93174C18AD373207a40F2A3",
+};
+
+//Gravity Bridge Chains
+export const ETHMainnet = {
+  name: "Ethereum Mainnet",
+  symbol: "ETH",
+  chainId: 1,
+  addresses: ADDRESSES.ETHMainnet,
+  rpcUrl: import.meta.env.VITE_MAINNET_RPC,
+  isTestChain: false,
+  blockExplorerUrl: emptyBlockExplorerLink,
+};
+
+export const GravityTestnet = {
+  name: "Gravity Bridge Testnet",
+  symbol: "DIODE",
+  chainId: 15,
+  addresses: ADDRESSES.gravityBridgeTest,
+  rpcUrl: "https://testnet.gravitychain.io",
+  isTestChain: true,
+  blockExplorerUrl: emptyBlockExplorerLink,
 };
 
 export const NodeAddresses = {

@@ -23,7 +23,7 @@
     "@tharsis/provider": "^0.2.4",
     "@tharsis/transactions": "^0.2.6",
     "@usedapp/coingecko": "^1.1.5",
-    "@usedapp/core": "1.2.2",
+    "@usedapp/core": "1.2.7",
     "bignumber.js": "^9.0.2",
     "ethers": "^5.7.2",
     "mixpanel": "^0.16.0",

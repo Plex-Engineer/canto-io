@@ -3,53 +3,42 @@ import useModals, { ModalType } from "../hooks/useModals";
 import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
 import { UserLPPairInfo } from "../config/interfaces";
 import { PrimaryButton, Text } from "global/packages/src";
-import { getEnableButtonTextAndOnClick } from "../utils/modalButtonParams";
 import { DexModalContainer } from "../components/Styled";
-import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
+import lockIcon from "assets/icons/lock.svg";
+import { BigNumber } from "ethers";
+import { TransactionState } from "@usedapp/core";
+import { getShortTxStatusFromState } from "global/utils/utils";
+import { useEffect } from "react";
 
-interface AddAllowanceProps {
-  pair: UserLPPairInfo;
+interface AddSingleAllowanceProps {
+  tokenName: string;
+  tokenAllowance: BigNumber;
   chainId: number | undefined;
-  addAllowance1: (router: string, amount: string) => void;
-  addAllowance2: (router: string, amount: string) => void;
+  addAllowance: (router: string, amount: string) => void;
+  state: TransactionState;
 }
 
-const AddAllowanceButton = (props: AddAllowanceProps) => {
+const AddSingleAllowanceButton = (props: AddSingleAllowanceProps) => {
   const routerAddress = getRouterAddress(props.chainId);
-  const [buttonText, buttonOnclick] = getEnableButtonTextAndOnClick(
-    props.pair.basePairInfo.token1.symbol,
-    props.pair.basePairInfo.token2.symbol,
-    props.pair.allowance.token1,
-    props.pair.allowance.token2,
-    () =>
-      props.addAllowance1(
-        routerAddress,
-        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-      ),
-    () =>
-      props.addAllowance2(
-        routerAddress,
-        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-      )
-  );
 
-  return <PrimaryButton onClick={buttonOnclick}>{buttonText}</PrimaryButton>;
-};
-
-const RemoveAllowanceButton = (props: AddAllowanceProps) => {
-  const routerAddress = getRouterAddress(props.chainId);
   return (
     <PrimaryButton
-      onClick={() => {
-        props.addAllowance1(
+      disabled={props.tokenAllowance.gt(0)}
+      onClick={() =>
+        props.addAllowance(
           routerAddress,
           "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-        );
-      }}
+        )
+      }
+      filled
+      height={"big"}
     >
-      enable {props.pair.basePairInfo.token1.symbol}/
-      {props.pair.basePairInfo.token2.symbol}_LP
+      <Text color="dark" bold>
+        {props.state == "None"
+          ? `enable ${props.tokenName}`
+          : getShortTxStatusFromState(props.state)}
+      </Text>
     </PrimaryButton>
   );
 };
@@ -59,9 +48,10 @@ interface Props {
   onClose: () => void;
   chainId?: number;
   account?: string;
+  setModal: (modalType: ModalType) => void;
 }
 
-const EnableModal = ({ activePair, chainId, onClose }: Props) => {
+const EnableModal = ({ activePair, chainId, setModal }: Props) => {
   const { state: addAllowanceA, send: addAllowanceASend } = useSetAllowance({
     type: CantoTransactionType.ENABLE,
     address: activePair.basePairInfo.token1.address,
@@ -89,114 +79,100 @@ const EnableModal = ({ activePair, chainId, onClose }: Props) => {
   });
 
   const prevModalType = useModals((state) => state.prevModalType);
+
+  //bring us to the next modal if we are done enabling
+  useEffect(() => {
+    if (prevModalType == ModalType.ADD) {
+      const doneAllowance1 =
+        activePair.allowance.token1.gt(activePair.balances.token1) ||
+        addAllowanceA.status == "Success";
+      const doneAllowance2 =
+        activePair.allowance.token2.gt(activePair.balances.token2) ||
+        addAllowanceB.status == "Success";
+      if (doneAllowance1 && doneAllowance2) {
+        setModal(ModalType.NONE);
+      }
+    } else if (
+      prevModalType == ModalType.REMOVE &&
+      (activePair.allowance.LPtoken.gt(activePair.userSupply.totalLP) ||
+        addLPAllowance.status == "Success")
+    ) {
+      setModal(ModalType.NONE);
+    }
+  }, [addAllowanceA.status, addAllowanceB.status, addLPAllowance.status]);
+
   return (
     <DexModalContainer>
-      {addAllowanceA.status != "None" && (
-        <GlobalLoadingModal
-          transactionType={CantoTransactionType.ENABLE}
-          status={addAllowanceA.status}
-          tokenName={
-            activePair.basePairInfo.token1.symbol +
-            " / " +
-            activePair.basePairInfo.token2.symbol
-          }
-          txHash={addAllowanceA.transaction?.hash}
-          onClose={onClose}
-          mixPanelEventInfo={{
-            tokenName:
-              activePair.basePairInfo.token1.symbol +
-              " / " +
-              activePair.basePairInfo.token2.symbol,
-          }}
-        />
-      )}
-      {addAllowanceB.status != "None" && (
-        <GlobalLoadingModal
-          transactionType={CantoTransactionType.ENABLE}
-          status={addAllowanceB.status}
-          tokenName={
-            activePair.basePairInfo.token1.symbol +
-            " / " +
-            activePair.basePairInfo.token2.symbol
-          }
-          txHash={addAllowanceB.transaction?.hash}
-          onClose={onClose}
-          mixPanelEventInfo={{
-            tokenName:
-              activePair.basePairInfo.token1.symbol +
-              " / " +
-              activePair.basePairInfo.token2.symbol,
-          }}
-        />
-      )}
-      {addLPAllowance.status != "None" && (
-        <GlobalLoadingModal
-          transactionType={CantoTransactionType.ENABLE}
-          status={addLPAllowance.status}
-          tokenName={
-            activePair.basePairInfo.token1.symbol +
-            " / " +
-            activePair.basePairInfo.token2.symbol
-          }
-          txHash={addLPAllowance.transaction?.hash}
-          onClose={onClose}
-          mixPanelEventInfo={{
-            tokenName:
-              activePair.basePairInfo.token1.symbol +
-              " / " +
-              activePair.basePairInfo.token2.symbol,
-          }}
-        />
-      )}
-      <div className="title">
-        <Text type="title" align="left" size="title3">
-          Enable Token
-        </Text>
-      </div>
       <div className="content">
         <div
           style={{
             marginTop: "1rem",
           }}
-        >
-          <IconPair
-            iconLeft={activePair.basePairInfo.token1.icon}
-            iconRight={activePair.basePairInfo.token2.icon}
-          />
+        ></div>
+        <div className="locked">
+          <img src={lockIcon} alt="token locked" />
+          <span className="icons">
+            <IconPair
+              iconLeft={activePair.basePairInfo.token1.icon}
+              iconRight={activePair.basePairInfo.token2.icon}
+            />
+          </span>
         </div>
-        <Text
-          type="text"
-          align="left"
-          size="title3"
-          style={{
-            padding: "2rem",
-            textAlign: "center",
-            height: "100%",
-          }}
-        >
-          Your tokens need to be enabled in order to transfer them to canto LP
-          interface
-        </Text>
+        <div className="info">
+          <Text
+            type="title"
+            align="left"
+            size="title2"
+            style={{
+              textAlign: "center",
+              marginBottom: "1rem",
+            }}
+          >
+            {`You need to enable ${
+              activePair.basePairInfo.token1.symbol +
+              " / " +
+              activePair.basePairInfo.token2.symbol +
+              "_LP"
+            }`}
+          </Text>
+        </div>
       </div>
 
       <div
         style={{
           paddingBottom: "3rem",
+          width: "100%",
         }}
       >
         {prevModalType == ModalType.ADD ? (
-          <AddAllowanceButton
-            pair={activePair}
-            chainId={chainId}
-            addAllowance1={addAllowanceASend}
-            addAllowance2={addAllowanceBSend}
-          />
+          <div className="dual-button">
+            <AddSingleAllowanceButton
+              addAllowance={addAllowanceASend}
+              chainId={chainId}
+              tokenName={activePair.basePairInfo.token1.name}
+              tokenAllowance={activePair.allowance.token1}
+              state={addAllowanceA.status}
+            />
+            <AddSingleAllowanceButton
+              addAllowance={addAllowanceBSend}
+              chainId={chainId}
+              tokenName={activePair.basePairInfo.token2.name}
+              tokenAllowance={activePair.allowance.token2}
+              state={addAllowanceB.status}
+            />
+          </div>
         ) : (
-          <RemoveAllowanceButton
-            pair={activePair}
+          <AddSingleAllowanceButton
+            addAllowance={addLPAllowanceSend}
             chainId={chainId}
-            addAllowance1={addLPAllowanceSend}
-            addAllowance2={addAllowanceASend}
+            tokenName={
+              activePair.basePairInfo.token1.symbol +
+              " / " +
+              activePair.basePairInfo.token2.symbol +
+              "_LP"
+            }
+            tokenAllowance={activePair.allowance.LPtoken}
+            state={addLPAllowance.status}
           />
         )}
       </div>

@@ -5,7 +5,7 @@ import { UserLPPairInfo } from "../config/interfaces";
 import { valueInNote } from "../utils/utils";
 import { formatUnits } from "ethers/lib/utils";
 import { AddRemoveContainer } from "../components/Styled";
-import { OutlinedButton, PrimaryButton } from "global/packages/src";
+import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 interface Props {
   activePair: UserLPPairInfo;
   onClose: () => void;
@@ -23,15 +23,19 @@ const AddRemoveModal = ({ activePair }: Props) => {
           activePair.basePairInfo.token2.symbol}
       </div>
       <p id="position">position overview</p>
-      <IconPair
-        iconLeft={activePair.basePairInfo.token1.icon}
-        iconRight={activePair.basePairInfo.token2.icon}
-      />
-      <h1>
-        {activePair.basePairInfo.token1.symbol +
-          " & " +
-          activePair.basePairInfo.token2.symbol}
-      </h1>
+      <div className="row">
+        <IconPair
+          iconLeft={activePair.basePairInfo.token1.icon}
+          iconRight={activePair.basePairInfo.token2.icon}
+        />
+      </div>
+      <div className="row">
+        <Text type="title">{activePair.basePairInfo.token1.symbol}</Text>
+
+        <Text type="title">/</Text>
+
+        <Text type="title">{activePair.basePairInfo.token2.symbol}</Text>
+      </div>
       <h4>
         pool share {(activePair.userSupply.percentOwned * 100).toFixed(4)}%
       </h4>
@@ -93,9 +97,11 @@ const AddRemoveModal = ({ activePair }: Props) => {
           </p>
         </div>
       </div>
-      <div className="fields">
+      <div className="btns">
         <OutlinedButton
-          style={{ width: "9rem" }}
+          height="big"
+          weight="bold"
+          filled
           onClick={() => {
             setModalType(ModalType.REMOVE);
           }}
@@ -104,7 +110,9 @@ const AddRemoveModal = ({ activePair }: Props) => {
         </OutlinedButton>
 
         <PrimaryButton
-          style={{ width: "9rem" }}
+          height="big"
+          weight="bold"
+          filled
           onClick={() => {
             setModalType(ModalType.ADD);
           }}

@@ -5,6 +5,15 @@ const ChangeLog = () => {
   return (
     <Styled>
       <LogSection
+        date="Mar 21st 2023"
+        title="Fixes & Enhancements"
+        content={`- Made improvements to the bridge to make the UX more intuitive.
+        - Made general design updates to modals on various pages.
+        - Added S6 dates to the COH banner.
+        - Added new cosmos tokens to bridge.
+        - Minor updates have been made to the UI styling on various pages.`}
+      />
+      <LogSection
         date="Feb 2nd 2023"
         title="Fixes & Enhancements"
         content={`- Added a link to the Canto Online Hackathon on the landing page.

@@ -16,6 +16,7 @@ import { parseUnits } from "ethers/lib/utils";
 import { getSupplyBalanceFromCTokens } from "../utils/utils";
 import { valueInNote } from "pages/dexLP/utils/utils";
 import { ADDRESSES } from "global/config/addresses";
+import { checkMultiCallForUndefined } from "global/utils/utils";
 
 export function useUserLMTokenData(
   LMTokens: LMTokenDetails[],
@@ -126,7 +127,7 @@ export function useUserLMTokenData(
     }
     return chunks;
   };
-  if (chuckSize > 0 && results?.[0] != undefined && !results?.[0].error) {
+  if (chuckSize > 0 && checkMultiCallForUndefined(results)) {
     processedTokens = array_chunks(results, chuckSize);
     const userLMTokens = processedTokens.map((tokenData, idx) => {
       const balanceOf: BigNumber =
