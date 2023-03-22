@@ -226,11 +226,7 @@ export const ToolTipL = styled.div`
 
 export const SupplyBorrowContainer = styled.div`
   display: flex;
-  max-height: 45.6rem;
-  height: 90vh;
-  width: 400px;
   flex-direction: column;
-  align-items: stretch;
   position: relative;
   .title {
     display: flex;
@@ -257,6 +253,7 @@ export const SupplyBorrowContainer = styled.div`
       padding: 0.5rem;
       text-align: center;
       transition: all 0.2s ease-in-out;
+      padding: 20px 0;
       &:hover:not(.selected) {
         background: #a7efd218;
       }
@@ -366,6 +363,7 @@ export const ModalWallet = styled.div`
   margin: 2rem 0 1.3rem 0;
   border-top: 1px solid #222;
   padding-top: 1rem;
+  width: 30rem;
   p:first-of-type {
     font-weight: 300;
     font-size: 16px;

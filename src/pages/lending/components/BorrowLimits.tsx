@@ -18,8 +18,9 @@ import {
 } from "../utils/borrowRepayLimits";
 import React from "react";
 import { CantoTransactionType } from "global/config/transactionTypes";
+import { Text } from "global/packages/src";
 
-interface IDetailProps {
+interface Props {
   borrowLimit: BigNumber;
   icon: string;
   stringAmount: string;
@@ -33,7 +34,7 @@ const Limits = styled.div`
   display: flex;
   justify-content: space-between;
   border-top: 1px solid #222;
-  padding: 1.4rem 0;
+  padding: 1rem 0;
   span {
     color: var(--primary-color);
   }
@@ -48,15 +49,17 @@ const Details = ({
   isBorrowing,
   transactionType,
   borrowBalance,
-}: IDetailProps) => {
+}: Props) => {
   const amount =
     isNaN(Number(stringAmount)) || !stringAmount || Number(stringAmount) <= 0
       ? BigNumber.from(0)
       : parseUnits(stringAmount, token.data.underlying.decimals);
+
   const cBorrowLimit = formatUnits(
     isBorrowing ? borrowBalance : borrowLimit,
     18
   );
+
   const cBorrowLimitUsed = borrowLimit.isZero()
     ? 0
     : convertBigNumberRatioIntoPercentage(borrowBalance, borrowLimit) * 100;
@@ -112,14 +115,14 @@ const Details = ({
               marginBottom: "0.5rem",
             }}
           />
-          <p>
+          <Text>
             {!isBorrowing ? "supply apr:" : "borrow rate:"}
             {!isBorrowing ? (
               <span>{token.supplyAPY.toFixed(2)}%</span>
             ) : (
               <span>{token.borrowAPY.toFixed(2)}%</span>
             )}
-          </p>
+          </Text>
         </div>
         <div
           style={{

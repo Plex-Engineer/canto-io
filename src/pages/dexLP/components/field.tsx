@@ -20,12 +20,10 @@ const Max = styled.span`
 const IconName = styled.div<styleProps>`
   display: flex;
   flex-direction: column;
-  gap: 6px;
   align-items: center;
   justify-content: center;
   width: 100px;
   border: 2px solid #191919;
-  border-bottom: none;
   background-color: black;
   border-radius: 4px;
   /* border-bottom: 1px solid

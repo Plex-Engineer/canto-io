@@ -107,10 +107,12 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
           props.pair.basePairInfo.token2.symbol}
       </div>
       <p id="position">you will receive</p>
-      <IconPair
-        iconLeft={props.pair.basePairInfo.token1.icon}
-        iconRight={props.pair.basePairInfo.token2.icon}
-      />
+      <div className="row">
+        <IconPair
+          iconLeft={props.pair.basePairInfo.token1.icon}
+          iconRight={props.pair.basePairInfo.token2.icon}
+        />
+      </div>
       <h1>
         {props.expectedLP.isZero()
           ? "calculating..."
@@ -195,7 +197,9 @@ const AddLiquidityButton = (props: AddConfirmationProps) => {
 
       <PrimaryButton
         style={{ marginTop: "1.5rem" }}
-        size="lg"
+        weight="bold"
+        height="big"
+        filled
         onClick={addLiquidity}
       >
         confirm
