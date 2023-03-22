@@ -17,6 +17,7 @@ interface AddSingleAllowanceProps {
   chainId: number | undefined;
   addAllowance: (router: string, amount: string) => void;
   state: TransactionState;
+  tokenBalance: BigNumber;
 }
 
 const AddSingleAllowanceButton = (props: AddSingleAllowanceProps) => {
@@ -24,7 +25,7 @@ const AddSingleAllowanceButton = (props: AddSingleAllowanceProps) => {
 
   return (
     <PrimaryButton
-      disabled={props.tokenAllowance.gt(0)}
+      disabled={props.tokenAllowance.gte(props.tokenBalance)}
       onClick={() =>
         props.addAllowance(
           routerAddress,
@@ -152,6 +153,7 @@ const EnableModal = ({ activePair, chainId, setModal }: Props) => {
               tokenName={activePair.basePairInfo.token1.name}
               tokenAllowance={activePair.allowance.token1}
               state={addAllowanceA.status}
+              tokenBalance={activePair.balances.token1}
             />
             <AddSingleAllowanceButton
               addAllowance={addAllowanceBSend}
@@ -159,6 +161,7 @@ const EnableModal = ({ activePair, chainId, setModal }: Props) => {
               tokenName={activePair.basePairInfo.token2.name}
               tokenAllowance={activePair.allowance.token2}
               state={addAllowanceB.status}
+              tokenBalance={activePair.balances.token2}
             />
           </div>
         ) : (
@@ -173,6 +176,7 @@ const EnableModal = ({ activePair, chainId, setModal }: Props) => {
             }
             tokenAllowance={activePair.allowance.LPtoken}
             state={addLPAllowance.status}
+            tokenBalance={activePair.userSupply.totalLP}
           />
         )}
       </div>
