@@ -67,9 +67,7 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
           <Text className="type">rewards in note value</Text>
           <Text className="value">
             {truncateNumber(
-              formatUnits(
-                valueInNote(rewardsObj.walletBalance, rewardsObj.price)
-              )
+              formatUnits(valueInNote(rewardsObj.accrued, rewardsObj.price))
             )}
             <TokenSymbol token="note" />
           </Text>
