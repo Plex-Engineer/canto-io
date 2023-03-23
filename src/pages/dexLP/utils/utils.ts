@@ -98,8 +98,6 @@ export function getReserveRatioAtoB(
 
 //price is scaled by 1e18
 export function valueInNote(amount: BigNumber, price: BigNumber) {
-  console.log(price.mul(amount).div(BigNumber.from(10).pow(18)))
-  console.log(amount)
   return price.mul(amount).div(BigNumber.from(10).pow(18));
 }
 
