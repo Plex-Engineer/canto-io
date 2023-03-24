@@ -42,7 +42,6 @@ export function getNetworkFromTokenName(
   if (ibcEthList.includes(ibcDenom) && bridgeIn) return "ETH";
 
   for (const [, value] of Object.entries(ALL_BRIDGE_OUT_NETWORKS)) {
-    console.log(value)
     for (const token of value.tokens) {
       if (token.ibcDenom == ibcDenom) {
         return value.name;
