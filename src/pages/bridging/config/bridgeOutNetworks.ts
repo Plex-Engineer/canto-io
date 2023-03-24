@@ -38,7 +38,6 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
       ALL_IBC_TOKENS_WITH_DENOMS.ETH,
       ALL_IBC_TOKENS_WITH_DENOMS.USDC,
       ALL_IBC_TOKENS_WITH_DENOMS.USDT,
-      ALL_IBC_TOKENS_WITH_DENOMS.ATOM,
     ],
     cantoChannel: "channel-0",
     networkChannel: "channel-88",
