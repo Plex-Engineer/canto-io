@@ -41,12 +41,7 @@ const Bridging = () => {
   };
   return (
     <Styled>
-      <div
-        className="diff"
-        style={{
-          position: "relative",
-        }}
-      >
+      <div className="diff">
         <BalanceTableModal
           ethTokens={bridgingTokens.userBridgeInTokens}
           cantoTokens={bridgingTokens.userBridgeOutTokens}
@@ -108,6 +103,11 @@ const Bridging = () => {
   );
 };
 
-const Styled = styled.div``;
+const Styled = styled.div`
+  .diff {
+    position: relative;
+    top: 4.5rem;
+  }
+`;
 
 export default Bridging;
