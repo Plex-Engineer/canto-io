@@ -8,13 +8,19 @@ import { useNetworkInfo } from "global/stores/networkInfo";
 import { createConvertTransactions } from "./utils/utils";
 import { SelectedTokens } from "./stores/bridgeTokenStore";
 import walletIcon from "assets/wallet.svg";
-import { useEthers } from "@usedapp/core";
+import { useEtherBalance, useEthers } from "@usedapp/core";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
 import BalanceTableModal from "./walkthrough/components/modals/BalanceTableModal";
 import styled from "@emotion/styled";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { GenPubKeyWalkthrough } from "./walkthrough/components/pages/genPubKey";
+import { CantoMainnet } from "global/config/networks";
+import { useState } from "react";
+import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
+import { PubKeyStyled } from "./walkthrough/Walkthrough";
+import warningRedIcon from "assets/warning_red.svg";
+import { parseUnits } from "ethers/lib/utils";
 
 const Bridging = () => {
   const networkInfo = useNetworkInfo();
@@ -22,6 +28,12 @@ const Bridging = () => {
   const bridgingHistory = useTransactionHistory();
   const { activateBrowserWallet } = useEthers();
   const navigate = useNavigate();
+  const [pubKeySuccess, setPubKeySuccess] = useState("None");
+  const ethBalance = useEtherBalance(networkInfo.account, { chainId: 1 });
+  const canPubKey =
+    (ethBalance?.gte(parseUnits("0.01")) ||
+      networkInfo.balance?.gte(parseUnits("0.5"))) ??
+    false;
 
   const NotConnectedTabs = () => {
     const tabs = [];
@@ -42,11 +54,6 @@ const Bridging = () => {
     }
     return tabs;
   };
-
-  if (!networkInfo.hasPubKey) {
-    navigate("/bridge/walkthrough");
-  }
-
   return (
     <Styled>
       <div
@@ -67,24 +74,51 @@ const Bridging = () => {
           !networkInfo.account
             ? NotConnectedTabs()
             : [
-                <BridgeIn
-                  key={"in"}
-                  ethAddress={networkInfo.account}
-                  cantoAddress={networkInfo.cantoAddress}
-                  ethGBridgeTokens={bridgingTokens.userBridgeInTokens}
-                  selectedEthToken={bridgingTokens.selectedTokens.bridgeInToken}
-                  selectEthToken={(tokenAddress) =>
-                    bridgingTokens.setSelectedToken(
-                      tokenAddress,
-                      SelectedTokens.ETHTOKEN
-                    )
-                  }
-                  step2Transactions={createConvertTransactions(
-                    bridgingHistory.pendingBridgeInTransactions,
-                    bridgingTokens.userNativeTokens,
-                    true
-                  )}
-                />,
+                networkInfo.hasPubKey ? (
+                  <BridgeIn
+                    key={"in"}
+                    ethAddress={networkInfo.account}
+                    cantoAddress={networkInfo.cantoAddress}
+                    ethGBridgeTokens={bridgingTokens.userBridgeInTokens}
+                    selectedEthToken={
+                      bridgingTokens.selectedTokens.bridgeInToken
+                    }
+                    selectEthToken={(tokenAddress) =>
+                      bridgingTokens.setSelectedToken(
+                        tokenAddress,
+                        SelectedTokens.ETHTOKEN
+                      )
+                    }
+                    step2Transactions={createConvertTransactions(
+                      bridgingHistory.pendingBridgeInTransactions,
+                      bridgingTokens.userNativeTokens,
+                      true
+                    )}
+                  />
+                ) : canPubKey ? (
+                  <PubKeyStyled>
+                    <NotConnected
+                      title="Not Qualified to public generate key"
+                      subtext="It seems like you don't have a public key on this account. In order to be qualified to generate a public key, you must have at least 0.5 CANTO or 0.01 ETH on mainnet"
+                      buttonText="Home"
+                      onClick={() => {
+                        navigate("/");
+                      }}
+                      icon={warningRedIcon}
+                    />
+                  </PubKeyStyled>
+                ) : (
+                  <GenPubKeyWalkthrough
+                    txGenPubKey={() => {
+                      if (Number(networkInfo.chainId) != CantoMainnet.chainId) {
+                        addNetwork();
+                      } else {
+                        generatePubKey(networkInfo.account, setPubKeySuccess);
+                      }
+                    }}
+                    txStatus={pubKeySuccess}
+                  />
+                ),
                 <BridgeOut
                   key={"out"}
                   ethAddress={networkInfo.account}

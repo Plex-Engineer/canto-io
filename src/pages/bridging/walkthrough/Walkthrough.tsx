@@ -173,7 +173,7 @@ const Walkthrough = () => {
   );
 };
 
-const PubKeyStyled = styled.div`
+export const PubKeyStyled = styled.div`
   background-color: black;
   height: 100%;
   max-width: 1200px;
