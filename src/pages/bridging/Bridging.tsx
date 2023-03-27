@@ -13,12 +13,15 @@ import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
 import BalanceTableModal from "./walkthrough/components/modals/BalanceTableModal";
 import styled from "@emotion/styled";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Bridging = () => {
   const networkInfo = useNetworkInfo();
   const bridgingTokens = useBridgeTokenInfo();
   const bridgingHistory = useTransactionHistory();
   const { activateBrowserWallet } = useEthers();
+  const navigate = useNavigate();
 
   const NotConnectedTabs = () => {
     const tabs = [];
@@ -39,6 +42,11 @@ const Bridging = () => {
     }
     return tabs;
   };
+
+  if (!networkInfo.hasPubKey) {
+    navigate("/bridge/walkthrough");
+  }
+
   return (
     <Styled>
       <div
