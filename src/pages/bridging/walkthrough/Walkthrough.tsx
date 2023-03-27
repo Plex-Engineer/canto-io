@@ -34,12 +34,12 @@ const Walkthrough = () => {
 
   if (networkInfo.needPubKey) {
     //! removed the condition as it deosn't seem to be working
-    if (networkInfo.canPubKey) {
+    if (!networkInfo.canPubKey) {
       return (
         <PubKeyStyled>
           <NotConnected
-            title="Not Qualified to public generate key"
-            subtext="It seems like you don't have a public key on this account. In order to be qualified to generate a public key, you must have at least 0.5 CANTO or 0.01 ETH on mainnet"
+            title="you don’t have enough Canto or ETH to generate a public key"
+            subtext="In order to generate a public key, you must have at least 0.5 CANTO or 0.01 ETH on mainnet"
             buttonText="Home"
             onClick={() => {
               navigate("/");
@@ -192,7 +192,13 @@ const PubKeyStyled = styled.div`
     }
   }
   .container {
-    width: 1200px;
+    max-width: 1200px;
+  }
+  @media (max-width: 1000px) {
+    width: 100vw;
+    .container {
+      max-width: 100vw;
+    }
   }
 `;
 const Styled = styled.div`

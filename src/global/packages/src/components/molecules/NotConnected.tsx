@@ -66,8 +66,7 @@ const Styled = styled.div`
     max-width: 410px;
 
     button {
-      width: 100vmax;
-      max-width: 410px;
+      width: 310px;
     }
   }
 
