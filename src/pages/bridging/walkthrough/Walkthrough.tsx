@@ -15,6 +15,8 @@ import NoFunds from "./components/pages/noFunds";
 import IntroPage from "./components/pages/intro";
 import { BridgeInManager } from "./managers/BridgeInManager";
 import { BridgeOutManager } from "./managers/BridgeOutManager";
+import { CantoMainnet } from "global/providers";
+import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
@@ -31,7 +33,8 @@ const Walkthrough = () => {
   }
 
   if (networkInfo.needPubKey) {
-    if (!networkInfo.canPubKey) {
+    //! removed the condition as it deosn't seem to be working
+    if (networkInfo.canPubKey) {
       return (
         <PubKeyStyled>
           <NotConnected
@@ -48,7 +51,13 @@ const Walkthrough = () => {
     }
     return (
       <GenPubKeyWalkthrough
-        txGenPubKey={transactions.pubKey.send}
+        txGenPubKey={() => {
+          if (Number(networkInfo.chainId) != CantoMainnet.chainId) {
+            addNetwork();
+          } else {
+            transactions.pubKey.send();
+          }
+        }}
         txStatus={transactions.pubKey.state}
       />
     );
@@ -178,6 +187,9 @@ const PubKeyStyled = styled.div`
 
   button {
     background: var(--error-color);
+    &:hover {
+      background: #e13838;
+    }
   }
   .container {
     width: 1200px;
