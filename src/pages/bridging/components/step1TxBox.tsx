@@ -43,6 +43,7 @@ interface Step1TxBoxProps {
     balance: string;
     onSelect: (value: BaseToken) => void;
   };
+  needPubKey: boolean;
 }
 const Step1TxBox = (props: Step1TxBoxProps) => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -281,12 +282,12 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         weight="bold"
         padding="lg"
         filled
-        disabled={buttonDisabled}
+        disabled={buttonDisabled || props.needPubKey}
         onClick={() => {
           setModalOpen(true);
         }}
       >
-        {buttonText}
+        {props.needPubKey ? "create public key" : buttonText}
       </PrimaryButton>
     </Styled>
   );

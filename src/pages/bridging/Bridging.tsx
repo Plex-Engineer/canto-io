@@ -76,6 +76,7 @@ const Bridging = () => {
                     bridgingTokens.userNativeTokens,
                     true
                   )}
+                  needPubKey={!networkInfo.hasPubKey}
                 />,
                 <BridgeOut
                   key={"out"}

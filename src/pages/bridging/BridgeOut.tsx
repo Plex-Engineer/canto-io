@@ -90,6 +90,7 @@ const BridgeOut = (props: BridgeOutProps) => {
                 false
               )
             }
+            needPubKey={false}
           />
         </div>
         <div className="bridgeToCanto">

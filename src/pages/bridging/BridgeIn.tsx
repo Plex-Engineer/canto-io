@@ -14,6 +14,7 @@ interface BridgeInProps {
   selectedEthToken: UserERC20BridgeToken;
   selectEthToken: (tokenAddress: string) => void;
   step2Transactions: NativeTransaction[];
+  needPubKey: boolean;
 }
 const BridgeIn = (props: BridgeInProps) => {
   const transactionHooks = useBridgingTransactions();
@@ -116,6 +117,7 @@ const BridgeIn = (props: BridgeInProps) => {
             balance: "ibc",
             onSelect: () => true,
           }}
+          needPubKey={props.needPubKey}
         />
         <Step2TxBox
           bridgeIn
