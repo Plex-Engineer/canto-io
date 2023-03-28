@@ -1,13 +1,6 @@
-import { useState } from "react";
-import { useNetworkInfo } from "global/stores/networkInfo";
-import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
-import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
-import { CantoMainnet } from "global/config/networks";
 import { useNavigate } from "react-router-dom";
 
 export const GenPubKey = () => {
-  const [pubKeySuccess, setPubKeySuccess] = useState("");
-  const networkInfo = useNetworkInfo();
   const navigate = useNavigate();
 
   return (
@@ -16,12 +9,6 @@ export const GenPubKey = () => {
       tabIndex={0}
       onClick={() => {
         navigate("/bridge");
-        // if (Number(networkInfo.chainId) != CantoMainnet.chainId) {
-        //   addNetwork();
-        //   setPubKeySuccess("switch to canto network");
-        // } else {
-        //   generatePubKey(networkInfo.account, setPubKeySuccess);
-        // }
       }}
       style={{
         color: "#b73d3d",
