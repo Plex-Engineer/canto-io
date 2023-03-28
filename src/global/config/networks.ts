@@ -9,7 +9,7 @@ export const CantoMainnet = {
   rpcUrl: "https://mainnode.plexnode.org:8545",
   cosmosAPIEndpoint: "https://mainnode.plexnode.org:1317",
   isTestChain: false,
-  blockExplorerUrl: "https://evm.explorer.canto.io/",
+  blockExplorerUrl: "https://tuber.build/",
   multicall1Address: "0x210b88d5Ad4BEbc8FAC4383cC7F84Cd4F03d18c6",
   multicall2Address: "0x637490E68AA50Ea810688a52D7464E10c25A77c1",
 };

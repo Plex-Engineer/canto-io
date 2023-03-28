@@ -100,10 +100,7 @@ const LoadingModal = (props: Props) => {
           className="btn"
           onClick={() => {
             Mixpanel.events.loadingModal.blockExplorerOpened(props.txHash);
-            window.open(
-              "https://evm.explorer.canto.io/tx/" + props.txHash,
-              "_blank"
-            );
+            window.open("https://tuber.build/tx/" + props.txHash, "_blank");
           }}
         >
           open in block explorer
