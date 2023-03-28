@@ -15,7 +15,7 @@ export const GenPubKey = () => {
       role="button"
       tabIndex={0}
       onClick={() => {
-        navigate("/bridge/walkthrough");
+        navigate("/bridge");
         // if (Number(networkInfo.chainId) != CantoMainnet.chainId) {
         //   addNetwork();
         //   setPubKeySuccess("switch to canto network");
