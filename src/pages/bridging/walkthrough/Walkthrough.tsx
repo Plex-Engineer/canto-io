@@ -33,7 +33,6 @@ const Walkthrough = () => {
   }
 
   if (networkInfo.needPubKey) {
-    //! removed the condition as it deosn't seem to be working
     if (!networkInfo.canPubKey) {
       return (
         <PubKeyStyled>

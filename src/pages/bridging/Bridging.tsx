@@ -95,11 +95,11 @@ const Bridging = () => {
                       true
                     )}
                   />
-                ) : canPubKey ? (
+                ) : !canPubKey ? (
                   <PubKeyStyled>
                     <NotConnected
-                      title="Not Qualified to public generate key"
-                      subtext="It seems like you don't have a public key on this account. In order to be qualified to generate a public key, you must have at least 0.5 CANTO or 0.01 ETH on mainnet"
+                      title="you don’t have enough Canto or ETH to generate a public key"
+                      subtext="In order to generate a public key, you must have at least 0.5 CANTO or 0.01 ETH on mainnet"
                       buttonText="Home"
                       onClick={() => {
                         navigate("/");
