@@ -49,7 +49,7 @@ const Container = styled.div<Props>`
   position: ${({ floating }) => (floating ? "absolute" : "relative")};
   left: 50%;
   top: ${({ open, floating }) =>
-    open && floating ? "1rem" : !open && floating ? "-6rem" : "0rem"};
+    open && floating ? "1rem" : !open && floating ? "-10rem" : "0rem"};
   border-radius: ${({ floating }) => (floating ? "4px" : "0")};
 
   transform: translateX(-50%);
@@ -63,7 +63,6 @@ const Container = styled.div<Props>`
 
   .close-btn {
     position: absolute;
-
     height: 30px;
     width: 30px;
     top: -10px;
@@ -84,6 +83,8 @@ const Container = styled.div<Props>`
     padding: 1rem;
     width: calc(100% - 4rem);
     margin: 10px 0;
+    top: ${({ open, floating }) =>
+      open && floating ? "1rem" : !open && floating ? "-10rem" : "0rem"};
   }
 `;
 

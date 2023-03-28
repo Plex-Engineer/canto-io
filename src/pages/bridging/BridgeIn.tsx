@@ -6,6 +6,9 @@ import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
 import { ADDRESSES } from "global/config/addresses";
 import QBoxList from "./components/QBoxList";
 import { NATIVE_COMSOS_TOKENS } from "./config/bridgingTokens";
+import { GenPubKeyWalkthrough } from "./walkthrough/components/pages/genPubKey";
+import { CantoMainnet } from "global/config/networks";
+import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 
 interface BridgeInProps {
   ethAddress?: string;
