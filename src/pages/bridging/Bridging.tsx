@@ -150,6 +150,8 @@ const Bridging = () => {
   );
 };
 
-const Styled = styled.div``;
+const Styled = styled.div`
+  display: flex;
+`;
 
 export default Bridging;
