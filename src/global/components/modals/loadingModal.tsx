@@ -12,7 +12,8 @@ import {
   TransactionState,
 } from "global/config/transactionTypes";
 import { ReactNode, useEffect, useState } from "react";
-import close from "assets/close.svg";
+//! verify this
+import close from "assets/icons/close.svg";
 import { Mixpanel } from "mixpanel";
 
 interface GlobalLoadingProps {
