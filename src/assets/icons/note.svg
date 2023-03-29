@@ -1,33 +1,4 @@
-<svg width="82" height="82" viewBox="0 0 82 82" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="41" cy="41" r="39.5" fill="#06FC99" stroke="#06FC99" stroke-width="3"/>
-<rect x="27" y="21" width="5" height="5" fill="#161616"/>
-<rect x="32" y="27" width="5" height="8" fill="#161616"/>
-<rect x="37" y="34" width="5" height="8" fill="#161616"/>
-<rect x="49" y="36" width="5" height="2" fill="#161616"/>
-<rect x="54" y="34" width="5" height="2" fill="#161616"/>
-<rect x="59" y="32" width="5" height="2" fill="#161616"/>
-<rect x="44" y="38" width="5" height="2" fill="#161616"/>
-<rect x="39" y="40" width="5" height="2" fill="#161616"/>
-<rect x="34" y="42" width="5" height="2" fill="#161616"/>
-<rect x="29" y="44" width="5" height="2" fill="#161616"/>
-<rect x="24" y="46" width="5" height="2" fill="#161616"/>
-<rect x="19" y="48" width="5" height="2" fill="#161616"/>
-<rect x="42" y="39" width="5" height="8" fill="#161616"/>
-<rect x="47" y="46" width="5" height="8" fill="#161616"/>
-<rect x="52" y="46" width="5" height="5" fill="#161616"/>
-<rect x="52" y="21" width="5" height="5" fill="#161616"/>
-<rect x="27" y="26" width="5" height="5" fill="#161616"/>
-<rect x="52" y="26" width="5" height="5" fill="#161616"/>
-<rect x="27" y="31" width="5" height="5" fill="#161616"/>
-<rect x="52" y="31" width="5" height="5" fill="#161616"/>
-<rect x="27" y="36" width="5" height="5" fill="#161616"/>
-<rect x="52" y="36" width="5" height="5" fill="#161616"/>
-<rect x="27" y="41" width="5" height="5" fill="#161616"/>
-<rect x="52" y="41" width="5" height="5" fill="#161616"/>
-<rect x="27" y="46" width="5" height="5" fill="#161616"/>
-<rect x="52" y="46" width="5" height="5" fill="#161616"/>
-<rect x="27" y="51" width="5" height="5" fill="#161616"/>
-<rect x="52" y="51" width="5" height="5" fill="#161616"/>
-<rect x="27" y="56" width="5" height="5" fill="#161616"/>
-<rect x="52" y="56" width="5" height="5" fill="#161616"/>
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="96" height="96" rx="48" fill="#06FC99"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M66.235 75.0684L21.115 75.0684L21.115 20.7324L21.1196 20.7324L21.1196 29.9688L29.9531 29.9688L29.9531 20.7324L74.875 20.7324L74.875 65.6604L66.235 65.6604L66.235 75.0684ZM66.2344 29.7559L66.2344 65.6599L56.8264 65.6599L56.8264 57.0684L48.0571 57.0684L48.0571 47.5938L39.3563 47.5938L39.3563 65.6159L29.9531 65.6159L29.9531 29.9805L39.3563 29.9805L39.3563 38.0936L48.1719 38.0936L48.1719 47.5682L56.8264 47.5682L56.8264 29.7559L66.2344 29.7559Z" fill="black"/>
 </svg>
