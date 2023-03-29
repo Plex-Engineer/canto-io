@@ -1,5 +1,5 @@
 import Table from "./components/table";
-import Row, { TransactionRow } from "./components/row";
+import LpRow, { TransactionRow } from "./components/row";
 import { useState } from "react";
 import { Notification, useNotifications } from "@usedapp/core";
 import useModals, { ModalType } from "./hooks/useModals";
@@ -141,7 +141,7 @@ const Dex = () => {
                   ?.map((pair: UserLPPairInfo, idx) => {
                     return !pair.userSupply.totalLP.isZero() ||
                       pair.userSupply.percentOwned > 0 ? (
-                      <Row
+                      <LpRow
                         delay={0.2 * idx}
                         key={pair.basePairInfo.address}
                         iconLeft={pair.basePairInfo.token1.icon}
@@ -165,7 +165,6 @@ const Dex = () => {
                             truncateNumber(formatUnits(pair.totalSupply.tvl))
                           )
                         }
-                        apr={"23.2"}
                         position={
                           truncateNumber(
                             formatUnits(
@@ -225,7 +224,7 @@ const Dex = () => {
                     pair.userSupply.totalLP.isZero() &&
                     pair.userSupply.percentOwned == 0
                   ) ? null : (
-                    <Row
+                    <LpRow
                       delay={0.1 * idx}
                       key={pair.basePairInfo.address}
                       iconLeft={pair.basePairInfo.token1.icon}
@@ -243,13 +242,9 @@ const Dex = () => {
                         "/" +
                         pair.basePairInfo.token2.symbol
                       }
-                      totalValueLocked={
-                        noteSymbol +
-                        ethers.utils.commify(
-                          truncateNumber(formatUnits(pair.totalSupply.tvl))
-                        )
-                      }
-                      apr={"23.2"}
+                      totalValueLocked={ethers.utils.commify(
+                        truncateNumber(formatUnits(pair.totalSupply.tvl))
+                      )}
                       position={
                         truncateNumber(formatUnits(pair.userSupply.totalLP)) +
                         " LP Tokens"
