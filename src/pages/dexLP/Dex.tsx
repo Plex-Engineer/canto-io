@@ -109,29 +109,33 @@ const LP_Interface = () => {
         {isOngoingToken && (
           <>
             <p className="tableName">ongoing transaction</p>
-            <Table columns={["name", "transaction", "time"]}>
-              {notifs.map((item) => {
-                if (
-                  //@ts-ignore
-                  item?.transactionName?.includes("type") &&
-                  item.type == "transactionStarted"
-                ) {
-                  //@ts-ignore
-                  const msg: Details = JSON.parse(item?.transactionName);
-                  const actionMsg = transactionStatusActions(msg.type).inAction;
-                  return (
-                    <TransactionRow
-                      key={item.submittedAt}
-                      icons={msg.icon}
-                      name={msg.name.toLowerCase()}
-                      status={actionMsg}
-                      date={new Date(item.submittedAt)}
-                    />
-                  );
-                }
-                return null;
-              })}
-            </Table>
+            <FadeIn>
+              <Table columns={["name", "transaction", "time"]}>
+                {notifs.map((item) => {
+                  if (
+                    //@ts-ignore
+                    item?.transactionName?.includes("type") &&
+                    item.type == "transactionStarted"
+                  ) {
+                    //@ts-ignore
+                    const msg: Details = JSON.parse(item?.transactionName);
+                    const actionMsg = transactionStatusActions(
+                      msg.type
+                    ).inAction;
+                    return (
+                      <TransactionRow
+                        key={item.submittedAt}
+                        icons={msg.icon}
+                        name={msg.name.toLowerCase()}
+                        status={actionMsg}
+                        date={new Date(item.submittedAt)}
+                      />
+                    );
+                  }
+                  return null;
+                })}
+              </Table>
+            </FadeIn>
           </>
         )}
         {isPositionedToken && (
@@ -286,9 +290,7 @@ const LP_Interface = () => {
         ) : (
           <div
             style={{
-              //   height: "20rem",
-              flexGrow: "1",
-              background: "Red",
+              height: "30rem",
             }}
           >
             <Loading />
@@ -302,6 +304,7 @@ const LP_Interface = () => {
 const Styled = styled.div`
   display: flex;
   flex-direction: column;
+  min-height: 100%;
   .tableName {
     width: 1200px;
     margin: 0 auto;
