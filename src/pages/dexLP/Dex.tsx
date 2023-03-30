@@ -26,7 +26,7 @@ import loadingGif from "assets/loading.gif";
 import Loading from "global/components/Loading";
 import styled from "@emotion/styled";
 
-const Dex = () => {
+const LP_Interface = () => {
   const networkInfo = useNetworkInfo();
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);
@@ -316,4 +316,4 @@ const Styled = styled.div`
   }
 `;
 
-export default Dex;
+export default LP_Interface;

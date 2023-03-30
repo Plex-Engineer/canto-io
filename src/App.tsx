@@ -22,7 +22,7 @@ const Container = styled.div`
 `;
 //Lazy loading pages. will load in the required pages
 const Bridging = lazy(() => import("pages/bridging/Bridging"));
-const Dex = lazy(() => import("./pages/dexLP/Dex"));
+const LP_Interface = lazy(() => import("./pages/dexLP/Dex"));
 const Staking = lazy(() => import("./pages/staking/Staking"));
 const LendingMarket = lazy(() => import("./pages/lending/LendingMarket"));
 const Governance = lazy(() => import("./pages/governance/governance"));
@@ -67,7 +67,7 @@ function App() {
                 <Route
                   path={PAGES.lp.link}
                   key="lp interface"
-                  element={<Dex />}
+                  element={<LP_Interface />}
                 />
                 <Route
                   path={PAGES.lending.link}
