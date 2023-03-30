@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
 import walletIcon from "assets/wallet.svg";
-import warningIcon from "assets/warning.svg";
+import warningRedIcon from "assets/warning_red.svg";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useBridgeWalkthroughStore } from "./store/bridgeWalkthroughStore";
@@ -15,6 +15,8 @@ import NoFunds from "./components/pages/noFunds";
 import IntroPage from "./components/pages/intro";
 import { BridgeInManager } from "./managers/BridgeInManager";
 import { BridgeOutManager } from "./managers/BridgeOutManager";
+import { CantoMainnet } from "global/providers";
+import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
@@ -33,22 +35,28 @@ const Walkthrough = () => {
   if (networkInfo.needPubKey) {
     if (!networkInfo.canPubKey) {
       return (
-        <Styled>
+        <PubKeyStyled>
           <NotConnected
-            title="No Public Key"
-            subtext="It seems like you don't have a public key on this account. In order to generate a public key, you must have at least 0.5 CANTO or 0.01 ETH on mainnet"
+            title="you don’t have enough Canto or ETH to generate a public key"
+            subtext="In order to generate a public key, you must have at least 0.5 CANTO or 0.01 ETH on mainnet"
             buttonText="Home"
             onClick={() => {
               navigate("/");
             }}
-            icon={warningIcon}
+            icon={warningRedIcon}
           />
-        </Styled>
+        </PubKeyStyled>
       );
     }
     return (
       <GenPubKeyWalkthrough
-        txGenPubKey={transactions.pubKey.send}
+        txGenPubKey={() => {
+          if (Number(networkInfo.chainId) != CantoMainnet.chainId) {
+            addNetwork();
+          } else {
+            transactions.pubKey.send();
+          }
+        }}
         txStatus={transactions.pubKey.state}
       />
     );
@@ -164,6 +172,34 @@ const Walkthrough = () => {
   );
 };
 
+export const PubKeyStyled = styled.div`
+  background-color: black;
+  height: 100%;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  border-top: 1px solid var(--primary-color);
+  p {
+    color: var(--error-color);
+  }
+
+  button {
+    background: var(--error-color);
+    &:hover {
+      background: #e13838;
+    }
+  }
+  .container {
+    max-width: 1200px;
+  }
+  @media (max-width: 1000px) {
+    width: 100vw;
+    .container {
+      max-width: 100vw;
+    }
+  }
+`;
 const Styled = styled.div`
   background-color: black;
   height: 100%;
