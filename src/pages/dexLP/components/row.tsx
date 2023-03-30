@@ -30,7 +30,7 @@ const RowStyle = styled.tr<RowProps>`
     }
   }
 `;
-const LpRow = (props: RowProps) => {
+const Row = (props: RowProps) => {
   return (
     <RowStyle
       {...props}
@@ -145,4 +145,4 @@ export const LoadingRow = ({ colSpan }: LoadingProps) => {
   );
 };
 
-export default LpRow;
+export default Row;
