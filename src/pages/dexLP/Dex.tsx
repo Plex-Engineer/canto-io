@@ -1,5 +1,5 @@
 import Table from "./components/table";
-import LpRow, { TransactionRow } from "./components/row";
+import Row, { TransactionRow } from "./components/row";
 import { useState } from "react";
 import { Notification, useNotifications } from "@usedapp/core";
 import useModals, { ModalType } from "./hooks/useModals";
@@ -15,7 +15,6 @@ import useLPTokenData from "./hooks/useLPTokenData";
 import useUserLPTokenInfo from "./hooks/useUserLPTokenData";
 import { LPPairInfo, UserLPPairInfo } from "./config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
-import { DexContainer } from "./components/Styled";
 import FadeIn from "react-fade-in";
 import { Text } from "global/packages/src";
 import { Details } from "pages/lending/hooks/useTransaction";
@@ -23,11 +22,12 @@ import HelmetSEO from "global/components/seo";
 import { sortColumnsByType } from "pages/lending/components/LMTables";
 import { Mixpanel } from "mixpanel";
 import { useOngoingTransactions } from "global/utils/handleOnGoingTransactions";
+import loadingGif from "assets/loading.gif";
+import Loading from "global/components/Loading";
+import styled from "@emotion/styled";
 
 const Dex = () => {
-  //get network info from store
   const networkInfo = useNetworkInfo();
-
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);
   useOngoingTransactions(notifications, notifs, setNotifs);
@@ -36,6 +36,7 @@ const Dex = () => {
     state.setModalType,
     state.setActivePair,
   ]);
+
   const pairs: LPPairInfo[] = useLPTokenData(Number(networkInfo.chainId));
   const userPairs: UserLPPairInfo[] = useUserLPTokenInfo(
     pairs,
@@ -47,6 +48,22 @@ const Dex = () => {
   const [availablePoolsColumnClicked, setAvailablePoolsColumnCLicked] =
     useState(0);
 
+  const isOngoingToken =
+    notifs.filter((filterItem) => filterItem.type == "transactionStarted")
+      .length > 0;
+
+  const isPositionedToken =
+    userPairs?.filter(
+      (pair: UserLPPairInfo) =>
+        !pair.userSupply.totalLP.isZero() || pair.userSupply.percentOwned > 0
+    ).length > 0;
+
+  const isRegularToken =
+    userPairs?.filter(
+      (pair: UserLPPairInfo) =>
+        pair.userSupply.totalLP.isZero() && pair.userSupply.percentOwned == 0
+    ).length > 0;
+
   return (
     <>
       <HelmetSEO
@@ -54,7 +71,7 @@ const Dex = () => {
         description="Canto Homepage serves De-fi applications"
         link="lp"
       />
-      <DexContainer as={FadeIn}>
+      <Styled as={FadeIn}>
         <div>
           <ModalManager
             chainId={Number(networkInfo.chainId)}
@@ -64,7 +81,6 @@ const Dex = () => {
             }}
           />
         </div>
-        {/* Title widget the margin of 2rem */}
         <div
           style={{
             margin: "2rem 0",
@@ -89,11 +105,9 @@ const Dex = () => {
             </a>
           </Text>
         </div>
-
         {/* Transactions table will be shown here */}
-        {notifs.filter((filterItem) => filterItem.type == "transactionStarted")
-          .length > 0 ? (
-          <div>
+        {isOngoingToken && (
+          <>
             <p className="tableName">ongoing transaction</p>
             <Table columns={["name", "transaction", "time"]}>
               {notifs.map((item) => {
@@ -118,13 +132,9 @@ const Dex = () => {
                 return null;
               })}
             </Table>
-          </div>
-        ) : null}
-        {userPairs?.filter(
-          (pair: UserLPPairInfo) =>
-            !pair.userSupply.totalLP.isZero() ||
-            pair.userSupply.percentOwned > 0
-        ).length ? (
+          </>
+        )}
+        {isPositionedToken && (
           <div>
             <Text type="title" align="left" className="tableName">
               current position
@@ -141,7 +151,7 @@ const Dex = () => {
                   ?.map((pair: UserLPPairInfo, idx) => {
                     return !pair.userSupply.totalLP.isZero() ||
                       pair.userSupply.percentOwned > 0 ? (
-                      <LpRow
+                      <Row
                         delay={0.2 * idx}
                         key={pair.basePairInfo.address}
                         iconLeft={pair.basePairInfo.token1.icon}
@@ -201,12 +211,9 @@ const Dex = () => {
               </Table>
             </FadeIn>
           </div>
-        ) : null}
-        {userPairs?.filter(
-          (pair: UserLPPairInfo) =>
-            pair.userSupply.totalLP.isZero() &&
-            pair.userSupply.percentOwned == 0
-        ).length ? (
+        )}
+
+        {isRegularToken ? (
           <div>
             <Text type="title" align="left" className="tableName">
               pools
@@ -224,7 +231,7 @@ const Dex = () => {
                     pair.userSupply.totalLP.isZero() &&
                     pair.userSupply.percentOwned == 0
                   ) ? null : (
-                    <LpRow
+                    <Row
                       delay={0.1 * idx}
                       key={pair.basePairInfo.address}
                       iconLeft={pair.basePairInfo.token1.icon}
@@ -276,9 +283,37 @@ const Dex = () => {
                 })}
             </Table>
           </div>
-        ) : null}
-      </DexContainer>
+        ) : (
+          <div
+            style={{
+              //   height: "20rem",
+              flexGrow: "1",
+              background: "Red",
+            }}
+          >
+            <Loading />
+          </div>
+        )}
+      </Styled>
     </>
   );
 };
+
+const Styled = styled.div`
+  display: flex;
+  flex-direction: column;
+  .tableName {
+    width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  @media (max-width: 1000px) {
+    .tableName {
+      width: 100%;
+      padding: 0 2rem;
+    }
+  }
+`;
+
 export default Dex;
