@@ -22,9 +22,9 @@ import HelmetSEO from "global/components/seo";
 import { sortColumnsByType } from "pages/lending/components/LMTables";
 import { Mixpanel } from "mixpanel";
 import { useOngoingTransactions } from "global/utils/handleOnGoingTransactions";
-import loadingGif from "assets/loading.gif";
 import Loading from "global/components/Loading";
 import styled from "@emotion/styled";
+import CTable from "global/components/cTable";
 
 const LP_Interface = () => {
   const networkInfo = useNetworkInfo();
@@ -105,6 +105,16 @@ const LP_Interface = () => {
             </a>
           </Text>
         </div>
+
+        {/* <CTable
+          headers={["Test 1", "Test 2", "Test 3", "Test 4", "Test 5"]}
+          items={[
+            ["dummy 1", "dummy 1", "dummy 1", "dummy 1", "dummy 1"],
+            ["dummy 2", "dummy 2", "dummy 2", "dummy 2", "dummy 2"],
+            ["dummy 3", "dummy 3", "dummy 3", "dummy 3", "dummy 3"],
+            ["dummy 4", "dummy 4", "dummy 4", "dummy 4", "dummy 4"],
+          ]}
+        /> */}
         {/* Transactions table will be shown here */}
         {isOngoingToken && (
           <>
