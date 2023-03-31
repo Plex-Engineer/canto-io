@@ -30,7 +30,7 @@ const Proposal = () => {
   } = useSingleProposalData();
   const [votingOpen, setVotingOpen] = useState(false);
 
-  if (!proposalFound || Number(proposal.proposal_id) > 60) {
+  if (!proposalFound) {
     return (
       <ProposalContainer>
         <div>{`proposal id "${proposalId}" not found`}</div>

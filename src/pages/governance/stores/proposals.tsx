@@ -29,12 +29,7 @@ export const useProposals = create<ProposalProps>()(
       ).then(function (response) {
         return response.json();
       });
-      //filter out above 60
-      let allProposals = allProposalData.proposals;
-      allProposals = allProposals.filter((proposal: ProposalData) => {
-        return Number(proposal.proposal_id) <= 60;
-      });
-
+      const allProposals = allProposalData.proposals;
       set({ proposals: allProposals });
 
       await allProposals.map(async (proposal: ProposalData) => {
