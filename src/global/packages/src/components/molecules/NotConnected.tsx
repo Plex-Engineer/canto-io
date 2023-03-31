@@ -41,7 +41,7 @@ const NotConnected = ({
         >
           {subtext}
         </Text2>
-        <PrimaryButton onClick={onClick} weight="bold" height="big">
+        <PrimaryButton onClick={onClick} weight="bold" filled height="big">
           {buttonText}
         </PrimaryButton>
       </FadeIn>
@@ -64,10 +64,9 @@ const Styled = styled.div`
     gap: 2rem;
     width: 100%;
     max-width: 410px;
+
     button {
-      /* width: 100vmax; */
-      /* margin: 0 2rem; */
-      max-width: 410px;
+      width: 310px;
     }
   }
 

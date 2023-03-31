@@ -287,9 +287,9 @@ export function useCustomWalkthrough(): Props {
   };
 
   const canPubKey =
-    (ethBalance?.gt(parseUnits("0.01")) ||
-      networkInfo.balance?.gt(parseUnits("0.5"))) ??
-    true;
+    (ethBalance?.gte(parseUnits("0.01")) ||
+      networkInfo.balance?.gte(parseUnits("0.5"))) ??
+    false;
   return {
     networkInfo: {
       chainId: Number(networkInfo.chainId),
