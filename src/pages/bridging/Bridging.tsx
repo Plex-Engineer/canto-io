@@ -157,6 +157,11 @@ const Bridging = () => {
 };
 
 const Styled = styled.div`
+  .diff {
+    position: relative;
+    top: 4.5rem;
+  }
+
   display: flex;
   justify-content: center;
   align-self: center;

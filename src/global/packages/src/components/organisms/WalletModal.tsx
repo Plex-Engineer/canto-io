@@ -77,7 +77,7 @@ const WalletModal = () => {
         }}
       ></div>
       <div className="row">
-        <Text type="text">support</Text>
+        {/* <Text type="text">support</Text> */}
         <div className="balance">
           <a href="https://docs.canto.io/" target="_blank" rel="noreferrer">
             help center
@@ -127,6 +127,7 @@ const Styled = styled.div`
 
   a {
     text-decoration: underline;
+    font-weight: 400;
   }
 
   .center {

@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import Popup from "reactjs-popup";
 import useGlobalModals, { ModalType } from "../../stores/useModals";
+import Modal from "./Modal";
 import TokensModal from "./TokensModal";
 
 interface ModalManagerProps {
@@ -12,41 +13,16 @@ const ModalManager = ({ chainId }: ModalManagerProps) => {
     state.setModalType,
   ]);
   return (
-    <StyledPopup
+    <Modal
       open={modalType != ModalType.NONE}
       onClose={() => {
         setModalType(ModalType.NONE);
       }}
-      lockScroll
-      modal
-      position="center center"
-      nested
+      title={modalType != ModalType.NONE ? "Import Tokens" : ""}
     >
       {modalType === ModalType.TOKENS && <TokensModal chainId={chainId} />}
-    </StyledPopup>
+    </Modal>
   );
 };
-const StyledPopup = styled(Popup)`
-  // use your custom style for ".popup-overlay"
 
-  &-overlay {
-    background-color: #17271c6d;
-    backdrop-filter: blur(2px);
-    z-index: 10;
-  }
-  // use your custom style for ".popup-content"
-  &-content {
-    position: relative;
-    overflow-y: hidden;
-    overflow-x: hidden;
-    background-color: black;
-    border: 1px solid var(--primary-color);
-    scroll-behavior: smooth;
-    /* width */
-
-    @media (max-width: 1000px) {
-      width: 100%;
-    }
-  }
-`;
 export default ModalManager;

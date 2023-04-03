@@ -401,5 +401,18 @@ const Styled = styled.div`
     margin-top: 1.2rem;
     margin-bottom: 0.4rem;
   }
+
+  @media (max-width: 1000px) {
+    width: 100%;
+    /* margin: 0 1rem; */
+    padding: 12px;
+    .amount-box {
+      flex-direction: column;
+    }
+    .amount {
+      min-width: 14rem;
+      width: 100%;
+    }
+  }
 `;
 export default Step1TxBox;

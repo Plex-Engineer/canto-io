@@ -1,33 +1,27 @@
 import styled from "@emotion/styled";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { CantoMainnet, CantoTestnet } from "global/config/networks";
 import CheckBox from "global/components/checkBox";
 import { CTOKENS, TOKENS } from "global/config/tokenInfo";
-import { OutlinedButton } from "../atoms/Button";
+import { PrimaryButton } from "../atoms/Button";
 import { Text } from "../atoms/Text";
+import { CInput } from "../atoms/Input";
+
 const Styled = styled.div`
   background-color: #040404;
   height: 36rem;
-  width: 26rem;
+  width: 30rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: start;
-  /* padding: 1rem; */
-  .title {
-    font-style: normal;
-    font-weight: 300;
-    font-size: 22px;
-    line-height: 130%;
-    text-align: center;
-    letter-spacing: -0.1em;
-    text-transform: lowercase;
-    color: var(--primary-color);
-    /* margin-top: 0.3rem; */
-    width: 100%;
-    background-color: #06fc991a;
-    padding: 1rem;
-    border-bottom: 1px solid var(--primary-color);
+
+  .search {
+    margin: 6px;
+    input {
+      max-width: 26rem;
+      width: 80vw;
+    }
   }
   .details {
     display: flex;
@@ -40,12 +34,12 @@ const Styled = styled.div`
   .scroll-view {
     overflow-y: auto;
     width: 100%;
-    border-top: 1px solid var(--dark-grey-color);
-    border-bottom: 1px solid var(--dark-grey-color);
-    padding: 2rem;
+    border-top: 1px solid #111;
+    border-bottom: 1px solid #111;
+    padding: 0 1.5rem;
   }
   @media (max-width: 1000px) {
-    width: 100%;
+    width: 100vw;
   }
 `;
 
@@ -59,6 +53,7 @@ interface AddTokenItemProps {
   decimals: number;
   icon: string;
 }
+
 function sortTokens(tokens: AddTokenItemProps[]) {
   return tokens.sort((a, b) => {
     if (a.symbol < b.symbol) {
@@ -146,7 +141,7 @@ const fullTokenList = (chainId: number): TokenListCategory[] => {
   ];
 };
 
-function getAllTokens2(categories: TokenListCategory[]) {
+function getAllTokens(categories: TokenListCategory[]): AddTokenItemProps[] {
   const allTokens: AddTokenItemProps[] = [];
   categories.forEach((category) => allTokens.push(...category.tokens));
   return allTokens;
@@ -156,16 +151,51 @@ interface TokenModalProps {
 }
 const TokensModal = ({ chainId }: TokenModalProps) => {
   const [selectedTokens, setSelectedTokens] = useState<AddTokenItemProps[]>([]);
-  const allTokens = getAllTokens2(fullTokenList(chainId));
+  const [tokenList, setTokenList] = useState<TokenListCategory[]>(
+    fullTokenList(chainId)
+  );
+  const allTokens = getAllTokens(tokenList);
+
+  const [userSearch, setUserSearch] = useState("");
+
+  useEffect(() => {
+    if (!userSearch) {
+      setTokenList(fullTokenList(chainId));
+    } else {
+      setTokenList(
+        fullTokenList(chainId).map((category) => {
+          return {
+            name: category.name,
+            tokens: (category.tokens = category.tokens.filter((token) =>
+              token.symbol.toLowerCase().includes(userSearch.toLowerCase())
+            )),
+          };
+        })
+      );
+    }
+  }, [userSearch]);
   return (
     <Styled>
-      <div className="title">Import Tokens</div>
+      <div className="search">
+        <CInput
+          value={userSearch}
+          placeholder="Token Name"
+          onChange={(e) => setUserSearch(e.target.value)}
+        />
+      </div>
       {allTokens.length > 0 ? (
-        <React.Fragment>
+        <>
           <div className="scroll-view">
-            {fullTokenList(chainId).map((category) => (
+            {tokenList.map((category) => (
               <div key={category.name}>
-                <Text type="text">{category.name}</Text>
+                <Text
+                  type="title"
+                  style={{
+                    margin: "1rem",
+                  }}
+                >
+                  {category.name}
+                </Text>
                 {category.tokens.map((token) => {
                   return (
                     <TokenItem
@@ -192,16 +222,18 @@ const TokensModal = ({ chainId }: TokenModalProps) => {
               </div>
             ))}
           </div>
-          <OutlinedButton
+          <PrimaryButton
             style={{
               marginTop: "1.2rem",
             }}
             onClick={() => {
               addTokens(selectedTokens);
             }}
+            weight="bold"
+            height="big"
           >
             Import Tokens
-          </OutlinedButton>
+          </PrimaryButton>
           {
             <div className="details">
               <p>
@@ -222,10 +254,16 @@ const TokensModal = ({ chainId }: TokenModalProps) => {
               </div>
             </div>
           }
-        </React.Fragment>
+        </>
       ) : (
         <div style={{ marginTop: "50%" }}>
-          <Text type="text">please switch to canto network to add tokens</Text>
+          {userSearch ? (
+            <Text type="title">no tokens match search</Text>
+          ) : (
+            <Text type="title">
+              please switch to canto network to add tokens
+            </Text>
+          )}
         </div>
       )}
     </Styled>
@@ -241,9 +279,10 @@ interface TokenItemProps {
 const ItemStyled = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 1rem 2rem;
+  padding: 1rem;
   margin: 0 0.4rem;
   align-items: center;
+  border-radius: 4px;
   .row {
     display: flex;
     gap: 1rem;
@@ -256,6 +295,7 @@ const ItemStyled = styled.div`
     cursor: pointer;
   }
 `;
+
 const TokenItem = ({ token, onSelect, isSelected }: TokenItemProps) => {
   return (
     <ItemStyled
