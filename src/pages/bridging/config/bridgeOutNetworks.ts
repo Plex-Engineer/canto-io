@@ -42,6 +42,7 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
       ALL_IBC_TOKENS_WITH_DENOMS.ETH,
       ALL_IBC_TOKENS_WITH_DENOMS.USDC,
       ALL_IBC_TOKENS_WITH_DENOMS.USDT,
+      ALL_IBC_TOKENS_WITH_DENOMS.WSTETH,
     ],
     nativeDenom: "ugraviton",
     cantoChannel: "channel-0",
@@ -171,6 +172,96 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
     restEndpoint: "https://api.data.kava.io",
     rpcEndpoint: "https://rpc.data.kava.io",
     addressBeginning: "kava",
+    checkAddress: function (address) {
+      return addressCheck(address, this.addressBeginning);
+    },
+  },
+  [BridgeOutNetworks.SENTINEL]: {
+    name: "sentinel",
+    chainId: "sentinelhub-2",
+    icon: TOKENS.cantoMainnet.SENTINAL.icon,
+    tokens: [ALL_IBC_TOKENS_WITH_DENOMS.KAVA],
+    nativeDenom: "udvpn",
+    cantoChannel: "channel-16",
+    networkChannel: "channel-71",
+    restEndpoint: "https://api-sentinel-ia.cosmosia.notional.ventures/",
+    rpcEndpoint: "https://rpc-sentinel-ia.cosmosia.notional.ventures/",
+    addressBeginning: "sent",
+    checkAddress: function (address) {
+      return addressCheck(address, this.addressBeginning);
+    },
+  },
+  [BridgeOutNetworks.EVMOS]: {
+    name: "evmos",
+    chainId: "evmos_9001-2",
+    icon: TOKENS.cantoMainnet.EVMOS.icon,
+    tokens: [ALL_IBC_TOKENS_WITH_DENOMS.EVMOS],
+    nativeDenom: "aevmos",
+    restEndpoint: "https://evmos.kingnodes.com",
+    rpcEndpoint: "https://evmos.kingnodes.com",
+    cantoChannel: "channel-15",
+    networkChannel: "channel-62",
+    addressBeginning: "evmos",
+    checkAddress: function (address) {
+      return addressCheck(address, this.addressBeginning);
+    },
+  },
+  [BridgeOutNetworks.PERSISTENCE]: {
+    name: "persistence",
+    chainId: "core-1",
+    icon: TOKENS.cantoMainnet.PERSISTENCE.icon,
+    tokens: [
+      ALL_IBC_TOKENS_WITH_DENOMS.PERSISTENCE,
+      ALL_IBC_TOKENS_WITH_DENOMS.PSTAKEDATOM,
+    ],
+    nativeDenom: "uxprt",
+    restEndpoint: "https://rest.core.persistence.one",
+    rpcEndpoint: "https://rpc.core.persistence.one",
+    cantoChannel: "channel-17",
+    networkChannel: "channel-80",
+    addressBeginning: "persistence",
+    checkAddress: function (address) {
+      return addressCheck(address, this.addressBeginning);
+    },
+  },
+  [BridgeOutNetworks.STRIDE]: {
+    name: "stride",
+    chainId: "stride-1",
+    icon: TOKENS.cantoMainnet.STRIDE.icon,
+    tokens: [
+      ALL_IBC_TOKENS_WITH_DENOMS.STRIDE,
+      ALL_IBC_TOKENS_WITH_DENOMS.STEVMOS,
+      ALL_IBC_TOKENS_WITH_DENOMS.STATOM,
+      ALL_IBC_TOKENS_WITH_DENOMS.STJUNO,
+      ALL_IBC_TOKENS_WITH_DENOMS.STOSMO,
+      ALL_IBC_TOKENS_WITH_DENOMS.STSTARS,
+    ],
+    nativeDenom: "ustrd",
+    restEndpoint: "https://stride-api.polkachu.com/",
+    rpcEndpoint: "https://stride-rpc.polkachu.com/",
+    cantoChannel: "channel-18",
+    networkChannel: "channel-74",
+    addressBeginning: "stride",
+    checkAddress: function (address) {
+      return addressCheck(address, this.addressBeginning);
+    },
+  },
+  [BridgeOutNetworks.QUICKSILVER]: {
+    name: "quicksilver",
+    chainId: "quicksilver-2",
+    icon: TOKENS.cantoMainnet.QUICKSILVER.icon,
+    tokens: [
+      ALL_IBC_TOKENS_WITH_DENOMS.QUICKSILVER,
+      ALL_IBC_TOKENS_WITH_DENOMS.QATOM,
+      ALL_IBC_TOKENS_WITH_DENOMS.QREGEN,
+      ALL_IBC_TOKENS_WITH_DENOMS.QSTARS,
+    ],
+    nativeDenom: "uqck",
+    restEndpoint: "https://api-quicksilver-ia.cosmosia.notional.ventures:443",
+    rpcEndpoint: "https://rpc.quicksilver.zone:443",
+    cantoChannel: "channel-19",
+    networkChannel: "channel-24",
+    addressBeginning: "quick",
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },

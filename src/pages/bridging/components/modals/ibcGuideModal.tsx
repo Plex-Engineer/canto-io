@@ -43,7 +43,7 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
       setKeplrClient(client);
       const balance = await client.getBalance(
         accounts[0].address,
-        network.nativeDenom
+        props.token.nativeName
       );
       setBalance(balance.amount);
     }
@@ -57,7 +57,7 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
     await keplrClient?.sendIbcTokens(
       userKeplrAddress,
       props.cantoAddress,
-      coin(amount, network.nativeDenom),
+      coin(amount, props.token.nativeName),
       "transfer",
       network.networkChannel,
       undefined,

@@ -37,6 +37,11 @@ export enum BridgeOutNetworks {
   KAVA,
   AKASH,
   CRESCENT,
+  SENTINEL,
+  EVMOS,
+  PERSISTENCE,
+  STRIDE,
+  QUICKSILVER,
 }
 
 /**
