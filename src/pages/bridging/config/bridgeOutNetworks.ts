@@ -19,11 +19,14 @@ function addressCheck(address: string | undefined, addressBeginning: string) {
 }
 export const CANTO_IBC_NETWORK: BridgeOutNetworkInfo = {
   name: "canto",
+  chainId: "",
   icon: TOKENS.cantoMainnet.CANTO.icon,
   tokens: [],
+  nativeDenom: "canto",
   cantoChannel: "",
   networkChannel: "",
-  endpoint: "",
+  restEndpoint: "",
+  rpcEndpoint: "",
   addressBeginning: "canto",
   checkAddress: function (address) {
     return addressCheck(address, this.addressBeginning);
@@ -32,6 +35,7 @@ export const CANTO_IBC_NETWORK: BridgeOutNetworkInfo = {
 export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
   [BridgeOutNetworks.GRAVITY_BRIDGE]: {
     name: "gravity bridge",
+    chainId: "gravity-bridge-3",
     icon: GravitonGrey,
     tokens: [
       ALL_IBC_TOKENS_WITH_DENOMS.GRAV,
@@ -39,9 +43,11 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
       ALL_IBC_TOKENS_WITH_DENOMS.USDC,
       ALL_IBC_TOKENS_WITH_DENOMS.USDT,
     ],
+    nativeDenom: "ugraviton",
     cantoChannel: "channel-0",
     networkChannel: "channel-88",
-    endpoint: "https://gravitychain.io:1317",
+    restEndpoint: "https://gravitychain.io:1317",
+    rpcEndpoint: "https://gravitychain.io:26657",
     extraEndpoints: ["https://gravity-api.polkachu.com"],
     addressBeginning: "gravity",
     checkAddress: function (address) {
@@ -50,11 +56,14 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
   },
   [BridgeOutNetworks.COSMOS_HUB]: {
     name: "cosmos hub",
+    chainId: "cosmoshub-4",
     icon: cosmosIcon,
     tokens: [ALL_IBC_TOKENS_WITH_DENOMS.ATOM],
+    nativeDenom: "uatom",
     cantoChannel: "channel-2",
     networkChannel: "channel-358",
-    endpoint: "https://api-cosmoshub-ia.cosmosia.notional.ventures/",
+    restEndpoint: "https://api-cosmoshub-ia.cosmosia.notional.ventures",
+    rpcEndpoint: "https://rpc-cosmoshub.blockapsis.com",
     addressBeginning: "cosmos",
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
@@ -62,11 +71,14 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
   },
   [BridgeOutNetworks.OSMOSIS]: {
     name: "osmosis",
+    chainId: "osmosis-1",
     icon: TOKENS.cantoMainnet.OSMOSIS.icon,
     tokens: [ALL_IBC_TOKENS_WITH_DENOMS.OSMOSIS],
+    nativeDenom: "uosmo",
     cantoChannel: "channel-5",
     networkChannel: "channel-550",
-    endpoint: "https://lcd.osmosis.zone/",
+    restEndpoint: "https://lcd.osmosis.zone",
+    rpcEndpoint: "https://rpc.osmosis.zone",
     addressBeginning: "osmo",
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
@@ -74,11 +86,14 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
   },
   [BridgeOutNetworks.COMDEX]: {
     name: "comdex",
+    chainId: "comdex-1",
     icon: TOKENS.cantoMainnet.COMDEX.icon,
     tokens: [ALL_IBC_TOKENS_WITH_DENOMS.COMDEX],
+    nativeDenom: "ucmdx",
     cantoChannel: "channel-7",
     networkChannel: "channel-58",
-    endpoint: "https://rest.comdex.one",
+    restEndpoint: "https://rest.comdex.one",
+    rpcEndpoint: "https://rpc.comdex.one",
     addressBeginning: "comdex",
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
@@ -86,11 +101,14 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
   },
   [BridgeOutNetworks.INJECTIVE]: {
     name: "injective",
+    chainId: "injective-1",
     icon: TOKENS.cantoMainnet.INJECTIVE.icon,
     tokens: [ALL_IBC_TOKENS_WITH_DENOMS.INJECTIVE],
+    nativeDenom: "inj",
     cantoChannel: "channel-8",
     networkChannel: "channel-99",
-    endpoint: "https://lcd.injective.network/",
+    restEndpoint: "https://lcd.injective.network",
+    rpcEndpoint: "https://injective-rpc.polkachu.com",
     latestBlockEndpoint: "/cosmos/base/tendermint/v1beta1",
     addressBeginning: "inj",
     checkAddress: function (address) {
@@ -99,11 +117,14 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
   },
   [BridgeOutNetworks.CRESCENT]: {
     name: "crescent",
+    chainId: "crescent-1",
     icon: TOKENS.cantoMainnet.CRESCENT.icon,
     tokens: [ALL_IBC_TOKENS_WITH_DENOMS.CRESCENT],
+    nativeDenom: "ucre",
     cantoChannel: "channel-9",
     networkChannel: "channel-34",
-    endpoint: "https://mainnet.crescent.network:1317",
+    restEndpoint: "https://mainnet.crescent.network:1317",
+    rpcEndpoint: "https://mainnet.crescent.network:26657",
     addressBeginning: "cre",
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
@@ -111,11 +132,14 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
   },
   [BridgeOutNetworks.SOMMELIER]: {
     name: "sommelier",
+    chainId: "sommelier-3",
     icon: TOKENS.cantoMainnet.SOMM.icon,
     tokens: [ALL_IBC_TOKENS_WITH_DENOMS.SOMM],
+    nativeDenom: "usomm",
     cantoChannel: "channel-10",
     networkChannel: "channel-2",
-    endpoint: "https://sommelier-api.polkachu.com",
+    restEndpoint: "https://sommelier-api.polkachu.com",
+    rpcEndpoint: "https://sommelier-rpc.lavenderfive.com",
     addressBeginning: "somm",
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
@@ -123,11 +147,14 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
   },
   [BridgeOutNetworks.AKASH]: {
     name: "akash",
+    chainId: "akashnet-2",
     icon: TOKENS.cantoMainnet.AKASH.icon,
     tokens: [ALL_IBC_TOKENS_WITH_DENOMS.AKASH],
+    nativeDenom: "uakt",
     cantoChannel: "channel-11",
     networkChannel: "channel-59",
-    endpoint: "https://api-akash-ia.cosmosia.notional.ventures",
+    restEndpoint: "https://api-akash-ia.cosmosia.notional.ventures",
+    rpcEndpoint: "https://akash-rpc.polkachu.com",
     addressBeginning: "akash",
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
@@ -135,11 +162,14 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
   },
   [BridgeOutNetworks.KAVA]: {
     name: "kava",
+    chainId: "kava_2222-10",
     icon: TOKENS.cantoMainnet.KAVA.icon,
     tokens: [ALL_IBC_TOKENS_WITH_DENOMS.KAVA],
+    nativeDenom: "ukava",
     cantoChannel: "channel-13",
     networkChannel: "channel-87",
-    endpoint: "https://api.data.kava.io/",
+    restEndpoint: "https://api.data.kava.io",
+    rpcEndpoint: "https://rpc.data.kava.io",
     addressBeginning: "kava",
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);

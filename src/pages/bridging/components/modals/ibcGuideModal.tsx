@@ -1,20 +1,95 @@
 import styled from "@emotion/styled";
-import { Text } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
 import { ALL_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
 import { NativeToken } from "pages/bridging/config/interfaces";
 import { copyAddress, formatAddress } from "pages/bridging/utils/utils";
 import CopyToClipboard from "react-copy-to-clipboard";
 import CopyIcon from "assets/copy.svg";
-import { ReactNode } from "react";
-
+import { ReactNode, useState } from "react";
+import { Window as KeplrWindow } from "@keplr-wallet/types";
+import { coin, SigningStargateClient, GasPrice } from "@cosmjs/stargate";
+import { getBlockTimestamp } from "pages/bridging/utils/IBC/IBCTransfer";
+import { CInput } from "global/packages/src/components/atoms/Input";
 interface IBCGuideModalProps {
   token: NativeToken;
   cantoAddress: string;
 }
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface Window extends KeplrWindow {}
+}
+
 const IBCGuideModal = (props: IBCGuideModalProps) => {
+  const [userKeplrAddress, setUserKeplrAddress] = useState("");
+  const [balance, setBalance] = useState("0");
+  const [keplrClient, setKeplrClient] = useState<SigningStargateClient>();
+  const [amount, setAmount] = useState("");
   const network = ALL_BRIDGE_OUT_NETWORKS[props.token.supportedOutChannels[0]];
+  async function setKeplrAddressAndBalance() {
+    if (!window.keplr) {
+      console.error("no keplr installed");
+    } else {
+      await window.keplr.enable(network.chainId);
+      const offlineSinger = window.keplr.getOfflineSigner(network.chainId);
+      const accounts = await offlineSinger.getAccounts();
+      setUserKeplrAddress(accounts[0].address);
+      const client = await SigningStargateClient.connectWithSigner(
+        network.rpcEndpoint,
+        offlineSinger,
+        {
+          gasPrice: GasPrice.fromString("300000" + network.nativeDenom),
+        }
+      );
+      setKeplrClient(client);
+      const balance = await client.getBalance(
+        accounts[0].address,
+        network.nativeDenom
+      );
+      setBalance(balance.amount);
+    }
+  }
+  async function createIBCMsg() {
+    const blockTimestamp = await getBlockTimestamp(
+      network.restEndpoint,
+      network.extraEndpoints,
+      network.latestBlockEndpoint
+    );
+    await keplrClient?.sendIbcTokens(
+      userKeplrAddress,
+      props.cantoAddress,
+      coin(amount, network.nativeDenom),
+      "transfer",
+      network.networkChannel,
+      undefined,
+      Number(blockTimestamp),
+      "auto",
+      "ibc transfer"
+    );
+  }
   return (
     <Styled>
+      <PrimaryButton onClick={setKeplrAddressAndBalance}>
+        Connect to keplr
+      </PrimaryButton>
+      <PrimaryButton onClick={createIBCMsg}>create tx</PrimaryButton>
+      <div className="header">amount :</div>
+      <div className="value">
+        <CInput
+          style={{
+            border: "1px solid #282828",
+            backgroundColor: "transparent",
+            width: "16rem",
+          }}
+          placeholder={"0"}
+          value={amount}
+          onChange={(val) => {
+            setAmount(val.target.value);
+          }}
+        />
+      </div>
+      {userKeplrAddress}
+      <br />
+      {"balance: " + balance}
       <div>
         <img height={50} src={props.token.icon} alt={props.token.name} />
         <Text type="title" size="title3">

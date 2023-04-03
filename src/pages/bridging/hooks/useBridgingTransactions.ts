@@ -163,7 +163,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
           amount,
           tokenDenom,
           CantoMainnet.cosmosAPIEndpoint,
-          bridgeOutNetwork.endpoint,
+          bridgeOutNetwork.restEndpoint,
           bridgeOutNetwork.latestBlockEndpoint,
           ibcFee,
           chain,
