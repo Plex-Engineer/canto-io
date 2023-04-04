@@ -17,6 +17,8 @@ function addressCheck(address: string | undefined, addressBeginning: string) {
     address.length == 39 + addressBeginning.length
   );
 }
+const blockEndpoint = "/cosmos/base/tendermint/v1beta1";
+
 export const CANTO_IBC_NETWORK: BridgeOutNetworkInfo = {
   name: "canto",
   chainId: "",
@@ -110,7 +112,7 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
     networkChannel: "channel-99",
     restEndpoint: "https://lcd.injective.network",
     rpcEndpoint: "https://injective-rpc.polkachu.com",
-    latestBlockEndpoint: "/cosmos/base/tendermint/v1beta1",
+    latestBlockEndpoint: blockEndpoint,
     addressBeginning: "inj",
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
@@ -180,7 +182,7 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
     name: "sentinel",
     chainId: "sentinelhub-2",
     icon: TOKENS.cantoMainnet.SENTINAL.icon,
-    tokens: [ALL_IBC_TOKENS_WITH_DENOMS.KAVA],
+    tokens: [ALL_IBC_TOKENS_WITH_DENOMS.SENTINAL],
     nativeDenom: "udvpn",
     cantoChannel: "channel-16",
     networkChannel: "channel-71",
@@ -239,6 +241,7 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
     nativeDenom: "ustrd",
     restEndpoint: "https://stride-api.polkachu.com/",
     rpcEndpoint: "https://stride-rpc.polkachu.com/",
+    latestBlockEndpoint: blockEndpoint,
     cantoChannel: "channel-18",
     networkChannel: "channel-74",
     addressBeginning: "stride",
@@ -257,8 +260,9 @@ export const ALL_BRIDGE_OUT_NETWORKS: BridgeOutNetworkData = {
       ALL_IBC_TOKENS_WITH_DENOMS.QSTARS,
     ],
     nativeDenom: "uqck",
-    restEndpoint: "https://api-quicksilver-ia.cosmosia.notional.ventures:443",
+    restEndpoint: "https://quicksilver-api.lavenderfive.com:443",
     rpcEndpoint: "https://rpc.quicksilver.zone:443",
+    latestBlockEndpoint: blockEndpoint,
     cantoChannel: "channel-19",
     networkChannel: "channel-24",
     addressBeginning: "quick",

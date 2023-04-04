@@ -27,6 +27,7 @@
     "@usedapp/core": "1.2.7",
     "bignumber.js": "^9.0.2",
     "ethers": "^5.7.2",
+    "injectivejs": "^1.4.0",
     "mixpanel": "^0.16.0",
     "mixpanel-browser": "^2.45.0",
     "moment": "^2.29.4",

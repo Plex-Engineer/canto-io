@@ -6,10 +6,14 @@ import { copyAddress, formatAddress } from "pages/bridging/utils/utils";
 import CopyToClipboard from "react-copy-to-clipboard";
 import CopyIcon from "assets/copy.svg";
 import { ReactNode, useState } from "react";
-import { Window as KeplrWindow } from "@keplr-wallet/types";
+import { BroadcastMode, Window as KeplrWindow } from "@keplr-wallet/types";
 import { coin, SigningStargateClient, GasPrice } from "@cosmjs/stargate";
 import { getBlockTimestamp } from "pages/bridging/utils/IBC/IBCTransfer";
 import { CInput } from "global/packages/src/components/atoms/Input";
+import { TransactionState } from "@usedapp/core";
+import { CantoMainnet } from "global/config/networks";
+import { modifiedSignEvmos } from "pages/bridging/utils/IBC/otherIBCMethods";
+
 interface IBCGuideModalProps {
   token: NativeToken;
   cantoAddress: string;
@@ -24,7 +28,9 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
   const [balance, setBalance] = useState("0");
   const [keplrClient, setKeplrClient] = useState<SigningStargateClient>();
   const [amount, setAmount] = useState("");
+  const [txStatus, setTxStatus] = useState<TransactionState>("None");
   const network = ALL_BRIDGE_OUT_NETWORKS[props.token.supportedOutChannels[0]];
+
   async function setKeplrAddressAndBalance() {
     if (!window.keplr) {
       console.error("no keplr installed");
@@ -50,21 +56,54 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
   }
   async function createIBCMsg() {
     const blockTimestamp = await getBlockTimestamp(
-      network.restEndpoint,
-      network.extraEndpoints,
-      network.latestBlockEndpoint
+      CantoMainnet.cosmosAPIEndpoint
     );
-    await keplrClient?.sendIbcTokens(
-      userKeplrAddress,
-      props.cantoAddress,
-      coin(amount, props.token.nativeName),
-      "transfer",
-      network.networkChannel,
-      undefined,
-      Number(blockTimestamp),
-      "auto",
-      "ibc transfer"
-    );
+    setTxStatus("PendingSignature");
+    try {
+      //if injective or emvos, we cannot use stargate client
+      if (
+        (network.chainId === "evmos_9001-2" ||
+          network.chainId === "injective-1") &&
+        keplrClient &&
+        window.keplr
+      ) {
+        const tx = await modifiedSignEvmos(
+          network.restEndpoint,
+          keplrClient,
+          window.keplr.getOfflineSigner(network.chainId),
+          network.chainId,
+          userKeplrAddress,
+          network.networkChannel,
+          coin(amount, props.token.nativeName),
+          props.cantoAddress,
+          Number(blockTimestamp),
+          network.nativeDenom
+        );
+        const mode = "block" as BroadcastMode;
+        const response = window.keplr?.sendTx(network.chainId, tx, mode);
+        console.log(response);
+      } else {
+        const ibcResponse = await keplrClient?.sendIbcTokens(
+          userKeplrAddress,
+          props.cantoAddress,
+          coin(amount, props.token.nativeName),
+          "transfer",
+          network.networkChannel,
+          undefined,
+          Number(blockTimestamp),
+          "auto",
+          "ibc transfer" //memo
+        );
+        if (ibcResponse?.code === 0) {
+          setTxStatus("Success");
+        } else {
+          setTxStatus("Fail");
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      setTxStatus("Fail");
+    }
   }
   return (
     <Styled>
@@ -72,6 +111,7 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
         Connect to keplr
       </PrimaryButton>
       <PrimaryButton onClick={createIBCMsg}>create tx</PrimaryButton>
+      {txStatus}
       <div className="header">amount :</div>
       <div className="value">
         <CInput
