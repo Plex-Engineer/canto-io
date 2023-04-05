@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { BigNumber } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
 import { BaseToken } from "pages/bridging/config/interfaces";
@@ -22,7 +22,12 @@ const TokenModal = (props: Props) => {
         {props.tokens
           ?.sort(
             (a, b) =>
-              Number(b[props.balanceString]) - Number(a[props.balanceString])
+              Number(
+                formatUnits(b[props.balanceString] as BigNumberish, b.decimals)
+              ) -
+              Number(
+                formatUnits(a[props.balanceString] as BigNumberish, a.decimals)
+              )
           )
           .map((token) => (
             <div
@@ -52,7 +57,7 @@ const TokenModal = (props: Props) => {
           ))}
         {props.extraTokenData &&
           props.extraTokenData.tokens
-            ?.sort((a, b) => (b.symbol > a.symbol ? -1 : 1))
+            ?.sort((a, b) => (b.name > a.name ? -1 : 1))
             .map((token) => (
               <div
                 role="button"

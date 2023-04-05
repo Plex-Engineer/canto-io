@@ -5,7 +5,24 @@ import {
   signAndBroadcastTxMsg,
 } from "global/utils/cantoTransactions/helpers";
 import { createTxIBCMsgTransfer } from "./IBCMsgTransfer";
+import { Any } from "cosmjs-types/google/protobuf/any";
+import { Account, accountFromAny } from "@cosmjs/stargate";
 
+/**
+ * @dev This function is used to parse the account from keplr
+ * @param account Object from keplr account
+ * @returns account with type Account
+ */
+export function customAccountParser(input: Any): Account {
+  let { typeUrl, value } = input;
+  //for eth accounts (like evmos)
+  if (typeUrl !== "/ethermint.types.v1.EthAccount") {
+    typeUrl = "/cosmos.auth.v1beta1.BaseAccount";
+    accountFromAny({ typeUrl, value });
+  }
+  return accountFromAny(input);
+}
+//this is for IBC out of canto to another chain
 export async function txIBCTransfer(
   receiver: any,
   channel_id: any,
@@ -42,7 +59,7 @@ export async function txIBCTransfer(
   );
 
   //decrease precision of timeoutTimestamp to avoid errors in protobuf encoding
-  timeoutTimestamp = timeoutTimestamp.slice(0, 9) + "0000000000";
+  timeoutTimestamp = timeoutTimestamp.slice(0, 9) + "00000000000";
 
   //set tolerance on revision height to be 1000 blocks, (timeoutHeight is 1000 blocks higher than client concensus state height)
   const revisionHeight = Number(ibcData["height"]["revision_height"]) + 1000;
@@ -136,14 +153,6 @@ export async function getBlockTimestamp(
     allEndpoints,
     urlEnding + "/blocks/latest"
   );
-  // const resp = await fetch(nodeAddress + urlEnding + "/blocks/latest", {
-  //   method: "GET",
-  //   headers: {
-  //     Accept: "application/json",
-  //   },
-  // }).catch((error) => console.log("getBlockTimestamp::error: ", error));
-  // //@ts-ignore
-  // const obj = await resp.json();
 
   if (data) {
     // get iso formatted time stamp from latest block

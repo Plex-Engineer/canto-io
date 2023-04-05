@@ -14,11 +14,14 @@ import { ReactNode } from "react";
  */
 export interface BridgeOutNetworkInfo {
   name: string;
+  chainId: string;
   icon: string;
   tokens: NativeToken[];
+  nativeDenom: string;
   cantoChannel: string;
   networkChannel: string;
-  endpoint: string;
+  restEndpoint: string;
+  rpcEndpoint: string;
   extraEndpoints?: string[];
   latestBlockEndpoint?: string;
   addressBeginning: string;
@@ -34,6 +37,11 @@ export enum BridgeOutNetworks {
   KAVA,
   AKASH,
   CRESCENT,
+  SENTINEL,
+  EVMOS,
+  PERSISTENCE,
+  STRIDE,
+  QUICKSILVER,
 }
 
 /**
