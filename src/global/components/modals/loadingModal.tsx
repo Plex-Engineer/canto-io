@@ -12,7 +12,8 @@ import {
   TransactionState,
 } from "global/config/transactionTypes";
 import { ReactNode, useEffect, useState } from "react";
-import close from "assets/close.svg";
+//! verify this
+import close from "assets/icons/close.svg";
 import { Mixpanel } from "mixpanel";
 
 interface GlobalLoadingProps {
@@ -118,10 +119,7 @@ const GlobalLoadingModal = (props: GlobalLoadingProps) => {
           className="btn"
           onClick={() => {
             Mixpanel.events.loadingModal.blockExplorerOpened(props.txHash);
-            window.open(
-              "https://evm.explorer.canto.io/tx/" + props.txHash,
-              "_blank"
-            );
+            window.open("https://tuber.build/tx/" + props.txHash, "_blank");
           }}
         >
           open in block explorer

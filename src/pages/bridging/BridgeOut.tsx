@@ -75,32 +75,28 @@ const BridgeOut = (props: BridgeOutProps) => {
         />
       </div>
       <div className="center">
-        <div className="evmToBrige">
-          <Step1TxBox
-            fromAddress={props.ethAddress}
-            toAddress={props.cantoAddress}
-            bridgeIn={false}
-            tokens={props.bridgeOutTokens}
-            selectedToken={props.selectedBridgeOutToken}
-            selectToken={props.selectToken}
-            txHook={() =>
-              transactionHooks.convertCoin.convertTx(
-                props.selectedBridgeOutToken.address,
-                props.cantoAddress ?? "",
-                false
-              )
-            }
-          />
-        </div>
-        <div className="bridgeToCanto">
-          <Step2TxBox
-            bridgeIn={false}
-            transactions={props.step2Transactions}
-            txHook={(tokenName) => transactionHooks.bridgeOut.ibcOut(tokenName)}
-            cantoAddress={props.cantoAddress ?? ""}
-            ethAddress={props.ethAddress ?? ""}
-          />
-        </div>
+        <Step1TxBox
+          fromAddress={props.ethAddress}
+          toAddress={props.cantoAddress}
+          bridgeIn={false}
+          tokens={props.bridgeOutTokens}
+          selectedToken={props.selectedBridgeOutToken}
+          selectToken={props.selectToken}
+          txHook={() =>
+            transactionHooks.convertCoin.convertTx(
+              props.selectedBridgeOutToken.address,
+              props.cantoAddress ?? "",
+              false
+            )
+          }
+        />
+        <Step2TxBox
+          bridgeIn={false}
+          transactions={props.step2Transactions}
+          txHook={(tokenName) => transactionHooks.bridgeOut.ibcOut(tokenName)}
+          cantoAddress={props.cantoAddress ?? ""}
+          ethAddress={props.ethAddress ?? ""}
+        />
       </div>
       <div className="right"></div>
     </BridgeStyled>

@@ -17,11 +17,6 @@ const AddRemoveModal = ({ activePair }: Props) => {
 
   return (
     <AddRemoveContainer>
-      <div className="title">
-        {activePair.basePairInfo.token1.symbol +
-          " / " +
-          activePair.basePairInfo.token2.symbol}
-      </div>
       <p id="position">position overview</p>
       <div className="row">
         <IconPair

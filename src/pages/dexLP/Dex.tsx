@@ -15,7 +15,6 @@ import useLPTokenData from "./hooks/useLPTokenData";
 import useUserLPTokenInfo from "./hooks/useUserLPTokenData";
 import { LPPairInfo, UserLPPairInfo } from "./config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
-import { DexContainer } from "./components/Styled";
 import FadeIn from "react-fade-in";
 import { Text } from "global/packages/src";
 import { Details } from "pages/lending/hooks/useTransaction";
@@ -23,11 +22,12 @@ import HelmetSEO from "global/components/seo";
 import { sortColumnsByType } from "pages/lending/components/LMTables";
 import { Mixpanel } from "mixpanel";
 import { useOngoingTransactions } from "global/utils/handleOnGoingTransactions";
+import Loading from "global/components/Loading";
+import styled from "@emotion/styled";
+import CTable from "global/components/cTable";
 
-const Dex = () => {
-  //get network info from store
+const LP_Interface = () => {
   const networkInfo = useNetworkInfo();
-
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);
   useOngoingTransactions(notifications, notifs, setNotifs);
@@ -36,6 +36,7 @@ const Dex = () => {
     state.setModalType,
     state.setActivePair,
   ]);
+
   const pairs: LPPairInfo[] = useLPTokenData(Number(networkInfo.chainId));
   const userPairs: UserLPPairInfo[] = useUserLPTokenInfo(
     pairs,
@@ -47,6 +48,22 @@ const Dex = () => {
   const [availablePoolsColumnClicked, setAvailablePoolsColumnCLicked] =
     useState(0);
 
+  const isOngoingToken =
+    notifs.filter((filterItem) => filterItem.type == "transactionStarted")
+      .length > 0;
+
+  const isPositionedToken =
+    userPairs?.filter(
+      (pair: UserLPPairInfo) =>
+        !pair.userSupply.totalLP.isZero() || pair.userSupply.percentOwned > 0
+    ).length > 0;
+
+  const isRegularToken =
+    userPairs?.filter(
+      (pair: UserLPPairInfo) =>
+        pair.userSupply.totalLP.isZero() && pair.userSupply.percentOwned == 0
+    ).length > 0;
+
   return (
     <>
       <HelmetSEO
@@ -54,7 +71,7 @@ const Dex = () => {
         description="Canto Homepage serves De-fi applications"
         link="lp"
       />
-      <DexContainer as={FadeIn}>
+      <Styled as={FadeIn}>
         <div>
           <ModalManager
             chainId={Number(networkInfo.chainId)}
@@ -64,7 +81,6 @@ const Dex = () => {
             }}
           />
         </div>
-        {/* Title widget the margin of 2rem */}
         <div
           style={{
             margin: "2rem 0",
@@ -90,41 +106,49 @@ const Dex = () => {
           </Text>
         </div>
 
+        {/* <CTable
+          headers={["Test 1", "Test 2", "Test 3", "Test 4", "Test 5"]}
+          items={[
+            ["dummy 1", "dummy 1", "dummy 1", "dummy 1", "dummy 1"],
+            ["dummy 2", "dummy 2", "dummy 2", "dummy 2", "dummy 2"],
+            ["dummy 3", "dummy 3", "dummy 3", "dummy 3", "dummy 3"],
+            ["dummy 4", "dummy 4", "dummy 4", "dummy 4", "dummy 4"],
+          ]}
+        /> */}
         {/* Transactions table will be shown here */}
-        {notifs.filter((filterItem) => filterItem.type == "transactionStarted")
-          .length > 0 ? (
-          <div>
+        {isOngoingToken && (
+          <>
             <p className="tableName">ongoing transaction</p>
-            <Table columns={["name", "transaction", "time"]}>
-              {notifs.map((item) => {
-                if (
-                  //@ts-ignore
-                  item?.transactionName?.includes("type") &&
-                  item.type == "transactionStarted"
-                ) {
-                  //@ts-ignore
-                  const msg: Details = JSON.parse(item?.transactionName);
-                  const actionMsg = transactionStatusActions(msg.type).inAction;
-                  return (
-                    <TransactionRow
-                      key={item.submittedAt}
-                      icons={msg.icon}
-                      name={msg.name.toLowerCase()}
-                      status={actionMsg}
-                      date={new Date(item.submittedAt)}
-                    />
-                  );
-                }
-                return null;
-              })}
-            </Table>
-          </div>
-        ) : null}
-        {userPairs?.filter(
-          (pair: UserLPPairInfo) =>
-            !pair.userSupply.totalLP.isZero() ||
-            pair.userSupply.percentOwned > 0
-        ).length ? (
+            <FadeIn>
+              <Table columns={["name", "transaction", "time"]}>
+                {notifs.map((item) => {
+                  if (
+                    //@ts-ignore
+                    item?.transactionName?.includes("type") &&
+                    item.type == "transactionStarted"
+                  ) {
+                    //@ts-ignore
+                    const msg: Details = JSON.parse(item?.transactionName);
+                    const actionMsg = transactionStatusActions(
+                      msg.type
+                    ).inAction;
+                    return (
+                      <TransactionRow
+                        key={item.submittedAt}
+                        icons={msg.icon}
+                        name={msg.name.toLowerCase()}
+                        status={actionMsg}
+                        date={new Date(item.submittedAt)}
+                      />
+                    );
+                  }
+                  return null;
+                })}
+              </Table>
+            </FadeIn>
+          </>
+        )}
+        {isPositionedToken && (
           <div>
             <Text type="title" align="left" className="tableName">
               current position
@@ -165,7 +189,6 @@ const Dex = () => {
                             truncateNumber(formatUnits(pair.totalSupply.tvl))
                           )
                         }
-                        apr={"23.2"}
                         position={
                           truncateNumber(
                             formatUnits(
@@ -202,12 +225,9 @@ const Dex = () => {
               </Table>
             </FadeIn>
           </div>
-        ) : null}
-        {userPairs?.filter(
-          (pair: UserLPPairInfo) =>
-            pair.userSupply.totalLP.isZero() &&
-            pair.userSupply.percentOwned == 0
-        ).length ? (
+        )}
+
+        {isRegularToken ? (
           <div>
             <Text type="title" align="left" className="tableName">
               pools
@@ -243,13 +263,9 @@ const Dex = () => {
                         "/" +
                         pair.basePairInfo.token2.symbol
                       }
-                      totalValueLocked={
-                        noteSymbol +
-                        ethers.utils.commify(
-                          truncateNumber(formatUnits(pair.totalSupply.tvl))
-                        )
-                      }
-                      apr={"23.2"}
+                      totalValueLocked={ethers.utils.commify(
+                        truncateNumber(formatUnits(pair.totalSupply.tvl))
+                      )}
                       position={
                         truncateNumber(formatUnits(pair.userSupply.totalLP)) +
                         " LP Tokens"
@@ -281,9 +297,36 @@ const Dex = () => {
                 })}
             </Table>
           </div>
-        ) : null}
-      </DexContainer>
+        ) : (
+          <div
+            style={{
+              height: "30rem",
+            }}
+          >
+            <Loading />
+          </div>
+        )}
+      </Styled>
     </>
   );
 };
-export default Dex;
+
+const Styled = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  .tableName {
+    width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  @media (max-width: 1000px) {
+    .tableName {
+      width: 100%;
+      padding: 0 2rem;
+    }
+  }
+`;
+
+export default LP_Interface;

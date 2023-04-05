@@ -29,12 +29,6 @@ const BridgeIn = (props: BridgeInProps) => {
   return (
     <BridgeStyled>
       <div className="left">
-        <div
-          className="spacer"
-          style={{
-            marginTop: "3rem",
-          }}
-        ></div>
         <QBoxList
           title="instructions"
           QA={[
@@ -151,10 +145,7 @@ export const BridgeStyled = styled.div`
   .left {
     height: calc(100% - 1rem);
     overflow-y: auto;
-    ::-webkit-scrollbar {
-      width: 3px;
-      height: 6px;
-    }
+    margin-top: 3rem;
   }
   .center {
     display: flex;
@@ -167,8 +158,22 @@ export const BridgeStyled = styled.div`
     position: relative;
   }
   @media (max-width: 1000px) {
+    flex-direction: column-reverse;
+
     br {
       display: none;
+    }
+    .center {
+      padding: 4rem 1rem 2rem 1rem;
+    }
+
+    .right {
+      display: none;
+    }
+
+    .left {
+      margin-top: 0;
+      margin-bottom: 4rem;
     }
   }
 `;

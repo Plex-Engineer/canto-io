@@ -104,8 +104,8 @@ const Styled = styled.div`
     text-align: right;
   }
   .token-list {
-    scrollbar-color: var(--primary-color);
-    scroll-behavior: smooth;
+    /* scrollbar-color: var(--primary-color); */
+    /* scroll-behavior: smooth; */
     max-height: 200px;
     overflow-y: scroll;
     /* width */

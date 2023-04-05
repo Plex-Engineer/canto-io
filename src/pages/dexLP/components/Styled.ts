@@ -204,23 +204,6 @@ export const SettingsPopIn = styled.div<showProps>`
   z-index: 1;
 `;
 
-export const DexContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  .tableName {
-    width: 1200px;
-    margin: 0 auto;
-    padding: 0;
-  }
-
-  @media (max-width: 1000px) {
-    .tableName {
-      width: 100%;
-      padding: 0 2rem;
-    }
-  }
-`;
-
 type fieldProps = {
   focused: boolean;
 };

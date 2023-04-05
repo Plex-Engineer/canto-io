@@ -87,5 +87,11 @@ const Styled = styled.div`
     flex-direction: column;
     gap: 1rem;
   }
+
+  @media (max-width: 1000px) {
+    width: 100%;
+    /* margin: 0 1rem; */
+    padding: 12px;
+  }
 `;
 export default Step2TxBox;
