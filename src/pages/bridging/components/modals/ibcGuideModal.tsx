@@ -5,24 +5,13 @@ import { NativeToken } from "pages/bridging/config/interfaces";
 import { copyAddress, formatAddress } from "pages/bridging/utils/utils";
 import CopyToClipboard from "react-copy-to-clipboard";
 import CopyIcon from "assets/copy.svg";
-import { ReactNode, useEffect, useState } from "react";
-import { BroadcastMode, Window as KeplrWindow } from "@keplr-wallet/types";
-import {
-  coin,
-  SigningStargateClient,
-  GasPrice,
-  accountFromAny,
-} from "@cosmjs/stargate";
+import { ReactNode, useState } from "react";
+import { Window as KeplrWindow } from "@keplr-wallet/types";
+import { coin, SigningStargateClient, GasPrice } from "@cosmjs/stargate";
 import { getBlockTimestamp } from "pages/bridging/utils/IBC/IBCTransfer";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import { TransactionState } from "@usedapp/core";
 import { CantoMainnet } from "global/config/networks";
-import {
-  injectiveIBC,
-  modifiedSignEvmos,
-  sign,
-} from "pages/bridging/utils/IBC/otherIBCMethods";
-// import { ibcInjective } from "pages/bridging/utils/IBC/injectiveIBC";
 
 interface IBCGuideModalProps {
   token: NativeToken;
@@ -42,7 +31,7 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
   const [amount, setAmount] = useState("");
   const [txStatus, setTxStatus] = useState<TransactionState>("None");
   const network = ALL_BRIDGE_OUT_NETWORKS[props.token.supportedOutChannels[0]];
-  const hasKeplr = !!window.keplr;
+
   async function setKeplrAddressAndBalance() {
     if (!window.keplr) {
       //show user link to download keplr
@@ -57,24 +46,6 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
         offlineSinger,
         {
           gasPrice: GasPrice.fromString("300000" + network.nativeDenom),
-          // accountParser: (account) => {
-          //   // readonly address: string;
-          //   // readonly pubkey: Pubkey | null;
-          //   // readonly accountNumber: number;
-          //   // readonly sequence: number;
-          //   if (account.typeUrl === "/ethermint.types.v1.EthAccount") {
-          //     return {
-          //       address: userKeplrAddress,
-          //       pubkey: {
-          //         type: "/ethermint.crypto.v1.ethsecp256k1.PubKey",
-          //         value: null,
-          //       },
-          //       accountNumber: ,
-          //       sequence: ,
-          //     };
-          //   }
-          //   return accountFromAny(account);
-          // },
         }
       );
       setKeplrClient(client);
@@ -92,22 +63,22 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
     setTxStatus("PendingSignature");
     try {
       //if injective or emvos, we cannot use stargate client
-      if (network.chainId === "evmos_9001-2" && keplrClient && window.keplr) {
-        const tx = await sign(
-          network.restEndpoint,
-          keplrClient,
-          window.keplr.getOfflineSigner(network.chainId),
-          network.chainId,
-          userKeplrAddress,
-          network.networkChannel,
-          coin(amount, props.token.nativeName),
-          props.cantoAddress,
-          Number(blockTimestamp),
-          network.nativeDenom
-        );
-        const mode = "block" as BroadcastMode;
-        const response = window.keplr?.sendTx(network.chainId, tx, mode);
-        console.log(response);
+      if (network.chainId === "evmos_9001-2" && window.keplr) {
+        // await newEvmosIBC();
+        // const tx = await sign(
+        //   network.restEndpoint,
+        //   keplrClient,
+        //   window.keplr.getOfflineSigner(network.chainId),
+        //   network.chainId,
+        //   userKeplrAddress,
+        //   network.networkChannel,
+        //   coin(amount, props.token.nativeName),
+        //   props.cantoAddress,
+        //   Number(blockTimestamp),
+        //   network.nativeDenom
+        // );
+        // const mode = "block" as BroadcastMode;
+        // const response = window.keplr?.sendTx(network.chainId, tx, mode);
       } else if (network.chainId === "injective-1" && window.keplr) {
         // ibcInjective(userKeplrAddress);
         // injectiveIBC(

@@ -1,10 +1,10 @@
-import {
-  ChainGrpcBankApi,
-  ChainRestTendermintApi,
-  makeTimeoutTimestampInNs,
-  MsgBroadcasterWithPk,
-  MsgTransfer,
-} from "@injectivelabs/sdk-ts";
+// import {
+//   ChainGrpcBankApi,
+//   ChainRestTendermintApi,
+//   makeTimeoutTimestampInNs,
+//   MsgBroadcasterWithPk,
+//   MsgTransfer,
+// } from "@injectivelabs/sdk-ts";
 // import {
 //   cosmosNativeDenomsFromChainId,
 //   TokenService,
@@ -14,10 +14,11 @@ import {
 // //   getEndpointsFromChainId,
 // //   WalletStrategy,
 // } from "@injectivelabs/wallet-ts";
-import { BigNumberInBase } from "@injectivelabs/utils";
-import { ChainId, CosmosChainId } from "@injectivelabs/ts-types";
-import { getNetworkEndpoints, Network } from "@injectivelabs/networks";
-import { IbcToken, Token } from "@injectivelabs/token-metadata";
+// import { BigNumberInBase } from "@injectivelabs/utils";
+// import { ChainId, CosmosChainId } from "@injectivelabs/ts-types";
+// import { getNetworkEndpoints, Network } from "@injectivelabs/networks";
+// import { IbcToken, Token } from "@injectivelabs/token-metadata";
+export const inj = "inj";
 
 // const tokenService = new TokenService({
 //   chainId: ChainId.Mainnet,
