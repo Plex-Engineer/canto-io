@@ -5,7 +5,7 @@ import { NativeToken } from "pages/bridging/config/interfaces";
 import { copyAddress, formatAddress } from "pages/bridging/utils/utils";
 import CopyToClipboard from "react-copy-to-clipboard";
 import CopyIcon from "assets/copy.svg";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { BroadcastMode, Window as KeplrWindow } from "@keplr-wallet/types";
 import { coin, SigningStargateClient, GasPrice } from "@cosmjs/stargate";
 import { getBlockTimestamp } from "pages/bridging/utils/IBC/IBCTransfer";
@@ -13,14 +13,15 @@ import { CInput } from "global/packages/src/components/atoms/Input";
 import { TransactionState } from "@usedapp/core";
 import { CantoMainnet } from "global/config/networks";
 import { modifiedSignEvmos } from "pages/bridging/utils/IBC/otherIBCMethods";
-
 interface IBCGuideModalProps {
   token: NativeToken;
   cantoAddress: string;
 }
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface Window extends KeplrWindow {}
+  interface Window extends KeplrWindow {
+    ethereum: import("ethers").providers.ExternalProvider;
+  }
 }
 
 const IBCGuideModal = (props: IBCGuideModalProps) => {
@@ -30,9 +31,11 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
   const [amount, setAmount] = useState("");
   const [txStatus, setTxStatus] = useState<TransactionState>("None");
   const network = ALL_BRIDGE_OUT_NETWORKS[props.token.supportedOutChannels[0]];
-
+  const hasKeplr = !!window.keplr;
+  console.log(hasKeplr);
   async function setKeplrAddressAndBalance() {
     if (!window.keplr) {
+      //show user link to download keplr
       console.error("no keplr installed");
     } else {
       await window.keplr.enable(network.chainId);
@@ -142,8 +145,14 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
       </div>
       <br />
       <div className="values">
-        <ConfirmationRow title="network" value={network.name} />
-        <ConfirmationRow title="channel" value={network.networkChannel} />
+        <ConfirmationRow
+          title="network"
+          value={<Text type="title">{network.name} </Text>}
+        />
+        <ConfirmationRow
+          title="channel"
+          value={<Text type="title">{network.networkChannel} </Text>}
+        />
         <ConfirmationRow
           title="address"
           value={
@@ -194,9 +203,7 @@ const ConfirmationRow = ({ title, value }: ConfirmationRowProps) => {
   return (
     <div className="row">
       <div className="header">{title} :</div>
-      <div className="value">
-        <Text type="title">{value}</Text>
-      </div>
+      <div className="value">{value}</div>
     </div>
   );
 };
