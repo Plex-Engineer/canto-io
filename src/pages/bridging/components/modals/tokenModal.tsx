@@ -33,7 +33,7 @@ const TokenModal = (props: Props) => {
             <div
               role="button"
               tabIndex={0}
-              key={token.icon}
+              key={token.address}
               className="token-item"
               onClick={() => {
                 props.onClose(token);
