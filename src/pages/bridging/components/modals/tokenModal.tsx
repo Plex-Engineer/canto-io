@@ -1,8 +1,11 @@
 import styled from "@emotion/styled";
 import { BigNumber, BigNumberish } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
+import { Text } from "global/packages/src";
+import { CInput } from "global/packages/src/components/atoms/Input";
 import { truncateNumber } from "global/utils/utils";
 import { BaseToken } from "pages/bridging/config/interfaces";
+import { useState } from "react";
 
 interface Props {
   onClose: (value?: BaseToken) => void;
@@ -16,65 +19,104 @@ interface Props {
 }
 
 const TokenModal = (props: Props) => {
+  const [userSearch, setUserSearch] = useState("");
+  const dexTokens = props.tokens
+    ?.sort(
+      (a, b) =>
+        Number(
+          formatUnits(b[props.balanceString] as BigNumberish, b.decimals)
+        ) -
+        Number(formatUnits(a[props.balanceString] as BigNumberish, a.decimals))
+    )
+    .filter((item) =>
+      item.symbol.toLowerCase().includes(userSearch.toLowerCase())
+    );
+  const ibcTokens =
+    props.extraTokenData &&
+    props.extraTokenData.tokens
+      ?.sort((a, b) => (b.name > a.name ? -1 : 1))
+      .filter((item) =>
+        item.symbol.toLowerCase().includes(userSearch.toLowerCase())
+      );
   return (
     <Styled>
+      <div className="modal-title">
+        <Text type="title" align="left" size="title3">
+          choose token
+        </Text>
+      </div>
+      <div className="search">
+        <CInput
+          value={userSearch}
+          placeholder="Token Name"
+          onChange={(e) => setUserSearch(e.target.value)}
+        />
+      </div>
+
+      {dexTokens?.length == 0 && ibcTokens?.length == 0 && (
+        <div className="expanded">
+          <Text size="text2">no tokens found</Text>
+        </div>
+      )}
       <div className="token-list">
-        {props.tokens
-          ?.sort(
-            (a, b) =>
-              Number(
-                formatUnits(b[props.balanceString] as BigNumberish, b.decimals)
-              ) -
-              Number(
-                formatUnits(a[props.balanceString] as BigNumberish, a.decimals)
-              )
-          )
-          .map((token) => (
+        {dexTokens && dexTokens.length > 0 && (
+          <div className="header">
+            <Text type="title" align="left">
+              native Tokens
+            </Text>
+          </div>
+        )}
+        {dexTokens?.map((token) => (
+          <div
+            role="button"
+            tabIndex={0}
+            key={token.address}
+            className="token-item"
+            onClick={() => {
+              props.onClose(token);
+            }}
+          >
+            <span>
+              <img src={token.icon} alt={token.name} />
+              <Text color="white">{token.symbol}</Text>
+            </span>
+            <p className="balance">
+              {props.balanceString
+                ? truncateNumber(
+                    formatUnits(
+                      BigNumber.from(token[props.balanceString]),
+                      token.decimals
+                    )
+                  )
+                : ""}
+            </p>
+          </div>
+        ))}
+        {ibcTokens && ibcTokens.length > 0 && (
+          <div className="header">
+            <Text type="title" align="left">
+              IBC Tokens
+            </Text>
+          </div>
+        )}
+        {ibcTokens &&
+          ibcTokens.map((token) => (
             <div
               role="button"
               tabIndex={0}
-              key={token.address}
+              key={token.icon}
               className="token-item"
               onClick={() => {
-                props.onClose(token);
+                props.extraTokenData?.onSelect(token);
               }}
             >
               <span>
                 <img src={token.icon} alt="" />
-                <p>{token.name}</p>
+                <p>{token.symbol}</p>
               </span>
-              <p className="balance">
-                {props.balanceString
-                  ? truncateNumber(
-                      formatUnits(
-                        BigNumber.from(token[props.balanceString]),
-                        token.decimals
-                      )
-                    )
-                  : ""}
-              </p>
+              {/* <p className="balance">{props.extraTokenData?.balance}</p> */}
             </div>
           ))}
-        {props.extraTokenData &&
-          props.extraTokenData.tokens
-            ?.sort((a, b) => (b.name > a.name ? -1 : 1))
-            .map((token) => (
-              <div
-                role="button"
-                tabIndex={0}
-                key={token.icon}
-                className="token-item"
-                onClick={() => {
-                  props.extraTokenData?.onSelect(token);
-                }}
-              >
-                <span>
-                  <img src={token.icon} alt="" />
-                  <p>{token.name}</p>
-                </span>
-                <p className="balance">{props.extraTokenData?.balance}</p>
-              </div>
-            ))}
       </div>
     </Styled>
   );
@@ -83,18 +125,40 @@ const TokenModal = (props: Props) => {
 const Styled = styled.div`
   display: flex;
   flex-direction: column;
-  width: 310px;
-  p {
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 21px;
-    letter-spacing: -0.03em;
-    color: var(--primary-color);
+  width: 30rem;
+  max-height: 42rem;
+  overscroll-y: scroll;
+
+  .search {
+    margin: 6px;
+    padding: 0 14px;
+
+    input {
+      max-width: 100%;
+      width: 80vw;
+    }
+  }
+
+  .header {
+    padding: 16px;
+  }
+
+  .expanded {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 36rem;
+    height: 100vmax;
+
+    p {
+      color: #888;
+    }
   }
   span {
     display: flex;
     align-items: center;
     gap: 6px;
+    /* background: red; */
   }
   .balance {
     font-size: 16px;
@@ -104,27 +168,25 @@ const Styled = styled.div`
     text-align: right;
   }
   .token-list {
-    /* scrollbar-color: var(--primary-color); */
-    /* scroll-behavior: smooth; */
-    max-height: 200px;
+    scrollbar-color: var(--primary-color);
+    scroll-behavior: smooth;
     overflow-y: scroll;
-    /* width */
-    padding: 8px;
+    padding: 16px;
+
+    /* background: red; */
     .token-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-weight: 400;
-      font-size: 18px;
-      letter-spacing: -0.02em;
-      height: 38px;
+
+      height: 60px;
       padding: 0 14px;
       outline: none;
       cursor: pointer;
       img {
-        margin: 6px;
-        height: 18px;
-        width: 18px;
+        margin: 8px;
+        height: 32px;
+        width: 32px;
       }
 
       &:hover {
