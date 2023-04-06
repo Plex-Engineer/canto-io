@@ -12,11 +12,10 @@ import { getBlockTimestamp } from "pages/bridging/utils/IBC/IBCTransfer";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import { TransactionState } from "@usedapp/core";
 import { CantoMainnet } from "global/config/networks";
-import LoadingModal from "global/components/modals/loading2";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { truncateNumber } from "global/utils/utils";
-import { formatUnits } from "ethers/lib/utils";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 
 interface IBCGuideModalProps {
   token: NativeToken;
@@ -98,7 +97,10 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
         const ibcResponse = await keplrClient?.sendIbcTokens(
           userKeplrAddress,
           props.cantoAddress,
-          coin(amount, props.token.nativeName),
+          coin(
+            parseUnits(amount, props.token.decimals).toString(),
+            props.token.nativeName
+          ),
           "transfer",
           network.networkChannel,
           undefined,
