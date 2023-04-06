@@ -21,6 +21,8 @@ import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
 import { PubKeyStyled } from "./walkthrough/Walkthrough";
 import warningRedIcon from "assets/warning_red.svg";
 import { parseUnits } from "ethers/lib/utils";
+import Tooltip from "global/packages/src/components/molecules/Tooltip";
+import { Text } from "global/packages/src";
 
 const Bridging = () => {
   const networkInfo = useNetworkInfo();
@@ -62,16 +64,22 @@ const Bridging = () => {
           cantoTokens={bridgingTokens.userBridgeOutTokens}
           nativeTokens={bridgingTokens.userNativeTokens}
         />
-        <div
-          role={"button"}
-          tabIndex={-2}
-          className="walkthrough"
-          onClick={() => {
-            navigate("/bridge/walkthrough");
-          }}
-        >
-          !
-        </div>
+        <Tooltip
+          position="bottom right"
+          trigger={
+            <div
+              role={"button"}
+              tabIndex={-2}
+              className="walkthrough"
+              onClick={() => {
+                navigate("/bridge/walkthrough");
+              }}
+            >
+              !
+            </div>
+          }
+          content={<Text size="text4">Click here for walkthrough.</Text>}
+        />
       </div>
 
       <CantoTabs

@@ -23,7 +23,6 @@ const BalanceTableModal = (props: Props) => {
   return (
     <Styled>
       <Tooltip
-        autoShow
         position="bottom right"
         trigger={
           <div
