@@ -30,8 +30,7 @@ const LoadingWalkthrough = ({ delay }: Props) => {
       >
         <Text type="title">Setting up the walkthrough for you</Text>
         <Text type="text" size="text3">
-          You can use this to ease up and go through each step one-by-one. we
-          are here to help you make the process easier
+          This walkthrough takes you steps you through bridging for a simpler experience.
         </Text>
       </div>
     </Styled>
