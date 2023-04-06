@@ -85,34 +85,40 @@ const Transactions = (props: TransactionHistoryProps) => {
           />
         </Selected>
       )}
-      {pendingTx.length != 0 && (
-        <>
-          <Text type="title" color="primary" size="title2">
-            In Progress
-          </Text>
-          {pendingTx
-            .sort((a, b) =>
-              new Date(a.timestamp) > new Date(b.timestamp) ? -1 : 1
-            )
-            .map((tx) => {
-              return <TransactionHistoryBox key={tx.txHash} tx={tx} />;
-            })}
-        </>
-      )}
-      {completeTransactions.length != 0 && (
-        <>
-          <Text type="title" color="primary" size="title2">
-            complete
-          </Text>
-          {completeTransactions
-            .sort((a, b) =>
-              new Date(a.timestamp) > new Date(b.timestamp) ? -1 : 1
-            )
-            .map((tx) => {
-              return <TransactionHistoryBox key={tx.txHash} tx={tx} />;
-            })}
-        </>
-      )}
+      <div
+        style={{
+          margin: "0 1rem",
+        }}
+      >
+        {pendingTx.length != 0 && (
+          <>
+            <Text type="title" color="primary" size="title2">
+              In Progress
+            </Text>
+            {pendingTx
+              .sort((a, b) =>
+                new Date(a.timestamp) > new Date(b.timestamp) ? -1 : 1
+              )
+              .map((tx) => {
+                return <TransactionHistoryBox key={tx.txHash} tx={tx} />;
+              })}
+          </>
+        )}
+        {completeTransactions.length != 0 && (
+          <>
+            <Text type="title" color="primary" size="title2">
+              complete
+            </Text>
+            {completeTransactions
+              .sort((a, b) =>
+                new Date(a.timestamp) > new Date(b.timestamp) ? -1 : 1
+              )
+              .map((tx) => {
+                return <TransactionHistoryBox key={tx.txHash} tx={tx} />;
+              })}
+          </>
+        )}
+      </div>
     </Styled>
   );
 };
@@ -128,7 +134,6 @@ const Styled = styled.div`
 
   @media (max-width: 1000px) {
     max-width: 100%;
-    margin: 0 1rem;
   }
 `;
 export default Transactions;

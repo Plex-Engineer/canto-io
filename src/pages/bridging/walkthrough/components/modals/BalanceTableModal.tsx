@@ -3,7 +3,7 @@ import { StyledPopup } from "global/components/Styled";
 import { Text } from "global/packages/src";
 import Tooltip from "global/packages/src/components/molecules/Tooltip";
 import { useState } from "react";
-
+import walletImg from "assets/mini-wallet.svg";
 import TokenTable from "./tokenTable";
 import { formatTokensAmountsbyChain } from "../../utils/utils";
 import Modal from "global/packages/src/components/molecules/Modal";
@@ -33,10 +33,10 @@ const BalanceTableModal = (props: Props) => {
               setIsOpen(true);
             }}
           >
-            ?
+            <img src={walletImg} alt="wallet" height={21} />
           </div>
         }
-        content={<Text size="text4">Click here to check the balances.</Text>}
+        content={<Text size="text4">Click here to check your balances.</Text>}
       />
       <Modal
         title="Token Balances"

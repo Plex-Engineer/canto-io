@@ -23,6 +23,7 @@ import warningRedIcon from "assets/warning_red.svg";
 import { parseUnits } from "ethers/lib/utils";
 import Tooltip from "global/packages/src/components/molecules/Tooltip";
 import { Text } from "global/packages/src";
+import guideImg from "assets/guide.svg";
 
 const Bridging = () => {
   const networkInfo = useNetworkInfo();
@@ -75,10 +76,10 @@ const Bridging = () => {
                 navigate("/bridge/walkthrough");
               }}
             >
-              !
+              <img src={guideImg} height={20} alt="" />
             </div>
           }
-          content={<Text size="text4">Click here for walkthrough.</Text>}
+          content={<Text size="text4">Click here for a walkthrough.</Text>}
         />
       </div>
 
@@ -201,6 +202,16 @@ const Styled = styled.div`
     gap: 2rem;
     width: 5rem;
     height: 5rem;
+  }
+
+  @media (max-width: 1000px) {
+    .walkthrough {
+      right: 5rem;
+      top: 1.2rem;
+    }
+    .floating-buttons {
+      top: 4.6rem;
+    }
   }
 `;
 
