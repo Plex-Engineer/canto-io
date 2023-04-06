@@ -72,6 +72,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         <IBCGuideModal
           token={selectedIBCToken}
           cantoAddress={props.toAddress ?? ""}
+          onClose={() => setisIBCModalOpen(false)}
         />
       </Modal>
       <Modal

@@ -5,7 +5,7 @@ import { NativeToken } from "pages/bridging/config/interfaces";
 import { copyAddress, formatAddress } from "pages/bridging/utils/utils";
 import CopyToClipboard from "react-copy-to-clipboard";
 import CopyIcon from "assets/copy.svg";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Window as KeplrWindow } from "@keplr-wallet/types";
 import { coin, SigningStargateClient, GasPrice } from "@cosmjs/stargate";
 import { getBlockTimestamp } from "pages/bridging/utils/IBC/IBCTransfer";
@@ -20,6 +20,7 @@ import { formatUnits, parseUnits } from "ethers/lib/utils";
 interface IBCGuideModalProps {
   token: NativeToken;
   cantoAddress: string;
+  onClose: () => void;
 }
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -67,32 +68,11 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
     setTxStatus("PendingSignature");
     try {
       //if injective or emvos, we cannot use stargate client
-      if (network.chainId === "evmos_9001-2" && window.keplr) {
-        // await newEvmosIBC();
-        // const tx = await sign(
-        //   network.restEndpoint,
-        //   keplrClient,
-        //   window.keplr.getOfflineSigner(network.chainId),
-        //   network.chainId,
-        //   userKeplrAddress,
-        //   network.networkChannel,
-        //   coin(amount, props.token.nativeName),
-        //   props.cantoAddress,
-        //   Number(blockTimestamp),
-        //   network.nativeDenom
-        // );
-        // const mode = "block" as BroadcastMode;
-        // const response = window.keplr?.sendTx(network.chainId, tx, mode);
-      } else if (network.chainId === "injective-1" && window.keplr) {
-        // ibcInjective(userKeplrAddress);
-        // injectiveIBC(
-        //   window.keplr.getOfflineSigner(network.chainId),
-        //   network.networkChannel,
-        //   coin(amount, props.token.nativeName),
-        //   userKeplrAddress,
-        //   props.cantoAddress,
-        //   Number(blockTimestamp)
-        // );
+      if (
+        network.chainId === "evmos_9001-2" ||
+        network.chainId === "injective-1"
+      ) {
+        //solution tbd
       } else {
         const ibcResponse = await keplrClient?.sendIbcTokens(
           userKeplrAddress,
@@ -119,16 +99,30 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
       setTxStatus("Fail");
     }
   }
+  useEffect(() => {
+    setKeplrAddressAndBalance();
+  }, []);
 
   return (
     <Styled>
       {txStatus != "None" && (
         <GlobalLoadingModal
           onClose={() => {
-            null;
+            if (txStatus !== "Success") {
+              setTxStatus("None");
+            } else {
+              props.onClose();
+            }
           }}
           transactionType={CantoTransactionType.IBC_IN}
           status={txStatus}
+          additionalMessage={
+            txStatus === "Fail"
+              ? "please make sure you have enough balance left over for gas fees"
+              : txStatus === "Success"
+              ? "please allow time for the funds to be received on the canto network"
+              : ""
+          }
         />
       )}
       <div>
@@ -245,22 +239,6 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
           <Text>max</Text>
         </button>
       </div>
-      {/* <div className="header">amount :</div>
-      <div className="value">
-        <CInput
-          style={{
-            border: "1px solid #282828",
-            backgroundColor: "transparent",
-            width: "16rem",
-          }}
-          placeholder={"0"}
-          value={amount}
-          onChange={(val) => {
-            setAmount(val.target.value);
-          }}
-        />
-      </div> */}
-      {/* {"balance: " + balance} */}
       {
         //if keplr plugin exists
         window.keplr ? (
@@ -305,7 +283,7 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
               window.open("https://www.keplr.app/download", "_blank");
             }}
           >
-            Install keplr
+            install keplr
           </PrimaryButton>
         )
       }
