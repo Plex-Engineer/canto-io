@@ -12,7 +12,6 @@ import {
   TransactionState,
 } from "global/config/transactionTypes";
 import { ReactNode, useEffect, useState } from "react";
-//! verify this
 import close from "assets/icons/close.svg";
 import { Mixpanel } from "mixpanel";
 

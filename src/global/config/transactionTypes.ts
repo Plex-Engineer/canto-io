@@ -18,6 +18,7 @@ export enum CantoTransactionType {
   CONVERT_TO_EVM = "Convert to EVM",
   CONVERT_TO_NATIVE = "Convert to Native",
   BRIDGE = "Bridge",
+  IBC_IN = "IBC in",
 }
 
 //Do not change, same as useTransaction, but need for compatability with cosmos transactions
