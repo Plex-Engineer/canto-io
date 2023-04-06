@@ -145,11 +145,22 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
           value={<Text type="title">{network.networkChannel} </Text>}
         />
         <ConfirmationRow
-          title="to"
+          title="balance"
           value={
-            <CopyToClipboard text={props.cantoAddress} onCopy={copyAddress}>
+            <Text type="title">
+              {userKeplrAddress.length > 10
+                ? truncateNumber(formatUnits(balance, props.token.decimals), 6)
+                : "..."}
+            </Text>
+          }
+        />
+
+        <ConfirmationRow
+          title="from"
+          value={
+            <CopyToClipboard text={userKeplrAddress} onCopy={copyAddress}>
               <Text type="title" style={{ cursor: "pointer" }}>
-                {formatAddress(props.cantoAddress, 6)}
+                {formatAddress(userKeplrAddress, 6)}
                 <img
                   src={CopyIcon}
                   style={{
@@ -163,13 +174,12 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
             </CopyToClipboard>
           }
         />
-
         <ConfirmationRow
-          title="from"
+          title="to"
           value={
-            <CopyToClipboard text={userKeplrAddress} onCopy={copyAddress}>
+            <CopyToClipboard text={props.cantoAddress} onCopy={copyAddress}>
               <Text type="title" style={{ cursor: "pointer" }}>
-                {formatAddress(userKeplrAddress, 6)}
+                {formatAddress(props.cantoAddress, 6)}
                 <img
                   src={CopyIcon}
                   style={{
@@ -255,12 +265,22 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
           //if we have keplr address
           userKeplrAddress.length > 10 ? (
             <PrimaryButton
+              disabled={
+                Number(amount) <= 0 ||
+                Number(amount) >
+                  Number(formatUnits(balance, props.token.decimals))
+              }
               onClick={createIBCMsg}
               filled
               height="big"
               weight="bold"
             >
-              IBC IN
+              {Number(amount) <= 0
+                ? "Enter Amount "
+                : Number(amount) >
+                  Number(formatUnits(balance, props.token.decimals))
+                ? "Amount Exceeds Max"
+                : "IBC IN"}
             </PrimaryButton>
           ) : (
             //if keplr address doesn't exist, connect and retrive it
