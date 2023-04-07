@@ -49,8 +49,8 @@ const TokenModal = (props: Props) => {
         </div>
       )}
       <div className="token-list">
-        {props.tokenGroups.map((group) => (
-          <>
+        {props.tokenGroups.map((group, idx) => (
+          <div key={group.groupName + idx}>
             <div key={group.groupName} className="header">
               <Text type="title" align="left">
                 {group.groupName}
@@ -94,10 +94,12 @@ const TokenModal = (props: Props) => {
                     <img src={token.icon} alt={token.name} />
                     <Text color="white">{token.symbol}</Text>
                   </span>
-                  <p className="balance">{group.getBalance(token)}</p>
+                  {group.getBalance(token) != "ibc" && (
+                    <p className="balance">{group.getBalance(token)}</p>
+                  )}
                 </div>
               ))}
-          </>
+          </div>
         ))}
       </div>
     </Styled>
