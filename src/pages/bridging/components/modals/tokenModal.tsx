@@ -6,6 +6,7 @@ import { CInput } from "global/packages/src/components/atoms/Input";
 import { truncateNumber } from "global/utils/utils";
 import { BaseToken } from "pages/bridging/config/interfaces";
 import { useState } from "react";
+import { levenshteinDistance } from "pages/staking/utils/utils";
 
 interface Props {
   onClose: (value?: BaseToken) => void;
@@ -20,6 +21,22 @@ interface Props {
 
 const TokenModal = (props: Props) => {
   const [userSearch, setUserSearch] = useState("");
+  function inSearch(
+    searchString: string,
+    tokenName: string,
+    tokenSymbol: string
+  ): boolean {
+    return (
+      levenshteinDistance(
+        searchString.toLowerCase(),
+        tokenName.toLowerCase()
+      ) <= 2 ||
+      levenshteinDistance(
+        searchString.toLowerCase(),
+        tokenSymbol.toLowerCase()
+      ) <= 2
+    );
+  }
   const dexTokens = props.tokens
     ?.sort(
       (a, b) =>
@@ -28,16 +45,12 @@ const TokenModal = (props: Props) => {
         ) -
         Number(formatUnits(a[props.balanceString] as BigNumberish, a.decimals))
     )
-    .filter((item) =>
-      item.symbol.toLowerCase().includes(userSearch.toLowerCase())
-    );
+    .filter((item) => inSearch(userSearch, item.name, item.symbol));
   const ibcTokens =
     props.extraTokenData &&
     props.extraTokenData.tokens
       ?.sort((a, b) => (b.name > a.name ? -1 : 1))
-      .filter((item) =>
-        item.symbol.toLowerCase().includes(userSearch.toLowerCase())
-      );
+      .filter((item) => inSearch(userSearch, item.name, item.symbol));
   return (
     <Styled>
       <div className="modal-title">
