@@ -1,22 +1,13 @@
 import styled from "@emotion/styled";
-import { BigNumber, BigNumberish } from "ethers";
-import { formatUnits } from "ethers/lib/utils";
 import { Text } from "global/packages/src";
 import { CInput } from "global/packages/src/components/atoms/Input";
-import { truncateNumber } from "global/utils/utils";
-import { BaseToken } from "pages/bridging/config/interfaces";
+import { BaseToken, Step1TokenGroups } from "pages/bridging/config/interfaces";
 import { useState } from "react";
 import { levenshteinDistance } from "pages/staking/utils/utils";
 
 interface Props {
+  tokenGroups: Step1TokenGroups[];
   onClose: (value?: BaseToken) => void;
-  tokens: BaseToken[] | undefined;
-  balanceString: string;
-  extraTokenData?: {
-    tokens: BaseToken[];
-    balance: string;
-    onSelect: (value: BaseToken) => void;
-  };
 }
 
 const TokenModal = (props: Props) => {
@@ -34,23 +25,10 @@ const TokenModal = (props: Props) => {
       levenshteinDistance(
         searchString.toLowerCase(),
         tokenSymbol.toLowerCase()
-      ) <= 2
+      ) <= 2 ||
+      searchString === ""
     );
   }
-  const dexTokens = props.tokens
-    ?.sort(
-      (a, b) =>
-        Number(
-          formatUnits(b[props.balanceString] as BigNumberish, b.decimals)
-        ) -
-        Number(formatUnits(a[props.balanceString] as BigNumberish, a.decimals))
-    )
-    .filter((item) => inSearch(userSearch, item.name, item.symbol));
-  const ibcTokens =
-    props.extraTokenData &&
-    props.extraTokenData.tokens
-      ?.sort((a, b) => (b.name > a.name ? -1 : 1))
-      .filter((item) => inSearch(userSearch, item.name, item.symbol));
   return (
     <Styled>
       <div className="modal-title">
@@ -65,71 +43,62 @@ const TokenModal = (props: Props) => {
           onChange={(e) => setUserSearch(e.target.value)}
         />
       </div>
-
-      {dexTokens?.length == 0 && ibcTokens?.length == 0 && (
+      {!props.tokenGroups.length && (
         <div className="expanded">
           <Text size="text2">no tokens found</Text>
         </div>
       )}
       <div className="token-list">
-        {dexTokens && dexTokens.length > 0 && (
-          <div className="header">
-            <Text type="title" align="left">
-              native Tokens
-            </Text>
-          </div>
-        )}
-        {dexTokens?.map((token) => (
-          <div
-            role="button"
-            tabIndex={0}
-            key={token.address}
-            className="token-item"
-            onClick={() => {
-              props.onClose(token);
-            }}
-          >
-            <span>
-              <img src={token.icon} alt={token.name} />
-              <Text color="white">{token.symbol}</Text>
-            </span>
-            <p className="balance">
-              {props.balanceString
-                ? truncateNumber(
-                    formatUnits(
-                      BigNumber.from(token[props.balanceString]),
-                      token.decimals
-                    )
-                  )
-                : ""}
-            </p>
-          </div>
-        ))}
-        {ibcTokens && ibcTokens.length > 0 && (
-          <div className="header">
-            <Text type="title" align="left">
-              IBC Tokens
-            </Text>
-          </div>
-        )}
-        {ibcTokens &&
-          ibcTokens.map((token) => (
-            <div
-              role="button"
-              tabIndex={0}
-              key={token.icon}
-              className="token-item"
-              onClick={() => {
-                props.extraTokenData?.onSelect(token);
-              }}
-            >
-              <span>
-                <img src={token.icon} alt="" />
-                <p>{token.symbol}</p>
-              </span>
-              {/* <p className="balance">{props.extraTokenData?.balance}</p> */}
+        {props.tokenGroups.map((group) => (
+          <>
+            <div key={group.groupName} className="header">
+              <Text type="title" align="left">
+                {group.groupName}
+              </Text>
             </div>
-          ))}
+            {group.tokens
+              ?.filter((token) =>
+                inSearch(userSearch, token.name, token.symbol)
+              )
+              .sort((a, b) => {
+                if (
+                  !isNaN(Number(group.getBalance(a))) &&
+                  isNaN(Number(group.getBalance(b)))
+                )
+                  return -1;
+                else if (
+                  isNaN(Number(group.getBalance(a))) &&
+                  !isNaN(Number(group.getBalance(b)))
+                )
+                  return 1;
+                else if (
+                  isNaN(Number(group.getBalance(a))) &&
+                  isNaN(Number(group.getBalance(b)))
+                )
+                  return 0;
+                return Number(group.getBalance(a)) > Number(group.getBalance(b))
+                  ? -1
+                  : 1;
+              })
+              .map((token) => (
+                <div
+                  role="button"
+                  tabIndex={0}
+                  key={token.address}
+                  className="token-item"
+                  onClick={() => {
+                    props.onClose(token);
+                  }}
+                >
+                  <span>
+                    <img src={token.icon} alt={token.name} />
+                    <Text color="white">{token.symbol}</Text>
+                  </span>
+                  <p className="balance">{group.getBalance(token)}</p>
+                </div>
+              ))}
+          </>
+        ))}
       </div>
     </Styled>
   );

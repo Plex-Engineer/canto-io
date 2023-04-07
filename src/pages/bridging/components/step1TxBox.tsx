@@ -5,9 +5,9 @@ import bridgeIcon from "assets/icons/canto-bridge.svg";
 import cantoIcon from "assets/icons/canto-evm.svg";
 import CopyIcon from "assets/copy.svg";
 import {
-  BaseToken,
   EMPTY_NATIVE_TOKEN,
   NativeToken,
+  Step1TokenGroups,
   UserERC20BridgeToken,
 } from "../config/interfaces";
 import LoadingBlip from "./LoadingBlip";
@@ -29,20 +29,16 @@ import ConfirmationModal from "./modals/confirmationModal";
 import { CantoMainnet, ETHMainnet } from "global/config/networks";
 import { TokenWallet } from "./tokenSelect";
 import IBCGuideModal from "./modals/ibcGuideModal";
+import { TokenGroups } from "global/config/tokenInfo";
 
 interface Step1TxBoxProps {
   fromAddress?: string;
   toAddress?: string;
   bridgeIn: boolean;
-  tokens: UserERC20BridgeToken[];
+  tokenGroups: Step1TokenGroups[];
   selectedToken: UserERC20BridgeToken;
   selectToken: (tokenAddress: string) => void;
   txHook: () => BridgeTransaction;
-  extraTokenData?: {
-    tokens: BaseToken[];
-    balance: string;
-    onSelect: (value: BaseToken) => void;
-  };
 }
 const Step1TxBox = (props: Step1TxBoxProps) => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -199,23 +195,18 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
       <div className="amount-box">
         <div className="token-box">
           <TokenWallet
-            tokens={props.tokens}
+            tokenGroups={props.tokenGroups}
             activeToken={props.selectedToken}
             onSelect={(value) => {
+              if (
+                value?.tokenGroups.includes(TokenGroups.IBC_TOKENS) &&
+                props.bridgeIn
+              ) {
+                setSelectedIBCToken(value as NativeToken);
+                setisIBCModalOpen(true);
+              }
               props.selectToken(value?.address ?? props.selectedToken.address);
             }}
-            balanceString="erc20Balance"
-            extraTokenData={
-              props.extraTokenData
-                ? {
-                    ...props.extraTokenData,
-                    onSelect: (value: BaseToken) => {
-                      setSelectedIBCToken(value as NativeToken);
-                      setisIBCModalOpen(true);
-                    },
-                  }
-                : undefined
-            }
           />
         </div>
         <div className="amount">

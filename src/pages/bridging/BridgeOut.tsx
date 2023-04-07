@@ -1,3 +1,5 @@
+import { BigNumberish } from "ethers";
+import { formatUnits } from "ethers/lib/utils";
 import { BridgeStyled } from "./BridgeIn";
 import QBoxList from "./components/QBoxList";
 import Step1TxBox from "./components/step1TxBox";
@@ -79,7 +81,14 @@ const BridgeOut = (props: BridgeOutProps) => {
           fromAddress={props.ethAddress}
           toAddress={props.cantoAddress}
           bridgeIn={false}
-          tokens={props.bridgeOutTokens}
+          tokenGroups={[
+            {
+              groupName: "bridge out tokens",
+              tokens: props.bridgeOutTokens,
+              getBalance: (token) =>
+                formatUnits(token.erc20Balance as BigNumberish, token.decimals),
+            },
+          ]}
           selectedToken={props.selectedBridgeOutToken}
           selectToken={props.selectToken}
           txHook={() =>

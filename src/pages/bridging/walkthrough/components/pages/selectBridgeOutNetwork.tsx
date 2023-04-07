@@ -85,11 +85,7 @@ const SelectBridgeOutNetwork = (props: SelectBridgeProps) => {
           </Text>
           <CInput
             className="address-input"
-            placeholder={
-              props.activeNetwork.name == "gravity bridge"
-                ? "Enter gravity bridge address"
-                : "Enter cosmos hub address"
-            }
+            placeholder={`Enter ${props.activeNetwork.name} address`}
             value={props.userCosmosSend.address}
             onChange={(e) => props.userCosmosSend.setAddress(e.target.value)}
           />

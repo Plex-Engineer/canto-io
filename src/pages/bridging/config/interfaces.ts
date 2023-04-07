@@ -47,6 +47,12 @@ export enum BridgeOutNetworks {
 /**
  * TOKEN INTERFACES
  */
+
+export interface Step1TokenGroups {
+  groupName: string;
+  tokens: BaseToken[] | undefined;
+  getBalance: (token: BaseToken) => string;
+}
 export interface BaseToken extends Token {
   [x: string | number | symbol]: unknown;
 }
@@ -73,6 +79,7 @@ const EMPTY_TOKEN: Token = {
   decimals: 6,
   icon: emptyToken,
   name: "choose token",
+  tokenGroups: [],
 };
 export const EMPTY_ERC20_BRIDGE_TOKEN: UserERC20BridgeToken = {
   ...EMPTY_TOKEN,

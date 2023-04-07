@@ -11,6 +11,12 @@ import ATOM from "assets/icons/ATOM.svg";
 import CANTO from "assets/icons/canto.png";
 import Note from "assets/icons/note.svg";
 import WSTETH from "assets/icons/wstETH.svg";
+
+export enum TokenGroups {
+  DEX_TOKENS = "DEX_TOKENS",
+  IBC_TOKENS = "IBC_TOKENS",
+  LP_TOKENS = "LP_TOKENS",
+}
 export interface Token {
   symbol: string;
   name: string;
@@ -19,6 +25,7 @@ export interface Token {
   isERC20: boolean;
   isLP: boolean;
   icon: string;
+  tokenGroups: TokenGroups[];
 }
 export interface CTOKEN {
   symbol: string;
@@ -70,7 +77,12 @@ const decimals = {
   cCantoETHLP: 18,
 };
 
-export const TOKENS = {
+interface FullTokenList {
+  [chain: string]: {
+    [key: string]: Token;
+  };
+}
+export const TOKENS: FullTokenList = {
   cantoTestnet: {
     CANTO: {
       symbol: "CANTO",
@@ -80,6 +92,7 @@ export const TOKENS = {
       isERC20: false,
       isLP: false,
       icon: icons.CANTO,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     WCANTO: {
       symbol: "WCANTO",
@@ -89,6 +102,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.CANTO,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     NOTE: {
       symbol: "NOTE",
@@ -98,6 +112,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.Note,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     ETH: {
       symbol: "ETH",
@@ -107,6 +122,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.ETH,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     ATOM: {
       symbol: "ATOM",
@@ -116,6 +132,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.ATOM,
+      tokenGroups: [TokenGroups.DEX_TOKENS, TokenGroups.IBC_TOKENS],
     },
     USDC: {
       symbol: "USDC",
@@ -125,6 +142,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.USDC,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     USDT: {
       symbol: "USDT",
@@ -134,6 +152,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.USDT,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     CantoNote: {
       symbol: "CantoNoteLP",
@@ -143,6 +162,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.CantoNoteLP,
+      tokenGroups: [TokenGroups.LP_TOKENS],
     },
     CantoAtom: {
       symbol: "CantoAtomLP",
@@ -152,6 +172,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.CantoAtomLP,
+      tokenGroups: [TokenGroups.LP_TOKENS],
     },
     NoteUSDC: {
       symbol: "NoteUSDCLP",
@@ -161,6 +182,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.USDCNoteLP,
+      tokenGroups: [TokenGroups.LP_TOKENS],
     },
     NoteUSDT: {
       symbol: "NoteUSDTLP",
@@ -170,6 +192,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.USDTNoteLP,
+      tokenGroups: [TokenGroups.LP_TOKENS],
     },
     CantoETH: {
       symbol: "CantoETHLP",
@@ -179,6 +202,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.CantoETHLP,
+      tokenGroups: [TokenGroups.LP_TOKENS],
     },
   },
   cantoMainnet: {
@@ -190,6 +214,7 @@ export const TOKENS = {
       isERC20: false,
       isLP: false,
       icon: icons.CANTO,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     WCANTO: {
       symbol: "WCANTO",
@@ -199,6 +224,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.CANTO,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     NOTE: {
       symbol: "NOTE",
@@ -208,6 +234,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.Note,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     ETH: {
       symbol: "ETH",
@@ -217,6 +244,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.ETH,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     ATOM: {
       symbol: "ATOM",
@@ -226,6 +254,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.ATOM,
+      tokenGroups: [TokenGroups.DEX_TOKENS, TokenGroups.IBC_TOKENS],
     },
     USDC: {
       symbol: "USDC",
@@ -235,6 +264,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.USDC,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     USDT: {
       symbol: "USDT",
@@ -244,6 +274,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.USDT,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     CantoNote: {
       symbol: "CantoNoteLP",
@@ -253,6 +284,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.CantoNoteLP,
+      tokenGroups: [TokenGroups.LP_TOKENS],
     },
     CantoAtom: {
       symbol: "CantoAtomLP",
@@ -262,6 +294,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.CantoAtomLP,
+      tokenGroups: [TokenGroups.LP_TOKENS],
     },
     NoteUSDC: {
       symbol: "NoteUSDCLP",
@@ -271,6 +304,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.USDCNoteLP,
+      tokenGroups: [TokenGroups.LP_TOKENS],
     },
     NoteUSDT: {
       symbol: "NoteUSDTLP",
@@ -280,6 +314,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.USDTNoteLP,
+      tokenGroups: [TokenGroups.LP_TOKENS],
     },
     CantoETH: {
       symbol: "CantoETHLP",
@@ -289,6 +324,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: true,
       icon: icons.CantoETHLP,
+      tokenGroups: [TokenGroups.LP_TOKENS],
     },
     //ibc tokens new
     SOMM: {
@@ -299,6 +335,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/sommelier/images/somm.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     GRAV: {
       symbol: "GRAV",
@@ -308,6 +345,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/gravitybridge/images/grav.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     AKASH: {
       symbol: "AKT",
@@ -317,6 +355,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/akash/images/akt.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     OSMOSIS: {
       symbol: "OSMO",
@@ -326,6 +365,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     CRESCENT: {
       symbol: "CRE",
@@ -335,6 +375,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/crescent/images/cre.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     KAVA: {
       symbol: "KAVA",
@@ -344,6 +385,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/kava/images/kava.png",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     INJECTIVE: {
       symbol: "INJ",
@@ -353,6 +395,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/injective/images/inj.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     COMDEX: {
       symbol: "CMDX",
@@ -362,6 +405,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/comdex/images/cmdx.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     //new ibc tokens batch II
     SENTINAL: {
@@ -372,6 +416,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/sentinel/images/dvpn.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     EVMOS: {
       symbol: "EVMOS",
@@ -381,6 +426,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/evmos/images/evmos.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     PERSISTENCE: {
       symbol: "XPRT",
@@ -390,6 +436,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/xprt.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     PStakedATOM: {
       symbol: "stkATOM",
@@ -399,6 +446,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/stkatom.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     STRIDE: {
       symbol: "STRD",
@@ -408,6 +456,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/strd.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     STEVMOS: {
       symbol: "stEVMOS",
@@ -417,6 +466,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stevmos.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     STATOM: {
       symbol: "stATOM",
@@ -426,6 +476,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/statom.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     STJUNO: {
       symbol: "stJUNO",
@@ -435,6 +486,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stjuno.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     STOSMO: {
       symbol: "stOSMO",
@@ -444,6 +496,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stosmo.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     STSTARS: {
       symbol: "stSTARS",
@@ -453,6 +506,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/ststars.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     QUICKSILVER: {
       symbol: "QCK",
@@ -462,6 +516,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qck.png",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     QATOM: {
       symbol: "qATOM",
@@ -471,6 +526,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qatom.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     QREGEN: {
       symbol: "qREGEN",
@@ -480,6 +536,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qregen.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     QSTARS: {
       symbol: "qSTARS",
@@ -489,6 +546,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/quicksilver/images/qstars.svg",
+      tokenGroups: [TokenGroups.IBC_TOKENS],
     },
     WSTETH: {
       symbol: "wstETH",
@@ -498,6 +556,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: WSTETH,
+      tokenGroups: [],
     },
   },
   ETHMainnet: {
@@ -509,6 +568,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.USDT,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     USDC: {
       symbol: "USDC",
@@ -518,6 +578,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.USDC,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     WETH: {
       symbol: "WETH",
@@ -527,6 +588,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: icons.ETH,
+      tokenGroups: [TokenGroups.DEX_TOKENS],
     },
     WSTETH: {
       symbol: "wstETH",
@@ -536,6 +598,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: WSTETH,
+      tokenGroups: [],
     },
   },
   GravityBridge: {
@@ -547,6 +610,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://s2.coinmarketcap.com/static/img/coins/32x32/1.png",
+      tokenGroups: [],
     },
     BYE: {
       symbol: "BYE",
@@ -556,6 +620,7 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://s2.coinmarketcap.com/static/img/coins/32x32/2.png",
+      tokenGroups: [],
     },
     MAX: {
       symbol: "MAX",
@@ -565,11 +630,17 @@ export const TOKENS = {
       isERC20: true,
       isLP: false,
       icon: "https://s2.coinmarketcap.com/static/img/coins/32x32/3.png",
+      tokenGroups: [],
     },
   },
 };
 
-export const CTOKENS = {
+interface FullCTokenList {
+  [chain: string]: {
+    [token: string]: CTOKEN;
+  };
+}
+export const CTOKENS: FullCTokenList = {
   cantoTestnet: {
     CCANTO: {
       symbol: "cCANTO",

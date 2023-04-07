@@ -1,30 +1,29 @@
 import styled from "@emotion/styled";
 import down from "assets/down.svg";
 import { useRef } from "react";
-import { BaseToken } from "../config/interfaces";
+import { BaseToken, Step1TokenGroups } from "../config/interfaces";
 import Popup from "reactjs-popup";
 import TokenModal from "./modals/tokenModal";
 
 interface ITokenSelect {
-  tokens: BaseToken[] | undefined;
+  tokenGroups: Step1TokenGroups[];
   activeToken: BaseToken;
   onSelect: (value: BaseToken | undefined) => void;
-  balanceString: string;
-  extraTokenData?: {
-    tokens: BaseToken[];
-    balance: string;
-    onSelect: (value: BaseToken) => void;
-  };
 }
 
 export const TokenWallet = ({
+  tokenGroups,
   onSelect,
-  tokens,
   activeToken,
-  balanceString,
-  extraTokenData,
 }: ITokenSelect) => {
   const ref = useRef(null);
+  const fullTokenLength = tokenGroups.reduce((acc, group) => {
+    if (group.tokens) {
+      return acc + group.tokens?.length;
+    } else {
+      return acc;
+    }
+  }, 0);
   return (
     <StyledPopup
       ref={ref}
@@ -45,14 +44,14 @@ export const TokenWallet = ({
               flex: "2",
             }}
           >
-            {tokens ? activeToken.symbol : "loading tokens"}
+            {fullTokenLength ? activeToken.symbol : "loading tokens"}
           </span>
           <img src={down} alt="" />
         </Styled>
       }
     >
       <TokenModal
-        tokens={tokens}
+        tokenGroups={tokenGroups}
         onClose={(value) => {
           if (ref != null) {
             //@ts-ignore
@@ -62,8 +61,6 @@ export const TokenWallet = ({
             onSelect(value);
           }
         }}
-        balanceString={balanceString}
-        extraTokenData={extraTokenData}
       />
     </StyledPopup>
   );

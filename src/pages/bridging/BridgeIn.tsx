@@ -6,9 +6,9 @@ import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
 import { ADDRESSES } from "global/config/addresses";
 import QBoxList from "./components/QBoxList";
 import { NATIVE_COMSOS_TOKENS } from "./config/bridgingTokens";
-import { GenPubKeyWalkthrough } from "./walkthrough/components/pages/genPubKey";
-import { CantoMainnet } from "global/config/networks";
-import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
+import { TokenGroups } from "global/config/tokenInfo";
+import { BigNumberish } from "ethers";
+import { formatUnits } from "ethers/lib/utils";
 
 interface BridgeInProps {
   ethAddress?: string;
@@ -93,7 +93,46 @@ const BridgeIn = (props: BridgeInProps) => {
           fromAddress={props.ethAddress}
           toAddress={props.cantoAddress}
           bridgeIn={true}
-          tokens={props.ethGBridgeTokens}
+          tokenGroups={[
+            {
+              groupName: "canto dex tokens",
+              tokens: [
+                ...props.ethGBridgeTokens,
+                ...NATIVE_COMSOS_TOKENS,
+              ].filter((token) =>
+                token.tokenGroups.includes(TokenGroups.DEX_TOKENS)
+              ),
+              getBalance: (token) => {
+                if (token.tokenGroups.includes(TokenGroups.IBC_TOKENS))
+                  return "ibc";
+                else {
+                  return formatUnits(
+                    token.erc20Balance as BigNumberish,
+                    token.decimals
+                  );
+                }
+              },
+            },
+            {
+              groupName: "other tokens",
+              tokens: [
+                ...props.ethGBridgeTokens,
+                ...NATIVE_COMSOS_TOKENS,
+              ].filter(
+                (token) => !token.tokenGroups.includes(TokenGroups.DEX_TOKENS)
+              ),
+              getBalance: (token) => {
+                if (token.tokenGroups.includes(TokenGroups.IBC_TOKENS))
+                  return "ibc";
+                else {
+                  return formatUnits(
+                    token.erc20Balance as BigNumberish,
+                    token.decimals
+                  );
+                }
+              },
+            },
+          ]}
           selectedToken={props.selectedEthToken}
           selectToken={props.selectEthToken}
           txHook={() => {
@@ -107,11 +146,6 @@ const BridgeIn = (props: BridgeInProps) => {
               selectedToken.address,
               props.cantoAddress ?? "ibc"
             );
-          }}
-          extraTokenData={{
-            tokens: NATIVE_COMSOS_TOKENS,
-            balance: "ibc",
-            onSelect: () => true,
           }}
         />
         <Step2TxBox
