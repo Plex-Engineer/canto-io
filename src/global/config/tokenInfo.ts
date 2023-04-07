@@ -10,6 +10,7 @@ import ETH from "assets/icons/ETH.svg";
 import ATOM from "assets/icons/ATOM.svg";
 import CANTO from "assets/icons/canto.png";
 import Note from "assets/icons/note.svg";
+import WSTETH from "assets/icons/WSTETH.svg";
 export interface Token {
   symbol: string;
   name: string;
@@ -496,7 +497,7 @@ export const TOKENS = {
       address: "0xc71aAf8e486e3F33841BB56Ca3FD2aC3fa8D29a8",
       isERC20: true,
       isLP: false,
-      icon: icons.ETH,
+      icon: WSTETH,
     },
   },
   ETHMainnet: {
@@ -534,7 +535,7 @@ export const TOKENS = {
       address: "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
       isERC20: true,
       isLP: false,
-      icon: icons.ETH,
+      icon: WSTETH,
     },
   },
   GravityBridge: {

@@ -32,7 +32,7 @@ export const TokenWallet = ({
       lockScroll
       trigger={
         <Styled>
-          {activeToken.name != "choose token" && (
+          {activeToken.symbol != "choose token" && (
             <img
               src={activeToken.icon}
               alt={activeToken.name}
@@ -45,7 +45,7 @@ export const TokenWallet = ({
               flex: "2",
             }}
           >
-            {tokens ? activeToken.name : "loading tokens"}
+            {tokens ? activeToken.symbol : "loading tokens"}
           </span>
           <img src={down} alt="" />
         </Styled>
