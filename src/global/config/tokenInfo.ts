@@ -10,7 +10,7 @@ import ETH from "assets/icons/ETH.svg";
 import ATOM from "assets/icons/ATOM.svg";
 import CANTO from "assets/icons/canto.png";
 import Note from "assets/icons/note.svg";
-import WSTETH from "assets/icons/WSTETH.svg";
+import WSTETH from "assets/icons/wstETH.svg";
 export interface Token {
   symbol: string;
   name: string;
