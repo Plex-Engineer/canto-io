@@ -6,9 +6,9 @@ import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
 import { ADDRESSES } from "global/config/addresses";
 import QBoxList from "./components/QBoxList";
 import { NATIVE_COMSOS_TOKENS } from "./config/bridgingTokens";
-import { GenPubKeyWalkthrough } from "./walkthrough/components/pages/genPubKey";
-import { CantoMainnet } from "global/config/networks";
-import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
+import { TokenGroups } from "global/config/tokenInfo";
+import { BigNumberish } from "ethers";
+import { formatUnits } from "ethers/lib/utils";
 
 interface BridgeInProps {
   ethAddress?: string;
@@ -29,12 +29,6 @@ const BridgeIn = (props: BridgeInProps) => {
   return (
     <BridgeStyled>
       <div className="left">
-        <div
-          className="spacer"
-          style={{
-            marginTop: "3rem",
-          }}
-        ></div>
         <QBoxList
           title="instructions"
           QA={[
@@ -99,7 +93,46 @@ const BridgeIn = (props: BridgeInProps) => {
           fromAddress={props.ethAddress}
           toAddress={props.cantoAddress}
           bridgeIn={true}
-          tokens={props.ethGBridgeTokens}
+          tokenGroups={[
+            {
+              groupName: "canto dex tokens",
+              tokens: [
+                ...props.ethGBridgeTokens,
+                ...NATIVE_COMSOS_TOKENS,
+              ].filter((token) =>
+                token.tokenGroups.includes(TokenGroups.DEX_TOKENS)
+              ),
+              getBalance: (token) => {
+                if (token.tokenGroups.includes(TokenGroups.IBC_TOKENS))
+                  return "ibc";
+                else {
+                  return formatUnits(
+                    token.erc20Balance as BigNumberish,
+                    token.decimals
+                  );
+                }
+              },
+            },
+            {
+              groupName: "other tokens",
+              tokens: [
+                ...props.ethGBridgeTokens,
+                ...NATIVE_COMSOS_TOKENS,
+              ].filter(
+                (token) => !token.tokenGroups.includes(TokenGroups.DEX_TOKENS)
+              ),
+              getBalance: (token) => {
+                if (token.tokenGroups.includes(TokenGroups.IBC_TOKENS))
+                  return "ibc";
+                else {
+                  return formatUnits(
+                    token.erc20Balance as BigNumberish,
+                    token.decimals
+                  );
+                }
+              },
+            },
+          ]}
           selectedToken={props.selectedEthToken}
           selectToken={props.selectEthToken}
           txHook={() => {
@@ -113,11 +146,6 @@ const BridgeIn = (props: BridgeInProps) => {
               selectedToken.address,
               props.cantoAddress ?? "ibc"
             );
-          }}
-          extraTokenData={{
-            tokens: NATIVE_COMSOS_TOKENS,
-            balance: "ibc",
-            onSelect: () => true,
           }}
         />
         <Step2TxBox
@@ -151,10 +179,7 @@ export const BridgeStyled = styled.div`
   .left {
     height: calc(100% - 1rem);
     overflow-y: auto;
-    ::-webkit-scrollbar {
-      width: 3px;
-      height: 6px;
-    }
+    margin-top: 3rem;
   }
   .center {
     display: flex;
@@ -167,8 +192,22 @@ export const BridgeStyled = styled.div`
     position: relative;
   }
   @media (max-width: 1000px) {
+    flex-direction: column-reverse;
+
     br {
       display: none;
+    }
+    .center {
+      padding: 4rem 1rem 2rem 1rem;
+    }
+
+    .right {
+      display: none;
+    }
+
+    .left {
+      margin-top: 0;
+      margin-bottom: 4rem;
     }
   }
 `;

@@ -70,14 +70,7 @@ const Styled = styled.div`
   /* overflow-y: scroll; */
   /* height: calc(100vh - 10rem); */
   position: relative;
-  &::-webkit-scrollbar {
-    display: none;
-  }
 
-  & {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
   .section {
     display: flex;
     gap: 2rem;

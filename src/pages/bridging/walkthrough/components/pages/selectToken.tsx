@@ -1,4 +1,6 @@
 import styled from "@emotion/styled";
+import { BigNumberish } from "ethers";
+import { formatUnits } from "ethers/lib/utils";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { TokenWallet } from "pages/bridging/components/tokenSelect";
 import { BaseToken } from "pages/bridging/config/interfaces";
@@ -35,10 +37,19 @@ const SelectTokenPage = (props: SelectTokenProps) => {
       <section>
         <div className="wallet">
           <TokenWallet
-            tokens={props.tokenList}
+            tokenGroups={[
+              {
+                groupName: "Tokens",
+                tokens: props.tokenList,
+                getBalance: (token) =>
+                  formatUnits(
+                    token[props.balanceString] as BigNumberish,
+                    token.decimals
+                  ),
+              },
+            ]}
             activeToken={props.activeToken}
             onSelect={(token) => props.onSelect(token ?? props.activeToken)}
-            balanceString={props.balanceString}
           />
         </div>
       </section>
