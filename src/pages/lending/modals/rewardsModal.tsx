@@ -53,7 +53,7 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
         <Text type="text" size="text2" bold>
           {Number(truncateNumber(formatUnits(rewardsObj.accrued, 18))) < 0.001
             ? "Sorry, seems like you have nothing to claim yet!"
-            : "Congratulations, you did a great job!"}
+            : ""}
         </Text>
       </div>
       {/* <p className="secondaryBalance">
