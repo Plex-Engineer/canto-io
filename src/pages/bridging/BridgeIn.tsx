@@ -41,14 +41,14 @@ const BridgeIn = (props: BridgeInProps) => {
                   step takes roughly 20 minutes.
                   <br />
                   <br />
-                  If you want to bridge Cosmos tokens using IBC, first send the
-                  tokens over (
+                  If you want to bridge from Cosmos Hub and other IBC Chains,
+                  start at the top to initiate an IBC transfer (
                   <a
                     role="button"
                     tabIndex={0}
                     onClick={() =>
                       window.open(
-                        "https://docs.canto.io/user-guides/bridging-assets/to-canto#from-cosmos-hub-or-other-ibc-enabled-chain",
+                        "https://docs.canto.io/user-guides/bridging-assets/to-canto#from-cosmos-hub-and-other-ibc-chains",
                         "_blank"
                       )
                     }
