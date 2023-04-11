@@ -41,8 +41,8 @@ const BridgeIn = (props: BridgeInProps) => {
                   step takes roughly 20 minutes.
                   <br />
                   <br />
-                  If you want to bridge from Cosmos Hub and other IBC Chains,
-                  start at the top to initiate an IBC transfer (
+                  If you want to bridge from a Cosmos chain start at the top to
+                  initiate an IBC transfer (
                   <a
                     role="button"
                     tabIndex={0}
