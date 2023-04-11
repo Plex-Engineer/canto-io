@@ -24,11 +24,14 @@ import { parseUnits } from "ethers/lib/utils";
 import Tooltip from "global/packages/src/components/molecules/Tooltip";
 import { Text } from "global/packages/src";
 import guideImg from "assets/guide.svg";
+import RecoveryModal from "./components/modals/recoveryModal";
+import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
 
 const Bridging = () => {
   const networkInfo = useNetworkInfo();
   const bridgingTokens = useBridgeTokenInfo();
   const bridgingHistory = useTransactionHistory();
+  const transactionHooks = useBridgingTransactions();
   const { activateBrowserWallet } = useEthers();
   const navigate = useNavigate();
   const [pubKeySuccess, setPubKeySuccess] = useState("None");
@@ -60,6 +63,11 @@ const Bridging = () => {
   return (
     <Styled>
       <div className="floating-buttons">
+        <RecoveryModal
+          tokens={bridgingTokens.unknownTokens}
+          cantoAddress={networkInfo.cantoAddress}
+          txSelector={transactionHooks}
+        />
         <BalanceTableModal
           ethTokens={bridgingTokens.userBridgeInTokens}
           cantoTokens={bridgingTokens.userBridgeOutTokens}
@@ -153,6 +161,7 @@ const Bridging = () => {
                     bridgingTokens.userNativeTokens,
                     false
                   )}
+                  txSelector={transactionHooks}
                 />,
                 <Transactions
                   key={"transaction"}
@@ -201,7 +210,7 @@ const Styled = styled.div`
     display: flex;
     gap: 2rem;
     width: 5rem;
-    height: 5rem;
+    height: 50rem;
   }
 
   @media (max-width: 1000px) {

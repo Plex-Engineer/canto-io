@@ -1,6 +1,10 @@
 import { generateEndpointBalances } from "@tharsis/provider";
 import { BigNumber } from "ethers";
-import { NativeToken, UserNativeToken } from "../config/interfaces";
+import {
+  BasicNativeBalance,
+  NativeToken,
+  UserNativeToken,
+} from "../config/interfaces";
 
 interface NativeTokenResponse {
   denom: string;
@@ -10,7 +14,10 @@ export async function getNativeCantoBalances(
   nodeAddressIP: string,
   cantoAddress: string,
   nativeTokens: NativeToken[]
-): Promise<UserNativeToken[]> {
+): Promise<{
+  foundTokens: UserNativeToken[];
+  notFoundTokens: BasicNativeBalance[];
+}> {
   const url = nodeAddressIP + "/" + generateEndpointBalances(cantoAddress);
   const options = {
     method: "GET",
@@ -18,7 +25,7 @@ export async function getNativeCantoBalances(
       Accept: "application/json",
     },
   };
-  const result = await fetch(url, options)
+  const results = await fetch(url, options)
     .then((response) => response.json())
     .then((result) => {
       return result["balances"];
@@ -26,16 +33,20 @@ export async function getNativeCantoBalances(
     .catch((err) => {
       console.error(err);
     });
-  return nativeTokens.map((token) => {
-    return {
-      ...token,
-      nativeBalance: BigNumber.from(
-        result
-          ? result.find(
-              (data: NativeTokenResponse) => data.denom == token.ibcDenom
-            )?.amount ?? 0
-          : 0
-      ),
-    };
-  });
+  const foundTokens: UserNativeToken[] = [];
+  const notFoundTokens: BasicNativeBalance[] = [];
+  for (const result of results) {
+    const foundToken = nativeTokens.find(
+      (token) => token.ibcDenom === result.denom
+    );
+    if (foundToken) {
+      foundTokens.push({
+        ...foundToken,
+        nativeBalance: BigNumber.from(result.amount ?? 0),
+      });
+    } else {
+      notFoundTokens.push(result);
+    }
+  }
+  return { foundTokens, notFoundTokens };
 }

@@ -22,7 +22,7 @@ export interface BridgeTransaction {
   txName: string;
   txType: CantoTransactionType;
 }
-interface BridgingTransactionsSelector {
+export interface BridgingTransactionsSelector {
   bridgeIn: {
     approveToken: (tokenAddress: string) => BridgeTransaction;
     sendToCosmos: (

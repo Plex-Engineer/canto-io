@@ -73,7 +73,7 @@ const StyledPopup = styled(Popup)`
     border-radius: 4px;
     animation: fadein 0.5s 1;
     min-height: 42rem;
-    max-height: 45rem;
+    /* max-height: 45rem; */
     overflow-y: hidden;
     @keyframes fadein {
       0% {

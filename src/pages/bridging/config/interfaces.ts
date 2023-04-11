@@ -69,6 +69,10 @@ export interface NativeToken extends BaseToken {
 export interface UserNativeToken extends NativeToken {
   nativeBalance: BigNumber;
 }
+export interface BasicNativeBalance {
+  denom: string;
+  amount: string;
+}
 
 //Empty token data for initialization
 const EMPTY_TOKEN: Token = {

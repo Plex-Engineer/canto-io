@@ -7,6 +7,7 @@ import {
   ETH_GRAVITY_BRIDGE_IN_TOKENS,
 } from "../config/bridgingTokens";
 import {
+  BasicNativeBalance,
   EMPTY_ERC20_BRIDGE_TOKEN,
   UserERC20BridgeToken,
   UserNativeToken,
@@ -22,6 +23,7 @@ interface BridgeTokenInfo {
   userBridgeInTokens: UserERC20BridgeToken[];
   userBridgeOutTokens: UserERC20BridgeToken[];
   userNativeTokens: UserNativeToken[];
+  unknownTokens: BasicNativeBalance[];
   selectedTokens: {
     bridgeInToken: UserERC20BridgeToken;
     bridgeOutToken: UserERC20BridgeToken;
@@ -52,14 +54,19 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
   const [userNativeTokens, setUserNativeTokens] = useState<UserNativeToken[]>(
     []
   );
+
+  //these are used for "recover tokens" if unidentified tokens are found
+  const [allNativeUnfilteredTokens, setAllNativeUnfilteredTokens] = useState<
+    BasicNativeBalance[]
+  >([]);
   async function getAllNativeTokens() {
-    setUserNativeTokens(
-      await getNativeCantoBalances(
-        CantoMainnet.cosmosAPIEndpoint,
-        networkInfo.cantoAddress,
-        CONVERT_COIN_TOKENS
-      )
+    const { foundTokens, notFoundTokens } = await getNativeCantoBalances(
+      CantoMainnet.cosmosAPIEndpoint,
+      networkInfo.cantoAddress,
+      CONVERT_COIN_TOKENS
     );
+    setUserNativeTokens(foundTokens);
+    setAllNativeUnfilteredTokens(notFoundTokens);
   }
 
   //initialize data on sign in
@@ -79,6 +86,7 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
     userBridgeInTokens: userEthBridgeInTokens,
     userBridgeOutTokens: userCantoBridgeOutTokens,
     userNativeTokens: userNativeTokens,
+    unknownTokens: allNativeUnfilteredTokens,
     selectedTokens: {
       bridgeInToken:
         userEthBridgeInTokens.find(
