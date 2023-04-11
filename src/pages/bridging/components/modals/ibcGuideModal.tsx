@@ -36,6 +36,9 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
   const [amount, setAmount] = useState("");
   const [txStatus, setTxStatus] = useState<TransactionState>("None");
   const network = ALL_BRIDGE_OUT_NETWORKS[props.token.supportedOutChannels[0]];
+  const canIBC = !(
+    network.chainId === "evmos_9001-2" || network.chainId === "injective-1"
+  );
 
   async function setKeplrAddressAndBalance() {
     if (!window.keplr) {
@@ -68,12 +71,7 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
     setTxStatus("PendingSignature");
     try {
       //if injective or emvos, we cannot use stargate client
-      if (
-        network.chainId === "evmos_9001-2" ||
-        network.chainId === "injective-1"
-      ) {
-        //solution tbd
-      } else {
+      if (canIBC) {
         const ibcResponse = await keplrClient?.sendIbcTokens(
           userKeplrAddress,
           props.cantoAddress,
@@ -211,82 +209,87 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
           IBC process
         </a>
       </Text>
-      <div className="expand"></div>
-      <div className="amount">
-        <CInput
-          style={{
-            backgroundColor: "transparent",
-            width: "100%",
-            height: "54px",
-          }}
-          placeholder={`amount :  ${truncateNumber(
-            formatUnits(balance, props.token.decimals),
-            6
-          )} `}
-          value={amount}
-          onChange={(val) => {
-            setAmount(val.target.value);
-          }}
-        />
-        <button
-          className="maxBtn"
-          onClick={() => {
-            setAmount(
-              truncateNumber(formatUnits(balance, props.token.decimals), 6)
-            );
-          }}
-        >
-          <Text>max</Text>
-        </button>
-      </div>
-      {
-        //if keplr plugin exists
-        window.keplr ? (
-          //if we have keplr address
-          userKeplrAddress.length > 10 ? (
-            <PrimaryButton
-              disabled={
-                Number(amount) <= 0 ||
-                Number(amount) >
-                  Number(formatUnits(balance, props.token.decimals))
-              }
-              onClick={createIBCMsg}
-              filled
-              height="big"
-              weight="bold"
+      {canIBC && (
+        <>
+          {" "}
+          <div className="expand"></div>
+          <div className="amount">
+            <CInput
+              style={{
+                backgroundColor: "transparent",
+                width: "100%",
+                height: "54px",
+              }}
+              placeholder={`amount :  ${truncateNumber(
+                formatUnits(balance, props.token.decimals),
+                6
+              )} `}
+              value={amount}
+              onChange={(val) => {
+                setAmount(val.target.value);
+              }}
+            />
+            <button
+              className="maxBtn"
+              onClick={() => {
+                setAmount(
+                  truncateNumber(formatUnits(balance, props.token.decimals), 6)
+                );
+              }}
             >
-              {Number(amount) <= 0
-                ? "Enter Amount "
-                : Number(amount) >
-                  Number(formatUnits(balance, props.token.decimals))
-                ? "Amount Exceeds Max"
-                : "IBC IN"}
-            </PrimaryButton>
-          ) : (
-            //if keplr address doesn't exist, connect and retrive it
-            <PrimaryButton
-              onClick={setKeplrAddressAndBalance}
-              filled
-              height="big"
-              weight="bold"
-            >
-              Connect to keplr
-            </PrimaryButton>
-          )
-        ) : (
-          //if keplr wallet doesn't exist
-          <PrimaryButton
-            filled
-            height="big"
-            weight="bold"
-            onClick={() => {
-              window.open("https://www.keplr.app/download", "_blank");
-            }}
-          >
-            install keplr
-          </PrimaryButton>
-        )
-      }
+              <Text>max</Text>
+            </button>
+          </div>
+          {
+            //if keplr plugin exists
+            window.keplr ? (
+              //if we have keplr address
+              userKeplrAddress.length > 10 ? (
+                <PrimaryButton
+                  disabled={
+                    Number(amount) <= 0 ||
+                    Number(amount) >
+                      Number(formatUnits(balance, props.token.decimals))
+                  }
+                  onClick={createIBCMsg}
+                  filled
+                  height="big"
+                  weight="bold"
+                >
+                  {Number(amount) <= 0
+                    ? "Enter Amount "
+                    : Number(amount) >
+                      Number(formatUnits(balance, props.token.decimals))
+                    ? "Amount Exceeds Max"
+                    : "IBC IN"}
+                </PrimaryButton>
+              ) : (
+                //if keplr address doesn't exist, connect and retrive it
+                <PrimaryButton
+                  onClick={setKeplrAddressAndBalance}
+                  filled
+                  height="big"
+                  weight="bold"
+                >
+                  Connect to keplr
+                </PrimaryButton>
+              )
+            ) : (
+              //if keplr wallet doesn't exist
+              <PrimaryButton
+                filled
+                height="big"
+                weight="bold"
+                onClick={() => {
+                  window.open("https://www.keplr.app/download", "_blank");
+                }}
+              >
+                install keplr
+              </PrimaryButton>
+            )
+          }
+        </>
+      )}
     </Styled>
   );
 };
