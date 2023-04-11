@@ -1,14 +1,13 @@
 import styled from "@emotion/styled";
 export const DexModalContainer = styled.div`
   background-color: #040404;
-  height: 42rem;
+  height: 40rem;
   width: 30rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: start;
   gap: 1rem;
-
+  padding: 0 2rem;
+  //! marked for deletion
   .title {
     width: 100%;
     /* background-color: #06fc991a; */
@@ -17,14 +16,36 @@ export const DexModalContainer = styled.div`
     z-index: 2;
   }
 
+  .dual-button {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .locked {
+    position: relative;
+    margin: 2rem 0;
+    .icons {
+      position: absolute;
+      bottom: -10px;
+      left: 60px;
+      border: 1px solid var(--primary-color);
+      border-radius: 50px;
+      background-color: #111;
+      padding: 2px 4px;
+    }
+  }
+
   .content {
     height: 100%;
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
   }
 
   .tokenBox {
-    margin: 0 2rem !important;
     background-color: #131313;
     border: 1px solid #606060;
     padding: 1rem;
@@ -71,15 +92,16 @@ export const DexModalContainer = styled.div`
     margin-bottom: 1.2rem;
   }
   .box {
-    width: 80%;
+    width: 100%;
     display: flex;
     flex-direction: column;
   }
 
   .fields {
     display: flex;
-    padding: 1rem;
-    gap: 0.3rem;
+    flex-direction: column;
+    width: 100%;
+    gap: 0.8rem;
   }
 
   .rowCell {
@@ -92,6 +114,12 @@ export const DexModalContainer = styled.div`
     }
   }
 
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
   .tableName {
     width: 80%;
     display: flex;
@@ -135,6 +163,11 @@ export const AddRemoveContainer = styled(DexModalContainer)`
     margin-top: 1rem;
     gap: 0.6rem;
   }
+  .btns {
+    display: flex;
+    flex-direction: row;
+    gap: 0.6rem;
+  }
 `;
 
 interface showProps {
@@ -174,7 +207,6 @@ export const SettingsPopIn = styled.div<showProps>`
 export const DexContainer = styled.div`
   display: flex;
   flex-direction: column;
-
   .tableName {
     width: 1200px;
     margin: 0 auto;
@@ -194,26 +226,30 @@ type fieldProps = {
 };
 export const FieldContainer = styled.div<fieldProps>`
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   background-color: ${(props) => (props.focused ? "#001A0E" : "#191919")};
   border: ${(props) =>
     props.focused ? "1px solid #06FC99" : "1px solid #191919"};
+  border-radius: 4px;
   color: #efefef;
-  height: 130px;
-  flex: 1;
-  margin: 1px;
+  height: 80px;
 
   &:hover {
     background-color: #001a0e;
+    border-radius: 4px;
+
     cursor: text;
     input {
-      background-color: #001a0e !important;
+      border-radius: 4px;
+      /* background-color: #001a0e !important; */
     }
   }
   input[type="text"] {
     padding: 0 1rem;
     margin-top: 1rem;
-    background-color: ${(props) => (props.focused ? "#001A0E" : "#191919")};
+    background-color: transparent;
+    /* background-color: ${(props) =>
+      props.focused ? "#001A0E" : "#191919"}; */
     font-size: 24px;
     width: 100%;
     border: none;

@@ -123,7 +123,13 @@ const ConfirmButton = (props: ConfirmButtonProps) => {
   );
 
   return (
-    <PrimaryButton disabled={disabled} onClick={buttonOnClick}>
+    <PrimaryButton
+      height="big"
+      filled
+      weight="bold"
+      disabled={disabled}
+      onClick={buttonOnClick}
+    >
       {buttonText}
     </PrimaryButton>
   );
@@ -184,16 +190,16 @@ const RemoveModal = ({ activePair, chainId, onClose }: Props) => {
           }}
         />
       </DexLoadingOverlay>
-      <div className="title">
+      {/* <div className="title">
         {openSettings ? "Transaction Settings" : "Remove Liquidity"}
-      </div>
+      </div> */}
       {/* <div className="logo">
         <img src={logo} height={30} />
       </div> */}
       <div
         style={{
           position: "absolute",
-          left: "10px",
+          right: "60px",
           top: "15px",
           zIndex: "10",
         }}
@@ -220,15 +226,14 @@ const RemoveModal = ({ activePair, chainId, onClose }: Props) => {
           marginTop: "1rem",
         }}
       >
-        <IconPair
-          iconLeft={activePair.basePairInfo.token1.icon}
-          iconRight={activePair.basePairInfo.token2.icon}
-        />
+        <div className="row">
+          <IconPair
+            iconLeft={activePair.basePairInfo.token1.icon}
+            iconRight={activePair.basePairInfo.token2.icon}
+          />
+        </div>
       </div>
-      <div
-        className="field"
-        style={{ width: "100%", padding: "0 2rem", marginTop: "1rem" }}
-      >
+      <div className="field" style={{ width: "100%", marginTop: "1rem" }}>
         <Input
           name="percent to remove"
           value={percentage}
@@ -285,6 +290,10 @@ const RemoveModal = ({ activePair, chainId, onClose }: Props) => {
           }
         />
       </div>
+      <div className="style" style={{ height: "100%" }}>
+        {" "}
+      </div>
+
       <ConfirmButton
         status={setTokenAllowanceStatus}
         pair={activePair}

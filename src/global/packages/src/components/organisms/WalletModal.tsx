@@ -10,9 +10,9 @@ import cantoIMG from "assets/logo.svg";
 import ethIMG from "assets/icons/ETH.svg";
 import { formatEther } from "ethers/lib/utils";
 import { CantoMainnet } from "global/providers";
-import { ETHMainnet } from "pages/bridge/config/networks";
 import { Mixpanel } from "mixpanel";
 import { toastHandler } from "global/utils/toastHandler";
+import { ETHMainnet } from "global/config/networks";
 
 const WalletModal = () => {
   const { deactivate } = useEthers();

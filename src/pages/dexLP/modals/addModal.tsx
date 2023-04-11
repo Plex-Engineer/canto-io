@@ -12,7 +12,6 @@ import {
   valueInNote,
 } from "pages/dexLP/utils/utils";
 import useModals, { ModalType } from "../hooks/useModals";
-import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
 import { truncateNumber } from "global/utils/utils";
 import { UserLPPairInfo } from "../config/interfaces";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
@@ -23,7 +22,7 @@ import {
   SettingsPopIn,
   DexLoadingOverlay,
 } from "../components/Styled";
-import { PrimaryButton } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { TransactionState } from "@usedapp/core";
@@ -64,84 +63,40 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
     );
   }
 
-  const routerAddress = getRouterAddress(props.chainId);
-
-  const { state: addAllowanceA, send: addAllowanceASend } = useSetAllowance({
-    type: CantoTransactionType.ENABLE,
-    address: props.pair.basePairInfo.token1.address,
-    amount: "-1",
-    icon: props.pair.basePairInfo.token1.icon,
-    name: props.pair.basePairInfo.token1.symbol,
-  });
-  const { state: addAllowanceB, send: addAllowanceBSend } = useSetAllowance({
-    type: CantoTransactionType.ENABLE,
-    address: props.pair.basePairInfo.token2.address,
-    amount: "-1",
-    icon: props.pair.basePairInfo.token2.icon,
-    name: props.pair.basePairInfo.token2.symbol,
-  });
-
   useEffect(() => {
     if (
-      props.pair.allowance.token1.isZero() ||
-      props.pair.allowance.token2.isZero()
+      props.pair.allowance.token1.lt(props.pair.balances.token1) ||
+      props.pair.allowance.token2.lt(props.pair.balances.token2)
     ) {
       setModalType(ModalType.ENABLE);
     }
   }, []);
 
-  useEffect(() => {
-    props.status1(addAllowanceA.status);
-    if (addAllowanceA.status == "Success") {
-      setTimeout(() => {
-        setModalType(ModalType.NONE);
-      }, 500);
-    }
-  }, [addAllowanceA.status]);
-  useEffect(() => {
-    props.status2(addAllowanceB.status);
-    if (addAllowanceB.status == "Success") {
-      setTimeout(() => {
-        setModalType(ModalType.NONE);
-      }, 500);
-    }
-  }, [addAllowanceB.status]);
-
-  const [buttonText, buttonOnClick, disabled] = getAddButtonTextAndOnClick(
-    props.pair.basePairInfo.token1.symbol,
-    props.pair.basePairInfo.token2.symbol,
-    props.pair.allowance.token1,
-    props.pair.allowance.token2,
+  const [buttonText, disabled] = getAddButtonTextAndOnClick(
     props.pair.balances.token1,
     props.pair.balances.token2,
     bnValue1,
     bnValue2,
     props.slippage,
-    props.deadline,
-    () =>
-      addAllowanceASend(
-        routerAddress,
-        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-      ),
-    () =>
-      addAllowanceBSend(
-        routerAddress,
-        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-      ),
-    () => {
-      setConfirmationValues({
-        amount1: bnValue1,
-        amount2: bnValue2,
-        slippage: props.slippage,
-        deadline: props.deadline,
-        percentage: 0,
-      });
-      setModalType(ModalType.ADD_CONFIRM);
-    }
+    props.deadline
   );
 
   return (
-    <PrimaryButton disabled={disabled} onClick={buttonOnClick}>
+    <PrimaryButton
+      disabled={disabled}
+      height="big"
+      filled
+      onClick={() => {
+        setConfirmationValues({
+          amount1: bnValue1,
+          amount2: bnValue2,
+          slippage: props.slippage,
+          deadline: props.deadline,
+          percentage: 0,
+        });
+        setModalType(ModalType.ADD_CONFIRM);
+      }}
+    >
       {buttonText}
     </PrimaryButton>
   );
@@ -228,15 +183,18 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
           mixPanelEventInfo={mixPanelInfoObject}
         />
       </DexLoadingOverlay>
-      <div className="title">
+      {/* <div className="title">
         {openSettings ? "Transaction Settings" : "Add Liquidity"}
-      </div>
+      </div> */}
       {/* <div className="logo">
         <img src={logo} height={30} />
       </div> */}
       <div
         style={{
           marginTop: "1rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <IconPair
@@ -244,10 +202,21 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
           iconRight={activePair.basePairInfo.token2.icon}
         />
       </div>
+
+      <div
+        className="row"
+        style={{
+          marginBottom: "2rem",
+        }}
+      >
+        <Text type="title">{activePair.basePairInfo.token1.symbol}</Text>
+        <Text type="title">/</Text>
+        <Text type="title">{activePair.basePairInfo.token2.symbol}</Text>
+      </div>
       <div
         style={{
           position: "absolute",
-          left: "10px",
+          right: "60px",
           top: "15px",
           zIndex: "10",
         }}
@@ -369,29 +338,36 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
           />
         </div>
       </div>
-      <div style={{ color: "white" }}>
+      <div style={{ color: "white", marginTop: "4rem" }}>
         {
-          <p style={{ textAlign: "right" }}>
-            <a>reserve ratio: </a> 1 {activePair.basePairInfo.token1.symbol} ={" "}
-            {truncateNumber(displayReserveRatio.toString())}{" "}
-            {activePair.basePairInfo.token2.symbol}
-          </p>
+          <div className="row">
+            <Text type="title">reserve ratio : </Text>
+            <Text color="white">
+              1 {activePair.basePairInfo.token1.symbol} ={" "}
+              {truncateNumber(displayReserveRatio.toString())}{" "}
+              {activePair.basePairInfo.token2.symbol}
+            </Text>
+          </div>
         }
         <br />
         {activePair.basePairInfo.stable ? (
-          <p style={{ textAlign: "right" }}>
-            <a style={{ textAlign: "left" }}>price: </a> 1{" "}
-            {activePair.basePairInfo.token1.symbol} ={" "}
-            {truncateNumber(
-              formatUnits(
-                valueInNote(
-                  parseUnits("1", activePair.basePairInfo.token2.decimals),
-                  activePair.prices.token2
+          <div className="row">
+            <Text style={{ textAlign: "left" }} type="title">
+              price :
+            </Text>{" "}
+            <Text style={{ textAlign: "right" }} color="white">
+              1 {activePair.basePairInfo.token1.symbol} ={" "}
+              {truncateNumber(
+                formatUnits(
+                  valueInNote(
+                    parseUnits("1", activePair.basePairInfo.token2.decimals),
+                    activePair.prices.token2
+                  )
                 )
-              )
-            )}{" "}
-            {activePair.basePairInfo.token2.symbol}
-          </p>
+              )}{" "}
+              {activePair.basePairInfo.token2.symbol}
+            </Text>
+          </div>
         ) : (
           ""
         )}

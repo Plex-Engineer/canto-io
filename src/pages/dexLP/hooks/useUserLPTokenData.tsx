@@ -5,8 +5,9 @@ import { cERC20Abi, ERC20Abi, routerAbi } from "global/config/abi";
 import { LPPairInfo, UserLPPairInfo } from "../config/interfaces";
 import { getSupplyBalanceFromCTokens } from "pages/lending/utils/utils";
 import { formatUnits } from "ethers/lib/utils";
-import { checkForCantoInPair } from "../utils/utils";
 import { ADDRESSES } from "global/config/addresses";
+import { checkForCantoInPair } from "../utils/pairCheck";
+import { checkMultiCallForUndefined } from "global/utils/utils";
 
 const useUserLPTokenInfo = (
   LPTokens: LPPairInfo[],
@@ -107,7 +108,7 @@ const useUserLPTokenInfo = (
     return chunks;
   };
 
-  if (chuckSize > 0 && results?.[1] != undefined && !results?.[1].error) {
+  if (chuckSize > 0 && checkMultiCallForUndefined(results)) {
     processedTokens = array_chunks(results, chuckSize);
     return processedTokens.map((tokenData, idx) => {
       const userLP = tokenData[0][0];

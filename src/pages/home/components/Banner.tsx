@@ -7,8 +7,8 @@ export const Banner = () => {
       <Text type="title" size="title2" align="left">
         The canto online hackathon
       </Text>
-      <Text align="left">/chapter 1 : season 6</Text>
-      <Text align="left">/dates: TBD</Text>
+      <Text align="left">/chapter 1 : season 7</Text>
+      <Text align="left">/dates: tbd</Text>
       <Text align="left">
         Join the Canto Online Hackathon for apps, infrastructure, and original
         work.
@@ -16,7 +16,7 @@ export const Banner = () => {
       <div className="spacer"></div>
       <OutlinedButton
         onClick={() => {
-          window.open("https://twitter.com/theCOH_");
+          window.open("https://thecoh.build/");
         }}
       >
         Apply to hack &gt;

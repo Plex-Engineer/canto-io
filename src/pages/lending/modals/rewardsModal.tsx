@@ -1,14 +1,15 @@
 import logo from "assets/logo.svg";
-import { noteSymbol, truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/utils";
 import { useClaim, useDrip } from "pages/lending/hooks/useTransaction";
 import { UserLMRewards } from "pages/lending/config/interfaces";
 import { ethers } from "ethers";
 import { valueInNote } from "pages/dexLP/utils/utils";
-import { PrimaryButton } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
 import { RewardsContainer } from "../components/Styled";
 import { reservoirAdddress } from "../config/lendingMarketTokens";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/transactionTypes";
+import TokenSymbol from "global/packages/src/components/atoms/NoteSymbol";
 
 interface Props {
   rewardsObj: UserLMRewards;
@@ -37,45 +38,58 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
           }}
         />
       )}
-      <div className="title">canto balance</div>
-      <div className="logo">
-        <img src={logo} height={30} />
+
+      <div className="container">
+        <div className="logo">
+          <img src={logo} height={30} />
+        </div>
+        <Text type="title" size="text1">
+          wcanto rewards
+        </Text>
+        <Text type="title" size="title1">
+          {truncateNumber(formatUnits(rewardsObj.accrued, 18))}
+        </Text>
+
+        <Text type="text" size="text2" bold>
+          {Number(truncateNumber(formatUnits(rewardsObj.accrued, 18))) < 0.001
+            ? "Sorry, seems like you have nothing to claim yet!"
+            : "Congratulations, you did a great job!"}
+        </Text>
       </div>
-      <p className="mainBalance">
-        {truncateNumber(formatUnits(rewardsObj.walletBalance, 18))}
-      </p>
-      <p className="secondaryBalance">
+      {/* <p className="secondaryBalance">
         {noteSymbol}
         {truncateNumber(
           formatUnits(valueInNote(rewardsObj.walletBalance, rewardsObj.price))
         )}
-      </p>
+      </p> */}
       <div className="balances">
         <div className="bal line">
-          <p className="type">wallet balance</p>
-          <p className="value">
-            {truncateNumber(formatUnits(rewardsObj.walletBalance, 18))}
-          </p>
-        </div>
-        <div className="bal line">
-          <p className="type">unclaimed balance</p>
-          <p className="value">
-            {truncateNumber(formatUnits(rewardsObj.accrued, 18))}
-          </p>
-        </div>
-        <div className="bal">
-          <p className="type">value</p>
-          <p className="value">
-            {noteSymbol}{" "}
+          <Text className="type">rewards in note value</Text>
+          <Text className="value">
             {truncateNumber(
               formatUnits(valueInNote(rewardsObj.accrued, rewardsObj.price))
             )}
-          </p>
+            <TokenSymbol token="note" />
+          </Text>
+        </div>
+        <div className="bal line">
+          <Text className="type">current wallet balance</Text>
+          <Text className="value">
+            {truncateNumber(formatUnits(rewardsObj.walletBalance, 18))}
+            <TokenSymbol token="canto" />
+          </Text>
+        </div>
+        <div className="bal line">
+          <Text className="type">unclaimed wcanto balance</Text>
+          <Text className="value">
+            {Number(truncateNumber(formatUnits(rewardsObj.accrued, 18)))}
+            <TokenSymbol token="canto" />
+          </Text>
         </div>
       </div>
       <PrimaryButton
-        style={{ margin: "2rem", width: "20rem" }}
-        size="sm"
+        style={{ margin: "2rem" }}
+        height={"big"}
         filled
         disabled={rewardsObj.accrued.isZero()}
         onClick={() => {
@@ -86,11 +100,7 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
             send(rewardsObj.wallet);
         }}
       >
-        {needDrip
-          ? "drip and claim"
-          : !rewardsObj.accrued.isZero()
-          ? "claim"
-          : "nothing to claim"}
+        {needDrip ? "drip and claim" : "claim"}
       </PrimaryButton>
     </RewardsContainer>
   );

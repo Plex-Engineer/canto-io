@@ -8,6 +8,7 @@ import { LMTokenDetails } from "../config/interfaces";
 import { cERC20Abi, comptrollerAbi, routerAbi } from "global/config/abi";
 import { CTOKEN, CTOKENS } from "global/config/tokenInfo";
 import { ADDRESSES } from "global/config/addresses";
+import { checkMultiCallForUndefined } from "global/utils/utils";
 
 const formatUnits = ethers.utils.formatUnits;
 const parseUnits = ethers.utils.parseUnits;
@@ -143,7 +144,7 @@ export function useLMTokenData(chainId?: string): LMTokenDetails[] {
   if (!tokens) {
     return [];
   }
-  if (chuckSize > 0 && results?.[0] != undefined && !results?.[0].error) {
+  if (chuckSize > 0 && checkMultiCallForUndefined(results)) {
     processedTokens = array_chunks(results, chuckSize);
     return processedTokens.map((tokenData, idx) => {
       const price =

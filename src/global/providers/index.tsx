@@ -1,13 +1,13 @@
 import { DAppProvider, Config, Mainnet as ETHMain } from "@usedapp/core";
 import React from "react";
 import { Chain } from "@usedapp/core";
-import { ETHMainnet } from "pages/bridge/config/networks";
 import { HelmetProvider } from "react-helmet-async";
 import { MetamaskConnector } from "@usedapp/core";
 
 import {
   CantoMainnet as CantoMain,
   CantoTestnet as CantoTest,
+  ETHMainnet,
 } from "global/config/networks";
 
 interface IProviderProps {
@@ -26,8 +26,8 @@ export const CantoMainnet: Chain = {
   rpcUrl: CantoMain.rpcUrl,
   isTestChain: CantoMain.isTestChain,
   isLocalChain: false,
-  multicallAddress: "0x210b88d5Ad4BEbc8FAC4383cC7F84Cd4F03d18c6",
-  multicall2Address: "0x637490E68AA50Ea810688a52D7464E10c25A77c1",
+  multicallAddress: CantoMain.multicall1Address,
+  multicall2Address: CantoMain.multicall2Address,
   blockExplorerUrl: CantoMain.blockExplorerUrl,
   getExplorerAddressLink: getAddressLink("kovanEtherscanUrl"),
   getExplorerTransactionLink: getTransactionLink("kovanEtherscanUrl"),
@@ -38,8 +38,8 @@ export const CantoTestnet: Chain = {
   rpcUrl: CantoTest.rpcUrl,
   isTestChain: CantoTest.isTestChain,
   isLocalChain: false,
-  multicallAddress: "0x121817438FC9b31ed4D6C4ED22eCde15af261f75",
-  multicall2Address: "0xd546F2aaB14eA4d4Dc083795b3e94D0C471A272f",
+  multicallAddress: CantoTest.multicall1Address,
+  multicall2Address: CantoTest.multicall2Address,
   blockExplorerUrl: CantoTest.blockExplorerUrl,
   getExplorerAddressLink: getAddressLink("kovanEtherscanUrl"),
   getExplorerTransactionLink: getTransactionLink("kovanEtherscanUrl"),

@@ -108,9 +108,15 @@ const ReactiveButton = ({
     token.data.underlying.symbol
   );
   return (
-    <div style={{ margin: "1rem", display: "flex", justifyContent: "center" }}>
+    <div
+      style={{
+        marginTop: "16px",
+      }}
+    >
       <PrimaryButton
         disabled={disabled}
+        height="big"
+        filled
         weight="bold"
         onClick={async () => {
           if (

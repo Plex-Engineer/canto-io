@@ -14,7 +14,7 @@ export const CInput = styled.input`
   ::placeholder {
     /* color: var(--primary-color); */
     opacity: 0.4;
-    color: var(--primary-color);
+    color: #999;
   }
   &:focus {
     outline: 1px solid var(--primary-color);

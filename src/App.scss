@@ -21,6 +21,17 @@
   --dark-grey-color: #424242;
   --too-dark-color: #222222;
   --pitch-black-color: #111111;
+
+  //colors
+
+  --matrix-green: #06fc99;
+  --matrix-green10: rgba(6, 252, 153, 0.1);
+  --danger-red: #ef4444;
+  --danger-red10: #ef44441a;
+  --warning-yellow: #e8d211;
+  --warning-yellow10: #e8d2111a;
+  --almost-white: #efefef;
+  --input-black: #222222;
 }
 
 :root {
@@ -29,8 +40,10 @@
   --off-white-color: #efefef;
   //   --error-color: #fe4256;
 
-  scrollbar-color: var(--primary-color);
+  scrollbar-color: var(--primary-color) #222;
   scroll-behavior: smooth;
+  //   overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
@@ -44,25 +57,29 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-// /* Handle */
-::-webkit-scrollbar-thumb {
-  box-shadow: inset 2 2 5px var(--primary-color);
-  border-radius: 6px;
-  width: 6px;
-  background: var(--primary-color);
-}
 ::selection {
   color: black;
   background: var(--primary-color);
 }
-::-webkit-scrollbar {
+// ::-webkit-scrollbar {
+//   width: 3px;
+//   height: 6px;
+// }
+
+::-webkit-scrollbar:hover {
   width: 6px;
   height: 6px;
 }
-
 /* Track */
 ::-webkit-scrollbar-track {
   background: #151515;
+}
+
+// // /* Handle */
+::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+  width: 2px;
+  background: #07e48c;
 }
 
 /* Handle on hover */
@@ -70,9 +87,6 @@ input[type="number"] {
   background: #07e48c;
 }
 
-:hover::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
-}
 .App {
   background: repeating-linear-gradient(
     0deg,
@@ -91,6 +105,11 @@ input[type="number"] {
     flex-direction: column;
     flex-grow: 2;
   }
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @keyframes fadeIn {

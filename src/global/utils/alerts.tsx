@@ -1,10 +1,13 @@
+import { useEtherBalance } from "@usedapp/core";
 import { BigNumber } from "ethers";
+import { parseUnits } from "ethers/lib/utils";
 import { GenPubKey } from "global/components/genPubKey";
 import { PageObject } from "global/config/pageList";
+import { useNetworkInfo } from "global/stores/networkInfo";
 import { ReactNode } from "react";
 import { addNetwork } from "./walletConnect/addCantoToWallet";
 
-export function showAlerts(
+export function ShowAlerts(
   openAlert: (
     type: "Failure" | "Warning" | "Success",
     child: ReactNode,
@@ -14,18 +17,20 @@ export function showAlerts(
   closeAlert: () => void,
   chainId: number | undefined,
   hasPubKey: boolean,
+  canPubKey: boolean,
   account: string | undefined,
   balance: BigNumber,
   currentPath: string,
   pageList: PageObject[]
 ) {
   const currentPageObj = pageList.find((page) => page.link === currentPath);
+
   if (!currentPageObj) {
     return;
   } else if (!account && !currentPageObj.walletNotRequired) {
     openAlert("Warning", <p> please connect your wallet to use canto</p>);
     return;
-  } else if (!hasPubKey) {
+  } else if (!hasPubKey && canPubKey && currentPageObj.pageTitle != "bridge") {
     openAlert("Failure", <GenPubKey />);
     return;
   } else if (

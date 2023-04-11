@@ -14,9 +14,9 @@ export enum CantoTransactionType {
   STAKE = "Stake",
   VOTING = "Voting",
   BRIDGE_IN = "Bridge In",
-  BRIDGE_OUT = "Bridge Out",
+  IBC_OUT = "IBC Out",
   CONVERT_TO_EVM = "Convert to EVM",
-  CONVERT_TO_COSMOS = "Convert to Cosmos",
+  CONVERT_TO_NATIVE = "Convert to Native",
   BRIDGE = "Bridge",
 }
 

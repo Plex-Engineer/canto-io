@@ -3,15 +3,13 @@ import { Contract } from "ethers";
 import { ERC20Abi } from "global/config/abi";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { useAlert } from "global/packages/src";
+import { getCurrentBlockTimestamp } from "global/utils/blockInfo";
 import { getProvider } from "global/utils/walletConnect/addCantoToWallet";
 import { useEnableToken, useSupply } from "pages/lending/hooks/useTransaction";
 import { useEffect, useState } from "react";
 import { AddConfirmationProps } from "../modals/addConfirmation";
-import {
-  checkForCantoInPair,
-  getCurrentBlockTimestamp,
-  getTokenValueFromPercent,
-} from "../utils/utils";
+import { checkForCantoInPair } from "../utils/pairCheck";
+import { getTokenValueFromPercent } from "../utils/utils";
 import { useAddLiquidity, useAddLiquidityCANTO } from "./useTransactions";
 
 interface ReturnProps {

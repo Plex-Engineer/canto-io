@@ -1,4 +1,5 @@
-import { BigNumber } from "ethers";
+import { CallResult } from "@usedapp/core";
+import { BigNumber, Contract } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import {
   CantoTransactionType,
@@ -112,6 +113,24 @@ export function convertFromScientificNotation(value: string) {
   return value;
 }
 
+export function getShortTxStatusFromState(state: TransactionState): string {
+  switch (state) {
+    case "None":
+      return "complete";
+    case "Mining":
+      return "ongoing";
+    case "PendingSignature":
+      return "signing";
+    case "Success":
+      return "done";
+    case "Exception":
+    case "Fail":
+      return "error";
+    default:
+      return "complete";
+  }
+}
+
 export function getTransactionStatusString(
   action: string,
   inAction: string,
@@ -220,6 +239,30 @@ export const transactionStatusActions = (
         inAction: "casting vote",
         postAction: "casted vote",
       };
+    case CantoTransactionType.BRIDGE_IN:
+      return {
+        action: "bridge in",
+        inAction: "bridging in",
+        postAction: "bridged in",
+      };
+    case CantoTransactionType.IBC_OUT:
+      return {
+        action: "bridge out",
+        inAction: "bridging out",
+        postAction: "bridged out",
+      };
+    case CantoTransactionType.CONVERT_TO_EVM:
+      return {
+        action: "complete bridge in",
+        inAction: "bridging in",
+        postAction: "completed bridge in",
+      };
+    case CantoTransactionType.CONVERT_TO_NATIVE:
+      return {
+        action: "convert token to canto native",
+        inAction: "converting token",
+        postAction: "converted token",
+      };
     default:
       return {
         action: "confirm",
@@ -228,3 +271,15 @@ export const transactionStatusActions = (
       };
   }
 };
+
+//check to make sure that the multicall values are accetable
+export function checkMultiCallForUndefined(
+  results: CallResult<Contract, string>[]
+) {
+  for (const result of results) {
+    if (!result || !result?.value || result?.error) {
+      return false;
+    }
+  }
+  return true;
+}
