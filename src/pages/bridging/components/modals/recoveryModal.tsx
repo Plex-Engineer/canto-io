@@ -44,7 +44,7 @@ const RecoveryModal = ({
         content={<Text size="text4">RECOVERY</Text>}
       />
       <Modal
-        title="Revcover IBC Transfers"
+        title="Recover IBC Transfers"
         open={isOpen}
         onClose={() => {
           setIsOpen(false);
