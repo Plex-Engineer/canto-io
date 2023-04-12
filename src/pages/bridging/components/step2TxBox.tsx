@@ -48,6 +48,7 @@ const Step2TxBox = (props: Step2TxBoxProps) => {
                   txFactory={() => props.txHook(tx.token.ibcDenom)}
                   cantoAddress={props.cantoAddress}
                   ethAddress={props.ethAddress}
+                  recover={false}
                 />
               );
             })}

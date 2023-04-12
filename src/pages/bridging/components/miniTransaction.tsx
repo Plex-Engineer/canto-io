@@ -7,7 +7,7 @@ import { CantoMainnet } from "global/providers";
 import { getShortTxStatusFromState, truncateNumber } from "global/utils/utils";
 import { useEffect, useState } from "react";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
-import { BridgeOutNetworks, NativeTransaction } from "../config/interfaces";
+import { NativeTransaction } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import {
   convertSecondsToString,
@@ -21,6 +21,7 @@ interface Props {
   txFactory: () => BridgeTransaction;
   cantoAddress: string;
   ethAddress: string;
+  recover: boolean;
 }
 const MiniTransaction = (props: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -28,11 +29,10 @@ const MiniTransaction = (props: Props) => {
   const isIBCTransfer = txStats.txType == CantoTransactionType.IBC_OUT;
   //just for ibc out
   const [userInputAddress, setUserInputAddress] = useState("");
-  const tokenNetworks: BridgeOutNetworks[] =
-    props.transaction.token.supportedOutChannels;
-  const [selectedNetwork, setSelectedNetwork] = useState(
-    ALL_BRIDGE_OUT_NETWORKS[tokenNetworks ? tokenNetworks[0] : 0]
-  );
+  const tokenNetworks = props.transaction.token.supportedOutChannels ?? [0];
+  const [selectedNetwork, setSelectedNetwork] = useState<
+    keyof typeof ALL_BRIDGE_OUT_NETWORKS
+  >(tokenNetworks ? tokenNetworks[0] : 0);
 
   useEffect(() => {
     toastBridgeTx(txStats.state, txStats.txName);
@@ -57,7 +57,9 @@ const MiniTransaction = (props: Props) => {
             chainId: CantoMainnet.chainId,
           }}
           to={{
-            chain: isIBCTransfer ? selectedNetwork.name : "canto",
+            chain: isIBCTransfer
+              ? ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].name
+              : "canto",
             address: isIBCTransfer ? userInputAddress : props.ethAddress,
           }}
           onClose={() => {
@@ -68,8 +70,7 @@ const MiniTransaction = (props: Props) => {
               ? {
                   userInputAddress,
                   setUserInputAddress,
-                  selectedNetwork,
-                  setSelectedNetwork,
+                  selectedNetwork: ALL_BRIDGE_OUT_NETWORKS[selectedNetwork],
                 }
               : undefined
           }
@@ -79,7 +80,9 @@ const MiniTransaction = (props: Props) => {
                 {`by completing bridge out, you are transferring your assets from your canto native address (${formatAddress(
                   props.cantoAddress,
                   6
-                )}) to your address on the ${selectedNetwork.name} network. `}
+                )}) to your address on the ${
+                  ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].name
+                } network. `}
                 Read more about this{" "}
                 <a
                   role="button"
@@ -139,10 +142,12 @@ const MiniTransaction = (props: Props) => {
         }}
       >
         <Text size="text3" align="left">
-          {isIBCTransfer ? "destination" : "origin"}
+          {props.recover ? "denom" : isIBCTransfer ? "destination" : "origin"}
         </Text>
         <Text type="title" align="left">
-          {props.transaction.origin}
+          {props.recover
+            ? props.transaction.token.name.slice(0, 7) + "..."
+            : props.transaction.origin}
         </Text>
       </div>
 
@@ -157,9 +162,50 @@ const MiniTransaction = (props: Props) => {
               props.transaction.token.decimals
             )
           )}
-          {" " + props.transaction.token.symbol}
+          {props.recover ? "" : " " + props.transaction.token.symbol}
         </Text>
       </div>
+      {isIBCTransfer &&
+        props.transaction.token.supportedOutChannels.length > 1 && (
+          <ChooseNetwork>
+            <div className="network-list">
+              {props.transaction.token.supportedOutChannels.map(
+                (key, network) => (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    key={key}
+                    className="network-item"
+                    onClick={() => {
+                      setSelectedNetwork(network);
+                    }}
+                    style={{
+                      background: selectedNetwork === network ? "#F2F2F2" : "",
+                    }}
+                  >
+                    <span>
+                      <img
+                        src={
+                          ALL_BRIDGE_OUT_NETWORKS[
+                            network as keyof typeof ALL_BRIDGE_OUT_NETWORKS
+                          ].icon
+                        }
+                        alt=""
+                      />
+                      <p>
+                        {
+                          ALL_BRIDGE_OUT_NETWORKS[
+                            network as keyof typeof ALL_BRIDGE_OUT_NETWORKS
+                          ].name
+                        }
+                      </p>
+                    </span>
+                  </div>
+                )
+              )}
+            </div>
+          </ChooseNetwork>
+        )}
       {props.transaction.timeLeft != "0" && (
         <div className="dual-item">
           <Text size="text3" align="left">
@@ -212,6 +258,49 @@ const Styled = styled.div`
   }
   .dual-item:last-child {
     max-width: 6rem;
+  }
+`;
+const ChooseNetwork = styled.div`
+  .network-list {
+    scrollbar-color: var(--primary-color);
+    scroll-behavior: smooth;
+    /* width */
+    padding: 8px;
+    max-height: 200px;
+    overflow-y: scroll;
+    .network-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 400;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      height: 38px;
+      padding: 0 14px;
+      outline: none;
+      cursor: pointer;
+      img {
+        margin: 6px;
+        height: 18px;
+        width: 18px;
+      }
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+      }
+    }
+  }
+  p {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 21px;
+    letter-spacing: -0.03em;
+    color: var(--primary-color);
+  }
+  span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 `;
 

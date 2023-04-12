@@ -129,7 +129,6 @@ export interface BridgeModal {
     userInputAddress: string;
     setUserInputAddress: (s: string) => void;
     selectedNetwork: BridgeOutNetworkInfo;
-    setSelectedNetwork: (n: BridgeOutNetworkInfo) => void;
   };
   extraDetails?: ReactNode;
 }

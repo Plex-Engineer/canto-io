@@ -61,6 +61,9 @@ const RecoveryModal = ({
                 onClick={() => {
                   setSelectedNetwork(network);
                 }}
+                style={{
+                  background: selectedNetowrk === network ? "#F2F2F2" : "",
+                }}
               >
                 <span>
                   <img
@@ -85,18 +88,28 @@ const RecoveryModal = ({
         </ChooseNetwork>
         {tokens.map((token) => {
           return (
-            <MiniTransaction
-              key={token.denom}
-              cantoAddress={cantoAddress}
-              ethAddress=""
-              transaction={{
-                origin: "cosmos",
-                timeLeft: "0",
-                amount: BigNumber.from(token.amount),
-                token: { ...EMPTY_NATIVE_TOKEN, decimals: 0 },
-              }}
-              txFactory={() => txSelector.bridgeOut.ibcOut(token.denom)}
-            />
+            token.denom !== "acanto" && (
+              <MiniTransaction
+                key={token.denom}
+                cantoAddress={cantoAddress}
+                ethAddress=""
+                transaction={{
+                  origin: "cosmos",
+                  timeLeft: "0",
+                  amount: BigNumber.from(token.amount),
+                  token: {
+                    ...EMPTY_NATIVE_TOKEN,
+                    decimals: 0,
+                    ibcDenom: token.denom,
+                    name: token.denom,
+                    symbol: token.denom.slice(0, 5),
+                    supportedOutChannels: [0, 1, 2,3,4,5,6,7,8,9,10,11,12,13],
+                  },
+                }}
+                txFactory={() => txSelector.bridgeOut.ibcOut(token.denom)}
+                recover={true}
+              />
+            )
           );
         })}
       </Modal>
