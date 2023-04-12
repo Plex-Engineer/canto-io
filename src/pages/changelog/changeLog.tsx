@@ -5,6 +5,14 @@ const ChangeLog = () => {
   return (
     <Styled>
       <LogSection
+        date="Apr 11th 2023"
+        title="Fixes & Enhancements"
+        content={`- Added bridging support for the 15 new cosmos tokens that recently passed governance.
+        - Added the ability to initiate ibc transactions for supported tokens.
+        - Updated the COH banner to S7.
+        - Minor updates have been made to the UI styling on various pages.`}
+      />
+      <LogSection
         date="Mar 21st 2023"
         title="Fixes & Enhancements"
         content={`- Made improvements to the bridge to make the UX more intuitive.
@@ -70,14 +78,7 @@ const Styled = styled.div`
   /* overflow-y: scroll; */
   /* height: calc(100vh - 10rem); */
   position: relative;
-  &::-webkit-scrollbar {
-    display: none;
-  }
 
-  & {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
   .section {
     display: flex;
     gap: 2rem;

@@ -40,10 +40,10 @@
   --off-white-color: #efefef;
   //   --error-color: #fe4256;
 
-  scrollbar-color: var(--primary-color) #222;
+  //   scrollbar-color: var(--primary-color) #222;
   scroll-behavior: smooth;
   //   overflow-y: auto;
-  scrollbar-gutter: stable;
+  //   scrollbar-gutter: stable;
 }
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
@@ -60,31 +60,6 @@ input[type="number"] {
 ::selection {
   color: black;
   background: var(--primary-color);
-}
-// ::-webkit-scrollbar {
-//   width: 3px;
-//   height: 6px;
-// }
-
-::-webkit-scrollbar:hover {
-  width: 6px;
-  height: 6px;
-}
-/* Track */
-::-webkit-scrollbar-track {
-  background: #151515;
-}
-
-// // /* Handle */
-::-webkit-scrollbar-thumb {
-  border-radius: 6px;
-  width: 2px;
-  background: #07e48c;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #07e48c;
 }
 
 .App {

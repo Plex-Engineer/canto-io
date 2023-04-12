@@ -1,40 +1,37 @@
 import styled from "@emotion/styled";
 import down from "assets/down.svg";
 import { useRef } from "react";
-import { BaseToken } from "../config/interfaces";
+import { BaseToken, Step1TokenGroups } from "../config/interfaces";
 import Popup from "reactjs-popup";
 import TokenModal from "./modals/tokenModal";
 
 interface ITokenSelect {
-  tokens: BaseToken[] | undefined;
+  tokenGroups: Step1TokenGroups[];
   activeToken: BaseToken;
   onSelect: (value: BaseToken | undefined) => void;
-  balanceString: string;
-  extraTokenData?: {
-    tokens: BaseToken[];
-    balance: string;
-    onSelect: (value: BaseToken) => void;
-  };
 }
 
 export const TokenWallet = ({
+  tokenGroups,
   onSelect,
-  tokens,
   activeToken,
-  balanceString,
-  extraTokenData,
 }: ITokenSelect) => {
   const ref = useRef(null);
+  const fullTokenLength = tokenGroups.reduce((acc, group) => {
+    if (group.tokens) {
+      return acc + group.tokens?.length;
+    } else {
+      return acc;
+    }
+  }, 0);
   return (
     <StyledPopup
       ref={ref}
-      position={"bottom left"}
-      offsetY={-20}
-      offsetX={20}
-      arrow={false}
+      modal
+      lockScroll
       trigger={
         <Styled>
-          {activeToken.name != "choose token" && (
+          {activeToken.symbol != "choose token" && (
             <img
               src={activeToken.icon}
               alt={activeToken.name}
@@ -47,14 +44,14 @@ export const TokenWallet = ({
               flex: "2",
             }}
           >
-            {tokens ? activeToken.name : "loading tokens"}
+            {fullTokenLength ? activeToken.symbol : "loading tokens"}
           </span>
           <img src={down} alt="" />
         </Styled>
       }
     >
       <TokenModal
-        tokens={tokens}
+        tokenGroups={tokenGroups}
         onClose={(value) => {
           if (ref != null) {
             //@ts-ignore
@@ -64,26 +61,75 @@ export const TokenWallet = ({
             onSelect(value);
           }
         }}
-        balanceString={balanceString}
-        extraTokenData={extraTokenData}
       />
     </StyledPopup>
   );
 };
 
-export const StyledPopup = styled(Popup)`
+const StyledPopup = styled(Popup)`
   // use your custom style for ".popup-overlay"
   &-overlay {
+    background-color: #1f4a2c6e;
+    backdrop-filter: blur(2px);
     z-index: 10;
-  }
-  &-content {
-    background: rgba(217, 217, 217, 0.2);
-    backdrop-filter: blur(35px);
-    border-radius: 7px;
+    animation: fadein 0.2s;
+    @keyframes fadein {
+      0% {
+        opacity: 0;
+      }
 
-    .token-item img {
-      margin-left: 0px !important;
+      100% {
+        opacity: 1;
+      }
     }
+  }
+
+  // use your custom style for ".popup-content"
+  &-content {
+    position: relative;
+    background-color: black;
+    scroll-behavior: smooth;
+    border-radius: 4px;
+    animation: fadein 0.5s 1;
+    min-height: 42rem;
+    max-height: 45rem;
+    max-width: 30rem;
+    width : 100%
+
+    overflow-y: hidden;
+    @keyframes fadein {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    .scrollview {
+      max-height: 43rem;
+      overflow-y: scroll;
+      margin-bottom: 1rem;
+      height: 100%;
+    }
+    .modal-title {
+      width: 90%;
+      border-bottom: 1px solid #222;
+      margin: 0 auto;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      min-height: 60px;
+    }
+    /* width */
+  }
+
+  & {
+    overflow-y: auto;
   }
 `;
 
