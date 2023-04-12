@@ -266,7 +266,7 @@ const ChooseNetwork = styled.div`
     scroll-behavior: smooth;
     /* width */
     padding: 8px;
-    max-height: 200px;
+    max-height: 100px;
     overflow-y: scroll;
     .network-item {
       display: flex;

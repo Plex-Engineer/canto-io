@@ -3,7 +3,7 @@ import { Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
 import Tooltip from "global/packages/src/components/molecules/Tooltip";
 import { useState } from "react";
-import walletImg from "assets/mini-wallet.svg";
+import recoverImg from "assets/recover.svg";
 import {
   BasicNativeBalance,
   EMPTY_NATIVE_TOKEN,
@@ -38,7 +38,7 @@ const RecoveryModal = ({
               setIsOpen(true);
             }}
           >
-            <img src={walletImg} alt="wallet" height={21} />
+            <img src={recoverImg} alt="wallet" height={21} />
           </div>
         }
         content={<Text size="text4">RECOVERY</Text>}
@@ -50,7 +50,28 @@ const RecoveryModal = ({
           setIsOpen(false);
         }}
       >
-        <ChooseNetwork>
+        <h1>Instructions: </h1>
+        <ul style={{ width: "50rem" }}>
+          <li>
+            1. Each token below represents all unidentified ibc tokens on the
+            canto network
+          </li>
+          <li>
+            2. For each token, select the network you would like to ibc transfer
+            the tokens back to (this could result in loss of funds if sent to
+            the wrong chain)
+          </li>
+          <li>
+            3. Click complete on the token once you have selected the network
+            you wish
+          </li>
+          <li>4. Sorry this is not styled yet, but functionally should work</li>
+        </ul>
+        <br />
+        <br />
+        <br />
+        <br />
+        {/* <ChooseNetwork>
           <div className="network-list">
             {Object.keys(ALL_BRIDGE_OUT_NETWORKS).map((key, network) => (
               <div
@@ -85,7 +106,7 @@ const RecoveryModal = ({
               </div>
             ))}
           </div>
-        </ChooseNetwork>
+        </ChooseNetwork> */}
         {tokens.map((token) => {
           return (
             token.denom !== "acanto" && (
@@ -102,8 +123,10 @@ const RecoveryModal = ({
                     decimals: 0,
                     ibcDenom: token.denom,
                     name: token.denom,
-                    symbol: token.denom.slice(0, 5),
-                    supportedOutChannels: [0, 1, 2,3,4,5,6,7,8,9,10,11,12,13],
+                    symbol: token.denom.slice(0, 9),
+                    supportedOutChannels: [
+                      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+                    ],
                   },
                 }}
                 txFactory={() => txSelector.bridgeOut.ibcOut(token.denom)}
