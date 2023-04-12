@@ -17,10 +17,11 @@ import { BridgeInManager } from "./managers/BridgeInManager";
 import { BridgeOutManager } from "./managers/BridgeOutManager";
 import { CantoMainnet } from "global/providers";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
-
+import { setSafeConnector } from "global/components/cantoNav";
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
   const { active: isConnected, activateBrowserWallet } = useEthers();
+  const [inSafe, setInSafe] = useState(false);
   const navigate = useNavigate();
   const { networkInfo, walkthroughInfo, transactions, tokens, userInputs } =
     useCustomWalkthrough();
@@ -64,6 +65,9 @@ const Walkthrough = () => {
 
   const hasFunds = walkthroughInfo.canBridgeIn || walkthroughInfo.canBridgeOut;
 
+  setSafeConnector().then((value) => {
+    setInSafe(value);
+  });
   if (!isConnected) {
     return (
       <Styled>
@@ -72,7 +76,11 @@ const Walkthrough = () => {
           title="Wallet is not connected"
           subtext="to use the bridge guide you need to connect a wallet through metamask"
           icon={walletIcon}
-          onClick={activateBrowserWallet}
+          onClick={() => {
+            inSafe
+              ? activateBrowserWallet({ type: "safe" })
+              : activateBrowserWallet({ type: "metamask" });
+          }}
         />
       </Styled>
     );

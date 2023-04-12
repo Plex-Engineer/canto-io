@@ -3,7 +3,7 @@ import React from "react";
 import { Chain } from "@usedapp/core";
 import { HelmetProvider } from "react-helmet-async";
 import { MetamaskConnector } from "@usedapp/core";
-
+import { SafeConnector } from "global/utils/safeConnector/safeConnector";
 import {
   CantoMainnet as CantoMain,
   CantoTestnet as CantoTest,
@@ -53,10 +53,11 @@ const config: Config = {
     [CantoTestnet.chainId]: CantoTest.rpcUrl,
   },
   connectors: {
+    safe: new SafeConnector(),
     metamask: new MetamaskConnector(),
     // coinbase: new CoinbaseWalletConnector(),
   },
-  autoConnect: true,
+  autoConnect: false,
   fastMulticallEncoding: true,
 };
 

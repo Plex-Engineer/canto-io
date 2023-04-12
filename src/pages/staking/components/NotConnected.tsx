@@ -3,16 +3,22 @@ import walletIcon from "assets/wallet.svg";
 import styled from "@emotion/styled";
 import { useEthers } from "@usedapp/core";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
+import { useState } from "react";
+import { setSafeConnector } from "global/components/cantoNav";
 
 const NotConnected = () => {
   const { activateBrowserWallet } = useEthers();
+  const [inSafe, setInSafe]= useState(false);
+  setSafeConnector().then((value)=>{
+    setInSafe(value);
+  })
   return (
     <Styled>
       <img src={walletIcon} alt="wallet" />
       <h1>you have not connected the wallet</h1>
       <OutlinedButton
         onClick={() => {
-          activateBrowserWallet();
+          inSafe? activateBrowserWallet({ type: "safe" }) : activateBrowserWallet({ type: "metamask" })
           addNetwork();
         }}
       >
