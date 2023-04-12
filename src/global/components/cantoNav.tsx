@@ -11,7 +11,14 @@ import { ShowAlerts } from "global/utils/alerts";
 import { pageList, PageObject } from "global/config/pageList";
 import { Mixpanel } from "mixpanel";
 import { CantoMainnet } from "global/config/networks";
+import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk/dist/src/sdk";
 
+export async function setSafeConnector(){
+  const sdk = new SafeAppsSDK();
+  const safe = await sdk.safe.getInfo();
+  if(!safe)return false
+  return true
+} 
 export const CantoNav = () => {
   const networkInfo = useNetworkInfo();
   const alert = useAlert();
@@ -29,6 +36,7 @@ export const CantoNav = () => {
 
   const location = useLocation();
   const [tokenName, setTokenName] = useState("");
+  const [inSafe, setInSafe]= useState(false); 
   async function grabTokenName() {
     setTokenName(await getBaseTokenName(chainId?.toString() ?? ""));
   }
@@ -109,10 +117,13 @@ export const CantoNav = () => {
     location,
     cantoBalance,
   ]);
+  setSafeConnector().then((value)=>{
+    setInSafe(value);
+  })
   return (
     <NavBar
       onClick={() => {
-        activateBrowserWallet({ type: "metamask" });
+         inSafe ? activateBrowserWallet({ type: "safe" }) : activateBrowserWallet({ type: "metamask" })     
       }}
       chainId={Number(networkInfo.chainId)}
       account={networkInfo.account ?? ""}

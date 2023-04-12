@@ -10,10 +10,15 @@ import { MyStakingProps } from "../config/interfaces";
 import walletIcon from "assets/wallet.svg";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import { useEthers } from "@usedapp/core";
+import { useState } from "react";
+import { setSafeConnector } from "global/components/cantoNav";
 
 const MyStaking = (props: MyStakingProps) => {
   const { activateBrowserWallet } = useEthers();
-
+  const [inSafe, setInSafe]= useState(false);
+  setSafeConnector().then((value)=>{
+    setInSafe(value);
+  })
   return (
     <Styled>
       {!props.connected ? (
@@ -27,7 +32,7 @@ const MyStaking = (props: MyStakingProps) => {
           bgFilled
           icon={walletIcon}
           onClick={() => {
-            activateBrowserWallet();
+            inSafe? activateBrowserWallet({ type: "safe" }) : activateBrowserWallet({ type: "metamask" })
             addNetwork();
           }}
         />
