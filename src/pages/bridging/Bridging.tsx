@@ -21,6 +21,9 @@ import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
 import { PubKeyStyled } from "./walkthrough/Walkthrough";
 import warningRedIcon from "assets/warning_red.svg";
 import { parseUnits } from "ethers/lib/utils";
+import Tooltip from "global/packages/src/components/molecules/Tooltip";
+import { Text } from "global/packages/src";
+import guideImg from "assets/guide.svg";
 
 const Bridging = () => {
   const networkInfo = useNetworkInfo();
@@ -56,18 +59,30 @@ const Bridging = () => {
   };
   return (
     <Styled>
-      <div
-        className="diff"
-        style={{
-          position: "relative",
-        }}
-      >
+      <div className="floating-buttons">
         <BalanceTableModal
           ethTokens={bridgingTokens.userBridgeInTokens}
           cantoTokens={bridgingTokens.userBridgeOutTokens}
           nativeTokens={bridgingTokens.userNativeTokens}
         />
+        <Tooltip
+          position="bottom right"
+          trigger={
+            <div
+              role={"button"}
+              tabIndex={-2}
+              className="walkthrough"
+              onClick={() => {
+                navigate("/bridge/walkthrough");
+              }}
+            >
+              <img src={guideImg} height={20} alt="" />
+            </div>
+          }
+          content={<Text size="text4">Click here for a walkthrough.</Text>}
+        />
       </div>
+
       <CantoTabs
         names={["bridge in", "bridge out", "tx history"]}
         panels={
@@ -151,7 +166,53 @@ const Bridging = () => {
 };
 
 const Styled = styled.div`
+  .diff {
+    position: relative;
+    top: 4.5rem;
+  }
+
   display: flex;
+  justify-content: center;
+  align-self: center;
+  position: relative;
+  max-width: 1200px;
+  .walkthrough {
+    position: absolute;
+    top: 5rem;
+    right: 2rem;
+    height: 40px;
+    width: 40px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: black;
+    font-size: 20px;
+    z-index: 3;
+    cursor: pointer;
+    &:hover {
+      background-color: #13a068;
+    }
+  }
+  .floating-buttons {
+    top: 5rem;
+    right: 0rem;
+    position: absolute;
+    display: flex;
+    gap: 2rem;
+    width: 5rem;
+    height: 5rem;
+  }
+
+  @media (max-width: 1000px) {
+    .walkthrough {
+      right: 5rem;
+      top: 1.2rem;
+    }
+    .floating-buttons {
+      top: 4.6rem;
+    }
+  }
 `;
 
 export default Bridging;

@@ -47,7 +47,13 @@ const WalletModal = () => {
           </Text>
         </CopyToClipboard>
       </div>
-
+      <div
+        style={{
+          marginBottom: "12px",
+          borderTop: "1px solid #d9d9d92b",
+          width: "90%",
+        }}
+      ></div>
       <div className="row">
         <Text type="text">
           {networkInfo.chainId == ETHMainnet.chainId.toString()
@@ -55,6 +61,7 @@ const WalletModal = () => {
             : "canto "}{" "}
           balance
         </Text>
+
         <div className="balance">
           <Text type="text">
             <span className="center">
@@ -69,21 +76,15 @@ const WalletModal = () => {
           </Text>
         </div>
       </div>
-      <div
-        style={{
-          margin: "12px 0",
-          borderTop: "1px solid #d9d9d92b",
-          width: "90%",
-        }}
-      ></div>
-      <div className="row">
+
+      {/* <div className="row">
         <Text type="text">support</Text>
         <div className="balance">
           <a href="https://docs.canto.io/" target="_blank" rel="noreferrer">
             help center
           </a>
         </div>
-      </div>
+      </div> */}
 
       <OutlinedButton
         style={{
@@ -127,6 +128,7 @@ const Styled = styled.div`
 
   a {
     text-decoration: underline;
+    font-weight: 400;
   }
 
   .center {

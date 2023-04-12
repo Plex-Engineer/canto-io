@@ -1,13 +1,13 @@
 import styled from "@emotion/styled";
+import { Text } from "global/packages/src";
 import IconPair from "./iconPair";
-
+import noteIcon from "assets/note.svg";
 interface RowProps {
   iconLeft: string;
   iconRight: string;
   assetName: string;
   totalValueLocked: string;
   position: string;
-  apr: string;
   share: string;
   onClick: () => void;
   delay?: number;
@@ -15,10 +15,12 @@ interface RowProps {
 }
 
 const RowStyle = styled.tr<RowProps>`
-  /* opacity: 0; */
-  /* animation: fadein 0.6s ${(props) => props.delay}s, fader 0.5s; */
-  /* animation-fill-mode: forwards; */
-
+  .center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
   @keyframes fadein {
     0% {
       opacity: 0;
@@ -36,34 +38,40 @@ const Row = (props: RowProps) => {
         props.onClick();
       }}
     >
-      <td
-        style={{
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <span
-          style={{
-            display: "flex",
-            alignContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <img src={props.iconLeft} height={30} />
-          <img
-            src={props.iconRight}
-            height={28}
-            style={{
-              marginLeft: "-.7rem",
-              paddingRight: "1rem",
-            }}
-          />
-        </span>
-        {props.assetName}
+      <td className="center">
+        <Text type="title" size="text3" bold className="center">
+          <span>
+            <img
+              src={props.iconLeft}
+              height={30}
+              style={{
+                zIndex: "2",
+              }}
+            />
+            <img
+              src={props.iconRight}
+              height={30}
+              style={{
+                marginLeft: "-.7rem",
+                paddingRight: "1rem",
+              }}
+            />
+          </span>
+          {props.assetName}
+        </Text>
       </td>
-      <td>{props.totalValueLocked}</td>
-      <td>{props.position}</td>
-      <td>{props.share} %</td>
+      <td>
+        <div className="center">
+          <img src={noteIcon} alt="note" height={14} width={14} />
+          <Text size="text3">{props.totalValueLocked}</Text>
+        </div>
+      </td>
+      <td>
+        <Text size="text3">{props.position}</Text>
+      </td>
+      <td>
+        <Text size="text3">{props.share}%</Text>
+      </td>
     </RowStyle>
   );
 };
