@@ -7,6 +7,7 @@ import { CInput } from "global/packages/src/components/atoms/Input";
 import { truncateNumber } from "global/utils/utils";
 import { BridgeModal } from "pages/bridging/config/interfaces";
 import { formatAddress } from "pages/bridging/utils/utils";
+import lockIcon from "assets/icons/lock.svg";
 
 const ConfirmationModal = (props: BridgeModal) => {
   const networkID = useEthers().chainId;
@@ -16,6 +17,7 @@ const ConfirmationModal = (props: BridgeModal) => {
     props.ibcData.selectedNetwork.checkAddress(props.ibcData.userInputAddress);
   return (
     <Styled>
+      {/* render switch network if netword ID is not undefined and value is not the same */}
       {props.from.chainId != networkID && networkID != undefined && (
         <div className="network-change">
           <Text type="title">Oops, you seem to be on a wrong network.</Text>
@@ -28,6 +30,8 @@ const ConfirmationModal = (props: BridgeModal) => {
           </PrimaryButton>
         </div>
       )}
+
+      {/* render loading modal which takes care of rest of the states*/}
       {props.tx.state != "None" &&
         (props.from.chainId == networkID || networkID == undefined) && (
           <div className="loading">
@@ -41,8 +45,41 @@ const ConfirmationModal = (props: BridgeModal) => {
             />
           </div>
         )}
+      {/* render content */}
       {props.tx.state == "None" &&
-        (props.from.chainId == networkID || networkID == undefined) && (
+        (props.from.chainId == networkID || networkID == undefined) &&
+        (props.tx.txName == "approve token" ? (
+          <>
+            <div
+              style={{
+                marginTop: "1rem",
+              }}
+            ></div>
+            <div className="locked">
+              <img src={lockIcon} alt="token locked" />
+              <span className="icons">
+                <img
+                  src={props.token.icon}
+                  height={40}
+                  alt={props.token.name}
+                />
+              </span>
+            </div>
+            <div className="info">
+              <Text
+                type="title"
+                align="left"
+                size="title2"
+                style={{
+                  textAlign: "center",
+                  marginBottom: "1rem",
+                }}
+              >
+                {`You need to enable ${props.token.name}`}
+              </Text>
+            </div>
+          </>
+        ) : (
           <>
             <Text type="title" size="title2">
               {props.tx.txName}{" "}
@@ -117,28 +154,28 @@ const ConfirmationModal = (props: BridgeModal) => {
                 {props.extraDetails}
               </Text>
             )}
-
-            <PrimaryButton
-              filled
-              height="big"
-              weight="bold"
-              onClick={() => {
-                if (props.ibcData) {
-                  props.tx.send(
-                    props.amount.toString(),
-                    props.ibcData.userInputAddress,
-                    props.ibcData.selectedNetwork
-                  );
-                } else {
-                  props.tx.send(props.amount.toString());
-                }
-              }}
-              disabled={!canConfirm}
-            >
-              confirm
-            </PrimaryButton>
           </>
-        )}
+        ))}
+      <div className="expanded"></div>
+      <PrimaryButton
+        filled
+        height="big"
+        weight="bold"
+        onClick={() => {
+          if (props.ibcData) {
+            props.tx.send(
+              props.amount.toString(),
+              props.ibcData.userInputAddress,
+              props.ibcData.selectedNetwork
+            );
+          } else {
+            props.tx.send(props.amount.toString());
+          }
+        }}
+        disabled={!canConfirm}
+      >
+        confirm
+      </PrimaryButton>
     </Styled>
   );
 };
@@ -167,6 +204,10 @@ const Styled = styled.div`
   padding: 0 40px;
   padding-bottom: 2rem;
   gap: 1rem;
+
+  .expanded {
+    flex-grow: 1;
+  }
 
   .loading {
     flex-grow: 1;
@@ -204,6 +245,24 @@ const Styled = styled.div`
 
       .header {
         color: #9b9b9b;
+      }
+    }
+  }
+
+  .locked {
+    position: relative;
+    margin: 2rem 0;
+    .icons {
+      position: absolute;
+      bottom: -10px;
+      left: 60px;
+      border: 1px solid var(--primary-color);
+      border-radius: 50px;
+      background-color: #111;
+      padding: 2px 4px;
+
+      img {
+        transform: translateY(3px);
       }
     }
   }
