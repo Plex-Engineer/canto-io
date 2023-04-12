@@ -99,6 +99,13 @@ const Styled = styled.div`
     width: 100%;
     gap: 1rem;
     flex-direction: column;
+
+    .separator {
+      height: 1px;
+      width: 80%;
+      border-bottom: 1px solid var(--primary-color);
+      opacity: 0.4;
+    }
   }
 `;
 export default InfoBar;

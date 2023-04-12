@@ -38,6 +38,7 @@ export function getNetworkFromTokenName(
     ALL_IBC_TOKENS_WITH_DENOMS.USDC.ibcDenom,
     ALL_IBC_TOKENS_WITH_DENOMS.USDT.ibcDenom,
     ALL_IBC_TOKENS_WITH_DENOMS.ETH.ibcDenom,
+    ALL_IBC_TOKENS_WITH_DENOMS.WSTETH.ibcDenom,
   ];
   if (ibcEthList.includes(ibcDenom) && bridgeIn) return "ETH";
 

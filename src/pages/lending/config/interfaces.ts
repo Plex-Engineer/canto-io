@@ -58,6 +58,7 @@ export const EmptyActiveLMToken: UserLMTokenDetails = {
       isERC20: false,
       isLP: false,
       icon: "",
+      tokenGroups: [],
     },
   },
   cash: BigNumber.from(0),

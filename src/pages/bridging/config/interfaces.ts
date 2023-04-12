@@ -14,11 +14,14 @@ import { ReactNode } from "react";
  */
 export interface BridgeOutNetworkInfo {
   name: string;
+  chainId: string;
   icon: string;
   tokens: NativeToken[];
+  nativeDenom: string;
   cantoChannel: string;
   networkChannel: string;
-  endpoint: string;
+  restEndpoint: string;
+  rpcEndpoint: string;
   extraEndpoints?: string[];
   latestBlockEndpoint?: string;
   addressBeginning: string;
@@ -34,11 +37,22 @@ export enum BridgeOutNetworks {
   KAVA,
   AKASH,
   CRESCENT,
+  SENTINEL,
+  EVMOS,
+  PERSISTENCE,
+  STRIDE,
+  QUICKSILVER,
 }
 
 /**
  * TOKEN INTERFACES
  */
+
+export interface Step1TokenGroups {
+  groupName: string;
+  tokens: BaseToken[] | undefined;
+  getBalance: (token: BaseToken) => string;
+}
 export interface BaseToken extends Token {
   [x: string | number | symbol]: unknown;
 }
@@ -65,6 +79,7 @@ const EMPTY_TOKEN: Token = {
   decimals: 6,
   icon: emptyToken,
   name: "choose token",
+  tokenGroups: [],
 };
 export const EMPTY_ERC20_BRIDGE_TOKEN: UserERC20BridgeToken = {
   ...EMPTY_TOKEN,

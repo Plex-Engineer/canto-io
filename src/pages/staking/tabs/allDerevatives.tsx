@@ -72,7 +72,8 @@ const AllDerevatives = (props: AllDerevativesProps) => {
         flexDirection: "column",
         width: "100%",
         height: "100%",
-        backgroundColor: searchedValidators().length == 0 ? "black" : "none",
+        backgroundColor:
+          searchedValidators().length == 0 ? "black" : "transparent",
       }}
     >
       <div className="sort-search-local">
@@ -125,7 +126,7 @@ const AllDerevatives = (props: AllDerevativesProps) => {
             display: "flex",
             flexDirection: "column",
             gap: "2rem",
-            marginTop: "1rem",
+            height: "100%",
             borderTopLeftRadius: "4px",
             borderTopRightRadius: "4px",
             justifyContent: "center",

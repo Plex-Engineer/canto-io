@@ -17,7 +17,10 @@ export function formatTokensAmountsbyChain(
   nativeTokens: UserNativeToken[]
 ): TokenTableProps[] {
   return CONVERT_COIN_TOKENS.map((token) => {
-    const ethToken = ethTokens.find((eTok) => eTok.name == token.name);
+    const ethToken = ethTokens.find(
+      (eTok) =>
+        eTok.name == token.name || (token.name == "ETH" && eTok.name == "WETH")
+    );
     const ethBalance = ethToken
       ? formatUnits(ethToken.erc20Balance, ethToken.decimals)
       : "-1";
@@ -30,7 +33,7 @@ export function formatTokensAmountsbyChain(
       ? formatUnits(cantoToken.erc20Balance, cantoToken.decimals)
       : "0.0";
     return {
-      name: token.name,
+      name: token.symbol,
       main: ethBalance,
       gBridge: bridgeBalance,
       canto: evmBalance,

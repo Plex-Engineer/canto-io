@@ -74,7 +74,7 @@ const StyledPopup = styled(Popup)`
     animation: fadein 0.5s 1;
     min-height: 42rem;
     max-height: 45rem;
-
+    overflow-y: hidden;
     @keyframes fadein {
       0% {
         opacity: 0;
