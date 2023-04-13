@@ -35,6 +35,7 @@ const BorrowModal = ({ position, onClose }: IProps) => {
   useEffect(() => {
     resetInput();
   }, [isRepaying]);
+
   function resetInput() {
     //if in repay tab and allowance is true or if borrowing is true
     if (isRepaying && token.allowance.isZero()) {
