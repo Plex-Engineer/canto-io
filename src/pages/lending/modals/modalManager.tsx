@@ -6,6 +6,7 @@ import RewardsModal from "./rewardsModal";
 import useModalStore, { ModalType } from "pages/lending/stores/useModals";
 import { UserLMPosition, UserLMRewards } from "pages/lending/config/interfaces";
 import Modal from "global/packages/src/components/molecules/Modal";
+import LendingModal from "./lendingModal";
 
 interface Props {
   isOpen: boolean;
@@ -21,7 +22,7 @@ const ModalManager = ({ isOpen, position, rewards }: Props) => {
         <WalletModal onClose={modalStore.close} />
       )}
       {modalStore.currentModal === ModalType.LENDING && (
-        <SupplyModal onClose={modalStore.close} position={position} />
+        <LendingModal onClose={modalStore.close} position={position} />
       )}
 
       {modalStore.currentModal === ModalType.BORROW && (
