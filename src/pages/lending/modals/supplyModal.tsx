@@ -103,7 +103,7 @@ const SupplyModal = ({ position, onClose }: IProps) => {
         <div
           style={{
             display: "flex",
-            marginTop: "2rem",
+            marginTop: "1rem",
           }}
         />
         {/* supply */}
@@ -184,7 +184,7 @@ const SupplyModal = ({ position, onClose }: IProps) => {
         <div
           style={{
             display: "flex",
-            marginTop: "2rem",
+            marginTop: "1rem",
           }}
         />
         <LendingField

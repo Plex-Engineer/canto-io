@@ -226,6 +226,7 @@ export const ToolTipL = styled.div`
 
 export const SupplyBorrowContainer = styled.div`
   display: flex;
+  width: 30rem;
   flex-direction: column;
   position: relative;
   .title {
@@ -233,7 +234,7 @@ export const SupplyBorrowContainer = styled.div`
     justify-content: center;
     align-items: center;
     gap: 1rem;
-    margin: 1rem;
+    margin-top: 1rem;
   }
   .tabs {
     margin: 16px;
@@ -268,7 +269,9 @@ export const SupplyBorrowContainer = styled.div`
     border-radius: 1px;
     color: var(--primary-color);
   }
-
+  button {
+    margin-top: 4rem;
+  }
   @media (max-width: 1000px) {
     width: 100%;
   }
