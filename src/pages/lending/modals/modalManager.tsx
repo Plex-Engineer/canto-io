@@ -22,11 +22,19 @@ const ModalManager = ({ isOpen, position, rewards }: Props) => {
         <WalletModal onClose={modalStore.close} />
       )}
       {modalStore.currentModal === ModalType.LENDING && (
-        <LendingModal onClose={modalStore.close} position={position} />
+        <LendingModal
+          modalType="supply_withdraw"
+          onClose={modalStore.close}
+          position={position}
+        />
       )}
 
       {modalStore.currentModal === ModalType.BORROW && (
-        <BorrowModal onClose={modalStore.close} position={position} />
+        <LendingModal
+          modalType="repay_borrow"
+          onClose={modalStore.close}
+          position={position}
+        />
       )}
 
       {modalStore.currentModal === ModalType.COLLATERAL && (

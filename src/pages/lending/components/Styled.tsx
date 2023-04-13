@@ -276,17 +276,6 @@ export const SupplyBorrowContainer = styled.div`
     width: 100%;
   }
 `;
-export const SupplyBorrowLoadingOverlay = styled.div`
-  position: absolute;
-  top: 0%;
-  bottom: 0%;
-  width: 400px;
-  max-height: 45.6rem;
-  background-color: black;
-  @media (max-width: 1000px) {
-    width: 99vw;
-  }
-`;
 
 export const EnableCollateralContainer = styled(SupplyBorrowContainer)`
   background-color: #040404;
