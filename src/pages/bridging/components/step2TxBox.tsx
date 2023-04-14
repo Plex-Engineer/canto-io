@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NativeTransaction } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import MiniTransaction from "./miniTransaction";
@@ -20,6 +20,10 @@ const Step2TxBox = (props: Step2TxBoxProps) => {
       setStoredTxs(props.transactions);
     }
   }, [props.transactions.length]);
+  const sortedTxs = useMemo(
+    () => storedTxs.sort((a, b) => (a.origin > b.origin ? 1 : -1)),
+    [storedTxs]
+  );
   return (
     <Styled>
       <Text type="title" size="title2">
@@ -38,20 +42,18 @@ const Step2TxBox = (props: Step2TxBoxProps) => {
               <Text>No transactions available right now</Text>
             </div>
           )}
-          {storedTxs
-            .sort((a, b) => (a.origin > b.origin ? 1 : -1))
-            .map((tx, index) => {
-              return (
-                <MiniTransaction
-                  key={tx.token.address}
-                  transaction={tx}
-                  txFactory={() => props.txHook(tx.token.ibcDenom)}
-                  cantoAddress={props.cantoAddress}
-                  ethAddress={props.ethAddress}
-                  recover={false}
-                />
-              );
-            })}
+          {sortedTxs.map((tx, index) => {
+            return (
+              <MiniTransaction
+                key={tx.token.address}
+                transaction={tx}
+                txFactory={() => props.txHook(tx.token.ibcDenom)}
+                cantoAddress={props.cantoAddress}
+                ethAddress={props.ethAddress}
+                recover={false}
+              />
+            );
+          })}
         </div>
       </div>
     </Styled>
