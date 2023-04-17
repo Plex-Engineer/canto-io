@@ -32,6 +32,8 @@ const ModalManager = (props: Props) => {
         return "Remove Liquidity";
       case ModalType.ADD_OR_REMOVE:
         return "Liquidity";
+      case ModalType.REMOVE_CONFIRM:
+        return "Confirmation";
     }
   }
   useEffect(() => {

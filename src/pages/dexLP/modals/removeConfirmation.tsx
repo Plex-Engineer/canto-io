@@ -7,7 +7,7 @@ import { RowCell } from "./removeModal";
 import { useEffect } from "react";
 import { useState } from "react";
 import useModals from "../hooks/useModals";
-import { PrimaryButton } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
 import { truncateNumber } from "global/utils/utils";
 import { getReserveRatioAtoB, getTokenValueFromPercent } from "../utils/utils";
 import { UserLPPairInfo } from "../config/interfaces";
@@ -150,89 +150,71 @@ export const RemoveLiquidityButton = (props: RemoveConfirmationProps) => {
           }}
         />
       )}
-      <div className="title">
-        {props.pair.basePairInfo.token1.symbol +
-          " / " +
-          props.pair.basePairInfo.token2.symbol}
-      </div>
-      <p id="position">you will receive</p>
-      {/* <IconPair iconLeft={props.pair.basePairInfo.token1.icon} iconRight={props.pair.basePairInfo.token2.icon} /> */}
-      <div className="row">
-        <img src={props.pair.basePairInfo.token1.icon} height={50} />
-        <img src={props.pair.basePairInfo.token2.icon} height={50} />
-      </div>
-      <h1>{/* {props.expectedLP} */}</h1>
+      <div className="center">
+        <p id="position">you will receive</p>
+        <div className="row">
+          <img src={props.pair.basePairInfo.token1.icon} height={50} />
+          <img src={props.pair.basePairInfo.token2.icon} height={50} />
+        </div>
 
-      <h4>
-        {" "}
-        {props.pair.basePairInfo.token1.symbol +
-          " and " +
-          props.pair.basePairInfo.token2.symbol}{" "}
-        tokens
-      </h4>
-      <div
-        className="tableName"
-        style={{
-          gap: "1rem",
-        }}
-      >
-        <RowCell
-          type={" rates: "}
-          value={
-            "1 " +
-            props.pair.basePairInfo.token1.symbol +
-            " = " +
-            truncateNumber(displayReserveRatio.toString()) +
-            " " +
-            props.pair.basePairInfo.token2.symbol
-          }
-        />
-        <RowCell
-          type={""}
-          value={
-            "1 " +
-            props.pair.basePairInfo.token2.symbol +
-            " = " +
-            truncateNumber((1 / displayReserveRatio).toString()) +
-            " " +
-            props.pair.basePairInfo.token1.symbol
-          }
-        />
-      </div>
-      <div
-        style={{
-          borderBottom: "1px solid #222",
-          width: "90%",
-        }}
-      ></div>
-      <div
-        className="tableName"
-        style={{
-          gap: "1rem",
-        }}
-      >
-        <RowCell
-          type={props.pair.basePairInfo.token1.symbol + " withdrawing: "}
-          value={truncateNumber(
-            formatUnits(props.value1, props.pair.basePairInfo.token1.decimals)
-          )}
-        />
-        <RowCell
-          type={props.pair.basePairInfo.token2.symbol + " withdrawing: "}
-          value={truncateNumber(
-            formatUnits(props.value2, props.pair.basePairInfo.token2.decimals)
-          )}
-        />
-        <RowCell
-          type={"burned: "}
-          value={truncateNumber(
-            formatUnits(LPOut, props.pair.basePairInfo.decimals)
-          )}
-        />
-        {/* <RowCell type="share of pool : " value={calculateExpectedShareofLP(props.expectedLP, props.pair.userSupply.totalLP, props.pair.totalSupply.totalLP).toFixed(8) + "%"} /> */}
+        <Text type="title">
+          {props.pair.basePairInfo.token1.symbol +
+            " and " +
+            props.pair.basePairInfo.token2.symbol}{" "}
+          tokens
+        </Text>
+        <div
+          className="tokenBox"
+          style={{
+            gap: "1rem",
+          }}
+        >
+          <RowCell
+            type={"1 " + props.pair.basePairInfo.token1.symbol}
+            value={
+              truncateNumber(displayReserveRatio.toString()) +
+              " " +
+              props.pair.basePairInfo.token2.symbol
+            }
+          />
+          <RowCell
+            type={"1 " + props.pair.basePairInfo.token2.symbol}
+            value={
+              truncateNumber((1 / displayReserveRatio).toString()) +
+              " " +
+              props.pair.basePairInfo.token1.symbol
+            }
+          />
+        </div>
+        <div
+          className="tokenBox"
+          style={{
+            gap: "1rem",
+          }}
+        >
+          <RowCell
+            type={props.pair.basePairInfo.token1.symbol + " withdrawing "}
+            value={truncateNumber(
+              formatUnits(props.value1, props.pair.basePairInfo.token1.decimals)
+            )}
+          />
+          <RowCell
+            type={props.pair.basePairInfo.token2.symbol + " withdrawing "}
+            value={truncateNumber(
+              formatUnits(props.value2, props.pair.basePairInfo.token2.decimals)
+            )}
+          />
+          <RowCell
+            type={"burned: "}
+            value={truncateNumber(
+              formatUnits(LPOut, props.pair.basePairInfo.decimals)
+            )}
+          />
+          {/* <RowCell type="share of pool : " value={calculateExpectedShareofLP(props.expectedLP, props.pair.userSupply.totalLP, props.pair.totalSupply.totalLP).toFixed(8) + "%"} /> */}
+        </div>
       </div>
       <PrimaryButton
-        style={{ marginTop: "1.5rem" }}
+        style={{ marginBottom: "1.5rem" }}
         filled
         height="big"
         weight="bold"

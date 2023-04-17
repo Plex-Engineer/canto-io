@@ -85,6 +85,7 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
     <PrimaryButton
       disabled={disabled}
       height="big"
+      weight="bold"
       filled
       onClick={() => {
         setConfirmationValues({
@@ -183,12 +184,7 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
           mixPanelEventInfo={mixPanelInfoObject}
         />
       </DexLoadingOverlay>
-      {/* <div className="title">
-        {openSettings ? "Transaction Settings" : "Add Liquidity"}
-      </div> */}
-      {/* <div className="logo">
-        <img src={logo} height={30} />
-      </div> */}
+
       <div
         style={{
           marginTop: "1rem",
@@ -341,7 +337,9 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
       <div style={{ color: "white", marginTop: "4rem" }}>
         {
           <div className="row">
-            <Text type="title">reserve ratio : </Text>
+            <Text type="title" align="left">
+              reserve ratio :{" "}
+            </Text>
             <Text color="white">
               1 {activePair.basePairInfo.token1.symbol} ={" "}
               {truncateNumber(displayReserveRatio.toString())}{" "}
@@ -352,7 +350,7 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
         <br />
         {activePair.basePairInfo.stable ? (
           <div className="row">
-            <Text style={{ textAlign: "left" }} type="title">
+            <Text align="left" type="title">
               price :
             </Text>{" "}
             <Text style={{ textAlign: "right" }} color="white">
@@ -382,7 +380,11 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
       >
         <SettingsPopIn
           show={openSettings}
-          style={!openSettings ? { zIndex: "-1" } : { marginBottom: "-15px" }}
+          style={
+            !openSettings
+              ? { zIndex: "-1" }
+              : { marginBottom: "-15px", zIndex: 2 }
+          }
         >
           <div className="field">
             <Input
@@ -400,6 +402,9 @@ const AddModal = ({ activePair, chainId, onClose }: Props) => {
           </div>
           <PrimaryButton
             disabled={Number(slippage) <= 0 || Number(deadline) <= 0}
+            height="big"
+            weight="bold"
+            filled
             onClick={() => setOpenSettings(false)}
           >
             save settings
