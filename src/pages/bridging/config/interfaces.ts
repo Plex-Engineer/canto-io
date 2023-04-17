@@ -3,6 +3,7 @@ import { Token } from "global/config/tokenInfo";
 import emptyToken from "assets/empty.svg";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import { ReactNode } from "react";
+import { IBCPathInfo } from "../utils/nativeBalances";
 
 /**
  * NETWORK INTERFACES
@@ -72,6 +73,10 @@ export interface UserNativeToken extends NativeToken {
 export interface BasicNativeBalance {
   denom: string;
   amount: string;
+}
+
+export interface IBCTokenTrace extends BasicNativeBalance {
+  ibcInfo: IBCPathInfo;
 }
 
 //Empty token data for initialization

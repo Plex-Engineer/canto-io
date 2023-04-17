@@ -64,7 +64,7 @@ const Bridging = () => {
     <Styled>
       <div className="floating-buttons">
         <RecoveryModal
-          tokens={bridgingTokens.unknownTokens}
+          tokens={bridgingTokens.unkownIBCTokens}
           cantoAddress={networkInfo.cantoAddress}
           txSelector={transactionHooks}
         />

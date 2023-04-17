@@ -5,16 +5,19 @@ import Tooltip from "global/packages/src/components/molecules/Tooltip";
 import { useState } from "react";
 import recoverImg from "assets/recover.svg";
 import {
-  BasicNativeBalance,
   EMPTY_NATIVE_TOKEN,
+  IBCTokenTrace,
 } from "pages/bridging/config/interfaces";
-import { ALL_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
 import MiniTransaction from "../miniTransaction";
 import { BridgingTransactionsSelector } from "pages/bridging/hooks/useBridgingTransactions";
 import { BigNumber } from "ethers";
+import {
+  findNativeToken,
+  getNetworkFromChannel,
+} from "pages/bridging/utils/findTokens";
 
 interface RecoveryModalProps {
-  tokens: BasicNativeBalance[];
+  tokens: IBCTokenTrace[];
   cantoAddress: string;
   txSelector: BridgingTransactionsSelector;
 }
@@ -24,7 +27,6 @@ const RecoveryModal = ({
   txSelector,
 }: RecoveryModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedNetowrk, setSelectedNetwork] = useState(0);
   return (
     <Styled>
       <Tooltip
@@ -71,43 +73,14 @@ const RecoveryModal = ({
         <br />
         <br />
         <br />
-        {/* <ChooseNetwork>
-          <div className="network-list">
-            {Object.keys(ALL_BRIDGE_OUT_NETWORKS).map((key, network) => (
-              <div
-                role="button"
-                tabIndex={0}
-                key={key}
-                className="network-item"
-                onClick={() => {
-                  setSelectedNetwork(network);
-                }}
-                style={{
-                  background: selectedNetowrk === network ? "#F2F2F2" : "",
-                }}
-              >
-                <span>
-                  <img
-                    src={
-                      ALL_BRIDGE_OUT_NETWORKS[
-                        network as keyof typeof ALL_BRIDGE_OUT_NETWORKS
-                      ].icon
-                    }
-                    alt=""
-                  />
-                  <p>
-                    {
-                      ALL_BRIDGE_OUT_NETWORKS[
-                        network as keyof typeof ALL_BRIDGE_OUT_NETWORKS
-                      ].name
-                    }
-                  </p>
-                </span>
-              </div>
-            ))}
-          </div>
-        </ChooseNetwork> */}
         {tokens.map((token) => {
+          //can get token information here from denomTrace
+          const tokenInfo = findNativeToken(
+            token.ibcInfo.denom_trace.base_denom
+          );
+          const transferFrom = getNetworkFromChannel(
+            token.ibcInfo.denom_trace.path.split("/").pop() ?? ""
+          );
           return (
             token.denom !== "acanto" && (
               <MiniTransaction

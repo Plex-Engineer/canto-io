@@ -51,3 +51,9 @@ export function getNetworkFromTokenName(
   }
   return "cosmos";
 }
+export function getNetworkFromChannel(channel: string) {
+  for (const [, value] of Object.entries(ALL_BRIDGE_OUT_NETWORKS)) {
+    if (value.cantoChannel === channel) return value;
+  }
+  return undefined;
+}

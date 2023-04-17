@@ -7,8 +7,8 @@ import {
   ETH_GRAVITY_BRIDGE_IN_TOKENS,
 } from "../config/bridgingTokens";
 import {
-  BasicNativeBalance,
   EMPTY_ERC20_BRIDGE_TOKEN,
+  IBCTokenTrace,
   UserERC20BridgeToken,
   UserNativeToken,
 } from "../config/interfaces";
@@ -16,14 +16,17 @@ import {
   SelectedTokens,
   useBridgeTokenStore,
 } from "../stores/bridgeTokenStore";
-import { getNativeCantoBalances } from "../utils/nativeBalances";
+import {
+  getNativeCantoBalances,
+  getUnknownIBCTokens,
+} from "../utils/nativeBalances";
 import { useTokenBalances } from "./tokenBalances/useTokenBalances";
 
 interface BridgeTokenInfo {
   userBridgeInTokens: UserERC20BridgeToken[];
   userBridgeOutTokens: UserERC20BridgeToken[];
   userNativeTokens: UserNativeToken[];
-  unknownTokens: BasicNativeBalance[];
+  unkownIBCTokens: IBCTokenTrace[];
   selectedTokens: {
     bridgeInToken: UserERC20BridgeToken;
     bridgeOutToken: UserERC20BridgeToken;
@@ -56,9 +59,7 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
   );
 
   //these are used for "recover tokens" if unidentified tokens are found
-  const [allNativeUnfilteredTokens, setAllNativeUnfilteredTokens] = useState<
-    BasicNativeBalance[]
-  >([]);
+  const [allUnknownIBC, setAllUnknownIBC] = useState<IBCTokenTrace[]>([]);
   async function getAllNativeTokens() {
     const { foundTokens, notFoundTokens } = await getNativeCantoBalances(
       CantoMainnet.cosmosAPIEndpoint,
@@ -66,7 +67,7 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
       CONVERT_COIN_TOKENS
     );
     setUserNativeTokens(foundTokens);
-    setAllNativeUnfilteredTokens(notFoundTokens);
+    setAllUnknownIBC(await getUnknownIBCTokens(notFoundTokens));
   }
 
   //initialize data on sign in
@@ -86,7 +87,7 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
     userBridgeInTokens: userEthBridgeInTokens,
     userBridgeOutTokens: userCantoBridgeOutTokens,
     userNativeTokens: userNativeTokens,
-    unknownTokens: allNativeUnfilteredTokens,
+    unkownIBCTokens: allUnknownIBC,
     selectedTokens: {
       bridgeInToken:
         userEthBridgeInTokens.find(
