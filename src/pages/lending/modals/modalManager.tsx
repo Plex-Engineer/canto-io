@@ -1,7 +1,5 @@
 import WalletModal from "./walletModal";
 import CollatModal from "./enableCollateral";
-import SupplyModal from "./supplyModal";
-import BorrowModal from ".//borrowModal";
 import RewardsModal from "./rewardsModal";
 import useModalStore, { ModalType } from "pages/lending/stores/useModals";
 import { UserLMPosition, UserLMRewards } from "pages/lending/config/interfaces";

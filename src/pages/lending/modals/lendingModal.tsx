@@ -120,13 +120,6 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
   const SupplyTab = () => {
     return (
       <TabPanel>
-        <div
-          style={{
-            display: "flex",
-            marginTop: "1rem",
-          }}
-        />
-        {/* supply */}
         <LendingField
           token={token}
           value={userAmount}
@@ -155,7 +148,6 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
             formatUnits(token.balanceOf, token.data.underlying.decimals)
           )}
         />
-        {/* 1st tab */}
         <Details
           transactionType={CantoTransactionType.SUPPLY}
           stringAmount={truncateNumber(
@@ -202,18 +194,11 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
     );
     return (
       <TabPanel>
-        <div
-          style={{
-            display: "flex",
-            marginTop: "1rem",
-          }}
-        />
         <LendingField
           token={token}
           value={userAmount}
           transactionType={CantoTransactionType.WITHDRAW}
           canDoMax={isMax}
-          //Withdraw
           onMax={() => {
             if (inputState != InputState.ENABLE) {
               setUserAmount(
@@ -237,7 +222,6 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
             formatUnits(token.supplyBalance, token.data.underlying.decimals)
           )}
         />
-        {/* 2nd tab */}
         <Details
           transactionType={CantoTransactionType.WITHDRAW}
           icon={token.data.underlying.icon}
@@ -282,13 +266,6 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
     );
     return (
       <TabPanel>
-        <div
-          style={{
-            display: "flex",
-            marginTop: "2rem",
-          }}
-        />
-        {/* borrow */}
         <LendingField
           token={token}
           value={userAmount}
@@ -318,7 +295,6 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
             formatUnits(token.borrowBalance, token.data.underlying.decimals)
           )}
         />
-        {/* 1st tab */}
         <Details
           transactionType={CantoTransactionType.BORROW}
           stringAmount={truncateNumber(
@@ -354,18 +330,11 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
       : token.borrowBalance;
     return (
       <TabPanel>
-        <div
-          style={{
-            display: "flex",
-            marginTop: "2rem",
-          }}
-        />
         <LendingField
           token={token}
           value={userAmount}
           transactionType={CantoTransactionType.REPAY}
           canDoMax={true}
-          //repay
           onMax={() => {
             if (inputState != InputState.ENABLE) {
               setUserAmount(
@@ -388,7 +357,6 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
             formatUnits(token.borrowBalance, token.data.underlying.decimals)
           )}
         />
-        {/* 2nd tab */}
         <Details
           transactionType={CantoTransactionType.REPAY}
           stringAmount={truncateNumber(
@@ -434,6 +402,8 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
       case "supply":
         return CantoTransactionType.SUPPLY;
       case "withdraw":
+        return CantoTransactionType.WITHDRAW;
+      default:
         return CantoTransactionType.WITHDRAW;
     }
   }
@@ -588,6 +558,9 @@ const Styled = styled.div`
         outline: none;
       }
     }
+  }
+  .react-tabs__tab-panel {
+    margin: 1rem 0;
   }
 
   .selected {
