@@ -10,12 +10,12 @@ import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { ModalWallet } from "../components/Styled";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
-import LendingField from "../components/lendingField";
 import { CantoTransactionType } from "global/config/transactionTypes";
 import { Details } from "../components/BorrowLimits";
 import { maxBorrowInUnderlying } from "../utils/borrowRepayLimits";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { userMaximumWithdrawal } from "../utils/supplyWithdrawLimits";
+import AmountField from "../components/amountField";
 
 interface IProps {
   onClose: () => void;
@@ -120,7 +120,19 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
   const SupplyTab = () => {
     return (
       <TabPanel>
-        <LendingField
+        <Details
+          transactionType={CantoTransactionType.SUPPLY}
+          stringAmount={truncateNumber(
+            userAmount,
+            token.data.underlying.decimals
+          )}
+          token={token}
+          icon={token.data.underlying.icon}
+          isBorrowing={false}
+          borrowLimit={position.totalBorrowLimit}
+          borrowBalance={position.totalBorrow}
+        />
+        <AmountField
           token={token}
           value={userAmount}
           transactionType={CantoTransactionType.SUPPLY}
@@ -148,19 +160,6 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
             formatUnits(token.balanceOf, token.data.underlying.decimals)
           )}
         />
-        <Details
-          transactionType={CantoTransactionType.SUPPLY}
-          stringAmount={truncateNumber(
-            userAmount,
-            token.data.underlying.decimals
-          )}
-          token={token}
-          icon={token.data.underlying.icon}
-          isBorrowing={false}
-          borrowLimit={position.totalBorrowLimit}
-          borrowBalance={position.totalBorrow}
-        />
-
         <ReactiveButton
           onTransaction={(e) => {
             setTransaction(e);
@@ -194,7 +193,19 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
     );
     return (
       <TabPanel>
-        <LendingField
+        <Details
+          transactionType={CantoTransactionType.WITHDRAW}
+          icon={token.data.underlying.icon}
+          token={token}
+          stringAmount={truncateNumber(
+            userAmount,
+            token.data.underlying.decimals
+          )}
+          borrowLimit={position.totalBorrowLimit}
+          borrowBalance={position.totalBorrow}
+          isBorrowing={false}
+        />
+        <AmountField
           token={token}
           value={userAmount}
           transactionType={CantoTransactionType.WITHDRAW}
@@ -221,18 +232,6 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
           balance={truncateNumber(
             formatUnits(token.supplyBalance, token.data.underlying.decimals)
           )}
-        />
-        <Details
-          transactionType={CantoTransactionType.WITHDRAW}
-          icon={token.data.underlying.icon}
-          token={token}
-          stringAmount={truncateNumber(
-            userAmount,
-            token.data.underlying.decimals
-          )}
-          borrowLimit={position.totalBorrowLimit}
-          borrowBalance={position.totalBorrow}
-          isBorrowing={false}
         />
         <ReactiveButton
           onTransaction={(e) => {
@@ -266,7 +265,19 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
     );
     return (
       <TabPanel>
-        <LendingField
+        <Details
+          transactionType={CantoTransactionType.BORROW}
+          stringAmount={truncateNumber(
+            userAmount,
+            token.data.underlying.decimals
+          )}
+          token={token}
+          icon={token.data.underlying.icon}
+          isBorrowing={true}
+          borrowLimit={position.totalBorrowLimit}
+          borrowBalance={position.totalBorrow}
+        />
+        <AmountField
           token={token}
           value={userAmount}
           transactionType={CantoTransactionType.BORROW}
@@ -295,19 +306,6 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
             formatUnits(token.borrowBalance, token.data.underlying.decimals)
           )}
         />
-        <Details
-          transactionType={CantoTransactionType.BORROW}
-          stringAmount={truncateNumber(
-            userAmount,
-            token.data.underlying.decimals
-          )}
-          token={token}
-          icon={token.data.underlying.icon}
-          isBorrowing={true}
-          borrowLimit={position.totalBorrowLimit}
-          borrowBalance={position.totalBorrow}
-        />
-
         <ReactiveButton
           transactionType={CantoTransactionType.BORROW}
           state={inputState}
@@ -330,7 +328,19 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
       : token.borrowBalance;
     return (
       <TabPanel>
-        <LendingField
+        <Details
+          transactionType={CantoTransactionType.REPAY}
+          stringAmount={truncateNumber(
+            userAmount,
+            token.data.underlying.decimals
+          )}
+          icon={token.data.underlying.icon}
+          token={token}
+          isBorrowing={true}
+          borrowLimit={position.totalBorrowLimit}
+          borrowBalance={position.totalBorrow}
+        />
+        <AmountField
           token={token}
           value={userAmount}
           transactionType={CantoTransactionType.REPAY}
@@ -356,18 +366,6 @@ const LendingModal = ({ position, onClose, modalType }: IProps) => {
           balance={truncateNumber(
             formatUnits(token.borrowBalance, token.data.underlying.decimals)
           )}
-        />
-        <Details
-          transactionType={CantoTransactionType.REPAY}
-          stringAmount={truncateNumber(
-            userAmount,
-            token.data.underlying.decimals
-          )}
-          icon={token.data.underlying.icon}
-          token={token}
-          isBorrowing={true}
-          borrowLimit={position.totalBorrowLimit}
-          borrowBalance={position.totalBorrow}
         />
         <ReactiveButton
           onTransaction={(e) => {
@@ -559,10 +557,17 @@ const Styled = styled.div`
       }
     }
   }
-  .react-tabs__tab-panel {
-    margin: 1rem 0;
+  .react-tabs {
+    background-color: red;
+    display: flex;
   }
-
+  .react-tabs__tab-panel {
+    display: flex;
+    flex-direction: column;
+  }
+  .amount-field {
+    margin-top: 0rem;
+  }
   .selected {
     background: rgba(6, 252, 153, 0.15);
     border-radius: 1px;

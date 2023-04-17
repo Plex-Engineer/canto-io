@@ -4,14 +4,13 @@ import { formatUnits } from "ethers/lib/utils";
 import { Text } from "global/packages/src";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import { truncateNumber } from "global/utils/utils";
-import { BaseToken } from "pages/bridging/config/interfaces";
 import { useState } from "react";
 interface Props {
-  tokenBalance: BigNumber;
-  selectedToken: BaseToken;
+  tokenBalance: string;
+  tokenDecimals?: number;
 }
-const AmountBox = ({ tokenBalance, selectedToken }: Props) => {
-  const [amount, setAmount] = useState("0.00");
+const AmountBox = ({ tokenBalance, tokenDecimals }: Props) => {
+  const [amount, setAmount] = useState("");
   return (
     <Styled>
       <CInput
@@ -21,7 +20,7 @@ const AmountBox = ({ tokenBalance, selectedToken }: Props) => {
           height: "54px",
         }}
         placeholder={`amount :  ${truncateNumber(
-          formatUnits(tokenBalance, selectedToken.decimals),
+          formatUnits(tokenBalance, tokenDecimals),
           6
         )} `}
         value={amount}
@@ -33,7 +32,7 @@ const AmountBox = ({ tokenBalance, selectedToken }: Props) => {
         className="maxBtn"
         onClick={() => {
           setAmount(
-            truncateNumber(formatUnits(tokenBalance, selectedToken.decimals), 6)
+            truncateNumber(formatUnits(tokenBalance, tokenDecimals), 6)
           );
         }}
       >
