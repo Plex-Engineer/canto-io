@@ -17,10 +17,11 @@ interface BurgerMenuProps {
   currentPage?: string;
 }
 
-const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
+const MenuBar = ({ currentPage, pageList }: BurgerMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const setModalType = useGlobalModals((state) => state.setModalType);
   const [isHovering, setIsHovering] = useState(false);
+  const cantoCommons = "canto-commons";
   return (
     <Styled isOpen={isOpen}>
       {/* <Styled className={isOpen ? "active" : ""}> */}
@@ -92,6 +93,18 @@ const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
                 </Navlink>
               ) : null;
             })}
+            <HrefLink
+              id={cantoCommons}
+              className={"menu-item"}
+              href="https://canto.build/"
+              key={cantoCommons}
+              target="_blank"
+              onClick={() => setIsOpen(false)}
+            >
+              <Text size="text2" type="title" align="left" id={cantoCommons}>
+                {"07 canto commons"}
+              </Text>
+            </HrefLink>
           </div>
         </div>
         <footer>
@@ -245,6 +258,40 @@ const Styled = styled.div<MenuState>`
     .burger {
       transform: translateY(-10px);
     }
+  }
+`;
+
+const HrefLink = styled.a`
+  display: flex;
+  text-align: left;
+  width: 100%;
+  padding: 1rem 2rem;
+  opacity: 0.5;
+  position: relative;
+  transition: all 0.1s;
+
+  /* &:hover {
+    background-color: #01190f;
+    opacity: 1;
+  } */
+
+  &:hover {
+    opacity: 1;
+  }
+  &:hover::before {
+    transform: scaleY(1);
+  }
+  &:before {
+    content: " ";
+    position: absolute;
+    transition: all 130ms ease-in;
+    background-color: #01190f;
+    transform: scaleY(0);
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
   }
 `;
 
