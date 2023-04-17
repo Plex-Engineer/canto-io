@@ -102,7 +102,7 @@ const MenuBar = ({ currentPage, pageList }: BurgerMenuProps) => {
               onClick={() => setIsOpen(false)}
             >
               <Text size="text2" type="title" align="left" id={cantoCommons}>
-                {"07 canto commons"}
+                {"06 canto commons"}
               </Text>
             </HrefLink>
           </div>
