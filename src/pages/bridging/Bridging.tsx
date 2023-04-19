@@ -24,7 +24,6 @@ import { parseUnits } from "ethers/lib/utils";
 import Tooltip from "global/packages/src/components/molecules/Tooltip";
 import { Text } from "global/packages/src";
 import guideImg from "assets/guide.svg";
-import RecoveryModal from "./components/modals/recoveryModal";
 import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
 import RecoveryPage from "./Recovery";
 
@@ -36,7 +35,7 @@ const Bridging = () => {
   const { activateBrowserWallet } = useEthers();
   const navigate = useNavigate();
   const [pubKeySuccess, setPubKeySuccess] = useState("None");
-  const hasRecoveryToken = true;
+  const hasRecoveryToken = bridgingTokens.unkownIBCTokens.length > 0;
   const ethBalance = useEtherBalance(networkInfo.account, { chainId: 1 });
   const canPubKey =
     (ethBalance?.gte(parseUnits("0.01")) ||
@@ -65,11 +64,6 @@ const Bridging = () => {
   return (
     <Styled>
       <div className="floating-buttons">
-        {/* <RecoveryModal
-          tokens={bridgingTokens.unkownIBCTokens}
-          cantoAddress={networkInfo.cantoAddress}
-          txSelector={transactionHooks}
-        /> */}
         <BalanceTableModal
           ethTokens={bridgingTokens.userBridgeInTokens}
           cantoTokens={bridgingTokens.userBridgeOutTokens}
