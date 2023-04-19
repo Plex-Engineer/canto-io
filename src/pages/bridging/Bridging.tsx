@@ -26,6 +26,7 @@ import { Text } from "global/packages/src";
 import guideImg from "assets/guide.svg";
 import RecoveryModal from "./components/modals/recoveryModal";
 import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
+import RecoveryPage from "./Recovery";
 
 const Bridging = () => {
   const networkInfo = useNetworkInfo();
@@ -35,6 +36,7 @@ const Bridging = () => {
   const { activateBrowserWallet } = useEthers();
   const navigate = useNavigate();
   const [pubKeySuccess, setPubKeySuccess] = useState("None");
+  const hasRecoveryToken = true;
   const ethBalance = useEtherBalance(networkInfo.account, { chainId: 1 });
   const canPubKey =
     (ethBalance?.gte(parseUnits("0.01")) ||
@@ -63,11 +65,11 @@ const Bridging = () => {
   return (
     <Styled>
       <div className="floating-buttons">
-        <RecoveryModal
+        {/* <RecoveryModal
           tokens={bridgingTokens.unkownIBCTokens}
           cantoAddress={networkInfo.cantoAddress}
           txSelector={transactionHooks}
-        />
+        /> */}
         <BalanceTableModal
           ethTokens={bridgingTokens.userBridgeInTokens}
           cantoTokens={bridgingTokens.userBridgeOutTokens}
@@ -92,7 +94,12 @@ const Bridging = () => {
       </div>
 
       <CantoTabs
-        names={["bridge in", "bridge out", "tx history"]}
+        names={[
+          "bridge in",
+          "bridge out",
+          "tx history",
+          ...(hasRecoveryToken ? ["recovery"] : []),
+        ]}
         panels={
           !networkInfo.account
             ? NotConnectedTabs()
@@ -167,6 +174,13 @@ const Bridging = () => {
                   key={"transaction"}
                   allTransactions={bridgingHistory}
                 />,
+                hasRecoveryToken && (
+                  <RecoveryPage
+                    tokens={bridgingTokens.unkownIBCTokens}
+                    cantoAddress={networkInfo.cantoAddress}
+                    txSelector={transactionHooks}
+                  />
+                ),
               ]
         }
       />

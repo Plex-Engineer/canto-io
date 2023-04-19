@@ -113,6 +113,18 @@ export interface NativeTransaction {
   token: UserNativeToken;
 }
 
+export interface RecoveryTransaction {
+  origin: string;
+  symbol: string;
+  channelID: number;
+  amount: BigNumber;
+  onRecovery?: () => void;
+  channelPath: string[];
+  defaultChannel: number;
+  supportedOutChannels: number[];
+  token: UserNativeToken;
+}
+
 /**
  * MODAL INTERFACES
  */
