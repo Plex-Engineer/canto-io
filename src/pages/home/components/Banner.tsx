@@ -8,7 +8,7 @@ export const Banner = () => {
         The canto online hackathon
       </Text>
       <Text align="left">/chapter 1 : season 7</Text>
-      <Text align="left">/dates: tbd</Text>
+      <Text align="left">/git aapril 20 - may 7</Text>
       <Text align="left">
         Join the Canto Online Hackathon for apps, infrastructure, and original
         work.
