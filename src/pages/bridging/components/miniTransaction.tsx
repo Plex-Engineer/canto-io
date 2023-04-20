@@ -28,7 +28,6 @@ const MiniTransaction = (props: Props) => {
   const txStats = props.txFactory();
   const isIBCTransfer = txStats.txType == CantoTransactionType.IBC_OUT;
   //just for ibc out
-  const [userInputAddress, setUserInputAddress] = useState("");
   const tokenNetworks = props.transaction.token.supportedOutChannels ?? [0];
   const [selectedNetwork, setSelectedNetwork] = useState<
     keyof typeof ALL_BRIDGE_OUT_NETWORKS
@@ -60,20 +59,12 @@ const MiniTransaction = (props: Props) => {
             chain: isIBCTransfer
               ? ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].name
               : "canto",
-            address: isIBCTransfer ? userInputAddress : props.ethAddress,
+            address: isIBCTransfer ? "" : props.ethAddress,
           }}
+          ibcTo={ALL_BRIDGE_OUT_NETWORKS[selectedNetwork]}
           onClose={() => {
             setModalOpen(false);
           }}
-          ibcData={
-            isIBCTransfer
-              ? {
-                  userInputAddress,
-                  setUserInputAddress,
-                  selectedNetwork: ALL_BRIDGE_OUT_NETWORKS[selectedNetwork],
-                }
-              : undefined
-          }
           extraDetails={
             isIBCTransfer ? (
               <>

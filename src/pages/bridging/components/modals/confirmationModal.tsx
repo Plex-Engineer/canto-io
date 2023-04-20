@@ -2,18 +2,23 @@ import styled from "@emotion/styled";
 import { useEthers } from "@usedapp/core";
 import { formatUnits } from "ethers/lib/utils";
 import LoadingModal from "global/components/modals/loading2";
+import { CantoTransactionType } from "global/config/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import { truncateNumber } from "global/utils/utils";
 import { BridgeModal } from "pages/bridging/config/interfaces";
 import { formatAddress } from "pages/bridging/utils/utils";
+import { useState } from "react";
 
 const ConfirmationModal = (props: BridgeModal) => {
   const networkID = useEthers().chainId;
   const { switchNetwork } = useEthers();
-  const canConfirm =
-    !props.ibcData ||
-    props.ibcData.selectedNetwork.checkAddress(props.ibcData.userInputAddress);
+  //if ibc transaction, we need a user input address for the receiving chain
+  const isIBC =
+    props.tx.txType === CantoTransactionType.IBC_OUT ||
+    props.tx.txType === CantoTransactionType.IBC_IN;
+  const [userInputAddress, setUserInputAddress] = useState("");
+  const canConfirm = !isIBC || props.ibcTo?.checkAddress(userInputAddress);
   return (
     <Styled>
       {props.from.chainId != networkID && networkID != undefined && (
@@ -68,7 +73,10 @@ const ConfirmationModal = (props: BridgeModal) => {
                   />
                   <ConfirmationRow
                     title="to"
-                    value={`${formatAddress(props.to.address, 6)}`}
+                    value={`${formatAddress(
+                      isIBC ? userInputAddress : props.to.address,
+                      6
+                    )}`}
                   />
                   <ConfirmationRow
                     title="amount"
@@ -84,7 +92,7 @@ const ConfirmationModal = (props: BridgeModal) => {
               )}
             </div>
 
-            {props.ibcData && (
+            {isIBC && (
               <div className="transactions">
                 <div
                   className="row"
@@ -100,12 +108,10 @@ const ConfirmationModal = (props: BridgeModal) => {
                         backgroundColor: "transparent",
                         width: "16rem",
                       }}
-                      placeholder={
-                        props.ibcData.selectedNetwork.addressBeginning + "1..."
-                      }
-                      value={props.ibcData.userInputAddress}
+                      placeholder={props.ibcTo?.addressBeginning + "1..."}
+                      value={userInputAddress}
                       onChange={(val) => {
-                        props.ibcData?.setUserInputAddress(val.target.value);
+                        setUserInputAddress(val.target.value);
                       }}
                     />
                   </div>
@@ -123,11 +129,11 @@ const ConfirmationModal = (props: BridgeModal) => {
               height="big"
               weight="bold"
               onClick={() => {
-                if (props.ibcData) {
+                if (isIBC) {
                   props.tx.send(
                     props.amount.toString(),
-                    props.ibcData.userInputAddress,
-                    props.ibcData.selectedNetwork
+                    userInputAddress,
+                    props.ibcTo
                   );
                 } else {
                   props.tx.send(props.amount.toString());

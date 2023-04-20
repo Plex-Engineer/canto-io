@@ -13,7 +13,7 @@ import { BridgingTransactionsSelector } from "pages/bridging/hooks/useBridgingTr
 import { BigNumber } from "ethers";
 import {
   findNativeToken,
-  getNetworkFromChannel,
+  getNetworkFromCantoChannel,
 } from "pages/bridging/utils/findTokens";
 
 interface RecoveryModalProps {
@@ -78,7 +78,7 @@ const RecoveryModal = ({
           const tokenInfo = findNativeToken(
             token.ibcInfo.denom_trace.base_denom
           );
-          const transferFrom = getNetworkFromChannel(
+          const transferFrom = getNetworkFromCantoChannel(
             token.ibcInfo.denom_trace.path.split("/").pop() ?? ""
           );
           return (

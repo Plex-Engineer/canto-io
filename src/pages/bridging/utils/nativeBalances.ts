@@ -8,10 +8,6 @@ import {
   UserNativeToken,
 } from "../config/interfaces";
 
-interface NativeTokenResponse {
-  denom: string;
-  amount: string;
-}
 const options = {
   method: "GET",
   headers: {
@@ -53,6 +49,9 @@ export async function getNativeCantoBalances(
   return { foundTokens, notFoundTokens };
 }
 
+//denom trace will look something like "transfer/channel-#/transfer/chanel-#/...."
+//denom trace is in reverse order (last channel in list is first channel token went through)
+//base denom will look something like "uatom"
 export interface IBCPathInfo {
   denom_trace: {
     path: string;

@@ -2,7 +2,10 @@ import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
 import { EMPTY_NATIVE_TOKEN, IBCTokenTrace } from "./config/interfaces";
 import { BridgingTransactionsSelector } from "./hooks/useBridgingTransactions";
-import { findNativeToken, getNetworkFromChannel } from "./utils/findTokens";
+import {
+  findNativeToken,
+  getNetworkFromCantoChannel,
+} from "./utils/findTokens";
 import RecoveryTransactionBox from "./components/recoveryTransaction";
 import { BigNumber } from "ethers";
 
@@ -70,8 +73,8 @@ const RecoveryPage = ({
           const tokenInfo = findNativeToken(
             token.ibcInfo.denom_trace.base_denom
           );
-          const transferFrom = getNetworkFromChannel(
-            token.ibcInfo.denom_trace.path.split("/").pop() ?? ""
+          const transferFrom = getNetworkFromCantoChannel(
+            token.ibcInfo.denom_trace.path.split("/")?.[1] ?? ""
           );
 
           return (
@@ -80,23 +83,20 @@ const RecoveryPage = ({
                 key={token.denom}
                 cantoAddress={cantoAddress}
                 transaction={{
-                  origin: transferFrom?.addressBeginning ?? "unknown",
+                  origin: transferFrom.name,
                   amount: BigNumber.from(token.amount),
-                  channelID: 2,
-                  supportedOutChannels: [
-                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-                  ],
-                  defaultChannel: tokenInfo?.supportedOutChannels[0] ?? 0,
+                  defaultNetwork: transferFrom,
                   channelPath: token.ibcInfo.denom_trace.path
-                    .replaceAll("transfer/channel", "")
-                    .split("/"),
-                  symbol: tokenInfo?.symbol ?? "",
+                    .replaceAll("transfer/channel-", "")
+                    .split("/")
+                    .reverse(),
+                  symbol: token.ibcInfo.denom_trace.base_denom,
                   token: {
                     ...EMPTY_NATIVE_TOKEN,
                     decimals: 0,
-                    ibcDenom: token.denom,
-                    name: token.denom.slice(0, 12),
-                    symbol: tokenInfo?.symbol ?? "",
+                    name: tokenInfo?.name ?? "unkown",
+                    symbol: token.ibcInfo.denom_trace.base_denom,
+                    icon: tokenInfo?.icon ?? "",
                   },
                 }}
                 txFactory={() => txSelector.bridgeOut.ibcOut(token.denom)}

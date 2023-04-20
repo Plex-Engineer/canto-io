@@ -116,12 +116,10 @@ export interface NativeTransaction {
 export interface RecoveryTransaction {
   origin: string;
   symbol: string;
-  channelID: number;
   amount: BigNumber;
   onRecovery?: () => void;
   channelPath: string[];
-  defaultChannel: number;
-  supportedOutChannels: number[];
+  defaultNetwork: BridgeOutNetworkInfo;
   token: UserNativeToken;
 }
 
@@ -142,10 +140,6 @@ export interface BridgeModal {
     address: string;
   };
   onClose: () => void;
-  ibcData?: {
-    userInputAddress: string;
-    setUserInputAddress: (s: string) => void;
-    selectedNetwork: BridgeOutNetworkInfo;
-  };
+  ibcTo?: BridgeOutNetworkInfo;
   extraDetails?: ReactNode;
 }

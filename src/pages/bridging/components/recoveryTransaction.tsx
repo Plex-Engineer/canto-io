@@ -7,7 +7,10 @@ import { CantoMainnet } from "global/providers";
 import { getShortTxStatusFromState, truncateNumber } from "global/utils/utils";
 import { useEffect, useState } from "react";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
-import { RecoveryTransaction } from "../config/interfaces";
+import {
+  BridgeOutNetworkInfo,
+  RecoveryTransaction,
+} from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import { formatAddress, toastBridgeTx } from "../utils/utils";
 import ConfirmationModal from "./modals/confirmationModal";
@@ -23,15 +26,12 @@ const RecoveryTransactionBox = ({
   txFactory,
   cantoAddress,
 }: Props) => {
+  const txStats = txFactory();
   const [isModalOpen, setModalOpen] = useState(false);
   const [isNetworkSelectModalOpen, setNetworkSelectModalOpen] = useState(false);
-  //just for ibc out
-  const [userInputAddress, setUserInputAddress] = useState("");
-  const tokenNetworks = transaction.supportedOutChannels;
-  const [selectedNetwork, setSelectedNetwork] = useState<
-    keyof typeof ALL_BRIDGE_OUT_NETWORKS
-  >(tokenNetworks ? tokenNetworks[transaction.defaultChannel] : 0);
-  const txStats = txFactory();
+  const [selectedNetwork, setSelectedNetwork] = useState<BridgeOutNetworkInfo>(
+    transaction.defaultNetwork
+  );
 
   useEffect(() => {
     toastBridgeTx(txStats.state, txStats.txName);
@@ -56,25 +56,19 @@ const RecoveryTransactionBox = ({
             chainId: CantoMainnet.chainId,
           }}
           to={{
-            chain: ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].name,
-            address: userInputAddress,
+            chain: selectedNetwork.name,
+            address: "",
           }}
+          ibcTo={selectedNetwork}
           onClose={() => {
             setModalOpen(false);
-          }}
-          ibcData={{
-            userInputAddress,
-            setUserInputAddress,
-            selectedNetwork: ALL_BRIDGE_OUT_NETWORKS[selectedNetwork],
           }}
           extraDetails={
             <>
               {`by completing bridge out, you are transferring your assets from your canto native address (${formatAddress(
                 cantoAddress,
                 6
-              )}) to your address on the ${
-                ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].name
-              } network. `}
+              )}) to your address on the ${selectedNetwork.name} network. `}
               Read more about this{" "}
               <a
                 role="button"
@@ -163,7 +157,7 @@ const RecoveryTransactionBox = ({
           channel id
         </Text>
         <Text type="title" align="left">
-          {transaction.channelID}
+          {selectedNetwork.cantoChannel.replace("channel-", "")}
         </Text>
       </div>
       <div
@@ -173,22 +167,18 @@ const RecoveryTransactionBox = ({
         onClick={() => setNetworkSelectModalOpen(true)}
       >
         <Text type="title" size="text4" align="left">
-          {
-            ALL_BRIDGE_OUT_NETWORKS[
-              selectedNetwork as keyof typeof ALL_BRIDGE_OUT_NETWORKS
-            ].name
-          }
-          {transaction.supportedOutChannels.length > 1 && (
-            <Modal
-              title="select network"
-              open={isNetworkSelectModalOpen}
-              onClose={() => {
-                setNetworkSelectModalOpen(false);
-              }}
-            >
-              <ChooseNetwork>
-                <div className="network-list">
-                  {transaction.supportedOutChannels.map((key, network) => (
+          {selectedNetwork.name}
+          <Modal
+            title="select network"
+            open={isNetworkSelectModalOpen}
+            onClose={() => {
+              setNetworkSelectModalOpen(false);
+            }}
+          >
+            <ChooseNetwork>
+              <div className="network-list">
+                {Object.entries(ALL_BRIDGE_OUT_NETWORKS).map(
+                  ([key, network]) => (
                     <div
                       role="button"
                       tabIndex={0}
@@ -200,31 +190,21 @@ const RecoveryTransactionBox = ({
                       }}
                       style={{
                         background:
-                          selectedNetwork === network ? "#1d1d1d" : "",
+                          selectedNetwork.chainId === network.chainId
+                            ? "#1d1d1d"
+                            : "",
                       }}
                     >
                       <span>
-                        <img
-                          src={
-                            ALL_BRIDGE_OUT_NETWORKS[
-                              network as keyof typeof ALL_BRIDGE_OUT_NETWORKS
-                            ].icon
-                          }
-                        />
-                        <Text>
-                          {
-                            ALL_BRIDGE_OUT_NETWORKS[
-                              network as keyof typeof ALL_BRIDGE_OUT_NETWORKS
-                            ].name
-                          }
-                        </Text>
+                        <img src={network.icon} />
+                        <Text>{network.name}</Text>
                       </span>
                     </div>
-                  ))}
-                </div>
-              </ChooseNetwork>
-            </Modal>
-          )}
+                  )
+                )}
+              </div>
+            </ChooseNetwork>
+          </Modal>
         </Text>
         <img src={acronIcon} className="separator" alt="separator" />
       </div>

@@ -5,7 +5,10 @@ import {
   ETH_GRAVITY_BRIDGE_IN_TOKENS,
 } from "../config/bridgingTokens";
 import { Token, TOKENS } from "global/config/tokenInfo";
-import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
+import {
+  ALL_BRIDGE_OUT_NETWORKS,
+  EMPTY_IBC_NETWORK,
+} from "../config/bridgeOutNetworks";
 
 export function findNativeToken(nativeName: string): NativeToken | undefined {
   return CONVERT_COIN_TOKENS.find(
@@ -51,9 +54,9 @@ export function getNetworkFromTokenName(
   }
   return "cosmos";
 }
-export function getNetworkFromChannel(channel: string) {
+export function getNetworkFromCantoChannel(channel: string) {
   for (const [, value] of Object.entries(ALL_BRIDGE_OUT_NETWORKS)) {
     if (value.cantoChannel === channel) return value;
   }
-  return undefined;
+  return EMPTY_IBC_NETWORK;
 }
