@@ -40,6 +40,7 @@ const Styled = styled.div<{ height: number; expanded: boolean }>`
   border: 1px solid #505050;
   border-radius: 4px;
   padding: 1rem;
+  min-height: ${({ height }) => height + 31 + "px"};
   transition: max-height 0.5s;
   max-height: ${({ height, expanded }) =>
     expanded ? "19rem" : height + 31 + "px"};
@@ -59,7 +60,6 @@ const Styled = styled.div<{ height: number; expanded: boolean }>`
   .content {
     transition: margin 0.2s;
     margin-top: ${({ expanded }) => (expanded ? "8px" : "16px")};
-
     font-size: 13px;
     line-height: 19px;
     letter-spacing: -0.03em;
