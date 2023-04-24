@@ -73,7 +73,6 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           cantoAddress={props.toAddress ?? ""}
           onClose={() => setisIBCModalOpen(false)}
         />
-        <div>ref</div>
       </Modal>
       <Modal
         title="confirmation"
