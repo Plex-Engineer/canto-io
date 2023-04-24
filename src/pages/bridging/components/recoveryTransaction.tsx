@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
 import { formatUnits } from "ethers/lib/utils";
-import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { CantoMainnet } from "global/providers";
@@ -13,8 +12,8 @@ import {
 } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import { formatAddress, toastBridgeTx } from "../utils/utils";
-import ConfirmationModal from "./modals/confirmationModal";
 import acronIcon from "assets/acron.svg";
+import ConfirmTxModal from "global/components/modals/confirmTxModal";
 
 interface Props {
   transaction: RecoveryTransaction;
@@ -32,6 +31,7 @@ const RecoveryTransactionBox = ({
   const [selectedNetwork, setSelectedNetwork] = useState<BridgeOutNetworkInfo>(
     transaction.defaultNetwork
   );
+  const [userInputAddress, setUserInputAddress] = useState("");
 
   useEffect(() => {
     toastBridgeTx(txStats.state, txStats.txName);
@@ -46,25 +46,62 @@ const RecoveryTransactionBox = ({
           setModalOpen(false);
         }}
       >
-        <ConfirmationModal
-          amount={transaction.amount}
-          token={transaction.token}
-          tx={txStats}
-          from={{
-            chain: "canto bridge",
-            address: cantoAddress,
-            chainId: CantoMainnet.chainId,
+        <ConfirmTxModal
+          networkId={CantoMainnet.chainId}
+          title="Confirm Bridge Out"
+          titleIcon={
+            <div style={{ flexGrow: 2, display: "grid", placeItems: "center" }}>
+              <>
+                <img
+                  height={50}
+                  src={transaction.token.icon}
+                  alt={transaction.token.name}
+                />
+                <Text type="title" size="title3">
+                  {transaction.token.name}
+                </Text>
+              </>
+            </div>
+          }
+          confirmationValues={[
+            { title: "from", value: formatAddress(cantoAddress, 6) },
+            { title: "to", value: selectedNetwork.name },
+            {
+              title: "amount",
+              value:
+                truncateNumber(
+                  formatUnits(transaction.amount, transaction.token.decimals)
+                ) +
+                " " +
+                transaction.token.symbol,
+            },
+          ]}
+          extraInputs={[
+            {
+              header: "address",
+              placeholder: selectedNetwork.addressBeginning + "1...",
+              value: userInputAddress,
+              setValue: setUserInputAddress,
+            },
+          ]}
+          disableConfirm={!selectedNetwork.checkAddress(userInputAddress)}
+          onConfirm={() => {
+            txStats.send(
+              transaction.amount.toString(),
+              userInputAddress,
+              selectedNetwork
+            );
           }}
-          to={{
-            chain: selectedNetwork.name,
-            address: "",
-          }}
-          ibcTo={selectedNetwork}
-          onClose={() => {
-            setModalOpen(false);
+          loadingProps={{
+            transactionType: txStats.txType,
+            status: txStats.state,
+            tokenName: transaction.token.name,
+            onClose: () => {
+              false;
+            },
           }}
           extraDetails={
-            <>
+            <Text size="text4" align="left" style={{ color: "#474747" }}>
               {`by completing bridge out, you are transferring your assets from your canto native address (${formatAddress(
                 cantoAddress,
                 6
@@ -87,8 +124,11 @@ const RecoveryTransactionBox = ({
               >
                 here.
               </a>{" "}
-            </>
+            </Text>
           }
+          onClose={() => {
+            setModalOpen(false);
+          }}
         />
       </Modal>
       <div
