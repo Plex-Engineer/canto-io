@@ -20,6 +20,7 @@ import acronIcon from "assets/acron.svg";
 import ConfirmTxModal, {
   TokenWithIcon,
 } from "global/components/modals/confirmTxModal";
+import rightArrow from "assets/next.svg";
 
 interface Props {
   transaction: RecoveryTransaction;
@@ -55,10 +56,19 @@ const RecoveryTransactionBox = ({
         <ConfirmTxModal
           networkId={CantoMainnet.chainId}
           title={txStats.txName}
-          titleIcon={TokenWithIcon({
-            icon: transaction.token.icon,
-            name: transaction.token.symbol,
-          })}
+          titleIcon={
+            <div style={{ display: "flex", flexDirection: "row", gap: "1rem" }}>
+              {TokenWithIcon({
+                icon: transaction.token.icon,
+                name: transaction.token.symbol,
+              })}
+              <img src={rightArrow} alt="arrow" />
+              {TokenWithIcon({
+                icon: selectedNetwork.icon,
+                name: selectedNetwork.name,
+              })}
+            </div>
+          }
           confirmationValues={[
             { title: "from", value: formatAddress(cantoAddress, 6) },
             { title: "to", value: formatAddress(userInputAddress, 6) },
