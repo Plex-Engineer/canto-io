@@ -8,6 +8,7 @@ import {
 } from "./utils/findTokens";
 import RecoveryTransactionBox from "./components/recoveryTransaction";
 import { BigNumber } from "ethers";
+import unknwonToken from "assets/icons/info.svg";
 
 interface RecoveryModalProps {
   tokens: IBCTokenTrace[];
@@ -97,7 +98,7 @@ const RecoveryPage = ({
                     decimals: 0,
                     name: tokenInfo?.name ?? "unkown",
                     symbol: token.ibcInfo.denom_trace.base_denom,
-                    icon: tokenInfo?.icon ?? "",
+                    icon: tokenInfo?.icon ?? unknwonToken,
                   },
                 }}
                 txFactory={() => txSelector.bridgeOut.ibcOut(token.denom)}
