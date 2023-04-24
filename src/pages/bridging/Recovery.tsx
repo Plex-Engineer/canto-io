@@ -55,7 +55,8 @@ const RecoveryPage = ({
           </li>
           <li>
             For each token, select the network you would like to ibc transfer
-            the tokens back to (default network is selected for you).
+            the tokens back to (the network where this token came from is
+            selected for you).
           </li>
           <li>
             Click recover on the token once you have selected the network you
