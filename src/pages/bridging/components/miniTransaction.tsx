@@ -12,9 +12,12 @@ import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import {
   convertSecondsToString,
   formatAddress,
+  getBridgeExtraDetails,
   toastBridgeTx,
 } from "../utils/utils";
-import ConfirmationModal from "./modals/confirmationModal";
+import ConfirmTxModal, {
+  TokenWithIcon,
+} from "global/components/modals/confirmTxModal";
 
 interface Props {
   transaction: NativeTransaction;
@@ -32,6 +35,7 @@ const MiniTransaction = (props: Props) => {
   const [selectedNetwork, setSelectedNetwork] = useState<
     keyof typeof ALL_BRIDGE_OUT_NETWORKS
   >(tokenNetworks ? tokenNetworks[0] : 0);
+  const [userInputAddress, setUserInputAddress] = useState("");
 
   useEffect(() => {
     toastBridgeTx(txStats.state, txStats.txName);
@@ -46,83 +50,82 @@ const MiniTransaction = (props: Props) => {
           setModalOpen(false);
         }}
       >
-        <ConfirmationModal
-          amount={props.transaction.amount}
-          token={props.transaction.token}
-          tx={txStats}
-          from={{
-            chain: "canto bridge",
-            address: props.cantoAddress,
-            chainId: CantoMainnet.chainId,
+        <ConfirmTxModal
+          networkId={CantoMainnet.chainId}
+          title={txStats.txName}
+          titleIcon={TokenWithIcon({
+            icon: props.transaction.token.icon,
+            name: props.transaction.token.symbol,
+          })}
+          confirmationValues={[
+            { title: "from", value: formatAddress(props.cantoAddress, 6) },
+            {
+              title: "to",
+              value: isIBCTransfer
+                ? formatAddress(userInputAddress, 6)
+                : formatAddress(props.ethAddress, 6),
+            },
+            {
+              title: "amount",
+              value:
+                truncateNumber(
+                  formatUnits(
+                    props.transaction.amount,
+                    props.transaction.token.decimals
+                  )
+                ) +
+                " " +
+                props.transaction.token.symbol,
+            },
+          ]}
+          extraInputs={
+            isIBCTransfer
+              ? [
+                  {
+                    header: "address",
+                    placeholder:
+                      ALL_BRIDGE_OUT_NETWORKS[selectedNetwork]
+                        .addressBeginning + "1...",
+                    value: userInputAddress,
+                    setValue: setUserInputAddress,
+                  },
+                ]
+              : []
+          }
+          disableConfirm={
+            isIBCTransfer &&
+            !ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].checkAddress(
+              userInputAddress
+            )
+          }
+          onConfirm={() => {
+            isIBCTransfer
+              ? txStats.send(
+                  props.transaction.amount.toString(),
+                  userInputAddress,
+                  ALL_BRIDGE_OUT_NETWORKS[selectedNetwork]
+                )
+              : txStats.send(props.transaction.amount.toString());
           }}
-          to={{
-            chain: isIBCTransfer
-              ? ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].name
-              : "canto",
-            address: isIBCTransfer ? "" : props.ethAddress,
+          loadingProps={{
+            transactionType: txStats.txType,
+            status: txStats.state,
+            tokenName: props.transaction.token.name,
+            onClose: () => {
+              setModalOpen(false);
+            },
           }}
-          ibcTo={ALL_BRIDGE_OUT_NETWORKS[selectedNetwork]}
+          extraDetails={getBridgeExtraDetails(
+            !isIBCTransfer,
+            true,
+            formatAddress(props.cantoAddress, 6),
+            !isIBCTransfer
+              ? formatAddress(props.ethAddress, 6)
+              : ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].name
+          )}
           onClose={() => {
             setModalOpen(false);
           }}
-          extraDetails={
-            isIBCTransfer ? (
-              <>
-                {`by completing bridge out, you are transferring your assets from your canto native address (${formatAddress(
-                  props.cantoAddress,
-                  6
-                )}) to your address on the ${
-                  ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].name
-                } network. `}
-                Read more about this{" "}
-                <a
-                  role="button"
-                  tabIndex={0}
-                  onClick={() =>
-                    window.open(
-                      "https://docs.canto.io/user-guides/bridging-assets/from-canto",
-                      "_blank"
-                    )
-                  }
-                  style={{
-                    color: "var(--primary-color)",
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                  }}
-                >
-                  here.
-                </a>{" "}
-              </>
-            ) : (
-              <>
-                {`by completing bridge in, you are transferring your assets from your canto native address (${formatAddress(
-                  props.cantoAddress,
-                  6
-                )}) to your canto EVM address (${formatAddress(
-                  props.ethAddress,
-                  6
-                )}). `}
-                Read more about this{" "}
-                <a
-                  role="button"
-                  tabIndex={0}
-                  onClick={() =>
-                    window.open(
-                      "https://docs.canto.io/user-guides/converting-assets",
-                      "_blank"
-                    )
-                  }
-                  style={{
-                    color: "var(--primary-color)",
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                  }}
-                >
-                  here.
-                </a>{" "}
-              </>
-            )
-          }
         />
       </Modal>
 

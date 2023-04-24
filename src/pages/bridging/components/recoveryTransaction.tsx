@@ -11,9 +11,15 @@ import {
   RecoveryTransaction,
 } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
-import { formatAddress, toastBridgeTx } from "../utils/utils";
+import {
+  formatAddress,
+  getBridgeExtraDetails,
+  toastBridgeTx,
+} from "../utils/utils";
 import acronIcon from "assets/acron.svg";
-import ConfirmTxModal from "global/components/modals/confirmTxModal";
+import ConfirmTxModal, {
+  TokenWithIcon,
+} from "global/components/modals/confirmTxModal";
 
 interface Props {
   transaction: RecoveryTransaction;
@@ -48,24 +54,14 @@ const RecoveryTransactionBox = ({
       >
         <ConfirmTxModal
           networkId={CantoMainnet.chainId}
-          title="Confirm Bridge Out"
-          titleIcon={
-            <div style={{ flexGrow: 2, display: "grid", placeItems: "center" }}>
-              <>
-                <img
-                  height={50}
-                  src={transaction.token.icon}
-                  alt={transaction.token.name}
-                />
-                <Text type="title" size="title3">
-                  {transaction.token.name}
-                </Text>
-              </>
-            </div>
-          }
+          title={txStats.txName}
+          titleIcon={TokenWithIcon({
+            icon: transaction.token.icon,
+            name: transaction.token.symbol,
+          })}
           confirmationValues={[
             { title: "from", value: formatAddress(cantoAddress, 6) },
-            { title: "to", value: selectedNetwork.name },
+            { title: "to", value: formatAddress(userInputAddress, 6) },
             {
               title: "amount",
               value:
@@ -100,32 +96,12 @@ const RecoveryTransactionBox = ({
               false;
             },
           }}
-          extraDetails={
-            <Text size="text4" align="left" style={{ color: "#474747" }}>
-              {`by completing bridge out, you are transferring your assets from your canto native address (${formatAddress(
-                cantoAddress,
-                6
-              )}) to your address on the ${selectedNetwork.name} network. `}
-              Read more about this{" "}
-              <a
-                role="button"
-                tabIndex={0}
-                onClick={() =>
-                  window.open(
-                    "https://docs.canto.io/user-guides/bridging-assets/from-canto",
-                    "_blank"
-                  )
-                }
-                style={{
-                  color: "var(--primary-color)",
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                }}
-              >
-                here.
-              </a>{" "}
-            </Text>
-          }
+          extraDetails={getBridgeExtraDetails(
+            false,
+            true,
+            formatAddress(cantoAddress, 6),
+            selectedNetwork.name
+          )}
           onClose={() => {
             setModalOpen(false);
           }}

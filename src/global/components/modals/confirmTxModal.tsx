@@ -99,6 +99,21 @@ const ConfirmationRow = ({ title, value }: ConfirmationRowProps) => {
     </div>
   );
 };
+//component for token icon with name (modal based off this, but any component can be used)
+interface TokenWithIconProps {
+  icon: string;
+  name: string;
+}
+export const TokenWithIcon = ({ icon, name }: TokenWithIconProps) => (
+  <div style={{ flexGrow: 2, display: "grid", placeItems: "center" }}>
+    <>
+      <img height={50} src={icon} alt={name} />
+      <Text type="title" size="title3">
+        {name}
+      </Text>
+    </>
+  </div>
+);
 export default ConfirmTxModal;
 
 const Styled = styled.div`
