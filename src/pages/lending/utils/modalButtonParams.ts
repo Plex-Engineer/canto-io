@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { InputState } from "../components/reactiveButton";
 
 export function showText(transactionType: CantoTransactionType) {

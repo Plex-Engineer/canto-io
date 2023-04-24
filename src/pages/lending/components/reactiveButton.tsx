@@ -16,7 +16,7 @@ import { parseUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/utils";
 import { PrimaryButton } from "global/packages/src";
 import { getReactiveButtonText } from "../utils/modalButtonParams";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 //ENUM
 enum InputState {
   ENABLE,

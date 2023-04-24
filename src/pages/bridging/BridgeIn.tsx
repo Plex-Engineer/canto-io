@@ -6,7 +6,7 @@ import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
 import { ADDRESSES } from "global/config/addresses";
 import QBoxList from "./components/QBoxList";
 import { NATIVE_COMSOS_TOKENS } from "./config/bridgingTokens";
-import { TokenGroups } from "global/config/tokenInfo";
+import { TokenGroups } from "global/config/interfaces/tokens";
 import { BigNumberish } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 

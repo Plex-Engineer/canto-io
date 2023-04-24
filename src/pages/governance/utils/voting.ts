@@ -1,7 +1,7 @@
 import { generateEndpointProposals } from "@tharsis/provider";
 import { createTxMsgVote } from "@tharsis/transactions";
 import { Chain, Fee } from "global/config/cosmosConstants";
-import { TransactionState } from "global/config/transactionTypes";
+import { TransactionState } from "global/config/interfaces/transactionTypes";
 import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/checkCosmosConfirmation";
 import {
   ethToCanto,

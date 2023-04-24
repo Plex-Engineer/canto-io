@@ -1,9 +1,9 @@
 import { BigNumber, ethers } from "ethers";
-import { Token } from "global/config/tokenInfo";
 import emptyToken from "assets/empty.svg";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import { ReactNode } from "react";
 import { IBCPathInfo } from "../utils/nativeBalances";
+import { Token } from "global/config/interfaces/tokens";
 
 /**
  * NETWORK INTERFACES

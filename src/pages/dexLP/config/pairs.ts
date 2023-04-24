@@ -1,5 +1,6 @@
 import { ADDRESSES } from "global/config/addresses";
-import { CTOKENS, Token, TOKENS } from "global/config/tokenInfo";
+import { Token } from "global/config/interfaces/tokens";
+import { CTOKENS, TOKENS } from "global/config/tokenInfo";
 
 export interface PAIR {
   address: string;

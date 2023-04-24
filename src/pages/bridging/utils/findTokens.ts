@@ -4,11 +4,12 @@ import {
   CONVERT_COIN_TOKENS,
   ETH_GRAVITY_BRIDGE_IN_TOKENS,
 } from "../config/bridgingTokens";
-import { Token, TOKENS } from "global/config/tokenInfo";
+import { TOKENS } from "global/config/tokenInfo";
 import {
   ALL_BRIDGE_OUT_NETWORKS,
   EMPTY_IBC_NETWORK,
 } from "../config/bridgeOutNetworks";
+import { Token } from "global/config/interfaces/tokens";
 
 export function findNativeToken(nativeName: string): NativeToken | undefined {
   return CONVERT_COIN_TOKENS.find(

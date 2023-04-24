@@ -28,8 +28,8 @@ import Modal from "global/packages/src/components/molecules/Modal";
 import ConfirmationModal from "./modals/confirmationModal";
 import { CantoMainnet, ETHMainnet } from "global/config/networks";
 import { TokenWallet } from "./tokenSelect";
-// import IBCGuideModal from "./modals/ibcGuideModal";
-import { TokenGroups } from "global/config/tokenInfo";
+import IBCGuideModal from "./modals/ibcGuideModal";
+import { TokenGroups } from "global/config/interfaces/tokens";
 
 interface Step1TxBoxProps {
   fromAddress?: string;
@@ -65,11 +65,11 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         open={isIBCModalOpen}
         onClose={() => setisIBCModalOpen(false)}
       >
-        {/* <IBCGuideModal
+        <IBCGuideModal
           token={selectedIBCToken}
           cantoAddress={props.toAddress ?? ""}
           onClose={() => setisIBCModalOpen(false)}
-        /> */}
+        />
         <div>ref</div>
       </Modal>
       <Modal

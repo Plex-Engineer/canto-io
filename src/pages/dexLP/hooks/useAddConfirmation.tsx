@@ -1,7 +1,7 @@
 import { TransactionStatus } from "@usedapp/core";
 import { Contract } from "ethers";
 import { ERC20Abi } from "global/config/abi";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { useAlert } from "global/packages/src";
 import { getCurrentBlockTimestamp } from "global/utils/blockInfo";
 import { getProvider } from "global/utils/walletConnect/addCantoToWallet";

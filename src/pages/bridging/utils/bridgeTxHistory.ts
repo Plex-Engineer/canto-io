@@ -1,9 +1,8 @@
 import { BigNumber, Contract, ethers } from "ethers";
-import { _toEscapedUtf8String } from "ethers/lib/utils";
 import { gravityBridgeAbi } from "global/config/abi";
 import { ADDRESSES } from "global/config/addresses";
 import { CantoMainnet, ETHMainnet } from "global/config/networks";
-import { Token } from "global/config/tokenInfo";
+import { Token } from "global/config/interfaces/tokens";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 import {
   findBridgeInToken,

@@ -13,7 +13,7 @@ import { CInput } from "global/packages/src/components/atoms/Input";
 import { TransactionState } from "@usedapp/core";
 import { CantoMainnet } from "global/config/networks";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { truncateNumber } from "global/utils/utils";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 

@@ -1,5 +1,6 @@
-import { Token, TOKENS } from "global/config/tokenInfo";
+import { TOKENS } from "global/config/tokenInfo";
 import { BridgeOutNetworks, NativeToken } from "./interfaces";
+import { Token } from "global/config/interfaces/tokens";
 
 const ETH_GRAVITY_BRIDGE_IN_TOKENS: Token[] = [
   TOKENS.ETHMainnet.USDC,

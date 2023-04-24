@@ -4,7 +4,7 @@ import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
 import { UserLPPairInfo } from "../config/interfaces";
 import { PrimaryButton, Text } from "global/packages/src";
 import { DexModalContainer } from "../components/Styled";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import lockIcon from "assets/icons/lock.svg";
 import { BigNumber } from "ethers";
 import { TransactionState } from "@usedapp/core";

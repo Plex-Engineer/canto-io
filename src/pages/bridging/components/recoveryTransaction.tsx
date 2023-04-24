@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { formatUnits } from "ethers/lib/utils";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { CantoMainnet } from "global/providers";

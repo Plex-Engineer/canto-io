@@ -11,7 +11,7 @@ import { truncateNumber } from "global/utils/utils";
 import Popup from "reactjs-popup";
 import GovModal from "./components/govModal";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import GBar from "./components/gBar";
 import { useSingleProposalData } from "./hooks/useSingleProposalData";
 import { useState } from "react";

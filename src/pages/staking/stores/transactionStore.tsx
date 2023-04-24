@@ -1,4 +1,4 @@
-import { TransactionState } from "global/config/transactionTypes";
+import { TransactionState } from "global/config/interfaces/transactionTypes";
 import React from "react";
 import create from "zustand";
 import { StakingTransactionType } from "../config/interfaces";

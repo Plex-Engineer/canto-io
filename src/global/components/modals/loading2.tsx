@@ -10,7 +10,7 @@ import {
 import {
   CantoTransactionType,
   TransactionState,
-} from "global/config/transactionTypes";
+} from "global/config/interfaces/transactionTypes";
 import { ReactNode, useEffect, useState } from "react";
 import { Mixpanel } from "mixpanel";
 

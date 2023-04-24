@@ -29,7 +29,7 @@ import styled from "@emotion/styled";
 import CheckBox from "global/components/checkBox";
 import { ConfirmUndelegationModal } from "./confirmUndelegationModal";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 
 interface StakingModalProps {
   validator: MasterValidatorProps;
