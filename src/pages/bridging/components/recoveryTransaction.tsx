@@ -11,16 +11,13 @@ import {
   RecoveryTransaction,
 } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
-import {
-  formatAddress,
-  getBridgeExtraDetails,
-  toastBridgeTx,
-} from "../utils/utils";
+import { formatAddress, toastBridgeTx } from "../utils/utils";
 import acronIcon from "assets/acron.svg";
 import ConfirmTxModal, {
   TokenWithIcon,
 } from "global/components/modals/confirmTxModal";
 import rightArrow from "assets/next.svg";
+import { getBridgeExtraDetails } from "./bridgeDetails";
 
 interface Props {
   transaction: RecoveryTransaction;
