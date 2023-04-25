@@ -4,7 +4,7 @@ import { truncateNumber } from "global/utils/utils";
 import React from "react";
 import { StakingTransactionType } from "../config/interfaces";
 import { TransactionStatus } from "../stores/transactionStore";
-import { userTxMessages } from "global/config/transactionTypes";
+import { userTxMessages } from "global/config/interfaces/transactionTypes";
 import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/checkCosmosConfirmation";
 
 interface Error {

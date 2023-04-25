@@ -1,38 +1,41 @@
 import styled from "@emotion/styled";
 import { formatUnits } from "ethers/lib/utils";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { CantoMainnet } from "global/providers";
 import { getShortTxStatusFromState, truncateNumber } from "global/utils/utils";
 import { useEffect, useState } from "react";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
-import { BridgeOutNetworks, NativeTransaction } from "../config/interfaces";
+import { NativeTransaction } from "../config/interfaces";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import {
   convertSecondsToString,
   formatAddress,
+  getBridgeExtraDetails,
   toastBridgeTx,
 } from "../utils/utils";
-import ConfirmationModal from "./modals/confirmationModal";
+import ConfirmTxModal, {
+  TokenWithIcon,
+} from "global/components/modals/confirmTxModal";
 
 interface Props {
   transaction: NativeTransaction;
   txFactory: () => BridgeTransaction;
   cantoAddress: string;
   ethAddress: string;
+  recover: boolean;
 }
 const MiniTransaction = (props: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const txStats = props.txFactory();
   const isIBCTransfer = txStats.txType == CantoTransactionType.IBC_OUT;
   //just for ibc out
+  const tokenNetworks = props.transaction.token.supportedOutChannels ?? [0];
+  const [selectedNetwork, setSelectedNetwork] = useState<
+    keyof typeof ALL_BRIDGE_OUT_NETWORKS
+  >(tokenNetworks ? tokenNetworks[0] : 0);
   const [userInputAddress, setUserInputAddress] = useState("");
-  const tokenNetworks: BridgeOutNetworks[] =
-    props.transaction.token.supportedOutChannels;
-  const [selectedNetwork, setSelectedNetwork] = useState(
-    ALL_BRIDGE_OUT_NETWORKS[tokenNetworks ? tokenNetworks[0] : 0]
-  );
 
   useEffect(() => {
     toastBridgeTx(txStats.state, txStats.txName);
@@ -47,88 +50,82 @@ const MiniTransaction = (props: Props) => {
           setModalOpen(false);
         }}
       >
-        <ConfirmationModal
-          amount={props.transaction.amount}
-          token={props.transaction.token}
-          tx={txStats}
-          from={{
-            chain: "canto bridge",
-            address: props.cantoAddress,
-            chainId: CantoMainnet.chainId,
+        <ConfirmTxModal
+          networkId={CantoMainnet.chainId}
+          title={txStats.txName}
+          titleIcon={TokenWithIcon({
+            icon: props.transaction.token.icon,
+            name: props.transaction.token.symbol,
+          })}
+          confirmationValues={[
+            { title: "from", value: formatAddress(props.cantoAddress, 6) },
+            {
+              title: "to",
+              value: isIBCTransfer
+                ? formatAddress(userInputAddress, 6)
+                : formatAddress(props.ethAddress, 6),
+            },
+            {
+              title: "amount",
+              value:
+                truncateNumber(
+                  formatUnits(
+                    props.transaction.amount,
+                    props.transaction.token.decimals
+                  )
+                ) +
+                " " +
+                props.transaction.token.symbol,
+            },
+          ]}
+          extraInputs={
+            isIBCTransfer
+              ? [
+                  {
+                    header: "address",
+                    placeholder:
+                      ALL_BRIDGE_OUT_NETWORKS[selectedNetwork]
+                        .addressBeginning + "1...",
+                    value: userInputAddress,
+                    setValue: setUserInputAddress,
+                  },
+                ]
+              : []
+          }
+          disableConfirm={
+            isIBCTransfer &&
+            !ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].checkAddress(
+              userInputAddress
+            )
+          }
+          onConfirm={() => {
+            isIBCTransfer
+              ? txStats.send(
+                  props.transaction.amount.toString(),
+                  userInputAddress,
+                  ALL_BRIDGE_OUT_NETWORKS[selectedNetwork]
+                )
+              : txStats.send(props.transaction.amount.toString());
           }}
-          to={{
-            chain: isIBCTransfer ? selectedNetwork.name : "canto",
-            address: isIBCTransfer ? userInputAddress : props.ethAddress,
+          loadingProps={{
+            transactionType: txStats.txType,
+            status: txStats.state,
+            tokenName: props.transaction.token.name,
+            onClose: () => {
+              setModalOpen(false);
+            },
           }}
+          extraDetails={getBridgeExtraDetails(
+            !isIBCTransfer,
+            true,
+            formatAddress(props.cantoAddress, 6),
+            !isIBCTransfer
+              ? formatAddress(props.ethAddress, 6)
+              : ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].name
+          )}
           onClose={() => {
             setModalOpen(false);
           }}
-          ibcData={
-            isIBCTransfer
-              ? {
-                  userInputAddress,
-                  setUserInputAddress,
-                  selectedNetwork,
-                  setSelectedNetwork,
-                }
-              : undefined
-          }
-          extraDetails={
-            isIBCTransfer ? (
-              <>
-                {`by completing bridge out, you are transferring your assets from your canto native address (${formatAddress(
-                  props.cantoAddress,
-                  6
-                )}) to your address on the ${selectedNetwork.name} network. `}
-                Read more about this{" "}
-                <a
-                  role="button"
-                  tabIndex={0}
-                  onClick={() =>
-                    window.open(
-                      "https://docs.canto.io/user-guides/bridging-assets/from-canto",
-                      "_blank"
-                    )
-                  }
-                  style={{
-                    color: "var(--primary-color)",
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                  }}
-                >
-                  here.
-                </a>{" "}
-              </>
-            ) : (
-              <>
-                {`by completing bridge in, you are transferring your assets from your canto native address (${formatAddress(
-                  props.cantoAddress,
-                  6
-                )}) to your canto EVM address (${formatAddress(
-                  props.ethAddress,
-                  6
-                )}). `}
-                Read more about this{" "}
-                <a
-                  role="button"
-                  tabIndex={0}
-                  onClick={() =>
-                    window.open(
-                      "https://docs.canto.io/user-guides/converting-assets",
-                      "_blank"
-                    )
-                  }
-                  style={{
-                    color: "var(--primary-color)",
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                  }}
-                >
-                  here.
-                </a>{" "}
-              </>
-            )
-          }
         />
       </Modal>
 
@@ -139,10 +136,12 @@ const MiniTransaction = (props: Props) => {
         }}
       >
         <Text size="text3" align="left">
-          {isIBCTransfer ? "destination" : "origin"}
+          {props.recover ? "denom" : isIBCTransfer ? "destination" : "origin"}
         </Text>
         <Text type="title" align="left">
-          {props.transaction.origin}
+          {props.recover
+            ? props.transaction.token.name.slice(0, 7) + "..."
+            : props.transaction.origin}
         </Text>
       </div>
 
@@ -157,9 +156,50 @@ const MiniTransaction = (props: Props) => {
               props.transaction.token.decimals
             )
           )}
-          {" " + props.transaction.token.symbol}
+          {props.recover ? "" : " " + props.transaction.token.symbol}
         </Text>
       </div>
+      {isIBCTransfer &&
+        props.transaction.token.supportedOutChannels.length > 1 && (
+          <ChooseNetwork>
+            <div className="network-list">
+              {props.transaction.token.supportedOutChannels.map(
+                (key, network) => (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    key={key}
+                    className="network-item"
+                    onClick={() => {
+                      setSelectedNetwork(network);
+                    }}
+                    style={{
+                      background: selectedNetwork === network ? "#F2F2F2" : "",
+                    }}
+                  >
+                    <span>
+                      <img
+                        src={
+                          ALL_BRIDGE_OUT_NETWORKS[
+                            network as keyof typeof ALL_BRIDGE_OUT_NETWORKS
+                          ].icon
+                        }
+                        alt=""
+                      />
+                      <p>
+                        {
+                          ALL_BRIDGE_OUT_NETWORKS[
+                            network as keyof typeof ALL_BRIDGE_OUT_NETWORKS
+                          ].name
+                        }
+                      </p>
+                    </span>
+                  </div>
+                )
+              )}
+            </div>
+          </ChooseNetwork>
+        )}
       {props.transaction.timeLeft != "0" && (
         <div className="dual-item">
           <Text size="text3" align="left">
@@ -212,6 +252,49 @@ const Styled = styled.div`
   }
   .dual-item:last-child {
     max-width: 6rem;
+  }
+`;
+const ChooseNetwork = styled.div`
+  .network-list {
+    scrollbar-color: var(--primary-color);
+    scroll-behavior: smooth;
+    /* width */
+    padding: 8px;
+    max-height: 100px;
+    overflow-y: scroll;
+    .network-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 400;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      height: 38px;
+      padding: 0 14px;
+      outline: none;
+      cursor: pointer;
+      img {
+        margin: 6px;
+        height: 18px;
+        width: 18px;
+      }
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+      }
+    }
+  }
+  p {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 21px;
+    letter-spacing: -0.03em;
+    color: var(--primary-color);
+  }
+  span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 `;
 

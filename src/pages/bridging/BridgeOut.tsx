@@ -5,7 +5,7 @@ import QBoxList from "./components/QBoxList";
 import Step1TxBox from "./components/step1TxBox";
 import Step2TxBox from "./components/step2TxBox";
 import { NativeTransaction, UserERC20BridgeToken } from "./config/interfaces";
-import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
+import { BridgingTransactionsSelector } from "./hooks/useBridgingTransactions";
 
 interface BridgeOutProps {
   ethAddress?: string;
@@ -14,10 +14,9 @@ interface BridgeOutProps {
   selectedBridgeOutToken: UserERC20BridgeToken;
   selectToken: (tokenAddress: string) => void;
   step2Transactions: NativeTransaction[];
+  txSelector: BridgingTransactionsSelector;
 }
 const BridgeOut = (props: BridgeOutProps) => {
-  const transactionHooks = useBridgingTransactions();
-
   return (
     <BridgeStyled>
       <div className="left">
@@ -92,7 +91,7 @@ const BridgeOut = (props: BridgeOutProps) => {
           selectedToken={props.selectedBridgeOutToken}
           selectToken={props.selectToken}
           txHook={() =>
-            transactionHooks.convertCoin.convertTx(
+            props.txSelector.convertCoin.convertTx(
               props.selectedBridgeOutToken.address,
               props.cantoAddress ?? "",
               false
@@ -102,7 +101,7 @@ const BridgeOut = (props: BridgeOutProps) => {
         <Step2TxBox
           bridgeIn={false}
           transactions={props.step2Transactions}
-          txHook={(tokenName) => transactionHooks.bridgeOut.ibcOut(tokenName)}
+          txHook={(tokenName) => props.txSelector.bridgeOut.ibcOut(tokenName)}
           cantoAddress={props.cantoAddress ?? ""}
           ethAddress={props.ethAddress ?? ""}
         />

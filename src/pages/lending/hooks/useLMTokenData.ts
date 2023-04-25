@@ -6,9 +6,10 @@ import { CantoTestnet, CantoMainnet } from "global/config/networks";
 import { cTokensBase, mainnetBasecTokens } from "../config/lendingMarketTokens";
 import { LMTokenDetails } from "../config/interfaces";
 import { cERC20Abi, comptrollerAbi, routerAbi } from "global/config/abi";
-import { CTOKEN, CTOKENS } from "global/config/tokenInfo";
+import { CTOKENS } from "global/config/tokenInfo";
 import { ADDRESSES } from "global/config/addresses";
 import { checkMultiCallForUndefined } from "global/utils/utils";
+import { CTOKEN } from "global/config/interfaces/tokens";
 
 const formatUnits = ethers.utils.formatUnits;
 const parseUnits = ethers.utils.parseUnits;

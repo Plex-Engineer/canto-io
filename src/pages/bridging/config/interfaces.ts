@@ -1,8 +1,9 @@
 import { BigNumber, ethers } from "ethers";
-import { Token } from "global/config/tokenInfo";
 import emptyToken from "assets/empty.svg";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import { ReactNode } from "react";
+import { IBCPathInfo } from "../utils/nativeBalances";
+import { Token } from "global/config/interfaces/tokens";
 
 /**
  * NETWORK INTERFACES
@@ -69,6 +70,14 @@ export interface NativeToken extends BaseToken {
 export interface UserNativeToken extends NativeToken {
   nativeBalance: BigNumber;
 }
+export interface BasicNativeBalance {
+  denom: string;
+  amount: string;
+}
+
+export interface IBCTokenTrace extends BasicNativeBalance {
+  ibcInfo: IBCPathInfo;
+}
 
 //Empty token data for initialization
 const EMPTY_TOKEN: Token = {
@@ -104,6 +113,16 @@ export interface NativeTransaction {
   token: UserNativeToken;
 }
 
+export interface RecoveryTransaction {
+  origin: string;
+  symbol: string;
+  amount: BigNumber;
+  onRecovery?: () => void;
+  channelPath: string[];
+  defaultNetwork: BridgeOutNetworkInfo;
+  token: UserNativeToken;
+}
+
 /**
  * MODAL INTERFACES
  */
@@ -121,11 +140,6 @@ export interface BridgeModal {
     address: string;
   };
   onClose: () => void;
-  ibcData?: {
-    userInputAddress: string;
-    setUserInputAddress: (s: string) => void;
-    selectedNetwork: BridgeOutNetworkInfo;
-    setSelectedNetwork: (n: BridgeOutNetworkInfo) => void;
-  };
+  ibcTo?: BridgeOutNetworkInfo;
   extraDetails?: ReactNode;
 }

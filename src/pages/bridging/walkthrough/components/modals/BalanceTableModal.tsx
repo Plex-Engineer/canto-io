@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import { StyledPopup } from "global/components/Styled";
 import { Text } from "global/packages/src";
 import Tooltip from "global/packages/src/components/molecules/Tooltip";
 import { useState } from "react";

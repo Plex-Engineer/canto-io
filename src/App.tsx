@@ -12,7 +12,6 @@ import Loading from "global/components/Loading";
 import PageNotFound from "global/components/pageNotFound";
 import ChangeLog from "pages/changelog/changeLog";
 import Walkthrough from "pages/bridging/walkthrough/Walkthrough";
-// import Bridging from "./pages/bridging/Bridging";
 
 //Styling
 const Container = styled.div`
@@ -30,8 +29,6 @@ const LendingMarket = lazy(() => import("./pages/lending/LendingMarket"));
 const Governance = lazy(() => import("./pages/governance/governance"));
 const Proposal = lazy(() => import("./pages/governance/proposal"));
 const HomePage = lazy(() => import("./pages/home/homepage"));
-
-// const HomePage = lazy(() => import("./pages/landing/Landing"));
 
 function App() {
   return (

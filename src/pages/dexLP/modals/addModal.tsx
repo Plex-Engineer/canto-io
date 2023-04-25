@@ -24,7 +24,7 @@ import {
 } from "../components/Styled";
 import { PrimaryButton, Text } from "global/packages/src";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { TransactionState } from "@usedapp/core";
 interface AddAllowanceProps {
   pair: UserLPPairInfo;

@@ -19,6 +19,21 @@ function addressCheck(address: string | undefined, addressBeginning: string) {
 }
 const blockEndpoint = "/cosmos/base/tendermint/v1beta1";
 
+export const EMPTY_IBC_NETWORK: BridgeOutNetworkInfo = {
+  name: "unknown",
+  chainId: "",
+  icon: "",
+  tokens: [],
+  nativeDenom: "unkown",
+  cantoChannel: "",
+  networkChannel: "",
+  restEndpoint: "",
+  rpcEndpoint: "",
+  addressBeginning: "unknown",
+  checkAddress: function (address) {
+    return addressCheck(address, this.addressBeginning);
+  },
+};
 export const CANTO_IBC_NETWORK: BridgeOutNetworkInfo = {
   name: "canto",
   chainId: "",

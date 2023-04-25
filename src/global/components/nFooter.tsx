@@ -18,6 +18,9 @@ const Footer = () => {
         <a href="https://canto.canny.io/" target="_blank" rel="noreferrer">
           <Text type="text">report bug</Text>
         </a>
+        <a href="https://canto.build/">
+          <Text type="text">canto commons</Text>
+        </a>
         <a href="/changelog">
           <Text type="text">changelog</Text>
         </a>

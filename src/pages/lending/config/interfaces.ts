@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { CTOKEN } from "global/config/tokenInfo";
+import { CTOKEN } from "global/config/interfaces/tokens";
 
 export interface LMTokenDetails {
   data: CTOKEN;

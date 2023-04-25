@@ -3,7 +3,7 @@ import {
   CantoTransactionType,
   TransactionActionObject,
   TransactionState,
-} from "global/config/transactionTypes";
+} from "global/config/interfaces/transactionTypes";
 import {
   getTransactionStatusString,
   transactionStatusActions,

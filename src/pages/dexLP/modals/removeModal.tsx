@@ -22,7 +22,7 @@ import {
 } from "../components/Styled";
 import { TransactionState } from "@usedapp/core";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 
 interface RowCellProps {
   type: string;

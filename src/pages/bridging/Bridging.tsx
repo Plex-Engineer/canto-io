@@ -24,14 +24,18 @@ import { parseUnits } from "ethers/lib/utils";
 import Tooltip from "global/packages/src/components/molecules/Tooltip";
 import { Text } from "global/packages/src";
 import guideImg from "assets/guide.svg";
+import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
+import RecoveryPage from "./Recovery";
 
 const Bridging = () => {
   const networkInfo = useNetworkInfo();
   const bridgingTokens = useBridgeTokenInfo();
   const bridgingHistory = useTransactionHistory();
+  const transactionHooks = useBridgingTransactions();
   const { activateBrowserWallet } = useEthers();
   const navigate = useNavigate();
   const [pubKeySuccess, setPubKeySuccess] = useState("None");
+  const hasRecoveryToken = bridgingTokens.unkownIBCTokens.length > 0;
   const ethBalance = useEtherBalance(networkInfo.account, { chainId: 1 });
   const canPubKey =
     (ethBalance?.gte(parseUnits("0.01")) ||
@@ -84,7 +88,12 @@ const Bridging = () => {
       </div>
 
       <CantoTabs
-        names={["bridge in", "bridge out", "tx history"]}
+        names={[
+          "bridge in",
+          "bridge out",
+          "tx history",
+          ...(hasRecoveryToken ? ["recovery"] : []),
+        ]}
         panels={
           !networkInfo.account
             ? NotConnectedTabs()
@@ -153,11 +162,19 @@ const Bridging = () => {
                     bridgingTokens.userNativeTokens,
                     false
                   )}
+                  txSelector={transactionHooks}
                 />,
                 <Transactions
                   key={"transaction"}
                   allTransactions={bridgingHistory}
                 />,
+                hasRecoveryToken && (
+                  <RecoveryPage
+                    tokens={bridgingTokens.unkownIBCTokens}
+                    cantoAddress={networkInfo.cantoAddress}
+                    txSelector={transactionHooks}
+                  />
+                ),
               ]
         }
       />
@@ -201,7 +218,7 @@ const Styled = styled.div`
     display: flex;
     gap: 2rem;
     width: 5rem;
-    height: 5rem;
+    height: 50rem;
   }
 
   @media (max-width: 1000px) {

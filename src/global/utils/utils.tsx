@@ -5,7 +5,7 @@ import {
   CantoTransactionType,
   TransactionActionObject,
   TransactionState,
-} from "global/config/transactionTypes";
+} from "global/config/interfaces/transactionTypes";
 
 export function classNames(...classes: unknown[]): string {
   return classes.filter(Boolean).join(" ");

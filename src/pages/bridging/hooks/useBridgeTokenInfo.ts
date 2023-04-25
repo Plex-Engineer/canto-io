@@ -8,6 +8,7 @@ import {
 } from "../config/bridgingTokens";
 import {
   EMPTY_ERC20_BRIDGE_TOKEN,
+  IBCTokenTrace,
   UserERC20BridgeToken,
   UserNativeToken,
 } from "../config/interfaces";
@@ -15,13 +16,17 @@ import {
   SelectedTokens,
   useBridgeTokenStore,
 } from "../stores/bridgeTokenStore";
-import { getNativeCantoBalances } from "../utils/nativeBalances";
+import {
+  getNativeCantoBalances,
+  getUnknownIBCTokens,
+} from "../utils/nativeBalances";
 import { useTokenBalances } from "./tokenBalances/useTokenBalances";
 
 interface BridgeTokenInfo {
   userBridgeInTokens: UserERC20BridgeToken[];
   userBridgeOutTokens: UserERC20BridgeToken[];
   userNativeTokens: UserNativeToken[];
+  unkownIBCTokens: IBCTokenTrace[];
   selectedTokens: {
     bridgeInToken: UserERC20BridgeToken;
     bridgeOutToken: UserERC20BridgeToken;
@@ -52,14 +57,17 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
   const [userNativeTokens, setUserNativeTokens] = useState<UserNativeToken[]>(
     []
   );
+
+  //these are used for "recover tokens" if unidentified tokens are found
+  const [allUnknownIBC, setAllUnknownIBC] = useState<IBCTokenTrace[]>([]);
   async function getAllNativeTokens() {
-    setUserNativeTokens(
-      await getNativeCantoBalances(
-        CantoMainnet.cosmosAPIEndpoint,
-        networkInfo.cantoAddress,
-        CONVERT_COIN_TOKENS
-      )
+    const { foundTokens, notFoundTokens } = await getNativeCantoBalances(
+      CantoMainnet.cosmosAPIEndpoint,
+      networkInfo.cantoAddress,
+      CONVERT_COIN_TOKENS
     );
+    setUserNativeTokens(foundTokens);
+    setAllUnknownIBC(await getUnknownIBCTokens(notFoundTokens));
   }
 
   //initialize data on sign in
@@ -79,6 +87,7 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
     userBridgeInTokens: userEthBridgeInTokens,
     userBridgeOutTokens: userCantoBridgeOutTokens,
     userNativeTokens: userNativeTokens,
+    unkownIBCTokens: allUnknownIBC,
     selectedTokens: {
       bridgeInToken:
         userEthBridgeInTokens.find(

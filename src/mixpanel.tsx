@@ -1,4 +1,4 @@
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import mixpanel, { Dict } from "mixpanel-browser";
 
 mixpanel.init("f58419bff863911fa30164121332f571");

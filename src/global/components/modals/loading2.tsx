@@ -10,11 +10,11 @@ import {
 import {
   CantoTransactionType,
   TransactionState,
-} from "global/config/transactionTypes";
+} from "global/config/interfaces/transactionTypes";
 import { ReactNode, useEffect, useState } from "react";
 import { Mixpanel } from "mixpanel";
 
-interface Props {
+export interface LoadingModalProps {
   transactionType: CantoTransactionType;
   status: TransactionState;
   tokenName?: string;
@@ -26,7 +26,7 @@ interface Props {
   mixPanelEventInfo?: object;
 }
 
-const LoadingModal = (props: Props) => {
+const LoadingModal = (props: LoadingModalProps) => {
   const [txLogged, setTxLogged] = useState(false);
   const [txConfirmed, setTxConfirmed] = useState(false);
   const actionObj = transactionStatusActions(

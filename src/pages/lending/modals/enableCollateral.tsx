@@ -16,7 +16,7 @@ import { enableCollateralButtonAndModalText } from "../utils/modalButtonParams";
 import { PrimaryButton } from "global/packages/src";
 import { EnableCollateralContainer } from "../components/Styled";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { formatUnits } from "ethers/lib/utils";
 
 const APY = styled.div`

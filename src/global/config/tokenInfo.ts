@@ -11,29 +11,7 @@ import ATOM from "assets/icons/ATOM.svg";
 import CANTO from "assets/icons/canto.png";
 import Note from "assets/icons/note.svg";
 import WSTETH from "assets/icons/wstETH.svg";
-
-export enum TokenGroups {
-  DEX_TOKENS = "DEX_TOKENS",
-  IBC_TOKENS = "IBC_TOKENS",
-  LP_TOKENS = "LP_TOKENS",
-}
-export interface Token {
-  symbol: string;
-  name: string;
-  decimals: number;
-  address: string;
-  isERC20: boolean;
-  isLP: boolean;
-  icon: string;
-  tokenGroups: TokenGroups[];
-}
-export interface CTOKEN {
-  symbol: string;
-  name: string;
-  decimals: number;
-  address: string;
-  underlying: Token;
-}
+import { Token, TokenGroups, CTOKEN } from "./interfaces/tokens";
 
 const icons = {
   Note,
