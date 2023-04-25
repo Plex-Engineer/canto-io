@@ -4,7 +4,7 @@ import LogSection from "./components/logSection";
 const ChangeLog = () => {
   return (
     <Styled>
-     <LogSection
+      <LogSection
         date="Apr 25th 2023"
         title="Fixes & Enhancements"
         content={`- Added a recovery page that lets users IBC transfer unsupported tokens back to their source chain.
