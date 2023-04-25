@@ -12,12 +12,12 @@ import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import {
   convertSecondsToString,
   formatAddress,
-  getBridgeExtraDetails,
   toastBridgeTx,
 } from "../utils/utils";
 import ConfirmTxModal, {
   TokenWithIcon,
 } from "global/components/modals/confirmTxModal";
+import { getBridgeExtraDetails } from "./bridgeDetails";
 
 interface Props {
   transaction: NativeTransaction;

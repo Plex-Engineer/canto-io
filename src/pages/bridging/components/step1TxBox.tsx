@@ -21,7 +21,6 @@ import {
   convertStringToBigNumber,
   copyAddress,
   formatAddress,
-  getBridgeExtraDetails,
   getStep1ButtonText,
   toastBridgeTx,
 } from "../utils/utils";
@@ -33,6 +32,7 @@ import { TokenGroups } from "global/config/interfaces/tokens";
 import ConfirmTxModal, {
   TokenWithIcon,
 } from "global/components/modals/confirmTxModal";
+import { getBridgeExtraDetails } from "./bridgeDetails";
 
 interface Step1TxBoxProps {
   fromAddress?: string;
