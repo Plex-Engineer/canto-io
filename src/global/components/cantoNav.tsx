@@ -1,7 +1,7 @@
 import { useEtherBalance, useEthers } from "@usedapp/core";
 import { useEffect, useState } from "react";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import logo from "./../../assets/doggy.svg";
+import logo from "assets/logo.svg";
 import { useLocation } from "react-router-dom";
 import { getBaseTokenName } from "global/utils/walletConnect/getTokenSymbol";
 import { useAlert, NavBar } from "../packages/src";

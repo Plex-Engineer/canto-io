@@ -104,7 +104,7 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
     }
   }
   useEffect(() => {
-    setKeplrAddressAndBalance();
+    if (canIBC) setKeplrAddressAndBalance();
   }, []);
 
   return (
@@ -135,6 +135,10 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
           {props.token.name}
         </Text>
       </div>
+      <Text size="text3" align="center" color="primaryDark">
+        To bridge {props.token.name} from the {network.name} network into Canto,
+        you will need to do an IBC transfer to Canto Mainnet.
+      </Text>
       <div className="values">
         <ConfirmationRow
           title="network"
@@ -176,26 +180,44 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
             }
           />
         )}
+        {canIBC && (
+          <>
+            {" "}
+            <ConfirmationRow
+              title="balance"
+              value={
+                <Text type="title">
+                  {userKeplrAddress.length > 10
+                    ? truncateNumber(
+                        formatUnits(balance, props.token.decimals),
+                        6
+                      )
+                    : "..."}
+                </Text>
+              }
+            />
+            <ConfirmationRow
+              title="from"
+              value={
+                <CopyToClipboard text={userKeplrAddress} onCopy={copyAddress}>
+                  <Text type="title" style={{ cursor: "pointer" }}>
+                    {formatAddress(userKeplrAddress, 6)}
+                    <img
+                      src={CopyIcon}
+                      style={{
+                        height: "18px",
+                        position: "relative",
+                        top: "5px",
+                        left: "4px",
+                      }}
+                    />
+                  </Text>
+                </CopyToClipboard>
+              }
+            />
+          </>
+        )}
 
-        <ConfirmationRow
-          title="from"
-          value={
-            <CopyToClipboard text={userKeplrAddress} onCopy={copyAddress}>
-              <Text type="title" style={{ cursor: "pointer" }}>
-                {formatAddress(userKeplrAddress, 6)}
-                <img
-                  src={CopyIcon}
-                  style={{
-                    height: "18px",
-                    position: "relative",
-                    top: "5px",
-                    left: "4px",
-                  }}
-                />
-              </Text>
-            </CopyToClipboard>
-          }
-        />
         <ConfirmationRow
           title="to"
           value={
@@ -216,10 +238,8 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
           }
         />
       </div>
-      <Text size="text3" align="left" color="primaryDark">
-        To bridge &quot;{props.token.name}&quot; from the &quot;{network.name}{" "}
-        network&quot; into &quot;canto network&quot;. You need to do an IBC
-        transfer, learn more about the{" "}
+      <Text size="text3" align="center" color="primaryDark">
+        To learn more about the ibc process, please read{" "}
         <a
           role="button"
           tabIndex={0}
@@ -234,9 +254,10 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
             textDecoration: "underline",
           }}
         >
-          IBC process
+          here
         </a>
       </Text>
+
       {canIBC && (
         <>
           {" "}
