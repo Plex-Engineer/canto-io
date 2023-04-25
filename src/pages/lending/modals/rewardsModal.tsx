@@ -8,7 +8,7 @@ import { PrimaryButton, Text } from "global/packages/src";
 import { RewardsContainer } from "../components/Styled";
 import { reservoirAdddress } from "../config/lendingMarketTokens";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import TokenSymbol from "global/packages/src/components/atoms/NoteSymbol";
 
 interface Props {

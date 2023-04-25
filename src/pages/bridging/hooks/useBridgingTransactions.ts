@@ -13,7 +13,7 @@ import { txIBCTransfer } from "../utils/IBC/IBCTransfer";
 import { ADDRESSES } from "global/config/addresses";
 import { BridgeOutNetworkInfo } from "../config/interfaces";
 import { CANTO_IBC_NETWORK } from "../config/bridgeOutNetworks";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 
 export interface BridgeTransaction {
   state: TransactionState;
@@ -22,7 +22,7 @@ export interface BridgeTransaction {
   txName: string;
   txType: CantoTransactionType;
 }
-interface BridgingTransactionsSelector {
+export interface BridgingTransactionsSelector {
   bridgeIn: {
     approveToken: (tokenAddress: string) => BridgeTransaction;
     sendToCosmos: (

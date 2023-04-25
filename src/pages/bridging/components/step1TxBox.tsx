@@ -25,11 +25,14 @@ import {
   toastBridgeTx,
 } from "../utils/utils";
 import Modal from "global/packages/src/components/molecules/Modal";
-import ConfirmationModal from "./modals/confirmationModal";
 import { CantoMainnet, ETHMainnet } from "global/config/networks";
 import { TokenWallet } from "./tokenSelect";
 import IBCGuideModal from "./modals/ibcGuideModal";
-import { TokenGroups } from "global/config/tokenInfo";
+import { TokenGroups } from "global/config/interfaces/tokens";
+import ConfirmTxModal, {
+  TokenWithIcon,
+} from "global/components/modals/confirmTxModal";
+import { getBridgeExtraDetails } from "./bridgeDetails";
 
 interface Step1TxBoxProps {
   fromAddress?: string;
@@ -79,42 +82,48 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           txProps.resetState();
         }}
       >
-        <ConfirmationModal
-          amount={convertStringToBigNumber(
-            amount,
-            props.selectedToken.decimals
+        <ConfirmTxModal
+          networkId={props.bridgeIn ? ETHMainnet.chainId : CantoMainnet.chainId}
+          title={txProps.txName}
+          titleIcon={TokenWithIcon({
+            icon: props.selectedToken.icon,
+            name: props.selectedToken.name,
+          })}
+          confirmationValues={[
+            { title: "from", value: formatAddress(props.fromAddress, 6) },
+            { title: "to", value: formatAddress(props.toAddress, 6) },
+            {
+              title: "amount",
+              value: truncateNumber(amount) + " " + props.selectedToken.symbol,
+            },
+          ]}
+          extraInputs={[]}
+          disableConfirm={false}
+          onConfirm={() => {
+            txProps.send(
+              convertStringToBigNumber(
+                amount,
+                props.selectedToken.decimals
+              ).toString()
+            );
+          }}
+          loadingProps={{
+            transactionType: txProps.txType,
+            status: txProps.state,
+            tokenName: props.selectedToken.name,
+            onClose: () => {
+              setModalOpen(false);
+            },
+          }}
+          extraDetails={getBridgeExtraDetails(
+            props.bridgeIn,
+            false,
+            formatAddress(props.fromAddress, 6),
+            formatAddress(props.toAddress, 6)
           )}
-          token={props.selectedToken}
-          tx={txProps}
-          from={{
-            chain: props.bridgeIn ? ETHMainnet.name : CantoMainnet.name,
-            address: props.fromAddress ?? "",
-            chainId: props.bridgeIn ? ETHMainnet.chainId : CantoMainnet.chainId,
-          }}
-          to={{
-            chain: "canto bridge",
-            address: props.toAddress ?? "",
-          }}
           onClose={() => {
             setModalOpen(false);
           }}
-          extraDetails={
-            props.bridgeIn
-              ? `by bridging in, you are transferring your assets from your ethereum EVM address (${formatAddress(
-                  props.fromAddress ?? "",
-                  6
-                )}) to your canto native address (${formatAddress(
-                  props.toAddress ?? "",
-                  6
-                )}) through gravity bridge. `
-              : `by bridging out, you are transferring your assets from your canto EVM address (${formatAddress(
-                  props.fromAddress ?? "",
-                  6
-                )}) to your canto native address (${formatAddress(
-                  props.toAddress ?? "",
-                  6
-                )}). `
-          }
         />
       </Modal>
       <Text type="title" size="title2">

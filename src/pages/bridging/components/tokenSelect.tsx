@@ -94,8 +94,7 @@ const StyledPopup = styled(Popup)`
     min-height: 42rem;
     max-height: 45rem;
     max-width: 30rem;
-    width : 100%
-
+    width: 100%;
     overflow-y: hidden;
     @keyframes fadein {
       0% {

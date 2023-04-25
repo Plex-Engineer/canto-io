@@ -13,7 +13,7 @@ import { CInput } from "global/packages/src/components/atoms/Input";
 import { TransactionState } from "@usedapp/core";
 import { CantoMainnet } from "global/config/networks";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { truncateNumber } from "global/utils/utils";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 
@@ -32,6 +32,7 @@ declare global {
 const IBCGuideModal = (props: IBCGuideModalProps) => {
   const [userKeplrAddress, setUserKeplrAddress] = useState("");
   const [balance, setBalance] = useState("0");
+  const [gasBalance, setGasBalance] = useState("0");
   const [keplrClient, setKeplrClient] = useState<SigningStargateClient>();
   const [amount, setAmount] = useState("");
   const [txStatus, setTxStatus] = useState<TransactionState>("None");
@@ -62,6 +63,11 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
         props.token.nativeName
       );
       setBalance(balance.amount);
+      const gasBalance = await client.getBalance(
+        accounts[0].address,
+        network.nativeDenom
+      );
+      setGasBalance(gasBalance.amount);
     }
   }
   async function createIBCMsg() {
@@ -142,7 +148,38 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
           title="channel"
           value={<Text type="title">{network.networkChannel} </Text>}
         />
-
+        <ConfirmationRow
+          title="balance"
+          value={
+            <Text type="title">
+              {userKeplrAddress.length > 10
+                ? truncateNumber(
+                    formatUnits(balance, props.token.decimals),
+                    6
+                  ) +
+                  " " +
+                  props.token.nativeName
+                : "..."}
+            </Text>
+          }
+        />
+        {network.nativeDenom !== props.token.nativeName && (
+          <ConfirmationRow
+            title="gas balance"
+            value={
+              <Text type="title">
+                {userKeplrAddress.length > 10
+                  ? truncateNumber(
+                      formatUnits(gasBalance, props.token.decimals),
+                      6
+                    ) +
+                    " " +
+                    network.nativeDenom
+                  : "..."}
+              </Text>
+            }
+          />
+        )}
         {canIBC && (
           <>
             {" "}

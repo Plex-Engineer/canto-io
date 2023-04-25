@@ -14,7 +14,7 @@ import { UserLPPairInfo } from "../config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
 import { DexModalContainer } from "../components/Styled";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { getCurrentBlockTimestamp } from "global/utils/blockInfo";
 import { checkForCantoInPair } from "../utils/pairCheck";
 

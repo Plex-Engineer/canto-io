@@ -13,7 +13,7 @@ import {
 } from "global/config/abi";
 import { ADDRESSES } from "global/config/addresses";
 import { TOKENS } from "global/config/tokenInfo";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 
 //Ex : DAI 50
 //On enter market : Collateralizing DAI : DAI is being collateralized: DAI has been collateralized

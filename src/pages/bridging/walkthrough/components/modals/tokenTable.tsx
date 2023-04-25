@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
-import close from "assets/icons/close.svg";
 interface Props {
   tokens: {
     name: string;

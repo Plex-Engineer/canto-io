@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { chain, memo, votingFee } from "global/config/cosmosConstants";
 import { CantoMainnet } from "global/config/networks";
-import { TransactionState } from "global/config/transactionTypes";
+import { TransactionState } from "global/config/interfaces/transactionTypes";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { nodeURL } from "global/utils/cantoTransactions/helpers";
 import { Mixpanel } from "mixpanel";

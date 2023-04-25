@@ -5,6 +5,12 @@ const ChangeLog = () => {
   return (
     <Styled>
       <LogSection
+        date="Apr 25th 2023"
+        title="Fixes & Enhancements"
+        content={`- Added a recovery page that lets users IBC transfer unsupported tokens back to their source chain.
+        - Added a link to the Canto Commons website on the footer. `}
+      />
+      <LogSection
         date="Apr 11th 2023"
         title="Fixes & Enhancements"
         content={`- Added bridging support for the 15 new cosmos tokens that recently passed governance.

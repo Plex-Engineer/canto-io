@@ -17,7 +17,7 @@ import {
   newBorrowAmount,
 } from "../utils/borrowRepayLimits";
 import React from "react";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { Text } from "global/packages/src";
 
 interface Props {

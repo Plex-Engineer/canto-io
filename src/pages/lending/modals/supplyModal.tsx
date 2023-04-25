@@ -15,7 +15,7 @@ import { BigNumber } from "ethers";
 import { userMaximumWithdrawal } from "pages/lending/utils/supplyWithdrawLimits";
 import { SupplyBorrowContainer, ModalWallet } from "../components/Styled";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/transactionTypes";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { Text } from "global/packages/src";
 interface IProps {
   position: UserLMPosition;
