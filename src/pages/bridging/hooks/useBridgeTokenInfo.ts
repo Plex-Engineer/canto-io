@@ -21,6 +21,7 @@ import {
   getUnknownIBCTokens,
 } from "../utils/nativeBalances";
 import { useTokenBalances } from "./tokenBalances/useTokenBalances";
+import { TOKENS } from "global/config/tokenInfo";
 
 interface BridgeTokenInfo {
   userBridgeInTokens: UserERC20BridgeToken[];
@@ -39,13 +40,18 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
   const tokenStore = useBridgeTokenStore();
 
   //bridge in erc20 tokens on ETH mainnet
-  const { tokens: userEthBridgeInTokens, fail: ethERC20Fail } =
-    useTokenBalances(
-      networkInfo.account,
-      ETH_GRAVITY_BRIDGE_IN_TOKENS,
-      ETHMainnet.chainId,
-      ADDRESSES.ETHMainnet.GravityBridge
-    );
+  const userEthBridgeInTokens = useTokenBalances(
+    networkInfo.account,
+    ETH_GRAVITY_BRIDGE_IN_TOKENS,
+    ETHMainnet.chainId,
+    ADDRESSES.ETHMainnet.GravityBridge
+  ).tokens.map((token) => ({
+    ...token,
+    erc20Balance:
+      token.address === TOKENS.ETHMainnet.WETH.address
+        ? token.erc20Balance.add(networkInfo.balance)
+        : token.erc20Balance,
+  }));
   //bridge out erc20 tokens on Canto Mainnet
   const { tokens: userCantoBridgeOutTokens, fail: cantoERC20Fail } =
     useTokenBalances(

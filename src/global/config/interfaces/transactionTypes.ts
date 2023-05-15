@@ -19,6 +19,8 @@ export enum CantoTransactionType {
   CONVERT_TO_NATIVE = "Convert to Native",
   BRIDGE = "Bridge",
   IBC_IN = "IBC in",
+  WRAP = "Wrap",
+  UNWRAP = "Unwrap",
 }
 
 //Do not change, same as useTransaction, but need for compatability with cosmos transactions

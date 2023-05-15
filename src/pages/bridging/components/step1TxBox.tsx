@@ -60,7 +60,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
   );
   useEffect(() => {
     toastBridgeTx(txProps.state, txProps.txName);
-  }, [txProps.state]);
+  }, [txProps?.state]);
   return (
     <Styled>
       <Modal

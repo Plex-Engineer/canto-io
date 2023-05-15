@@ -263,6 +263,12 @@ export const transactionStatusActions = (
         inAction: "converting token",
         postAction: "converted token",
       };
+    case CantoTransactionType.WRAP:
+      return {
+        action: "wrap ETH",
+        inAction: "wrapping ETH",
+        postAction: "wrapped ETH",
+      };
     default:
       return {
         action: "confirm",

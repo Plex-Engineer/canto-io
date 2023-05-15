@@ -168,13 +168,16 @@ const Bridging = () => {
                   key={"transaction"}
                   allTransactions={bridgingHistory}
                 />,
-                hasRecoveryToken && (
-                  <RecoveryPage
-                    tokens={bridgingTokens.unkownIBCTokens}
-                    cantoAddress={networkInfo.cantoAddress}
-                    txSelector={transactionHooks}
-                  />
-                ),
+                ...(hasRecoveryToken
+                  ? [
+                      <RecoveryPage
+                        key={"recovery"}
+                        tokens={bridgingTokens.unkownIBCTokens}
+                        cantoAddress={networkInfo.cantoAddress}
+                        txSelector={transactionHooks}
+                      />,
+                    ]
+                  : []),
               ]
         }
       />
