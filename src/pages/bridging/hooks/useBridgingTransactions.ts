@@ -2,8 +2,8 @@ import { TransactionState, useContractFunction } from "@usedapp/core";
 import { BigNumber, Contract, ethers, utils } from "ethers";
 import { ERC20Abi, gravityBridgeAbi, wethAbi } from "global/config/abi";
 import { chain, convertFee, ibcFee, memo } from "global/config/cosmosConstants";
-import { CantoMainnet } from "global/config/networks";
-import { useState } from "react";
+import { CantoMainnet, ETHMainnet } from "global/config/networks";
+import { useEffect, useState } from "react";
 import {
   txConvertCoin,
   txConvertERC20,
@@ -14,7 +14,6 @@ import { ADDRESSES } from "global/config/addresses";
 import { BridgeOutNetworkInfo } from "../config/interfaces";
 import { CANTO_IBC_NETWORK } from "../config/bridgeOutNetworks";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
-import { JsonRpcSigner } from "@ethersproject/providers";
 
 export interface BridgeTransaction {
   state: TransactionState;
@@ -32,7 +31,6 @@ export interface BridgingTransactionsSelector {
       cantoAddress: string
     ) => BridgeTransaction;
     sendToCosmosWithWrap: (
-      signer: JsonRpcSigner | undefined,
       account: string | undefined,
       gravityAddress: string,
       wethAddress: string,
@@ -99,52 +97,63 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
     };
   }
   function useSendToCosmosWithWrap(
-    signer: JsonRpcSigner | undefined,
     account: string | undefined,
     gravityAddress: string,
     wethAddress: string,
     cantoAddress: string
   ) {
-    const [wrapState, setWrapState] = useState<TransactionState>("None");
     const gBridgeInterface = new utils.Interface(gravityBridgeAbi);
-    const contract = new Contract(gravityAddress, gBridgeInterface);
+    const gBridgeContract = new Contract(gravityAddress, gBridgeInterface);
     const wethInterface = new utils.Interface(wethAbi);
-    const wethContract = new Contract(wethAddress, wethInterface, signer);
-    const { state, send, resetState } = useContractFunction(
-      contract,
-      "sendToCosmos",
-      {
-        transactionName: "sending to cosmos",
-      }
+    const wethContract = new Contract(
+      wethAddress,
+      wethInterface,
+      new ethers.providers.JsonRpcProvider(ETHMainnet.rpcUrl)
     );
+    const [amount, setAmount] = useState<string>("0");
+    const {
+      state: cosmosState,
+      send: cosmosSend,
+      resetState: comsosResetState,
+    } = useContractFunction(gBridgeContract, "sendToCosmos", {
+      transactionName: "sending to cosmos",
+    });
+    const {
+      state: wrapState,
+      send: wrapSend,
+      resetState: wrapResetState,
+    } = useContractFunction(wethContract, "deposit", {
+      transactionName: "wrapping weth",
+    });
+    useEffect(() => {
+      if (
+        wrapState.status === "Success" &&
+        CANTO_IBC_NETWORK.checkAddress(cantoAddress)
+      ) {
+        cosmosSend(wethAddress, cantoAddress, amount);
+      }
+    }, [wrapState.status]);
     return {
-      state: state.status === "None" ? wrapState : state.status,
+      state:
+        cosmosState.status === "None" ? wrapState.status : cosmosState.status,
       send: async (amount: string) => {
+        setAmount(amount);
         const wethBalance = await wethContract.balanceOf(account);
         if (wethBalance.lt(amount)) {
-          setWrapState("Mining");
-          try {
-            const depositTx = await wethContract.deposit({
-              value: BigNumber.from(amount).sub(wethBalance),
-            });
-            await depositTx.wait();
-            setWrapState("Success");
-          } catch {
-            setWrapState("Fail");
-            return;
+          wrapSend({ value: BigNumber.from(amount).sub(wethBalance) });
+        } else {
+          if (CANTO_IBC_NETWORK.checkAddress(cantoAddress)) {
+            cosmosSend(wethAddress, cantoAddress, amount);
           }
-        }
-        if (CANTO_IBC_NETWORK.checkAddress(cantoAddress)) {
-          send(wethAddress, cantoAddress, amount);
         }
       },
       resetState: () => {
-        resetState();
-        setWrapState("None");
+        comsosResetState();
+        wrapResetState();
       },
       txName: "bridge weth to canto",
       txType:
-        state.status === "None"
+        cosmosState.status === "None"
           ? CantoTransactionType.WRAP
           : CantoTransactionType.BRIDGE_IN,
     };

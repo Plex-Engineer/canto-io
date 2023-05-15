@@ -9,7 +9,6 @@ import { NATIVE_COMSOS_TOKENS } from "./config/bridgingTokens";
 import { TokenGroups } from "global/config/interfaces/tokens";
 import { BigNumberish } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
-import { useSigner } from "@usedapp/core";
 
 interface BridgeInProps {
   ethAddress?: string;
@@ -21,7 +20,6 @@ interface BridgeInProps {
 }
 const BridgeIn = (props: BridgeInProps) => {
   const transactionHooks = useBridgingTransactions();
-  const signer = useSigner();
   const selectedToken = props.selectedEthToken;
   const needAllowance =
     selectedToken.symbol !== "choose token" &&
@@ -36,7 +34,6 @@ const BridgeIn = (props: BridgeInProps) => {
     props.cantoAddress ?? "ibc"
   );
   const sendToCosmosWeth = transactionHooks.bridgeIn.sendToCosmosWithWrap(
-    signer,
     props.ethAddress,
     ADDRESSES.ETHMainnet.GravityBridge,
     selectedToken.address,
