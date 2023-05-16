@@ -4,6 +4,8 @@ import {
 } from "global/config/interfaces/transactionTypes";
 import { TransactionStore } from "./transactionStore";
 import { createTransactionMessges } from "global/utils/utils";
+import { BigNumber, Contract } from "ethers";
+import { MaxUint256 } from "@ethersproject/constants";
 
 export function createTransactionProps(
   txStore: TransactionStore,
@@ -24,4 +26,25 @@ export function createTransactionProps(
     currentMessage: "Awaiting Signature",
     messages: createTransactionMessges(txType, token?.symbol),
   };
+}
+export async function _enable(
+  txStore: TransactionStore,
+  contract: Contract,
+  txProps: TransactionProps,
+  spender: string,
+  allowance: BigNumber,
+  amount: BigNumber
+): Promise<boolean> {
+  if (allowance.gte(amount)) {
+    txStore.updateTx(txProps.txId, {
+      status: "Success",
+      currentMessage: txProps.messages.success,
+    });
+    return true;
+  } else {
+    return await txStore.performTx(
+      async () => await contract.approve(spender, MaxUint256),
+      txProps
+    );
+  }
 }

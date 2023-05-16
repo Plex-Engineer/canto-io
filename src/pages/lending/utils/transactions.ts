@@ -6,10 +6,12 @@ import {
   TransactionProps,
 } from "global/config/interfaces/transactionTypes";
 import { TransactionStore } from "global/stores/transactionStore";
-import { MaxUint256 } from "@ethersproject/constants";
 import { NetworkProps } from "global/stores/networkInfo";
 import { formatUnits } from "ethers/lib/utils";
-import { createTransactionProps } from "global/stores/transactionUtils";
+import {
+  createTransactionProps,
+  _enable,
+} from "global/stores/transactionUtils";
 import { ADDRESSES } from "global/config/addresses";
 import { CantoTestnet } from "global/providers";
 import { TOKENS } from "global/config/tokenInfo";
@@ -267,26 +269,4 @@ async function collateralizeTx(
         : await comptrollerContract.exitMarket(cTokenAddress),
     collateralizeTx
   );
-}
-
-async function _enable(
-  txStore: TransactionStore,
-  contract: Contract,
-  txProps: TransactionProps,
-  spender: string,
-  allowance: BigNumber,
-  amount: BigNumber
-): Promise<boolean> {
-  if (allowance.gte(amount)) {
-    txStore.updateTx(txProps.txId, {
-      status: "Success",
-      currentMessage: txProps.messages.success,
-    });
-    return true;
-  } else {
-    return await txStore.performTx(
-      async () => await contract.approve(spender, MaxUint256),
-      txProps
-    );
-  }
 }
