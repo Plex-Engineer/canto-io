@@ -6,23 +6,20 @@ import { valueInNote } from "pages/dexLP/utils/utils";
 import { PrimaryButton, Text } from "global/packages/src";
 import { RewardsContainer } from "../components/Styled";
 import TokenSymbol from "global/packages/src/components/atoms/NoteSymbol";
-import LoadingModalv3 from "global/components/modals/loadingv3";
 import { claimLendingRewardsTx } from "../utils/transactions";
 import { useTransactionStore } from "global/stores/transactionStore";
 import { useNetworkInfo } from "global/stores/networkInfo";
 
 interface Props {
   rewardsObj: UserLMRewards;
-  onClose: () => void;
 }
 const formatUnits = ethers.utils.formatUnits;
-const RewardsModal = ({ rewardsObj, onClose }: Props) => {
+const RewardsModal = ({ rewardsObj }: Props) => {
   const txStore = useTransactionStore();
   const networkStore = useNetworkInfo();
 
   return (
     <RewardsContainer>
-      <LoadingModalv3 onClose={onClose} />
       <div className="container">
         <div className="logo">
           <img src={logo} height={30} />

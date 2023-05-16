@@ -6,6 +6,7 @@ import RewardsModal from "./rewardsModal";
 import useModalStore, { ModalType } from "pages/lending/stores/useModals";
 import { UserLMPosition, UserLMRewards } from "pages/lending/config/interfaces";
 import Modal from "global/packages/src/components/molecules/Modal";
+import LoadingModalv3 from "global/components/modals/loadingv3";
 
 interface Props {
   isOpen: boolean;
@@ -17,37 +18,29 @@ const ModalManager = ({ isOpen, position, rewards }: Props) => {
   const modalStore = useModalStore();
   return (
     <Modal open={isOpen} onClose={modalStore.close}>
+      <LoadingModalv3 onClose={modalStore.close} />
       {modalStore.currentModal === ModalType.WALLET_CONNECTION && (
         <WalletModal onClose={modalStore.close} />
       )}
       {modalStore.currentModal === ModalType.LENDING && (
-        <SupplyModal onClose={modalStore.close} position={position} />
+        <SupplyModal position={position} />
       )}
 
       {modalStore.currentModal === ModalType.BORROW && (
-        <BorrowModal onClose={modalStore.close} position={position} />
+        <BorrowModal position={position} />
       )}
 
       {modalStore.currentModal === ModalType.COLLATERAL && (
-        <CollatModal
-          onClose={modalStore.close}
-          position={position}
-          decollateralize={false}
-        />
+        <CollatModal position={position} decollateralize={false} />
       )}
 
       {modalStore.currentModal === ModalType.DECOLLATERAL && (
-        <CollatModal
-          onClose={modalStore.close}
-          decollateralize={true}
-          position={position}
-        />
+        <CollatModal decollateralize={true} position={position} />
       )}
       {modalStore.currentModal === ModalType.BALANCE && (
         <RewardsModal
           // passin LMBalance to this
           rewardsObj={rewards}
-          onClose={modalStore.close}
         />
       )}
     </Modal>

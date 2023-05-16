@@ -16,15 +16,13 @@ import { PrimaryButton, Text } from "global/packages/src";
 import { lendingMarketTx } from "../utils/transactions";
 import { useTransactionStore } from "global/stores/transactionStore";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import LoadingModalv3 from "global/components/modals/loadingv3";
 import { convertStringToBigNumber } from "pages/bridging/utils/utils";
 import { getButtonText } from "../utils/modalButtonParams";
 interface IProps {
   position: UserLMPosition;
-  onClose: () => void;
 }
 
-const SupplyModal = ({ position, onClose }: IProps) => {
+const SupplyModal = ({ position }: IProps) => {
   const txStore = useTransactionStore();
   const networkInfo = useNetworkInfo();
 
@@ -194,7 +192,6 @@ const SupplyModal = ({ position, onClose }: IProps) => {
         e.preventDefault();
       }}
     >
-      <LoadingModalv3 onClose={onClose} />
       <div className="title">
         <img
           style={{

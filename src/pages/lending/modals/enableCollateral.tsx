@@ -9,7 +9,6 @@ import { willWithdrawalGoOverLimit } from "pages/lending/utils/supplyWithdrawLim
 import { enableCollateralButtonAndModalText } from "../utils/modalButtonParams";
 import { PrimaryButton } from "global/packages/src";
 import { EnableCollateralContainer } from "../components/Styled";
-import LoadingModalv3 from "global/components/modals/loadingv3";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { useTransactionStore } from "global/stores/transactionStore";
 import { lendingMarketTx } from "../utils/transactions";
@@ -33,7 +32,6 @@ const APY = styled.div`
 `;
 
 interface Props {
-  onClose: () => void;
   decollateralize: boolean;
   position: UserLMPosition;
 }
@@ -71,7 +69,6 @@ const CollatModal = (props: Props) => {
     );
   return (
     <EnableCollateralContainer>
-      <LoadingModalv3 onClose={props.onClose} />
       <img
         src={token.data.underlying.icon}
         height={50}

@@ -18,13 +18,11 @@ import { useNetworkInfo } from "global/stores/networkInfo";
 import { lendingMarketTx } from "../utils/transactions";
 import { convertStringToBigNumber } from "pages/bridging/utils/utils";
 import { getButtonText } from "../utils/modalButtonParams";
-import LoadingModalv3 from "global/components/modals/loadingv3";
 import { BigNumber } from "ethers";
 interface IProps {
-  onClose: () => void;
   position: UserLMPosition;
 }
-const BorrowModal = ({ position, onClose }: IProps) => {
+const BorrowModal = ({ position }: IProps) => {
   const txStore = useTransactionStore();
   const networkInfo = useNetworkInfo();
 
@@ -194,7 +192,6 @@ const BorrowModal = ({ position, onClose }: IProps) => {
 
   return (
     <SupplyBorrowContainer>
-      <LoadingModalv3 onClose={onClose} />
       <div className="title">
         <img
           style={{
