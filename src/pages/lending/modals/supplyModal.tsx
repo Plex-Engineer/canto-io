@@ -1,103 +1,42 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import LendingField from "../components/lendingField";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Details } from "../components/BorrowLimits";
-import { TransactionStatus } from "@usedapp/core";
-import { InputState, ReactiveButton } from "../components/reactiveButton";
 import { truncateNumber } from "global/utils/utils";
 import useModalStore from "pages/lending/stores/useModals";
 import {
+  LendingTransaction,
   UserLMPosition,
-  UserLMTokenDetails,
 } from "pages/lending/config/interfaces";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
-import { BigNumber } from "ethers";
 import { userMaximumWithdrawal } from "pages/lending/utils/supplyWithdrawLimits";
-import { SupplyBorrowContainer, ModalWallet } from "../components/Styled";
-import GlobalLoadingModal from "global/components/modals/loadingModal";
+import { SupplyBorrowContainer } from "../components/Styled";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
-import { Text } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
+import { lendingMarketTx } from "../utils/transactions";
+import { useTransactionStore } from "global/stores/transactionStore";
+import { useNetworkInfo } from "global/stores/networkInfo";
+import LoadingModalv3 from "global/components/modals/loadingv3";
+import { convertStringToBigNumber } from "pages/bridging/utils/utils";
+import { getButtonText } from "../utils/modalButtonParams";
 interface IProps {
   position: UserLMPosition;
   onClose: () => void;
 }
 
 const SupplyModal = ({ position, onClose }: IProps) => {
-  const modalStore = useModalStore();
-  const token: UserLMTokenDetails = modalStore.activeToken;
-  const [transaction, setTransaction] = useState<TransactionStatus>();
-  const [isWithdrawing, setIsWithdrawing] = useState(false);
-  const [isMax, setMax] = useState(false);
-  const [inputState, setInputState] = useState(
-    !token.allowance ? InputState.ENABLE : InputState.ENTERAMOUNT
-  );
+  const txStore = useTransactionStore();
+  const networkInfo = useNetworkInfo();
 
+  const token = useModalStore().activeToken;
   const [userAmount, setUserAmount] = useState("");
 
-  useEffect(() => {
-    resetInput();
-  }, [isWithdrawing]);
-
-  function resetInput() {
-    //if in supply tab and allowance is true or if withdraw is true
-    if (token.allowance.isZero() && !isWithdrawing) {
-      setInputState(InputState.ENABLE);
-    } else {
-      setInputState(InputState.ENTERAMOUNT);
-    }
-    setUserAmount("");
-  }
-
-  function inputValidation(value: string, max: BigNumber) {
-    value = truncateNumber(value, token.data.underlying.decimals);
-    if (inputState !== InputState.ENABLE) {
-      if (isNaN(Number(value))) {
-        setInputState(InputState.INVALID);
-      } else if (value.length < 1 || Number(value) <= 0) {
-        setInputState(InputState.ENTERAMOUNT);
-      } else if (parseUnits(value, token.data.underlying.decimals).gt(max)) {
-        setInputState(InputState.NOFUNDS);
-      } else if (
-        parseUnits(value, token.data.underlying.decimals).gt(token.allowance) &&
-        !isWithdrawing
-      ) {
-        //need more allowance
-        setInputState(InputState.INCREASE_ALLOWANCE);
-      } else {
-        setInputState(InputState.CONFIRM);
-      }
-    }
-  }
-
-  function WalletForSupply() {
-    return (
-      <ModalWallet>
-        <p>wallet balance</p>
-        <p>
-          {truncateNumber(
-            formatUnits(token.balanceOf, token.data.underlying.decimals)
-          )}{" "}
-          {token.data.underlying.symbol}
-        </p>
-      </ModalWallet>
-    );
-  }
-
-  function WalletForWithdraw() {
-    return (
-      <ModalWallet>
-        <p>currently supplying</p>
-        <p>
-          {truncateNumber(
-            formatUnits(token.supplyBalance, token.data.underlying.decimals)
-          )}{" "}
-          {token.data.underlying.symbol}
-        </p>
-      </ModalWallet>
-    );
-  }
-
   const SupplyTab = () => {
+    const [buttonText, disabled] = getButtonText(
+      convertStringToBigNumber(userAmount, token.data.underlying.decimals),
+      token.balanceOf,
+      CantoTransactionType.SUPPLY
+    );
     return (
       <TabPanel>
         <div
@@ -110,26 +49,19 @@ const SupplyModal = ({ position, onClose }: IProps) => {
         <LendingField
           token={token}
           value={userAmount}
-          transactionType={CantoTransactionType.SUPPLY}
           canDoMax={true}
           onMax={() => {
-            if (inputState != InputState.ENABLE) {
-              setUserAmount(
-                formatUnits(token.balanceOf, token.data.underlying.decimals)
-              );
-              setMax(true);
-              setInputState(InputState.CONFIRM);
-            }
-            //have to call this to check allowance
-            inputValidation(
-              formatUnits(token.balanceOf, token.data.underlying.decimals),
-              token.balanceOf
+            setUserAmount(
+              formatUnits(
+                token.data.underlying.symbol === "CANTO"
+                  ? token.balanceOf.sub(parseUnits("1", 17))
+                  : token.balanceOf,
+                token.data.underlying.decimals
+              )
             );
           }}
           onChange={(value) => {
             setUserAmount(value);
-            inputValidation(value, token.balanceOf);
-            setMax(false);
           }}
           balance={truncateNumber(
             formatUnits(token.balanceOf, token.data.underlying.decimals)
@@ -148,25 +80,32 @@ const SupplyModal = ({ position, onClose }: IProps) => {
           borrowLimit={position.totalBorrowLimit}
           borrowBalance={position.totalBorrow}
         />
-
-        <ReactiveButton
-          onTransaction={(e) => {
-            setTransaction(e);
+        <div
+          style={{
+            marginTop: "16px",
           }}
-          transactionType={
-            inputState == InputState.ENABLE ||
-            inputState == InputState.INCREASE_ALLOWANCE
-              ? CantoTransactionType.ENABLE
-              : CantoTransactionType.SUPPLY
-          }
-          state={inputState}
-          max={isMax}
-          token={token}
-          isEth={token.data.symbol == "cCANTO"}
-          amount={userAmount}
-        />
-
-        {/* {WalletForSupply()} */}
+        >
+          <PrimaryButton
+            height="big"
+            filled
+            weight="bold"
+            disabled={disabled}
+            onClick={() => {
+              lendingMarketTx(
+                networkInfo,
+                txStore,
+                LendingTransaction.SUPPLY,
+                token,
+                convertStringToBigNumber(
+                  userAmount,
+                  token.data.underlying.decimals
+                )
+              );
+            }}
+          >
+            {buttonText}
+          </PrimaryButton>
+        </div>
       </TabPanel>
     );
   };
@@ -179,6 +118,11 @@ const SupplyModal = ({ position, onClose }: IProps) => {
       token.price,
       token.collateral
     );
+    const [buttonText, disabled] = getButtonText(
+      convertStringToBigNumber(userAmount, token.data.underlying.decimals),
+      totalLimit,
+      CantoTransactionType.BORROW
+    );
     return (
       <TabPanel>
         <div
@@ -190,28 +134,14 @@ const SupplyModal = ({ position, onClose }: IProps) => {
         <LendingField
           token={token}
           value={userAmount}
-          transactionType={CantoTransactionType.WITHDRAW}
           canDoMax={isMax}
           //Withdraw
-          onMax={() => {
-            if (inputState != InputState.ENABLE) {
-              setUserAmount(
-                formatUnits(limit80Percent, token.data.underlying.decimals)
-              );
-              setMax(isMax);
-              if (limit80Percent.isZero()) {
-                setInputState(InputState.ENTERAMOUNT);
-              } else {
-                setInputState(InputState.CONFIRM);
-              }
-            }
-            //don't need to call validation since no allowance needed
-          }}
-          onChange={(value) => {
-            setUserAmount(value);
-            inputValidation(value, totalLimit);
-            setMax(false);
-          }}
+          onMax={() =>
+            setUserAmount(
+              formatUnits(limit80Percent, token.data.underlying.decimals)
+            )
+          }
+          onChange={(value) => setUserAmount(value)}
           balance={truncateNumber(
             formatUnits(token.supplyBalance, token.data.underlying.decimals)
           )}
@@ -229,54 +159,42 @@ const SupplyModal = ({ position, onClose }: IProps) => {
           borrowBalance={position.totalBorrow}
           isBorrowing={false}
         />
-        <ReactiveButton
-          onTransaction={(e) => {
-            setTransaction(e);
+        <div
+          style={{
+            marginTop: "16px",
           }}
-          max={isMax}
-          state={inputState}
-          token={token}
-          isEth={token.data.symbol == "cCANTO"}
-          amount={userAmount}
-          transactionType={CantoTransactionType.WITHDRAW}
-        />
-
-        {/* {WalletForWithdraw()} */}
+        >
+          <PrimaryButton
+            height="big"
+            filled
+            weight="bold"
+            disabled={disabled}
+            onClick={() =>
+              lendingMarketTx(
+                networkInfo,
+                txStore,
+                LendingTransaction.WITHDRAW,
+                token,
+                convertStringToBigNumber(
+                  userAmount,
+                  token.data.underlying.decimals
+                )
+              )
+            }
+          >
+            {buttonText}
+          </PrimaryButton>
+        </div>
       </TabPanel>
     );
   };
-
   return (
     <SupplyBorrowContainer
       onScroll={(e) => {
         e.preventDefault();
       }}
     >
-      {transaction?.status != "None" && transaction?.status && (
-        <GlobalLoadingModal
-          transactionType={
-            inputState == InputState.ENABLE
-              ? CantoTransactionType.ENABLE
-              : inputState == InputState.INCREASE_ALLOWANCE
-              ? CantoTransactionType.INCREASE_ALLOWANCE
-              : isWithdrawing
-              ? CantoTransactionType.WITHDRAW
-              : CantoTransactionType.SUPPLY
-          }
-          status={transaction.status}
-          tokenName={token.data.underlying.symbol}
-          txHash={transaction.transaction?.hash}
-          onClose={onClose}
-          mixPanelEventInfo={{
-            tokenName: token.data.underlying.symbol,
-            amount: userAmount,
-            tokenPrice: formatUnits(
-              token.price,
-              36 - token.data.underlying.decimals
-            ),
-          }}
-        />
-      )}
+      <LoadingModalv3 onClose={onClose} />
       <div className="title">
         <img
           style={{
@@ -296,22 +214,10 @@ const SupplyModal = ({ position, onClose }: IProps) => {
         className={"tabs"}
       >
         <TabList className={"tablist"}>
-          <Tab
-            className={"tab"}
-            selectedClassName="tab-selected"
-            onClick={() => {
-              setIsWithdrawing(false);
-            }}
-          >
+          <Tab className={"tab"} selectedClassName="tab-selected">
             <Text type="title">Supply</Text>
           </Tab>
-          <Tab
-            className={"tab"}
-            selectedClassName="tab-selected"
-            onClick={() => {
-              setIsWithdrawing(true);
-            }}
-          >
+          <Tab className={"tab"} selectedClassName="tab-selected">
             <Text type="title">withdraw</Text>
           </Tab>
         </TabList>

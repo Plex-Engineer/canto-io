@@ -18,6 +18,7 @@ import FadeIn from "react-fade-in";
 import HelmetSEO from "global/components/seo";
 import { LMPositionBar } from "./components/LMPositionBar";
 import { useOngoingTransactions } from "global/utils/handleOnGoingTransactions";
+import { useTransactionStore } from "global/stores/transactionStore";
 const LendingMarket = () => {
   const networkInfo = useNetworkInfo();
   const { notifications } = useNotifications();
@@ -43,6 +44,9 @@ const LendingMarket = () => {
       window.removeEventListener("resize", handleWindowSizeChange);
     };
   }, []);
+
+  const txStore = useTransactionStore();
+  console.log(txStore.transactions);
 
   return (
     <>

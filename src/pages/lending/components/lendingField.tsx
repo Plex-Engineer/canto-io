@@ -58,7 +58,6 @@ const Max = styled.span`
 type Props = {
   balance: string;
   token: UserLMTokenDetails;
-  transactionType: CantoTransactionType;
   onChange: (value: string) => void;
   onMax: () => void;
   value: string;

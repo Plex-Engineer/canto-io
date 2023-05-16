@@ -110,3 +110,13 @@ export const EmptyUserRewards: UserLMRewards = {
   cantroller: "",
   comptrollerBalance: BigNumber.from(0),
 };
+
+export enum LendingTransaction {
+  SUPPLY = "Supply",
+  BORROW = "Borrow",
+  WITHDRAW = "Withdraw",
+  REPAY = "Repay",
+  CLAIM_REWARDS = "Claim Rewards",
+  COLLATERALIZE = "Collateralize",
+  DECOLLATERLIZE = "Decollateralize",
+}

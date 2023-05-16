@@ -1,16 +1,18 @@
 export enum CantoTransactionType {
   ENABLE = "Enable",
-  INCREASE_ALLOWANCE = "Increase Allowance",
-  SEND_TOKEN = "Send Token",
-  ADD_LIQUIDITY = "Add Liquidity",
-  REMOVE_LIQUIDITY = "Remove Liquidity",
-  CLAIM_REWARDS = "Claim Rewards",
   SUPPLY = "Supply",
   WITHDRAW = "Withdraw",
   BORROW = "Borrow",
   REPAY = "Repay",
   COLLATERALIZE = "Collateralize",
   DECOLLATERLIZE = "Decollateralize",
+  DRIP = "Drip",
+  CLAIM_REWARDS = "Claim Rewards",
+
+  INCREASE_ALLOWANCE = "Increase Allowance",
+  SEND_TOKEN = "Send Token",
+  ADD_LIQUIDITY = "Add Liquidity",
+  REMOVE_LIQUIDITY = "Remove Liquidity",
   STAKE = "Stake",
   VOTING = "Voting",
   BRIDGE_IN = "Bridge In",
@@ -43,3 +45,26 @@ export const userTxMessages = {
   waitVerify: "waiting for the transaction to be verified...",
   deniedTx: "user denied transaction",
 };
+
+interface TransactionMessages {
+  pending: string;
+  success: string;
+  error: string;
+}
+
+export interface TransactionProps {
+  txId: string;
+  details: {
+    type: CantoTransactionType;
+    token?: {
+      symbol: string;
+      icon: string;
+      amount: string;
+    };
+  };
+  status: TransactionState;
+  currentMessage: string;
+  messages: TransactionMessages;
+  hash?: string;
+  errorReason?: string;
+}

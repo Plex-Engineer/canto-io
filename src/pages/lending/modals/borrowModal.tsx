@@ -1,97 +1,35 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import { useEffect, useState } from "react";
-import { TransactionStatus } from "@usedapp/core";
-import { InputState, ReactiveButton } from "../components/reactiveButton";
+import { useState } from "react";
 import { truncateNumber } from "global/utils/utils";
 import LendingField from "../components/lendingField";
 import { Details } from "../components/BorrowLimits";
 import useModalStore from "pages/lending/stores/useModals";
 import {
+  LendingTransaction,
   UserLMPosition,
-  UserLMTokenDetails,
 } from "pages/lending/config/interfaces";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { formatUnits } from "ethers/lib/utils";
 import { maxBorrowInUnderlying } from "pages/lending/utils/borrowRepayLimits";
-import { BigNumber } from "ethers";
-import { SupplyBorrowContainer, ModalWallet } from "../components/Styled";
-import GlobalLoadingModal from "global/components/modals/loadingModal";
+import { SupplyBorrowContainer } from "../components/Styled";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
-import { Text } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
+import { useTransactionStore } from "global/stores/transactionStore";
+import { useNetworkInfo } from "global/stores/networkInfo";
+import { lendingMarketTx } from "../utils/transactions";
+import { convertStringToBigNumber } from "pages/bridging/utils/utils";
+import { getButtonText } from "../utils/modalButtonParams";
+import LoadingModalv3 from "global/components/modals/loadingv3";
+import { BigNumber } from "ethers";
 interface IProps {
   onClose: () => void;
   position: UserLMPosition;
 }
 const BorrowModal = ({ position, onClose }: IProps) => {
-  const modalStore = useModalStore();
-  const token: UserLMTokenDetails = modalStore.activeToken;
-  const [transaction, setTransaction] = useState<TransactionStatus>();
-  const [isRepaying, setIsRepaying] = useState(false);
-  const [isMax, setMax] = useState(false);
+  const txStore = useTransactionStore();
+  const networkInfo = useNetworkInfo();
 
-  const [inputState, setInputState] = useState(InputState.ENTERAMOUNT);
-
+  const token = useModalStore().activeToken;
   const [userAmount, setUserAmount] = useState("");
-
-  useEffect(() => {
-    resetInput();
-  }, [isRepaying]);
-  function resetInput() {
-    //if in repay tab and allowance is true or if borrowing is true
-    if (isRepaying && token.allowance.isZero()) {
-      setInputState(InputState.ENABLE);
-    } else {
-      setInputState(InputState.ENTERAMOUNT);
-    }
-    setUserAmount("");
-  }
-
-  function inputValidation(value: string, max: BigNumber) {
-    value = truncateNumber(value, token.data.underlying.decimals);
-    if (inputState !== InputState.ENABLE) {
-      if (isNaN(Number(value))) {
-        setInputState(InputState.INVALID);
-      } else if (value.length < 1 || Number(value) == 0) {
-        setInputState(InputState.ENTERAMOUNT);
-      } else if (parseUnits(value, token.data.underlying.decimals).gt(max)) {
-        setInputState(InputState.NOFUNDS);
-      } else if (
-        parseUnits(value, token.data.underlying.decimals).gt(token.allowance) &&
-        isRepaying
-      ) {
-        setInputState(InputState.INCREASE_ALLOWANCE);
-      } else {
-        setInputState(InputState.CONFIRM);
-      }
-    }
-  }
-
-  function WalletForBorrow() {
-    return (
-      <ModalWallet>
-        <p>currently borrowing</p>
-        <p>
-          {truncateNumber(
-            formatUnits(token.borrowBalance, token.data.underlying.decimals)
-          )}{" "}
-          {token.data.underlying.symbol}
-        </p>
-      </ModalWallet>
-    );
-  }
-
-  function WalletForRepay() {
-    return (
-      <ModalWallet>
-        <p>wallet balance</p>
-        <p>
-          {truncateNumber(
-            formatUnits(token.balanceOf, token.data.underlying.decimals)
-          )}{" "}
-          {token.data.underlying.symbol}
-        </p>
-      </ModalWallet>
-    );
-  }
 
   const BorrowTab = () => {
     const borrowLimit80 = maxBorrowInUnderlying(
@@ -106,6 +44,11 @@ const BorrowModal = ({ position, onClose }: IProps) => {
       100,
       token.price
     );
+    const [buttonText, disabled] = getButtonText(
+      convertStringToBigNumber(userAmount, token.data.underlying.decimals),
+      borrowLimit100,
+      CantoTransactionType.BORROW
+    );
     return (
       <TabPanel>
         <div
@@ -118,28 +61,17 @@ const BorrowModal = ({ position, onClose }: IProps) => {
         <LendingField
           token={token}
           value={userAmount}
-          transactionType={CantoTransactionType.BORROW}
           canDoMax={false}
           onMax={() => {
-            if (inputState != InputState.ENABLE) {
-              setMax(true);
-              if (borrowLimit80.lte(0)) {
-                setInputState(InputState.ENTERAMOUNT);
-                setUserAmount("0");
-              } else {
-                setUserAmount(
-                  formatUnits(borrowLimit80, token.data.underlying.decimals)
-                );
-                setInputState(InputState.CONFIRM);
-              }
+            if (borrowLimit80.lte(0)) {
+              setUserAmount("0");
+            } else {
+              setUserAmount(
+                formatUnits(borrowLimit80, token.data.underlying.decimals)
+              );
             }
-            //no allowance needed for borrow, so validation not needed
           }}
-          onChange={(value) => {
-            setUserAmount(value);
-            inputValidation(value, borrowLimit100);
-            setMax(false);
-          }}
+          onChange={(value) => setUserAmount(value)}
           balance={truncateNumber(
             formatUnits(token.borrowBalance, token.data.underlying.decimals)
           )}
@@ -157,20 +89,27 @@ const BorrowModal = ({ position, onClose }: IProps) => {
           borrowLimit={position.totalBorrowLimit}
           borrowBalance={position.totalBorrow}
         />
-
-        <ReactiveButton
-          transactionType={CantoTransactionType.BORROW}
-          state={inputState}
-          token={token}
-          amount={userAmount}
-          isEth={token.data.symbol == "cCANTO"}
-          max={isMax}
-          onTransaction={(e) => {
-            setTransaction(e);
-          }}
-        />
-
-        {/* {WalletForBorrow()} */}
+        <PrimaryButton
+          height="big"
+          filled
+          weight="bold"
+          disabled={disabled}
+          onClick={() =>
+            lendingMarketTx(
+              networkInfo,
+              txStore,
+              LendingTransaction.BORROW,
+              token,
+              convertStringToBigNumber(
+                userAmount,
+                token.data.underlying.decimals
+              )
+            )
+          }
+        >
+          {" "}
+          {buttonText}
+        </PrimaryButton>
       </TabPanel>
     );
   };
@@ -178,6 +117,12 @@ const BorrowModal = ({ position, onClose }: IProps) => {
     const repayLimit = token.balanceOf.lt(token.borrowBalance)
       ? token.balanceOf
       : token.borrowBalance;
+    const [buttonText, disabled] = getButtonText(
+      convertStringToBigNumber(userAmount, token.data.underlying.decimals),
+      repayLimit,
+      CantoTransactionType.REPAY
+    );
+    const [repayMax, setRepayMax] = useState(false);
     return (
       <TabPanel>
         <div
@@ -189,26 +134,17 @@ const BorrowModal = ({ position, onClose }: IProps) => {
         <LendingField
           token={token}
           value={userAmount}
-          transactionType={CantoTransactionType.REPAY}
           canDoMax={true}
           //repay
           onMax={() => {
-            if (inputState != InputState.ENABLE) {
-              setUserAmount(
-                formatUnits(repayLimit, token.data.underlying.decimals)
-              );
-              setMax(true);
-              setInputState(InputState.CONFIRM);
-            }
-            inputValidation(
-              formatUnits(repayLimit, token.data.underlying.decimals),
-              repayLimit
+            setUserAmount(
+              formatUnits(repayLimit, token.data.underlying.decimals)
             );
+            setRepayMax(true);
           }}
           onChange={(value) => {
             setUserAmount(value);
-            inputValidation(value, repayLimit);
-            setMax(false);
+            setRepayMax(false);
           }}
           balance={truncateNumber(
             formatUnits(token.borrowBalance, token.data.underlying.decimals)
@@ -227,56 +163,38 @@ const BorrowModal = ({ position, onClose }: IProps) => {
           borrowLimit={position.totalBorrowLimit}
           borrowBalance={position.totalBorrow}
         />
-        <ReactiveButton
-          onTransaction={(e) => {
-            setTransaction(e);
-          }}
-          max={isMax}
-          isEth={token.data.symbol == "cCANTO"}
-          state={inputState}
-          token={token}
-          amount={userAmount}
-          transactionType={
-            inputState == InputState.ENABLE ||
-            inputState == InputState.INCREASE_ALLOWANCE
-              ? CantoTransactionType.ENABLE
-              : CantoTransactionType.REPAY
+        <PrimaryButton
+          height="big"
+          filled
+          weight="bold"
+          disabled={disabled}
+          onClick={() =>
+            lendingMarketTx(
+              networkInfo,
+              txStore,
+              LendingTransaction.REPAY,
+              token,
+              repayMax && token.balanceOf.gt(token.borrowBalance.add(1000))
+                ? BigNumber.from(
+                    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                  )
+                : convertStringToBigNumber(
+                    userAmount,
+                    token.data.underlying.decimals
+                  )
+            )
           }
-        />
-
-        {/* {WalletForRepay()}   */}
+        >
+          {" "}
+          {buttonText}
+        </PrimaryButton>
       </TabPanel>
     );
   };
 
   return (
     <SupplyBorrowContainer>
-      {transaction?.status != "None" && transaction?.status && (
-        <GlobalLoadingModal
-          transactionType={
-            inputState == InputState.ENABLE
-              ? CantoTransactionType.ENABLE
-              : inputState == InputState.INCREASE_ALLOWANCE
-              ? CantoTransactionType.INCREASE_ALLOWANCE
-              : isRepaying
-              ? CantoTransactionType.REPAY
-              : CantoTransactionType.BORROW
-          }
-          status={transaction.status}
-          tokenName={token.data.underlying.symbol}
-          txHash={transaction.transaction?.hash}
-          onClose={onClose}
-          mixPanelEventInfo={{
-            tokenName: token.data.underlying.symbol,
-            amount: userAmount,
-            tokenPrice: formatUnits(
-              token.price,
-              36 - token.data.underlying.decimals
-            ),
-          }}
-        />
-      )}
-
+      <LoadingModalv3 onClose={onClose} />
       <div className="title">
         <img
           style={{
@@ -295,7 +213,6 @@ const BorrowModal = ({ position, onClose }: IProps) => {
           }}
         >
           {token.data.underlying.name}
-          {/* {transaction?.status ?? "test"} */}
         </p>
       </div>
       <Tabs
@@ -304,22 +221,10 @@ const BorrowModal = ({ position, onClose }: IProps) => {
         className={"tabs"}
       >
         <TabList className={"tablist"}>
-          <Tab
-            className={"tab"}
-            selectedClassName="tab-selected"
-            onClick={() => {
-              setIsRepaying(false);
-            }}
-          >
+          <Tab className={"tab"} selectedClassName="tab-selected">
             <Text type="title">borrow</Text>
           </Tab>
-          <Tab
-            className={"tab"}
-            selectedClassName="tab-selected"
-            onClick={() => {
-              setIsRepaying(true);
-            }}
-          >
+          <Tab className={"tab"} selectedClassName="tab-selected">
             <Text type="title">Repay</Text>
           </Tab>
         </TabList>

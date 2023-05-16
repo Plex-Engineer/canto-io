@@ -1,23 +1,19 @@
 import styled from "@emotion/styled";
-import {
-  Details,
-  useEnterMarkets,
-  useExitMarket,
-} from "../hooks/useTransaction";
 import { useState } from "react";
-
 import useModalStore from "pages/lending/stores/useModals";
 import {
+  LendingTransaction,
   UserLMPosition,
-  UserLMTokenDetails,
 } from "pages/lending/config/interfaces";
 import { willWithdrawalGoOverLimit } from "pages/lending/utils/supplyWithdrawLimits";
 import { enableCollateralButtonAndModalText } from "../utils/modalButtonParams";
 import { PrimaryButton } from "global/packages/src";
 import { EnableCollateralContainer } from "../components/Styled";
-import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
-import { formatUnits } from "ethers/lib/utils";
+import LoadingModalv3 from "global/components/modals/loadingv3";
+import { useNetworkInfo } from "global/stores/networkInfo";
+import { useTransactionStore } from "global/stores/transactionStore";
+import { lendingMarketTx } from "../utils/transactions";
+import { BigNumber } from "ethers";
 
 const APY = styled.div`
   display: flex;
@@ -43,22 +39,10 @@ interface Props {
 }
 
 const CollatModal = (props: Props) => {
-  const modalStore = useModalStore();
-  const token: UserLMTokenDetails = modalStore.activeToken;
+  const networkStore = useNetworkInfo();
+  const txStore = useTransactionStore();
+  const token = useModalStore().activeToken;
   const [userConfirmed, setUserConfirmed] = useState(false);
-
-  const details: Details = {
-    name: token.data.underlying.symbol ?? "",
-    address: token.data.address ?? "",
-    icon: token.data.underlying.icon ?? "",
-    amount: "0",
-    type: props.decollateralize
-      ? CantoTransactionType.DECOLLATERLIZE
-      : CantoTransactionType.COLLATERALIZE,
-  };
-
-  const { state: enterState, send: enterSend } = useEnterMarkets(details);
-  const { state: exitState, send: exitSend } = useExitMarket(details);
 
   const willGoOverLimit80PercentLimit = willWithdrawalGoOverLimit(
     props.position.totalBorrow,
@@ -87,32 +71,7 @@ const CollatModal = (props: Props) => {
     );
   return (
     <EnableCollateralContainer>
-      {(enterState.status != "None" || exitState.status != "None") && (
-        <GlobalLoadingModal
-          transactionType={
-            enterState.status == "None"
-              ? CantoTransactionType.DECOLLATERLIZE
-              : CantoTransactionType.COLLATERALIZE
-          }
-          status={
-            enterState.status == "None" ? exitState.status : enterState.status
-          }
-          tokenName={token.data.underlying.symbol}
-          txHash={
-            enterState.status == "None"
-              ? exitState.transaction?.hash
-              : enterState.transaction?.hash
-          }
-          onClose={props.onClose}
-          mixPanelEventInfo={{
-            tokenName: token.data.underlying.symbol,
-            tokenPrice: formatUnits(
-              token.price,
-              36 - token.data.underlying.decimals
-            ),
-          }}
-        />
-      )}
+      <LoadingModalv3 onClose={props.onClose} />
       <img
         src={token.data.underlying.icon}
         height={50}
@@ -139,11 +98,17 @@ const CollatModal = (props: Props) => {
         <div>
           <PrimaryButton
             disabled={disabled}
-            onClick={() => {
-              props.decollateralize
-                ? exitSend(token.data.address)
-                : enterSend([token.data.address]);
-            }}
+            onClick={() =>
+              lendingMarketTx(
+                networkStore,
+                txStore,
+                props.decollateralize
+                  ? LendingTransaction.DECOLLATERLIZE
+                  : LendingTransaction.COLLATERALIZE,
+                token,
+                BigNumber.from("0")
+              )
+            }
           >
             {buttonText}
           </PrimaryButton>

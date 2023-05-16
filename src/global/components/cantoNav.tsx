@@ -1,4 +1,4 @@
-import { useEtherBalance, useEthers } from "@usedapp/core";
+import { useEtherBalance, useEthers, useSigner } from "@usedapp/core";
 import { useEffect, useState } from "react";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import logo from "assets/logo.svg";
@@ -21,6 +21,7 @@ export const CantoNav = () => {
     chainId: CantoMainnet.chainId,
   });
   const ethBalance = useEtherBalance(networkInfo.account, { chainId: 1 });
+  const signer = useSigner();
 
   const canPubKey =
     (ethBalance?.gte(parseUnits("0.01")) ||
@@ -62,9 +63,10 @@ export const CantoNav = () => {
 
   useEffect(() => {
     networkInfo.setChainId(chainId?.toString());
-    if (account) {
+    if (account && signer) {
       networkInfo.setAccount(account);
       networkInfo.setBalance(balance ?? BigNumber.from(0));
+      networkInfo.setSigner(signer);
       //mixpanel id
       Mixpanel.people.registerWallet(account);
       Mixpanel.identify(account);
@@ -73,7 +75,7 @@ export const CantoNav = () => {
     if (account == null) {
       networkInfo.setAccount("");
     }
-  }, [account, chainId, balance, active]);
+  }, [account, chainId, balance, active, signer]);
 
   //@ts-ignore
   if (window.ethereum) {
