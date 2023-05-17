@@ -72,6 +72,20 @@ export const createTransactionMessges = (
         success: "successfully dripped",
         error: "unable to drip",
       };
+    case CantoTransactionType.ADD_LIQUIDITY:
+      return {
+        short: "add liquidity",
+        pending: `adding liquidity for ${token}...`,
+        success: `successfully added liquidity for ${token}`,
+        error: `unable to add liquidity for ${token}`,
+      };
+    case CantoTransactionType.REMOVE_LIQUIDITY:
+      return {
+        short: "remove liquidity",
+        pending: `removing liquidity for ${token}...`,
+        success: `successfully removed liquidity for ${token}`,
+        error: `unable to remove liquidity for ${token}`,
+      };
     case CantoTransactionType.VOTING:
       return {
         short: "vote",

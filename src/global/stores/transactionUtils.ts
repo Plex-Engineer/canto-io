@@ -12,8 +12,8 @@ export function createTransactionProps(
   txType: CantoTransactionType,
   token?: {
     symbol: string;
-    icon: string;
-    amount: string;
+    icon?: string;
+    amount?: string;
   }
 ): TransactionProps {
   const transactionMessages = createTransactionMessges(txType, token?.symbol);

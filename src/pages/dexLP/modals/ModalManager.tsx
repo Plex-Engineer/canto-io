@@ -4,10 +4,10 @@ import RemoveModal from "./removeModal";
 import AddRemoveModal from "./addRemove";
 import { RemoveLiquidityConfirmation } from "./removeConfirmation";
 import { AddLiquidityConfirmation } from "./addConfirmation";
-import EnableModal from "./enableModal";
 import { useEffect } from "react";
 import { Mixpanel } from "mixpanel";
 import Modal from "global/packages/src/components/molecules/Modal";
+import OngoingTxModal from "global/components/modals/ongoingTxModal";
 
 interface Props {
   onClose: () => void;
@@ -16,16 +16,13 @@ interface Props {
 }
 
 const ModalManager = (props: Props) => {
-  const [modalType, activePair, setModalType] = useModals((state) => [
+  const [modalType, activePair] = useModals((state) => [
     state.modalType,
     state.activePair,
-    state.setModalType,
   ]);
 
   function getTitle(modalType: ModalType): string | undefined {
     switch (modalType) {
-      case ModalType.ENABLE:
-        return "";
       case ModalType.ADD:
         return "Add Liquidity";
       case ModalType.REMOVE:
@@ -61,15 +58,7 @@ const ModalManager = (props: Props) => {
         props.onClose();
       }}
     >
-      {modalType === ModalType.ENABLE && (
-        <EnableModal
-          onClose={props.onClose}
-          activePair={activePair}
-          chainId={props.chainId}
-          account={props.account}
-          setModal={setModalType}
-        />
-      )}
+      <OngoingTxModal onClose={props.onClose} />
       {modalType === ModalType.ADD && (
         <AddModal
           onClose={props.onClose}

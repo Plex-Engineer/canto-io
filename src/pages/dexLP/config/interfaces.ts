@@ -81,3 +81,11 @@ export const EmptySelectedLPToken = {
   },
   ...EmptyUserLPPairInfo,
 };
+
+export enum LPTransaction {
+  ADD_LIQUIDITY = "Add Liquidity",
+  REMOVE_LIQUIDITY = "Remove Liquidity",
+  STAKE = "Stake",
+  ADD_LIQUIDITY_AND_STAKE = "Add Liquidity and Stake",
+  REMOVE_LIQUIDITY_AND_UNSTAKE = "Remove Liquidity and Unstake",
+}

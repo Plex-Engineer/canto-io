@@ -11,15 +11,15 @@ export enum CantoTransactionType {
   CLAIM_REWARDS = "Claim Rewards",
 
   //LP
+  ADD_LIQUIDITY = "Add Liquidity",
+  REMOVE_LIQUIDITY = "Remove Liquidity",
+  STAKE = "Stake",
 
   //GOVERNANCE
   VOTING = "Voting",
 
   INCREASE_ALLOWANCE = "Increase Allowance",
   SEND_TOKEN = "Send Token",
-  ADD_LIQUIDITY = "Add Liquidity",
-  REMOVE_LIQUIDITY = "Remove Liquidity",
-  STAKE = "Stake",
   BRIDGE_IN = "Bridge In",
   IBC_OUT = "IBC Out",
   CONVERT_TO_EVM = "Convert to EVM",
@@ -63,8 +63,8 @@ export interface TransactionProps {
     type: CantoTransactionType;
     token?: {
       symbol: string;
-      icon: string;
-      amount: string;
+      icon?: string;
+      amount?: string;
     };
   };
   status: TransactionState;

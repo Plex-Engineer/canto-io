@@ -10,7 +10,6 @@ export enum ModalType {
   REMOVE = "REMOVE",
   REMOVE_CONFIRM = "REMOVE_CONFIRM",
   ADD_OR_REMOVE = "ADD_OR_REMOVE",
-  ENABLE = "ENABLE",
 }
 
 interface ModalProps {
