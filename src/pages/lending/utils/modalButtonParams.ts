@@ -1,22 +1,7 @@
 import { BigNumber } from "ethers";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
+import { createTransactionMessges } from "global/utils/formatTxDetails";
 
-export function showText(transactionType: CantoTransactionType) {
-  switch (transactionType) {
-    case CantoTransactionType.SUPPLY:
-      return "supply";
-    case CantoTransactionType.BORROW:
-      return "borrow";
-    case CantoTransactionType.REPAY:
-      return "repay";
-    case CantoTransactionType.WITHDRAW:
-      return "withdraw";
-    case CantoTransactionType.ENABLE:
-      return "enable";
-    default:
-      return "enable";
-  }
-}
 export function getButtonText(
   BNValue: BigNumber,
   max: BigNumber,
@@ -27,7 +12,7 @@ export function getButtonText(
   } else if (BNValue.gt(max)) {
     return ["insufficient balance", true];
   }
-  return [showText(transactionType), false];
+  return [createTransactionMessges(transactionType).short, false];
 }
 
 //returns text for the button, modalText, if it is disabled, and if the user needs to authorize
