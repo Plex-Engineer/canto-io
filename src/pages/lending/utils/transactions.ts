@@ -1,21 +1,16 @@
-import { BigNumber, Contract } from "ethers";
+import { BigNumber } from "ethers";
 import { LendingTransaction, UserLMTokenDetails } from "../config/interfaces";
-import {
-  ERC20Abi,
-  cERC20Abi,
-  comptrollerAbi,
-  reservoirAbi,
-} from "global/config/abi";
+import { cERC20Abi, comptrollerAbi, reservoirAbi } from "global/config/abi";
 import {
   CantoTransactionType,
-  TransactionProps,
+  TransactionDetails,
 } from "global/config/interfaces/transactionTypes";
 import { TransactionStore } from "global/stores/transactionStore";
 import { NetworkProps } from "global/stores/networkInfo";
 import { formatUnits } from "ethers/lib/utils";
 import {
-  createTransactionProps,
-  _enable,
+  createTransactionDetails,
+  _performEnable,
 } from "global/stores/transactionUtils";
 import { ADDRESSES } from "global/config/addresses";
 import { CantoTestnet } from "global/providers";
@@ -46,8 +41,8 @@ export async function claimLendingRewardsTx(
     amount: formatUnits(amountToClaim, 18),
   };
   const [dripTx, claimTx] = [
-    createTransactionProps(txStore, CantoTransactionType.DRIP, tokenInfo),
-    createTransactionProps(
+    createTransactionDetails(txStore, CantoTransactionType.DRIP, tokenInfo),
+    createTransactionDetails(
       txStore,
       CantoTransactionType.CLAIM_REWARDS,
       tokenInfo
@@ -81,20 +76,12 @@ export async function claimLendingRewardsTx(
 }
 //This will create the correct contracts before calling _functions
 export async function lendingMarketTx(
-  accountStore: NetworkProps,
+  chainId: number,
   txStore: TransactionStore,
   txType: LendingTransaction,
   cToken: UserLMTokenDetails,
   amount: BigNumber
 ): Promise<boolean> {
-  const cTokenContract = accountStore.createContractWithSigner(
-    cToken.data.address,
-    cERC20Abi
-  );
-  const underlyingContract = accountStore.createContractWithSigner(
-    cToken.data.underlying.address,
-    ERC20Abi
-  );
   const tokenInfo = {
     symbol: cToken.data.underlying.symbol,
     icon: cToken.data.underlying.icon,
@@ -103,172 +90,162 @@ export async function lendingMarketTx(
   const isCanto = cToken.data.underlying.symbol === "CANTO";
   switch (txType) {
     case LendingTransaction.SUPPLY:
+      return await supplyTx(
+        txStore,
+        cToken.data.address,
+        cToken.data.underlying.address,
+        amount,
+        cToken.allowance,
+        isCanto,
+        tokenInfo
+      );
     case LendingTransaction.REPAY:
-      const isSupply = txType === LendingTransaction.SUPPLY;
-      const [enableProps, nextTxProps] = [
-        createTransactionProps(txStore, CantoTransactionType.ENABLE, tokenInfo),
-        createTransactionProps(
-          txStore,
-          isSupply ? CantoTransactionType.SUPPLY : CantoTransactionType.REPAY,
-          tokenInfo
-        ),
-      ];
-      isCanto
-        ? txStore.addTransactions([nextTxProps])
-        : txStore.addTransactions([enableProps, nextTxProps]);
-      return isSupply
-        ? await _supply(
-            txStore,
-            enableProps,
-            nextTxProps,
-            cTokenContract,
-            underlyingContract,
-            amount,
-            cToken.allowance,
-            isCanto
-          )
-        : await _repay(
-            txStore,
-            enableProps,
-            nextTxProps,
-            cTokenContract,
-            underlyingContract,
-            amount,
-            cToken.allowance,
-            isCanto
-          );
+      return await repayTx(
+        txStore,
+        cToken.data.address,
+        cToken.data.underlying.address,
+        amount,
+        cToken.allowance,
+        isCanto,
+        tokenInfo
+      );
+
     case LendingTransaction.BORROW:
+      return await borrowTx(txStore, cToken.data.address, amount, tokenInfo);
     case LendingTransaction.WITHDRAW:
-      const isBorrow = txType === LendingTransaction.BORROW;
-      const [txProps] = [
-        createTransactionProps(
-          txStore,
-          isBorrow
-            ? CantoTransactionType.BORROW
-            : CantoTransactionType.WITHDRAW,
-          tokenInfo
-        ),
-      ];
-      txStore.addTransactions([txProps]);
-      return isBorrow
-        ? await _borrow(txStore, txProps, cTokenContract, amount)
-        : await _withdraw(txStore, txProps, cTokenContract, amount);
+      return await withdrawTx(txStore, cToken.data.address, amount, tokenInfo);
     case LendingTransaction.COLLATERALIZE:
     case LendingTransaction.DECOLLATERLIZE:
-      const comptrollerContract = accountStore.createContractWithSigner(
-        Number(accountStore.chainId) == CantoTestnet.chainId
+      const comptrollerAddress =
+        chainId == CantoTestnet.chainId
           ? ADDRESSES.testnet.Comptroller
-          : ADDRESSES.cantoMainnet.Comptroller,
-        comptrollerAbi
-      );
+          : ADDRESSES.cantoMainnet.Comptroller;
       return await collateralizeTx(
         txStore,
-        tokenInfo,
-        comptrollerContract,
+        comptrollerAddress,
         cToken.data.address,
-        txType === LendingTransaction.COLLATERALIZE
+        txType === LendingTransaction.COLLATERALIZE,
+        tokenInfo
       );
     default:
       return false;
   }
 }
 
-//Must create TransactionProps before calling these functions
-//Must create the contracts first before calling these functions
-export async function _supply(
+//will include the flow needed for each lending market action
+//Will also call _perform helpers to do transactions in correct order
+async function supplyTx(
   txStore: TransactionStore,
-  enableProps: TransactionProps,
-  supplyProps: TransactionProps,
-  cTokenContract: Contract,
-  underlyingContract: Contract,
+  cTokenAddress: string,
+  underlyingAddress: string,
   amount: BigNumber,
   currentAllowance: BigNumber,
-  isCanto: boolean
+  isCanto: boolean,
+  tokenInfo?: TokenInfo
 ): Promise<boolean> {
+  const [enableDetails, supplyDetails] = [
+    createTransactionDetails(txStore, CantoTransactionType.ENABLE, tokenInfo),
+    createTransactionDetails(txStore, CantoTransactionType.SUPPLY, tokenInfo),
+  ];
+  isCanto
+    ? txStore.addTransactions([supplyDetails])
+    : txStore.addTransactions([enableDetails, supplyDetails]);
   const enableDone = isCanto
     ? true
-    : await _enable(
+    : await _performEnable(
         txStore,
-        underlyingContract,
-        enableProps,
-        cTokenContract.address,
+        underlyingAddress,
+        cTokenAddress,
         currentAllowance,
-        amount
+        amount,
+        enableDetails
       );
   if (!enableDone) {
     return false;
   }
-
-  return await txStore.performTx(
-    async () =>
-      isCanto
-        ? await cTokenContract["mint()"]({ value: amount })
-        : await cTokenContract["mint(uint256)"](amount),
-    supplyProps
+  return await _performSupply(
+    txStore,
+    cTokenAddress,
+    isCanto,
+    amount,
+    supplyDetails
   );
 }
-async function _borrow(
+async function borrowTx(
   txStore: TransactionStore,
-  borrowProps: TransactionProps,
-  cTokenContract: Contract,
-  amount: BigNumber
+  cTokenAddress: string,
+  amount: BigNumber,
+  tokenInfo?: TokenInfo
 ): Promise<boolean> {
-  return await txStore.performTx(
-    async () => await cTokenContract.borrow(amount),
-    borrowProps
-  );
+  const [borrowDetails] = [
+    createTransactionDetails(txStore, CantoTransactionType.BORROW, tokenInfo),
+  ];
+  txStore.addTransactions([borrowDetails]);
+  return await _performBorrow(txStore, cTokenAddress, amount, borrowDetails);
 }
-async function _repay(
+async function repayTx(
   txStore: TransactionStore,
-  enableProps: TransactionProps,
-  repayProps: TransactionProps,
-  cTokenContract: Contract,
-  underlyingContract: Contract,
+  cTokenAddress: string,
+  underlyingAddress: string,
   amount: BigNumber,
   currentAllowance: BigNumber,
-  isCanto: boolean
+  isCanto: boolean,
+  tokenInfo?: TokenInfo
 ): Promise<boolean> {
+  const [enableDetails, repayDetails] = [
+    createTransactionDetails(txStore, CantoTransactionType.ENABLE, tokenInfo),
+    createTransactionDetails(txStore, CantoTransactionType.SUPPLY, tokenInfo),
+  ];
+  isCanto
+    ? txStore.addTransactions([repayDetails])
+    : txStore.addTransactions([enableDetails, repayDetails]);
   const enableDone = isCanto
     ? true
-    : await _enable(
+    : await _performEnable(
         txStore,
-        underlyingContract,
-        enableProps,
-        cTokenContract.address,
+        underlyingAddress,
+        cTokenAddress,
         currentAllowance,
-        amount
+        amount,
+        enableDetails
       );
   if (!enableDone) {
     return false;
   }
-  return await txStore.performTx(
-    async () =>
-      isCanto
-        ? await cTokenContract["repayBorrow()"]({ value: amount })
-        : await cTokenContract["repayBorrow(uint256)"](amount),
-    repayProps
+  return await _performRepay(
+    txStore,
+    cTokenAddress,
+    isCanto,
+    amount,
+    repayDetails
   );
 }
-export async function _withdraw(
+async function withdrawTx(
   txStore: TransactionStore,
-  withdrawProps: TransactionProps,
-  cTokenContract: Contract,
-  amount: BigNumber
+  cTokenAddress: string,
+  amount: BigNumber,
+  tokenInfo?: TokenInfo
 ): Promise<boolean> {
-  return await txStore.performTx(
-    async () => await cTokenContract.repay(amount),
-    withdrawProps
+  const [withdrawDetails] = [
+    createTransactionDetails(txStore, CantoTransactionType.WITHDRAW, tokenInfo),
+  ];
+  txStore.addTransactions([withdrawDetails]);
+  return await _performWithdraw(
+    txStore,
+    cTokenAddress,
+    amount,
+    withdrawDetails
   );
 }
 async function collateralizeTx(
   txStore: TransactionStore,
-  tokenInfo: TokenInfo,
-  comptrollerContract: Contract,
+  comptrollerAddress: string,
   cTokenAddress: string,
-  collateralize: boolean
+  collateralize: boolean,
+  tokenInfo?: TokenInfo
 ): Promise<boolean> {
-  const [collateralizeTx]: TransactionProps[] = [
-    createTransactionProps(
+  const [collateralizeTx]: TransactionDetails[] = [
+    createTransactionDetails(
       txStore,
       collateralize
         ? CantoTransactionType.COLLATERALIZE
@@ -277,11 +254,92 @@ async function collateralizeTx(
     ),
   ];
   txStore.addTransactions([collateralizeTx]);
-  return await txStore.performTx(
-    async () =>
-      collateralize
-        ? await comptrollerContract.enterMarkets([cTokenAddress])
-        : await comptrollerContract.exitMarket(cTokenAddress),
+  return await _performCollateralize(
+    txStore,
+    comptrollerAddress,
+    cTokenAddress,
+    collateralize,
     collateralizeTx
   );
+}
+
+//Will create EVM Transactions
+//Expects transaction details to be created before calling this function
+async function _performSupply(
+  txStore: TransactionStore,
+  cTokenAddress: string,
+  isCanto: boolean,
+  amount: BigNumber,
+  supplyDetails?: TransactionDetails
+): Promise<boolean> {
+  return await txStore.performEVMTx({
+    details: supplyDetails,
+    address: cTokenAddress,
+    abi: cERC20Abi,
+    method: isCanto ? "mint()" : "mint(uint256)",
+    params: isCanto ? [] : [amount],
+    value: isCanto ? amount : "0",
+  });
+}
+async function _performBorrow(
+  txStore: TransactionStore,
+  cTokenAddress: string,
+  amount: BigNumber,
+  borrowDetails?: TransactionDetails
+): Promise<boolean> {
+  return await txStore.performEVMTx({
+    details: borrowDetails,
+    address: cTokenAddress,
+    abi: cERC20Abi,
+    method: "borrow",
+    params: [amount],
+    value: "0",
+  });
+}
+async function _performRepay(
+  txStore: TransactionStore,
+  cTokenAddress: string,
+  isCanto: boolean,
+  amount: BigNumber,
+  repayDetails?: TransactionDetails
+): Promise<boolean> {
+  return await txStore.performEVMTx({
+    details: repayDetails,
+    address: cTokenAddress,
+    abi: cERC20Abi,
+    method: isCanto ? "repayBorrow()" : "repayBorrow(uint256)",
+    params: isCanto ? [] : [amount],
+    value: isCanto ? amount : "0",
+  });
+}
+async function _performWithdraw(
+  txStore: TransactionStore,
+  cTokenAddress: string,
+  amount: BigNumber,
+  withdrawDetails?: TransactionDetails
+): Promise<boolean> {
+  return await txStore.performEVMTx({
+    details: withdrawDetails,
+    address: cTokenAddress,
+    abi: cERC20Abi,
+    method: "redeem",
+    params: [amount],
+    value: "0",
+  });
+}
+async function _performCollateralize(
+  txStore: TransactionStore,
+  comptrollerAddress: string,
+  cTokenAddress: string,
+  collateralize: boolean,
+  collateralizeDetails?: TransactionDetails
+): Promise<boolean> {
+  return await txStore.performEVMTx({
+    details: collateralizeDetails,
+    address: comptrollerAddress,
+    abi: comptrollerAbi,
+    method: collateralize ? "enterMarkets" : "exitMarket",
+    params: collateralize ? [[cTokenAddress]] : [cTokenAddress],
+    value: "0",
+  });
 }

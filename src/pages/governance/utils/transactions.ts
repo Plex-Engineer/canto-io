@@ -2,7 +2,7 @@ import { createTxMsgVote } from "@tharsis/transactions";
 import { Chain, Fee } from "global/config/cosmosConstants";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { TransactionStore } from "global/stores/transactionStore";
-import { createTransactionProps } from "global/stores/transactionUtils";
+import { createTransactionDetails } from "global/stores/transactionUtils";
 import {
   getSenderObj,
   signAndBroadcastTxMsg,
@@ -22,7 +22,7 @@ export async function voteTx(
   if (!account) {
     return false;
   }
-  const voteTransaction = createTransactionProps(
+  const voteTransaction = createTransactionDetails(
     txStore,
     CantoTransactionType.VOTING,
     {

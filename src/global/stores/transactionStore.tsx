@@ -1,23 +1,28 @@
-import { TransactionProps } from "global/config/interfaces/transactionTypes";
+import {
+  EVMTransaction,
+  TransactionDetails,
+} from "global/config/interfaces/transactionTypes";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
 import create from "zustand";
 import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/transactionChecks";
 import { CosmosTxResponse } from "global/config/cosmosConstants";
+import { useNetworkInfo } from "./networkInfo";
 
 export interface TransactionStore {
-  transactions: TransactionProps[];
+  transactions: TransactionDetails[];
   modalOpen: boolean;
   setModalOpen: (modalOpen: boolean) => void;
   generateTxId: () => string;
-  addTransactions: (transactions: TransactionProps[]) => void;
-  updateTx: (txId: string, params: Partial<TransactionProps>) => void;
+  addTransactions: (transactions: TransactionDetails[]) => void;
+  updateTx: (txId: string, params: Partial<TransactionDetails>) => void;
   performTx: (
     tx: () => Promise<TransactionResponse>,
-    txProps: TransactionProps
+    txProps: TransactionDetails
   ) => Promise<boolean>;
+  performEVMTx: (tx: EVMTransaction) => Promise<boolean>;
   performCosmosTx: (
     tx: () => Promise<CosmosTxResponse>,
-    txProps: TransactionProps
+    txProps: TransactionDetails
   ) => Promise<boolean>;
 }
 
@@ -77,6 +82,45 @@ export const useTransactionStore = create<TransactionStore>()((set, get) => ({
         currentMessage: txProps.messages.error,
         errorReason: (e as Error).message ? (e as Error).message : "",
       });
+      return false;
+    }
+  },
+  performEVMTx: async (tx) => {
+    try {
+      const contract = useNetworkInfo
+        .getState()
+        .createContractWithSigner(tx.address, tx.abi);
+      const transaction = await contract[tx.method](...tx.params);
+      if (tx.details) {
+        get().updateTx(tx.details.txId, {
+          status: "Mining",
+          currentMessage: tx.details.messages.pending,
+          hash: transaction.hash,
+        });
+        const receipt = await transaction.wait();
+        if (receipt.status === 1) {
+          get().updateTx(tx.details.txId, {
+            status: "Success",
+            currentMessage: tx.details.messages.success,
+          });
+          return true;
+        } else {
+          get().updateTx(tx.details.txId, {
+            status: "Fail",
+            currentMessage: tx.details.messages.error,
+          });
+          return false;
+        }
+      }
+      return true;
+    } catch (e) {
+      if (tx.details) {
+        get().updateTx(tx.details.txId, {
+          status: "Fail",
+          currentMessage: tx.details.messages.error,
+          errorReason: (e as Error).message ? (e as Error).message : "",
+        });
+      }
       return false;
     }
   },

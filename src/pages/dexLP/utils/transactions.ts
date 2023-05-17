@@ -4,11 +4,11 @@ import { NetworkProps } from "global/stores/networkInfo";
 import { BigNumber } from "ethers";
 import {
   _enable,
-  createTransactionProps,
+  createTransactionDetails,
 } from "global/stores/transactionUtils";
 import {
   CantoTransactionType,
-  TransactionProps,
+  TransactionDetails,
 } from "global/config/interfaces/transactionTypes";
 import { getPairName } from "./utils";
 import { ERC20Abi, cERC20Abi, routerAbi } from "global/config/abi";
@@ -83,24 +83,24 @@ async function addLiquidityTx(
   stake: boolean
 ): Promise<boolean> {
   const [enableT1Props, enableT2Props, addProps] = [
-    createTransactionProps(txStore, CantoTransactionType.ENABLE, {
+    createTransactionDetails(txStore, CantoTransactionType.ENABLE, {
       icon: pair.basePairInfo.token1.icon,
       symbol: pair.basePairInfo.token1.symbol,
     }),
-    createTransactionProps(txStore, CantoTransactionType.ENABLE, {
+    createTransactionDetails(txStore, CantoTransactionType.ENABLE, {
       icon: pair.basePairInfo.token2.icon,
       symbol: pair.basePairInfo.token2.symbol,
     }),
-    createTransactionProps(txStore, CantoTransactionType.ADD_LIQUIDITY, {
+    createTransactionDetails(txStore, CantoTransactionType.ADD_LIQUIDITY, {
       symbol: getPairName(pair.basePairInfo),
     }),
   ];
   const stakeTransactions = stake
     ? [
-        createTransactionProps(txStore, CantoTransactionType.ENABLE, {
+        createTransactionDetails(txStore, CantoTransactionType.ENABLE, {
           symbol: getPairName(pair.basePairInfo),
         }),
-        createTransactionProps(txStore, CantoTransactionType.SUPPLY, {
+        createTransactionDetails(txStore, CantoTransactionType.SUPPLY, {
           symbol: getPairName(pair.basePairInfo),
         }),
       ]
@@ -169,16 +169,16 @@ async function removeLiquidityTx(
   unStake: boolean
 ): Promise<boolean> {
   const [enableLPProps, removeProps] = [
-    createTransactionProps(txStore, CantoTransactionType.ENABLE, {
+    createTransactionDetails(txStore, CantoTransactionType.ENABLE, {
       symbol: getPairName(pair.basePairInfo),
     }),
-    createTransactionProps(txStore, CantoTransactionType.REMOVE_LIQUIDITY, {
+    createTransactionDetails(txStore, CantoTransactionType.REMOVE_LIQUIDITY, {
       symbol: getPairName(pair.basePairInfo),
     }),
   ];
   const unstakeProps = unStake
     ? [
-        createTransactionProps(txStore, CantoTransactionType.WITHDRAW, {
+        createTransactionDetails(txStore, CantoTransactionType.WITHDRAW, {
           symbol: getPairName(pair.basePairInfo),
         }),
       ]
@@ -216,9 +216,9 @@ async function removeLiquidityTx(
 async function _addLiquidity(
   txStore: TransactionStore,
   accountStore: NetworkProps,
-  enableT1Props: TransactionProps,
-  enableT2Props: TransactionProps,
-  addProps: TransactionProps,
+  enableT1Props: TransactionDetails,
+  enableT2Props: TransactionDetails,
+  addProps: TransactionDetails,
   pair: UserLPPairInfo,
   amount1: BigNumber,
   amount2: BigNumber,
@@ -299,8 +299,8 @@ async function _addLiquidity(
 async function _removeLiquidity(
   txStore: TransactionStore,
   accountStore: NetworkProps,
-  enableLPProps: TransactionProps,
-  removeProps: TransactionProps,
+  enableLPProps: TransactionDetails,
+  removeProps: TransactionDetails,
   pair: UserLPPairInfo,
   LPOut: BigNumber,
   amountMin1: BigNumber,

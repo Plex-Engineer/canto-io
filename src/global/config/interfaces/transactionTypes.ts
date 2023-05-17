@@ -1,3 +1,5 @@
+import { BigNumber, ContractInterface } from "ethers";
+
 export enum CantoTransactionType {
   ENABLE = "Enable",
   //LENDING
@@ -57,19 +59,26 @@ interface TransactionMessages {
   error: string;
 }
 
-export interface TransactionProps {
+export interface TransactionDetails {
   txId: string;
-  details: {
-    type: CantoTransactionType;
-    token?: {
-      symbol: string;
-      icon?: string;
-      amount?: string;
-    };
+  txType: CantoTransactionType;
+  extra?: {
+    icon?: string;
+    symbol?: string;
+    readableAmount?: string;
   };
   status: TransactionState;
   currentMessage: string;
   messages: TransactionMessages;
   hash?: string;
   errorReason?: string;
+}
+export interface EVMTransaction {
+  details?: TransactionDetails;
+  address: string;
+  abi: ContractInterface;
+  method: string;
+  params: unknown[];
+  //if sending canto
+  value: string | BigNumber;
 }
