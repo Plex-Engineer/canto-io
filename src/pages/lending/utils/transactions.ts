@@ -74,7 +74,7 @@ export async function claimLendingRewardsTx(
   if (!dripDone) {
     return false;
   }
-  return txStore.performTx(
+  return await txStore.performTx(
     async () => await comptrollerContract.claimComp(account),
     claimTx
   );

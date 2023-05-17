@@ -2,7 +2,6 @@ import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { chain, memo, votingFee } from "global/config/cosmosConstants";
 import { CantoMainnet } from "global/config/networks";
-import { TransactionState } from "global/config/interfaces/transactionTypes";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { nodeURL } from "global/utils/cantoTransactions/helpers";
 import { Mixpanel } from "mixpanel";
@@ -27,7 +26,9 @@ import {
   getTotalCantoStaked,
   PercentVotesType,
 } from "../utils/proposalUtils";
-import { getAccountVote, txVote, voteAndSetStatus } from "../utils/voting";
+import { getAccountVote } from "../utils/voting";
+import { useTransactionStore } from "global/stores/transactionStore";
+import { voteTx } from "../utils/transactions";
 
 interface SingleProposalReturnProps {
   loading: boolean;
@@ -48,18 +49,14 @@ interface SingleProposalReturnProps {
     showPercentVote: boolean;
     setShowPercentVote: (show: boolean) => void;
   };
-  votingFuncionality: {
-    voteStatus: TransactionState;
-    castingVote: VotingOption;
-    txVote: (vote: VotingOption) => void;
-    resetVote: () => void;
-  };
+  txVote: (vote: VotingOption) => void;
 }
 export function useSingleProposalData(): SingleProposalReturnProps {
   const [chainId, account] = useNetworkInfo((state) => [
     Number(state.chainId),
     state.account,
   ]);
+  const txStore = useTransactionStore();
 
   const [loading, setLoading] = useState(true);
 
@@ -109,7 +106,6 @@ export function useSingleProposalData(): SingleProposalReturnProps {
   }
   useEffect(() => {
     setLoading(true);
-
     getProposalData();
     setLoading(false);
   }, []);
@@ -119,31 +115,10 @@ export function useSingleProposalData(): SingleProposalReturnProps {
     }
   }, [id]);
 
-  const [castingVote, setCastingVote] = useState<VotingOption>(
-    VotingOption.NONE
-  );
-  const [voteStatus, setVoteStatus] = useState<TransactionState>("None");
   useEffect(() => {
     showAccountVote();
-  }, [proposal, voteStatus]);
+  }, [proposal]);
 
-  async function voteOnProposal(vote: VotingOption) {
-    if (!account) return;
-    setCastingVote(vote);
-    await voteAndSetStatus(
-      async () =>
-        await txVote(
-          account,
-          Number(proposal.proposal_id),
-          convertToVoteNumber(vote),
-          nodeURL(chainId),
-          votingFee,
-          chain,
-          memo
-        ),
-      setVoteStatus
-    );
-  }
   return {
     loading,
     proposalId: id,
@@ -166,14 +141,18 @@ export function useSingleProposalData(): SingleProposalReturnProps {
       showPercentVote,
       setShowPercentVote,
     },
-    votingFuncionality: {
-      voteStatus,
-      castingVote,
-      txVote: voteOnProposal,
-      resetVote: () => {
-        setCastingVote(VotingOption.NONE);
-        setVoteStatus("None");
-      },
+    txVote: async (vote) => {
+      await voteTx(
+        txStore,
+        account,
+        Number(proposal.proposal_id),
+        convertToVoteNumber(vote),
+        nodeURL(chainId),
+        votingFee,
+        chain,
+        memo
+      );
+      showAccountVote();
     },
   };
 }

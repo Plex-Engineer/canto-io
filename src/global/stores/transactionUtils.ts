@@ -16,6 +16,7 @@ export function createTransactionProps(
     amount: string;
   }
 ): TransactionProps {
+  const transactionMessages = createTransactionMessges(txType, token?.symbol);
   return {
     txId: txStore.generateTxId(),
     details: {
@@ -23,8 +24,8 @@ export function createTransactionProps(
       token: token,
     },
     status: "None",
-    currentMessage: "Awaiting Signature",
-    messages: createTransactionMessges(txType, token?.symbol),
+    currentMessage: `Awaiting Signature to ${transactionMessages.short}`,
+    messages: transactionMessages,
   };
 }
 export async function _enable(

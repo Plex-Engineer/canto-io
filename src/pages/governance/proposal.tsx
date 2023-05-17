@@ -10,12 +10,11 @@ import { formatEther, formatUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/formattingNumbers";
 import Popup from "reactjs-popup";
 import GovModal from "./components/govModal";
-import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import GBar from "./components/gBar";
 import { useSingleProposalData } from "./hooks/useSingleProposalData";
 import { useState } from "react";
 import cantoIcon from "assets/logo.svg";
+import OngoingTxModal from "global/components/modals/ongoingTxModal";
 const Proposal = () => {
   const {
     loading,
@@ -26,7 +25,7 @@ const Proposal = () => {
     voteData,
     userVoteData,
     customizeData,
-    votingFuncionality,
+    txVote,
   } = useSingleProposalData();
   const [votingOpen, setVotingOpen] = useState(false);
 
@@ -202,7 +201,7 @@ const Proposal = () => {
         />
         <div className="voting-wrapper">
           <PrimaryButton
-            disabled={voteEnded}
+            disabled={false}
             autoFocus={false}
             onClick={() => {
               setVotingOpen(true);
@@ -218,29 +217,13 @@ const Proposal = () => {
             lockScroll
             open={votingOpen}
             modal
-            onClose={() => votingFuncionality.resetVote()}
+            onClose={() => setVotingOpen(false)}
           >
             {
               <div>
-                {votingFuncionality.voteStatus != "None" && (
-                  <GlobalLoadingModal
-                    transactionType={CantoTransactionType.VOTING}
-                    status={votingFuncionality.voteStatus}
-                    tokenName={convertVoteNumberToString(
-                      votingFuncionality.castingVote
-                    )}
-                    onClose={() => votingFuncionality.resetVote()}
-                    mixPanelEventInfo={{
-                      proposalId: proposal.proposal_id,
-                      vote: convertVoteNumberToString(
-                        votingFuncionality.castingVote
-                      ),
-                    }}
-                    customMessage={"Your vote is being processed..."}
-                  />
-                )}
+                <OngoingTxModal onClose={() => setVotingOpen(false)} />
                 <GovModal
-                  onVote={votingFuncionality.txVote}
+                  onVote={txVote}
                   onClose={() => setVotingOpen(false)}
                   proposal={proposal}
                   currentVote={userVoteData.currentVote}
@@ -280,9 +263,6 @@ const Proposal = () => {
                   : truncateNumber(formatEther(userVoteData.votingPower)) +
                     " canto"
               }`}
-          {votingFuncionality.voteStatus == "Success" && (
-            <div style={{ color: "green" }}>thank you for your vote!</div>
-          )}
         </div>
       </div>
     </ProposalContainer>

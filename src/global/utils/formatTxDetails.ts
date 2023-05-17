@@ -72,6 +72,13 @@ export const createTransactionMessges = (
         success: "successfully dripped",
         error: "unable to drip",
       };
+    case CantoTransactionType.VOTING:
+      return {
+        short: "vote",
+        pending: `voting ${token}...}`,
+        success: `successfully voted ${token}`,
+        error: `unable to vote ${token}`,
+      };
     default:
       return {
         short: "confirm",

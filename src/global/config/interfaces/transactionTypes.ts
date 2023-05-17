@@ -12,12 +12,14 @@ export enum CantoTransactionType {
 
   //LP
 
+  //GOVERNANCE
+  VOTING = "Voting",
+
   INCREASE_ALLOWANCE = "Increase Allowance",
   SEND_TOKEN = "Send Token",
   ADD_LIQUIDITY = "Add Liquidity",
   REMOVE_LIQUIDITY = "Remove Liquidity",
   STAKE = "Stake",
-  VOTING = "Voting",
   BRIDGE_IN = "Bridge In",
   IBC_OUT = "IBC Out",
   CONVERT_TO_EVM = "Convert to EVM",

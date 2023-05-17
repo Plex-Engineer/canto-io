@@ -55,3 +55,8 @@ export interface CosmosMsg {
   };
   signDirect: object;
 }
+export interface CosmosTxResponse {
+  tx_response: {
+    txhash: string;
+  };
+}
