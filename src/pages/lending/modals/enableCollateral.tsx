@@ -97,7 +97,7 @@ const CollatModal = (props: Props) => {
             disabled={disabled}
             onClick={() =>
               lendingMarketTx(
-                networkStore,
+                Number(networkStore.chainId),
                 txStore,
                 props.decollateralize
                   ? LendingTransaction.DECOLLATERLIZE

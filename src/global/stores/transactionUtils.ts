@@ -3,7 +3,7 @@ import {
   TransactionDetails,
 } from "global/config/interfaces/transactionTypes";
 import { TransactionStore } from "./transactionStore";
-import { BigNumber, Contract } from "ethers";
+import { BigNumber } from "ethers";
 import { MaxUint256 } from "@ethersproject/constants";
 import { createTransactionMessges } from "global/utils/formatTxDetails";
 import { ERC20Abi } from "global/config/abi";
@@ -26,27 +26,6 @@ export function createTransactionDetails(
     currentMessage: `awaiting signature to ${transactionMessages.short}`,
     messages: transactionMessages,
   };
-}
-export async function _enable(
-  txStore: TransactionStore,
-  contract: Contract,
-  txProps: TransactionDetails,
-  spender: string,
-  allowance: BigNumber,
-  amount: BigNumber
-): Promise<boolean> {
-  if (allowance.gte(amount)) {
-    txStore.updateTx(txProps.txId, {
-      status: "Success",
-      currentMessage: txProps.messages.success,
-    });
-    return true;
-  } else {
-    return await txStore.performTx(
-      async () => await contract.approve(spender, MaxUint256),
-      txProps
-    );
-  }
 }
 export async function _performEnable(
   txStore: TransactionStore,

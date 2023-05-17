@@ -90,7 +90,7 @@ const SupplyModal = ({ position }: IProps) => {
             disabled={disabled}
             onClick={() => {
               lendingMarketTx(
-                networkInfo,
+                Number(networkInfo.chainId),
                 txStore,
                 LendingTransaction.SUPPLY,
                 token,
@@ -169,7 +169,7 @@ const SupplyModal = ({ position }: IProps) => {
             disabled={disabled}
             onClick={() =>
               lendingMarketTx(
-                networkInfo,
+                Number(networkInfo.chainId),
                 txStore,
                 LendingTransaction.WITHDRAW,
                 token,

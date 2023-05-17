@@ -94,7 +94,7 @@ const BorrowModal = ({ position }: IProps) => {
           disabled={disabled}
           onClick={() =>
             lendingMarketTx(
-              networkInfo,
+              Number(networkInfo.chainId),
               txStore,
               LendingTransaction.BORROW,
               token,
@@ -168,7 +168,7 @@ const BorrowModal = ({ position }: IProps) => {
           disabled={disabled}
           onClick={() =>
             lendingMarketTx(
-              networkInfo,
+              Number(networkInfo.chainId),
               txStore,
               LendingTransaction.REPAY,
               token,
