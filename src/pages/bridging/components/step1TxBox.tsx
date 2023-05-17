@@ -11,14 +11,16 @@ import {
   UserERC20BridgeToken,
 } from "../config/interfaces";
 import LoadingBlip from "./LoadingBlip";
-import { truncateNumber } from "global/utils/utils";
+import {
+  convertStringToBigNumber,
+  truncateNumber,
+} from "global/utils/formattingNumbers";
 import { formatUnits } from "ethers/lib/utils";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import { useEffect, useState } from "react";
 import {
-  convertStringToBigNumber,
   copyAddress,
   formatAddress,
   getStep1ButtonText,

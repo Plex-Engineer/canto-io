@@ -1,5 +1,6 @@
 export enum CantoTransactionType {
   ENABLE = "Enable",
+  //LENDING
   SUPPLY = "Supply",
   WITHDRAW = "Withdraw",
   BORROW = "Borrow",
@@ -8,6 +9,8 @@ export enum CantoTransactionType {
   DECOLLATERLIZE = "Decollateralize",
   DRIP = "Drip",
   CLAIM_REWARDS = "Claim Rewards",
+
+  //LP
 
   INCREASE_ALLOWANCE = "Increase Allowance",
   SEND_TOKEN = "Send Token",

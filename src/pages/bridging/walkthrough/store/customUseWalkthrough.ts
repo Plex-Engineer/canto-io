@@ -18,7 +18,7 @@ import {
   useBridgingTransactions,
 } from "pages/bridging/hooks/useBridgingTransactions";
 import { useTransactionHistory } from "pages/bridging/hooks/useTransactionHistory";
-import { convertStringToBigNumber } from "pages/bridging/utils/utils";
+import { convertStringToBigNumber } from "global/utils/formattingNumbers";
 import { useState } from "react";
 import {
   BridgeInWalkthroughSteps,

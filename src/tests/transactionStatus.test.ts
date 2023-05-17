@@ -7,7 +7,7 @@ import {
 import {
   getTransactionStatusString,
   transactionStatusActions,
-} from "global/utils/utils";
+} from "global/utils/formattingNumbers";
 
 interface LocalTestType {
   value: TransactionActionObject;

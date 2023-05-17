@@ -15,7 +15,7 @@ import {
   UserERC20BridgeToken,
   UserNativeToken,
 } from "pages/bridging/config/interfaces";
-import { convertStringToBigNumber } from "pages/bridging/utils/utils";
+import { convertStringToBigNumber } from "global/utils/formattingNumbers";
 import SelectBridgeOutNetwork from "../components/pages/selectBridgeOutNetwork";
 import { WalkthroughSelectedTokens } from "../store/customUseWalkthrough";
 

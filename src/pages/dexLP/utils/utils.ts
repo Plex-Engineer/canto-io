@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 
 //ratio that returns is scaled to 1e18 for accuracy
 export function getLPPairRatio(

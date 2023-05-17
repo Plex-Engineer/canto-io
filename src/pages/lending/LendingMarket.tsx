@@ -3,10 +3,9 @@ import { useEffect, useState } from "react";
 import LendingTable from "./components/table";
 import { TransactionRow } from "./components/lendingRow";
 import { ModalType, ModalManager } from "./modals/modalManager";
-import { Details } from "./hooks/useTransaction";
 import { Styled } from "./components/Styled";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import { transactionStatusActions, truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import useModalStore from "./stores/useModals";
 import { useLMTokenData } from "./hooks/useLMTokenData";
 import { LMTokenDetails } from "./config/interfaces";
@@ -19,6 +18,8 @@ import HelmetSEO from "global/components/seo";
 import { LMPositionBar } from "./components/LMPositionBar";
 import { useOngoingTransactions } from "global/utils/handleOnGoingTransactions";
 import { useTransactionStore } from "global/stores/transactionStore";
+import { getShortTxStatusFromState } from "global/utils/formatTxDetails";
+
 const LendingMarket = () => {
   const networkInfo = useNetworkInfo();
   const { notifications } = useNotifications();
@@ -45,8 +46,9 @@ const LendingMarket = () => {
     };
   }, []);
 
-  const txStore = useTransactionStore();
-  console.log(txStore.transactions);
+  const ongoingTransactions = useTransactionStore().transactions.filter(
+    (filterItem) => filterItem.status === "Mining"
+  );
 
   return (
     <>
@@ -118,65 +120,24 @@ const LendingMarket = () => {
               }}
             />
           </div>
-
-          {/* This table is used for showing transaction status */}
-          <div className="tables">
-            <div className="left">
-              {notifs.filter(
-                (filterItem) => filterItem.type == "transactionStarted"
-              ).length > 0 ? (
+          {ongoingTransactions.length > 0 && (
+            <div className="tables">
+              <div className="left">
                 <LendingTable columns={["ongoing transactions"]} isLending>
-                  {notifs.map((item) => {
-                    if (
-                      //@ts-ignore
-                      item?.transactionName?.includes("type") &&
-                      item.type == "transactionStarted"
-                    ) {
-                      //@ts-ignore
-                      const msg: Details = JSON.parse(item?.transactionName);
-                      const amount =
-                        Number(msg.amount) > 0
-                          ? `${Number(msg.amount).toFixed(2)} ${msg.name}`
-                          : msg.name;
-                      const actionMsg = transactionStatusActions(
-                        msg.type,
-                        amount
-                      ).inAction;
-                      return (
-                        <TransactionRow
-                          key={msg.name + msg.type}
-                          icon={msg.icon}
-                          name={msg.name.toLowerCase()}
-                          status={actionMsg}
-                          date={new Date(item.submittedAt)}
-                        />
-                      );
-                    }
-                    return null;
-                  })}
+                  {ongoingTransactions.map((tx) => (
+                    <TransactionRow
+                      key={tx.txId}
+                      icon={tx.details.token?.icon ?? ""}
+                      name={tx.currentMessage ?? ""}
+                      status={getShortTxStatusFromState(tx.status)}
+                      date={new Date()}
+                    />
+                  ))}
                 </LendingTable>
-              ) : null}
+              </div>
             </div>
+          )}
 
-            <div className="right">
-              {/* {borrowFilter.length > 0 ? (
-            <LendingTable columns={["ongoing transactions"]} isLending>
-              {borrowFilter.map((rand) => {
-                //@ts-ignore
-                const ppNotif: Details = rand?.transactionName;
-                return (
-                  <TransactionRow
-                    icon={ppNotif.icon}
-                    name={ppNotif.name}
-                    status={ppNotif.type + " " + ppNotif.amount}
-                    date={new Date(ppNotif.time)}
-                  />
-                );
-              })}
-            </LendingTable>
-          ) : null} */}
-            </div>
-          </div>
           {/* These tables only show ERC20TOKENs*/}
           <div
             className="tables"

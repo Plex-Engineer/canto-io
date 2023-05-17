@@ -3,12 +3,11 @@ import { BigNumber, Contract } from "ethers";
 import { CantoTestnet, CantoMainnet } from "global/config/networks";
 import { cERC20Abi, ERC20Abi, routerAbi } from "global/config/abi";
 import { LPPairInfo, UserLPPairInfo } from "../config/interfaces";
-import { getSupplyBalanceFromCTokens } from "pages/lending/utils/utils";
+import { getSupplyBalanceFromCTokens } from "pages/lending/utils/supplyWithdrawLimits";
 import { formatUnits } from "ethers/lib/utils";
 import { ADDRESSES } from "global/config/addresses";
 import { checkForCantoInPair } from "../utils/pairCheck";
-import { checkMultiCallForUndefined } from "global/utils/utils";
-
+import { checkMultiCallForUndefined } from "global/utils/cantoTransactions/transactionChecks";
 const useUserLPTokenInfo = (
   LPTokens: LPPairInfo[],
   account: string | undefined,

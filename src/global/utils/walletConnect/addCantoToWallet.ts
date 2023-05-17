@@ -3,7 +3,7 @@ import {
   CantoTestnet,
   NodeAddresses,
 } from "global/config/networks";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 
 export async function switchNetwork(chainId: number) {
   //@ts-ignore
@@ -63,37 +63,6 @@ export async function addNetwork() {
   }
 }
 
-export async function getChainIdandAccount(): Promise<string[] | undefined[]> {
-  //@ts-ignore
-  if (window.ethereum) {
-    //@ts-ignore
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    //@ts-ignore
-    return [window.ethereum.networkVersion, window.ethereum.selectedAddress];
-  }
-  return [undefined, undefined];
-}
-export async function connect() {
-  //@ts-ignore
-  if (window.ethereum) {
-    //@ts-ignore
-    window.ethereum.request({ method: "eth_requestAccounts" });
-    addNetwork();
-  }
-}
-
-export async function getAccountBalance(account: string | undefined) {
-  //@ts-ignore
-  if (window.ethereum) {
-    //@ts-ignore
-    return await window.ethereum.request({
-      method: "eth_getBalance",
-      params: [account, "latest"],
-    });
-  }
-  return BigNumber.from(0);
-}
-
 export async function getCantoAddressFromMetaMask(address: string | undefined) {
   const nodeURLMain = CantoMainnet.cosmosAPIEndpoint;
   const result = await fetch(
@@ -106,19 +75,4 @@ export async function getCantoAddressFromMetaMask(address: string | undefined) {
     }
   );
   return (await result.json()).cosmos_address;
-}
-
-export function addEthMainToWallet() {
-  //@ts-ignore
-  if (window.ethereum) {
-    //@ts-ignore
-    window.ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [
-        {
-          chainId: "0x1",
-        },
-      ],
-    });
-  }
 }

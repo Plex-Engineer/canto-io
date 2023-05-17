@@ -12,7 +12,7 @@ import {
   valueInNote,
 } from "pages/dexLP/utils/utils";
 import useModals, { ModalType } from "../hooks/useModals";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import { UserLPPairInfo } from "../config/interfaces";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";

@@ -8,7 +8,7 @@ import { LMTokenDetails } from "../config/interfaces";
 import { cERC20Abi, comptrollerAbi, routerAbi } from "global/config/abi";
 import { CTOKENS } from "global/config/tokenInfo";
 import { ADDRESSES } from "global/config/addresses";
-import { checkMultiCallForUndefined } from "global/utils/utils";
+import { checkMultiCallForUndefined } from "global/utils/cantoTransactions/transactionChecks";
 import { CTOKEN } from "global/config/interfaces/tokens";
 
 const formatUnits = ethers.utils.formatUnits;

@@ -5,7 +5,7 @@ import {
   Validator,
 } from "../config/interfaces";
 import { StakingModalContainer } from "../components/Styled";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { useState } from "react";

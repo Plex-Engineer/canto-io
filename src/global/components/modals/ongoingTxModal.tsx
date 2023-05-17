@@ -10,7 +10,7 @@ import { useTransactionStore } from "global/stores/transactionStore";
 interface LoadingProps {
   onClose: () => void;
 }
-const LoadingModalv3 = (props: LoadingProps) => {
+const OngoingTxModal = (props: LoadingProps) => {
   const transactionStore = useTransactionStore();
 
   //   useEffect(() => {
@@ -124,4 +124,4 @@ const Styled = styled.div`
     margin-top: 2rem;
   }
 `;
-export default LoadingModalv3;
+export default OngoingTxModal;

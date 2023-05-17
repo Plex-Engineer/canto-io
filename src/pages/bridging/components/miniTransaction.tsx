@@ -4,7 +4,7 @@ import { CantoTransactionType } from "global/config/interfaces/transactionTypes"
 import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { CantoMainnet } from "global/providers";
-import { getShortTxStatusFromState, truncateNumber } from "global/utils/utils";
+import { getShortTxStatusFromState, truncateNumber } from "global/utils/formattingNumbers";
 import { useEffect, useState } from "react";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 import { NativeTransaction } from "../config/interfaces";

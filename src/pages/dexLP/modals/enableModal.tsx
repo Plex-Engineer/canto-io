@@ -8,7 +8,7 @@ import { CantoTransactionType } from "global/config/interfaces/transactionTypes"
 import lockIcon from "assets/icons/lock.svg";
 import { BigNumber } from "ethers";
 import { TransactionState } from "@usedapp/core";
-import { getShortTxStatusFromState } from "global/utils/utils";
+import { getShortTxStatusFromState } from "global/utils/formatTxDetails";
 import { useEffect } from "react";
 
 interface AddSingleAllowanceProps {

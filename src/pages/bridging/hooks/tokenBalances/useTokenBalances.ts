@@ -2,7 +2,7 @@ import { CallResult, useCalls } from "@usedapp/core";
 import { BigNumber, Contract, ethers } from "ethers";
 import { ERC20Abi } from "global/config/abi";
 import { Token } from "global/config/interfaces/tokens";
-import { checkMultiCallForUndefined } from "global/utils/utils";
+import { checkMultiCallForUndefined } from "global/utils/cantoTransactions/transactionChecks";
 import { UserERC20BridgeToken } from "pages/bridging/config/interfaces";
 
 export function useTokenBalances(

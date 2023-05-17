@@ -1,6 +1,6 @@
 import Input from "../components/input";
 import { useEffect, useState } from "react";
-import { noteSymbol, truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import SettingsIcon from "assets/settings.svg";
 import IconPair from "../components/iconPair";
 import useModals, { ModalType } from "../hooks/useModals";
@@ -23,6 +23,7 @@ import {
 import { TransactionState } from "@usedapp/core";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
+import { noteSymbol } from "global/config/tokenInfo";
 
 interface RowCellProps {
   type: string;

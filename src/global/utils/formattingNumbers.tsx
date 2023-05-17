@@ -1,15 +1,10 @@
-import { CallResult } from "@usedapp/core";
-import { BigNumber, Contract } from "ethers";
-import { formatUnits } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 import {
   CantoTransactionType,
   TransactionActionObject,
   TransactionState,
 } from "global/config/interfaces/transactionTypes";
-
-export function classNames(...classes: unknown[]): string {
-  return classes.filter(Boolean).join(" ");
-}
 
 export const formatBalance = (num: string | number) => {
   if (Number(num) > 1) {
@@ -23,7 +18,27 @@ export const formatBalance = (num: string | number) => {
   }
 };
 
-export const noteSymbol = "Ꞥ";
+export function formatLiquidity(liquidity: number) {
+  if (liquidity < 2) {
+    return liquidity.toFixed(4);
+  }
+  if (liquidity < 10000) {
+    return liquidity.toFixed(2);
+  }
+  if (liquidity < 1000000) {
+    return (liquidity / 1000).toFixed(1) + "k";
+  }
+  if (liquidity < 1000000000) return (liquidity / 1000000).toFixed(1) + "M";
+
+  return (liquidity / 1000000000).toFixed(1) + "B";
+}
+
+export function convertStringToBigNumber(amount: string, decimals: number) {
+  if (!amount || isNaN(Number(amount)) || Number(amount) < 0) {
+    return BigNumber.from(0);
+  }
+  return parseUnits(truncateNumber(amount, decimals), decimals);
+}
 
 export function convertBigNumberRatioIntoPercentage(
   numerator: BigNumber,
@@ -34,6 +49,9 @@ export function convertBigNumberRatioIntoPercentage(
   );
 }
 
+/**
+ * ALL TRUNCATION FUNCTIONS
+ */
 export function truncateNumber(value: string, decimals?: number) {
   if (!value || isNaN(Number(value))) {
     return "";
@@ -113,24 +131,7 @@ export function convertFromScientificNotation(value: string) {
   return value;
 }
 
-export function getShortTxStatusFromState(state: TransactionState): string {
-  switch (state) {
-    case "None":
-      return "complete";
-    case "Mining":
-      return "ongoing";
-    case "PendingSignature":
-      return "signing";
-    case "Success":
-      return "done";
-    case "Exception":
-    case "Fail":
-      return "error";
-    default:
-      return "complete";
-  }
-}
-
+//TODO:DELETE THESE WHEN YOU CAN
 export function getTransactionStatusString(
   action: string,
   inAction: string,
@@ -154,74 +155,6 @@ export function getTransactionStatusString(
       return action;
   }
 }
-export const createTransactionMessges = (
-  txType: CantoTransactionType,
-  tokenName?: string
-) => {
-  const token = tokenName ?? "token";
-  switch (txType) {
-    case CantoTransactionType.ENABLE:
-      return {
-        pending: `enabling ${token}...`,
-        success: `successfully enabled ${token}`,
-        error: `unable to enable ${token}`,
-      };
-    case CantoTransactionType.SUPPLY:
-      return {
-        pending: `supplying ${token}...`,
-        success: `successfully supplied ${token}`,
-        error: `unable to supply ${token}`,
-      };
-    case CantoTransactionType.BORROW:
-      return {
-        pending: `borrowing ${token}...`,
-        success: `successfully borrowed ${token}`,
-        error: `unable to borrow ${token}`,
-      };
-    case CantoTransactionType.REPAY:
-      return {
-        pending: `repaying ${token}...`,
-        success: `successfully repaid ${token}`,
-        error: `unable to repay ${token}`,
-      };
-    case CantoTransactionType.WITHDRAW:
-      return {
-        pending: `withdrawing ${token}...`,
-        success: `successfully withdrew ${token}`,
-        error: `unable to withdraw ${token}`,
-      };
-    case CantoTransactionType.COLLATERALIZE:
-      return {
-        pending: `collateralizing ${token}...`,
-        success: `successfully collateralized ${token}`,
-        error: `unable to collateralize ${token}`,
-      };
-    case CantoTransactionType.DECOLLATERLIZE:
-      return {
-        pending: `uncollateralizing ${token}...`,
-        success: `successfully uncollateralized ${token}`,
-        error: `unable to uncollateralize ${token}`,
-      };
-    case CantoTransactionType.CLAIM_REWARDS:
-      return {
-        pending: "claiming rewards...",
-        success: "successfully claimed rewards",
-        error: "unable to claim rewards",
-      };
-    case CantoTransactionType.DRIP:
-      return {
-        pending: "dripping...",
-        success: "successfully dripped",
-        error: "unable to drip",
-      };
-    default:
-      return {
-        pending: "confirming",
-        success: "confirmed",
-        error: "unable to confirm",
-      };
-  }
-};
 
 export const transactionStatusActions = (
   actionType: CantoTransactionType,
@@ -345,15 +278,3 @@ export const transactionStatusActions = (
       };
   }
 };
-
-//check to make sure that the multicall values are accetable
-export function checkMultiCallForUndefined(
-  results: CallResult<Contract, string>[]
-) {
-  for (const result of results) {
-    if (!result || !result?.value || result?.error) {
-      return false;
-    }
-  }
-  return true;
-}

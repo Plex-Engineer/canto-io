@@ -7,8 +7,7 @@ import { LPPairInfo } from "../config/interfaces";
 import { getLPPairRatio } from "../utils/utils";
 import { ADDRESSES } from "global/config/addresses";
 import { CTOKENS } from "global/config/tokenInfo";
-import { checkMultiCallForUndefined } from "global/utils/utils";
-
+import { checkMultiCallForUndefined } from "global/utils/cantoTransactions/transactionChecks";
 const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
   const onCanto =
     Number(chainId) == CantoMainnet.chainId ||

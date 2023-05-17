@@ -1,11 +1,11 @@
 import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import React from "react";
 import { StakingTransactionType } from "../config/interfaces";
 import { TransactionStatus } from "../stores/transactionStore";
 import { userTxMessages } from "global/config/interfaces/transactionTypes";
-import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/checkCosmosConfirmation";
+import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/transactionChecks";
 
 interface Error {
   code: number;

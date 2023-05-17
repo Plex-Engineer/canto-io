@@ -1,5 +1,5 @@
 import logo from "assets/logo.svg";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import { UserLMRewards } from "pages/lending/config/interfaces";
 import { ethers } from "ethers";
 import { valueInNote } from "pages/dexLP/utils/utils";

@@ -20,7 +20,7 @@ import { unbondingFee } from "../config/fees";
 import { chain, memo } from "global/config/cosmosConstants";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { CantoMainnet } from "global/config/networks";
-import { formatBalance } from "global/utils/utils";
+import { formatBalance } from "global/utils/formattingNumbers";
 import styled from "@emotion/styled";
 
 interface StakingModalProps {

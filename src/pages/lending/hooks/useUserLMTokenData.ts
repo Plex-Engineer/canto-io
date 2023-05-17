@@ -13,11 +13,10 @@ import {
 } from "../config/interfaces";
 import { cERC20Abi, comptrollerAbi, ERC20Abi } from "global/config/abi";
 import { parseUnits } from "ethers/lib/utils";
-import { getSupplyBalanceFromCTokens } from "../utils/utils";
+import { getSupplyBalanceFromCTokens } from "pages/lending/utils/supplyWithdrawLimits";
 import { valueInNote } from "pages/dexLP/utils/utils";
 import { ADDRESSES } from "global/config/addresses";
-import { checkMultiCallForUndefined } from "global/utils/utils";
-
+import { checkMultiCallForUndefined } from "global/utils/cantoTransactions/transactionChecks";
 export function useUserLMTokenData(
   LMTokens: LMTokenDetails[],
   account: string | undefined,

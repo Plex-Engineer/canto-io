@@ -7,7 +7,7 @@ import {
   UserNativeToken,
 } from "pages/bridging/config/interfaces";
 import { BridgeTransaction } from "pages/bridging/hooks/useBridgingTransactions";
-import { convertStringToBigNumber } from "pages/bridging/utils/utils";
+import { convertStringToBigNumber } from "global/utils/formattingNumbers";
 import { useState } from "react";
 import BarIndicator from "../components/barIndicator";
 import AmountPage from "../components/pages/amount";

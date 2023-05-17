@@ -3,9 +3,9 @@ import {
   TransactionProps,
 } from "global/config/interfaces/transactionTypes";
 import { TransactionStore } from "./transactionStore";
-import { createTransactionMessges } from "global/utils/utils";
 import { BigNumber, Contract } from "ethers";
 import { MaxUint256 } from "@ethersproject/constants";
+import { createTransactionMessges } from "global/utils/formatTxDetails";
 
 export function createTransactionProps(
   txStore: TransactionStore,

@@ -6,11 +6,7 @@ import useModals, { ModalType } from "./hooks/useModals";
 import { ModalManager } from "./modals/ModalManager";
 import { ethers } from "ethers";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import {
-  noteSymbol,
-  transactionStatusActions,
-  truncateNumber,
-} from "global/utils/utils";
+import { transactionStatusActions, truncateNumber } from "global/utils/formattingNumbers";
 import useLPTokenData from "./hooks/useLPTokenData";
 import useUserLPTokenInfo from "./hooks/useUserLPTokenData";
 import { LPPairInfo, UserLPPairInfo } from "./config/interfaces";
@@ -25,6 +21,7 @@ import { useOngoingTransactions } from "global/utils/handleOnGoingTransactions";
 import Loading from "global/components/Loading";
 import styled from "@emotion/styled";
 import CTable from "global/components/cTable";
+import { noteSymbol } from "global/config/tokenInfo";
 
 const LP_Interface = () => {
   const networkInfo = useNetworkInfo();

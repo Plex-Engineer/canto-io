@@ -52,19 +52,18 @@ export const useTransactionStore = create<TransactionStore>()((set, get) => ({
         hash: transaction.hash,
       });
       const receipt = await transaction.wait();
-      console.log(receipt);
-      if (receipt.status !== 1) {
-        get().updateTx(txProps.txId, {
-          status: "Fail",
-          currentMessage: txProps.messages.error,
-        });
-        return false;
-      } else {
+      if (receipt.status === 1) {
         get().updateTx(txProps.txId, {
           status: "Success",
           currentMessage: txProps.messages.success,
         });
         return true;
+      } else {
+        get().updateTx(txProps.txId, {
+          status: "Fail",
+          currentMessage: txProps.messages.error,
+        });
+        return false;
       }
     } catch (e) {
       get().updateTx(txProps.txId, {

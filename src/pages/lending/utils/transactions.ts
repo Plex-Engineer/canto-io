@@ -1,6 +1,11 @@
 import { BigNumber, Contract } from "ethers";
 import { LendingTransaction, UserLMTokenDetails } from "../config/interfaces";
-import { ERC20Abi, cERC20Abi, comptrollerAbi } from "global/config/abi";
+import {
+  ERC20Abi,
+  cERC20Abi,
+  comptrollerAbi,
+  reservoirAbi,
+} from "global/config/abi";
 import {
   CantoTransactionType,
   TransactionProps,
@@ -15,6 +20,7 @@ import {
 import { ADDRESSES } from "global/config/addresses";
 import { CantoTestnet } from "global/providers";
 import { TOKENS } from "global/config/tokenInfo";
+import { reservoirAdddress } from "../config/lendingMarketTokens";
 
 interface TokenInfo {
   symbol: string;
@@ -55,10 +61,14 @@ export async function claimLendingRewardsTx(
     comptrollerAddress,
     comptrollerAbi
   );
+  const reservoirContract = accountStore.createContractWithSigner(
+    reservoirAdddress,
+    reservoirAbi
+  );
   const dripDone = !needDrip
     ? true
     : await txStore.performTx(
-        async () => await comptrollerContract.drip(),
+        async () => await reservoirContract.drip(),
         dripTx
       );
   if (!dripDone) {

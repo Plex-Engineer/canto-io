@@ -1,8 +1,6 @@
 import { TransactionState } from "@usedapp/core";
 import { BigNumber } from "ethers";
-import { parseUnits } from "ethers/lib/utils";
 import { toastHandler } from "global/utils/toastHandler";
-import { truncateNumber } from "global/utils/utils";
 import { NativeTransaction, UserNativeToken } from "../config/interfaces";
 import { TransactionHistoryEvent } from "./bridgeTxHistory";
 import { getNetworkFromTokenName } from "./findTokens";
@@ -58,13 +56,6 @@ export function convertSecondsToString(seconds: string) {
   }
   const minutes = Math.ceil(Number(seconds) / 60);
   return minutes + " min";
-}
-
-export function convertStringToBigNumber(amount: string, decimals: number) {
-  if (!amount || isNaN(Number(amount)) || Number(amount) < 0) {
-    return BigNumber.from(0);
-  }
-  return parseUnits(truncateNumber(amount, decimals), decimals);
 }
 
 export function formatAddress(address: string | undefined, show: number) {

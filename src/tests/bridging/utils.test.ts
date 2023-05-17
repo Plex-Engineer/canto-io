@@ -1,11 +1,10 @@
 import { BridgeOutNetworks } from "pages/bridging/config/interfaces";
 import { CONVERT_COIN_TOKENS } from "pages/bridging/config/bridgingTokens";
 import { BigNumber } from "ethers";
-import { truncateNumber } from "global/utils/utils";
-import {
-  convertStringToBigNumber,
-  getStep1ButtonText,
-} from "pages/bridging/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
+import { getStep1ButtonText } from "pages/bridging/utils/utils";
+import { convertStringToBigNumber } from "global/utils/formattingNumbers";
+
 import { ALL_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
 import { parseUnits } from "ethers/lib/utils";
 

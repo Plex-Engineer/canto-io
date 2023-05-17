@@ -6,7 +6,7 @@ import warningIcon from "assets/warning.svg";
 import {
   getTransactionStatusString,
   transactionStatusActions,
-} from "global/utils/utils";
+} from "global/utils/formattingNumbers";
 import {
   CantoTransactionType,
   TransactionState,

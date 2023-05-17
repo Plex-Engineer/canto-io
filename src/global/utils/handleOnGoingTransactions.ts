@@ -1,7 +1,7 @@
 import { Notification } from "@usedapp/core";
 import { useEffect } from "react";
 import { toastHandler } from "./toastHandler";
-import { transactionStatusActions } from "./utils";
+import { transactionStatusActions } from "./formattingNumbers";
 
 export const useOngoingTransactions = (
   notifications: Notification[],

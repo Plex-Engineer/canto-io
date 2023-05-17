@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { useState } from "react";
 import { UserLMTokenDetails } from "../config/interfaces";
 

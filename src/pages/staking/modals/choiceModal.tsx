@@ -6,7 +6,7 @@ import useValidatorModalStore, {
 import cantoImg from "assets/logo.svg";
 import { MasterValidatorProps } from "../config/interfaces";
 import { formatEther } from "ethers/lib/utils";
-import { formatBalance, truncateNumber } from "global/utils/utils";
+import { formatBalance, truncateNumber } from "global/utils/formattingNumbers";
 import { BigNumber } from "ethers";
 
 interface Props {

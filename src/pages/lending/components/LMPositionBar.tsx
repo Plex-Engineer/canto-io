@@ -1,13 +1,14 @@
 import { Hero, LimitBar, ToolTipL } from "./Styled";
 import { BigNumber } from "ethers";
 import { OutlinedButton, Text } from "global/packages/src";
-import { noteSymbol, truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import CypherText from "./CypherText";
 import { formatUnits } from "ethers/lib/utils";
 import Popup from "reactjs-popup";
 import RewardsBox from "./RewardsBox";
 import useModalStore, { ModalType } from "../stores/useModals";
 import infoImg from "assets/icons/info.svg";
+import { noteSymbol } from "global/config/tokenInfo";
 
 interface LMPositionBarProps {
   borrowBalance: BigNumber;

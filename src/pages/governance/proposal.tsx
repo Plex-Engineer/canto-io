@@ -7,7 +7,7 @@ import { VoteStatus, VotingOption } from "./config/interfaces";
 import { PrimaryButton } from "global/packages/src";
 import { ProposalContainer } from "./components/Styled";
 import { formatEther, formatUnits } from "ethers/lib/utils";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import Popup from "reactjs-popup";
 import GovModal from "./components/govModal";
 import GlobalLoadingModal from "global/components/modals/loadingModal";

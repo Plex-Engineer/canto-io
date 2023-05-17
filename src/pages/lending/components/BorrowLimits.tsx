@@ -2,9 +2,8 @@ import styled from "@emotion/styled";
 import CANTO from "assets/icons/canto.png";
 import {
   convertBigNumberRatioIntoPercentage,
-  noteSymbol,
   truncateNumber,
-} from "global/utils/utils";
+} from "global/utils/formattingNumbers";
 import { BigNumber } from "ethers";
 import { UserLMTokenDetails } from "../config/interfaces";
 import {
@@ -19,6 +18,7 @@ import {
 import React from "react";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { Text } from "global/packages/src";
+import { noteSymbol } from "global/config/tokenInfo";
 
 interface Props {
   borrowLimit: BigNumber;

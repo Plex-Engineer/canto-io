@@ -1,3 +1,5 @@
+import { CallResult } from "@usedapp/core";
+import { Contract } from "ethers";
 import { CantoMainnet } from "global/config/networks";
 
 export async function checkCosmosTxConfirmation(
@@ -29,4 +31,16 @@ export async function checkCosmosTxConfirmation(
 }
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+//check to make sure that the multicall values are accetable
+export function checkMultiCallForUndefined(
+  results: CallResult<Contract, string>[]
+) {
+  for (const result of results) {
+    if (!result || !result?.value || result?.error) {
+      return false;
+    }
+  }
+  return true;
 }

@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import useModals from "../hooks/useModals";
 import { PrimaryButton } from "global/packages/src";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import { getReserveRatioAtoB, getTokenValueFromPercent } from "../utils/utils";
 import { UserLPPairInfo } from "../config/interfaces";
 import { formatUnits } from "ethers/lib/utils";

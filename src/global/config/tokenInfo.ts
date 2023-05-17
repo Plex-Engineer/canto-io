@@ -13,6 +13,8 @@ import Note from "assets/icons/note.svg";
 import WSTETH from "assets/icons/wstETH.svg";
 import { Token, TokenGroups, CTOKEN } from "./interfaces/tokens";
 
+export const noteSymbol = "Ꞥ";
+
 const icons = {
   Note,
   CANTO,

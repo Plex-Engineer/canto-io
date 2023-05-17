@@ -5,7 +5,7 @@ import { RowCell } from "./removeModal";
 import { useEffect, useState } from "react";
 import useModals from "../hooks/useModals";
 import { CantoMainnet, CantoTestnet } from "global/config/networks";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import {
   calculateExpectedShareIfSupplying,
   getReserveRatioAtoB,

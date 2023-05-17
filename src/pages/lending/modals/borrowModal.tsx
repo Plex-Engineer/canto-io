@@ -1,6 +1,6 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { useState } from "react";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import LendingField from "../components/lendingField";
 import { Details } from "../components/BorrowLimits";
 import useModalStore from "pages/lending/stores/useModals";
@@ -16,7 +16,7 @@ import { PrimaryButton, Text } from "global/packages/src";
 import { useTransactionStore } from "global/stores/transactionStore";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { lendingMarketTx } from "../utils/transactions";
-import { convertStringToBigNumber } from "pages/bridging/utils/utils";
+import { convertStringToBigNumber } from "global/utils/formattingNumbers";
 import { getButtonText } from "../utils/modalButtonParams";
 import { BigNumber } from "ethers";
 interface IProps {

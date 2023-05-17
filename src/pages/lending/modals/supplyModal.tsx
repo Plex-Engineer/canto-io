@@ -2,7 +2,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import LendingField from "../components/lendingField";
 import { useState } from "react";
 import { Details } from "../components/BorrowLimits";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import useModalStore from "pages/lending/stores/useModals";
 import {
   LendingTransaction,
@@ -16,7 +16,7 @@ import { PrimaryButton, Text } from "global/packages/src";
 import { lendingMarketTx } from "../utils/transactions";
 import { useTransactionStore } from "global/stores/transactionStore";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import { convertStringToBigNumber } from "pages/bridging/utils/utils";
+import { convertStringToBigNumber } from "global/utils/formattingNumbers";
 import { getButtonText } from "../utils/modalButtonParams";
 interface IProps {
   position: UserLMPosition;

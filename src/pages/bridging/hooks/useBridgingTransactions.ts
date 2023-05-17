@@ -8,7 +8,7 @@ import {
   txConvertCoin,
   txConvertERC20,
 } from "../utils/convertCoin/convertTransactions";
-import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/checkCosmosConfirmation";
+import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/transactionChecks";
 import { txIBCTransfer } from "../utils/IBC/IBCTransfer";
 import { ADDRESSES } from "global/config/addresses";
 import { BridgeOutNetworkInfo } from "../config/interfaces";
