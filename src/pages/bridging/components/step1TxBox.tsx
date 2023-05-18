@@ -18,14 +18,8 @@ import {
 import { formatUnits } from "ethers/lib/utils";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import CopyToClipboard from "react-copy-to-clipboard";
-import { BridgeTransaction } from "../hooks/useBridgingTransactions";
-import { useEffect, useState } from "react";
-import {
-  copyAddress,
-  formatAddress,
-  getStep1ButtonText,
-  toastBridgeTx,
-} from "../utils/utils";
+import { useState } from "react";
+import { copyAddress, formatAddress, getStep1ButtonText } from "../utils/utils";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { CantoMainnet, ETHMainnet } from "global/config/networks";
 import { TokenWallet } from "./tokenSelect";
@@ -35,6 +29,7 @@ import ConfirmTxModal, {
   TokenWithIcon,
 } from "global/components/modals/confirmTxModal";
 import { getBridgeExtraDetails } from "./bridgeDetails";
+import { BigNumber } from "ethers";
 
 interface Step1TxBoxProps {
   fromAddress?: string;
@@ -43,7 +38,7 @@ interface Step1TxBoxProps {
   tokenGroups: Step1TokenGroups[];
   selectedToken: UserERC20BridgeToken;
   selectToken: (tokenAddress: string) => void;
-  txHook: () => BridgeTransaction;
+  tx: (amount: BigNumber) => Promise<boolean>;
 }
 const Step1TxBox = (props: Step1TxBoxProps) => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -51,7 +46,6 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
   const [selectedIBCToken, setSelectedIBCToken] =
     useState<NativeToken>(EMPTY_NATIVE_TOKEN);
   const [amount, setAmount] = useState("");
-  const txProps = props.txHook();
 
   const currentTokenBalance = props.selectedToken.erc20Balance;
   const [buttonText, buttonDisabled] = getStep1ButtonText(
@@ -60,9 +54,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
     props.selectedToken.allowance,
     props.bridgeIn
   );
-  useEffect(() => {
-    toastBridgeTx(txProps.state, txProps.txName);
-  }, [txProps?.state]);
+
   return (
     <Styled>
       <Modal
@@ -79,14 +71,11 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
       <Modal
         title="confirmation"
         open={isModalOpen}
-        onClose={() => {
-          setModalOpen(false);
-          txProps.resetState();
-        }}
+        onClose={() => setModalOpen(false)}
       >
         <ConfirmTxModal
           networkId={props.bridgeIn ? ETHMainnet.chainId : CantoMainnet.chainId}
-          title={txProps.txName}
+          title={"CONFIRM"}
           titleIcon={TokenWithIcon({
             icon: props.selectedToken.icon,
             name: props.selectedToken.name,
@@ -101,22 +90,11 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           ]}
           extraInputs={[]}
           disableConfirm={false}
-          onConfirm={() => {
-            txProps.send(
-              convertStringToBigNumber(
-                amount,
-                props.selectedToken.decimals
-              ).toString()
-            );
-          }}
-          loadingProps={{
-            transactionType: txProps.txType,
-            status: txProps.state,
-            tokenName: props.selectedToken.name,
-            onClose: () => {
-              setModalOpen(false);
-            },
-          }}
+          onConfirm={() =>
+            props.tx(
+              convertStringToBigNumber(amount, props.selectedToken.decimals)
+            )
+          }
           extraDetails={getBridgeExtraDetails(
             props.bridgeIn,
             false,

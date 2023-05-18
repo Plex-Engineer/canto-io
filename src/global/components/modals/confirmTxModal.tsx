@@ -2,15 +2,15 @@ import styled from "@emotion/styled";
 import { useEthers } from "@usedapp/core";
 import { ConfirmTxModalProps } from "global/config/interfaces/modals";
 import { PrimaryButton, Text } from "global/packages/src";
-import LoadingModal from "./loading2";
 import { CInput } from "global/packages/src/components/atoms/Input";
+import OngoingTxModal from "./ongoingTxModal";
 
 const ConfirmTxModal = (props: ConfirmTxModalProps) => {
   const currentNetworkId = useEthers().chainId;
   const { switchNetwork } = useEthers();
   return (
     <Styled>
-      {" "}
+      <OngoingTxModal onClose={props.onClose} />{" "}
       {currentNetworkId != props.networkId && (
         <div className="network-change">
           <Text type="title">Oops, you seem to be on a wrong network.</Text>
@@ -23,65 +23,59 @@ const ConfirmTxModal = (props: ConfirmTxModalProps) => {
           </PrimaryButton>
         </div>
       )}
-      {props.loadingProps.status != "None" && (
-        <div className="loading">
-          <LoadingModal {...props.loadingProps} />
-        </div>
-      )}
-      {props.loadingProps.status == "None" &&
-        props.networkId == currentNetworkId && (
-          <>
-            <Text type="title" size="title2">
-              {props.title}
-            </Text>
-            {props.titleIcon}
-            {props.confirmationValues.length > 0 && (
-              <div className="confirm-details">
-                {props.confirmationValues.map((value, index) => (
-                  <ConfirmationRow
-                    key={index}
-                    title={value.title}
-                    value={value.value}
-                  />
-                ))}
-              </div>
-            )}
-            {props.extraInputs.length > 0 && (
-              <div className="confirm-details">
-                {props.extraInputs.map((input, index) => (
-                  <div className="row" style={{ margin: "8px 0" }} key={index}>
-                    <div className="header">{`${input.header} :`}</div>
-                    <div className="value">
-                      <CInput
-                        style={{
-                          border: "1px solid #282828",
-                          backgroundColor: "transparent",
-                          width: "16rem",
-                        }}
-                        placeholder={input.placeholder}
-                        value={input.value}
-                        onChange={(val) => {
-                          input.setValue(val.target.value);
-                        }}
-                      />
-                    </div>
+      {props.networkId == currentNetworkId && (
+        <>
+          <Text type="title" size="title2">
+            {props.title}
+          </Text>
+          {props.titleIcon}
+          {props.confirmationValues.length > 0 && (
+            <div className="confirm-details">
+              {props.confirmationValues.map((value, index) => (
+                <ConfirmationRow
+                  key={index}
+                  title={value.title}
+                  value={value.value}
+                />
+              ))}
+            </div>
+          )}
+          {props.extraInputs.length > 0 && (
+            <div className="confirm-details">
+              {props.extraInputs.map((input, index) => (
+                <div className="row" style={{ margin: "8px 0" }} key={index}>
+                  <div className="header">{`${input.header} :`}</div>
+                  <div className="value">
+                    <CInput
+                      style={{
+                        border: "1px solid #282828",
+                        backgroundColor: "transparent",
+                        width: "16rem",
+                      }}
+                      placeholder={input.placeholder}
+                      value={input.value}
+                      onChange={(val) => {
+                        input.setValue(val.target.value);
+                      }}
+                    />
                   </div>
-                ))}
-              </div>
-            )}
+                </div>
+              ))}
+            </div>
+          )}
 
-            {props.extraDetails}
-            <PrimaryButton
-              filled
-              height="big"
-              weight="bold"
-              onClick={props.onConfirm}
-              disabled={props.disableConfirm}
-            >
-              confirm
-            </PrimaryButton>
-          </>
-        )}
+          {props.extraDetails}
+          <PrimaryButton
+            filled
+            height="big"
+            weight="bold"
+            onClick={props.onConfirm}
+            disabled={props.disableConfirm}
+          >
+            confirm
+          </PrimaryButton>
+        </>
+      )}
     </Styled>
   );
 };

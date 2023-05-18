@@ -3,6 +3,7 @@ import { LendingTransaction, UserLMTokenDetails } from "../config/interfaces";
 import { cERC20Abi, comptrollerAbi, reservoirAbi } from "global/config/abi";
 import {
   CantoTransactionType,
+  ExtraProps,
   TransactionDetails,
 } from "global/config/interfaces/transactionTypes";
 import { TransactionStore } from "global/stores/transactionStore";
@@ -15,11 +16,6 @@ import { TOKENS } from "global/config/tokenInfo";
 import { reservoirAdddress } from "../config/lendingMarketTokens";
 import { getComptrollerAddress } from "global/utils/getAddressUtils";
 
-interface TokenInfo {
-  symbol: string;
-  icon: string;
-  amount: string;
-}
 //claim rewards needs different inputs, so separate transaction
 export async function claimLendingRewardsTx(
   txStore: TransactionStore,
@@ -135,7 +131,7 @@ async function supplyTx(
   amount: BigNumber,
   currentAllowance: BigNumber,
   isCanto: boolean,
-  tokenInfo?: TokenInfo
+  tokenInfo?: ExtraProps
 ): Promise<boolean> {
   const [enableDetails, supplyDetails] = [
     createTransactionDetails(txStore, CantoTransactionType.ENABLE, tokenInfo),
@@ -169,7 +165,7 @@ async function borrowTx(
   txStore: TransactionStore,
   cTokenAddress: string,
   amount: BigNumber,
-  tokenInfo?: TokenInfo
+  tokenInfo?: ExtraProps
 ): Promise<boolean> {
   const [borrowDetails] = [
     createTransactionDetails(txStore, CantoTransactionType.BORROW, tokenInfo),
@@ -184,7 +180,7 @@ async function repayTx(
   amount: BigNumber,
   currentAllowance: BigNumber,
   isCanto: boolean,
-  tokenInfo?: TokenInfo
+  tokenInfo?: ExtraProps
 ): Promise<boolean> {
   const [enableDetails, repayDetails] = [
     createTransactionDetails(txStore, CantoTransactionType.ENABLE, tokenInfo),
@@ -218,7 +214,7 @@ async function withdrawTx(
   txStore: TransactionStore,
   cTokenAddress: string,
   amount: BigNumber,
-  tokenInfo?: TokenInfo
+  tokenInfo?: ExtraProps
 ): Promise<boolean> {
   const [withdrawDetails] = [
     createTransactionDetails(txStore, CantoTransactionType.WITHDRAW, tokenInfo),
@@ -236,7 +232,7 @@ async function collateralizeTx(
   comptrollerAddress: string,
   cTokenAddress: string,
   collateralize: boolean,
-  tokenInfo?: TokenInfo
+  tokenInfo?: ExtraProps
 ): Promise<boolean> {
   const [collateralizeTx]: TransactionDetails[] = [
     createTransactionDetails(

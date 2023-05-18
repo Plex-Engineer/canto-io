@@ -23,7 +23,7 @@ export function createTransactionDetails(
     txType: txType,
     extra,
     status: "None",
-    currentMessage: `awaiting signature to ${transactionMessages.short}`,
+    currentMessage: `awaiting signature to ${transactionMessages.long}`,
     messages: transactionMessages,
   };
 }

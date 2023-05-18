@@ -2,45 +2,37 @@ import styled from "@emotion/styled";
 import { formatUnits } from "ethers/lib/utils";
 import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
-import { CantoMainnet } from "global/providers";
 import { truncateNumber } from "global/utils/formattingNumbers";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 import {
   BridgeOutNetworkInfo,
   RecoveryTransaction,
 } from "../config/interfaces";
-import { BridgeTransaction } from "../hooks/useBridgingTransactions";
-import { formatAddress, toastBridgeTx } from "../utils/utils";
+import { formatAddress } from "../utils/utils";
 import acronIcon from "assets/acron.svg";
 import ConfirmTxModal, {
   TokenWithIcon,
 } from "global/components/modals/confirmTxModal";
 import rightArrow from "assets/next.svg";
 import { getBridgeExtraDetails } from "./bridgeDetails";
-import { getShortTxStatusFromState } from "global/utils/formatTxDetails";
+import { ibcOutTx } from "../utils/transactions";
+import { useTransactionStore } from "global/stores/transactionStore";
+import { CantoMainnet } from "global/config/networks";
+import { chain, ibcFee } from "global/config/cosmosConstants";
 
 interface Props {
   transaction: RecoveryTransaction;
-  txFactory: () => BridgeTransaction;
   cantoAddress: string;
 }
-const RecoveryTransactionBox = ({
-  transaction,
-  txFactory,
-  cantoAddress,
-}: Props) => {
-  const txStats = txFactory();
+const RecoveryTransactionBox = ({ transaction, cantoAddress }: Props) => {
+  const txStore = useTransactionStore();
   const [isModalOpen, setModalOpen] = useState(false);
   const [isNetworkSelectModalOpen, setNetworkSelectModalOpen] = useState(false);
   const [selectedNetwork, setSelectedNetwork] = useState<BridgeOutNetworkInfo>(
     transaction.defaultNetwork
   );
   const [userInputAddress, setUserInputAddress] = useState("");
-
-  useEffect(() => {
-    toastBridgeTx(txStats.state, txStats.txName);
-  }, [txStats.state]);
 
   return (
     <Styled>
@@ -53,7 +45,7 @@ const RecoveryTransactionBox = ({
       >
         <ConfirmTxModal
           networkId={CantoMainnet.chainId}
-          title={txStats.txName}
+          title={"CONFIRM"}
           titleIcon={
             <div style={{ display: "flex", flexDirection: "row", gap: "1rem" }}>
               {TokenWithIcon({
@@ -90,19 +82,17 @@ const RecoveryTransactionBox = ({
           ]}
           disableConfirm={!selectedNetwork.checkAddress(userInputAddress)}
           onConfirm={() => {
-            txStats.send(
-              transaction.amount.toString(),
+            ibcOutTx(
+              txStore,
+              selectedNetwork,
               userInputAddress,
-              selectedNetwork
+              transaction.token.ibcDenom,
+              transaction.amount.toString(),
+              CantoMainnet.cosmosAPIEndpoint,
+              ibcFee,
+              chain,
+              ""
             );
-          }}
-          loadingProps={{
-            transactionType: txStats.txType,
-            status: txStats.state,
-            tokenName: transaction.token.name,
-            onClose: () => {
-              false;
-            },
           }}
           extraDetails={getBridgeExtraDetails(
             false,
@@ -143,15 +133,9 @@ const RecoveryTransactionBox = ({
           height="normal"
           weight="bold"
           filled
-          onClick={() => {
-            if (txStats.state == "Exception" || txStats.state == "Fail")
-              txStats.resetState();
-            setModalOpen(true);
-          }}
+          onClick={() => setModalOpen(true)}
         >
-          {getShortTxStatusFromState(txStats.state) == "complete"
-            ? "recover"
-            : getShortTxStatusFromState(txStats.state)}
+          recover
         </PrimaryButton>
       </div>
 

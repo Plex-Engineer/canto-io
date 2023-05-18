@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
 import { EMPTY_NATIVE_TOKEN, IBCTokenTrace } from "./config/interfaces";
-import { BridgingTransactionsSelector } from "./hooks/useBridgingTransactions";
 import {
   findNativeToken,
   getNetworkFromCantoChannel,
@@ -13,13 +12,8 @@ import unknwonToken from "assets/icons/info.svg";
 interface RecoveryModalProps {
   tokens: IBCTokenTrace[];
   cantoAddress: string;
-  txSelector: BridgingTransactionsSelector;
 }
-const RecoveryPage = ({
-  tokens,
-  cantoAddress,
-  txSelector,
-}: RecoveryModalProps) => {
+const RecoveryPage = ({ tokens, cantoAddress }: RecoveryModalProps) => {
   return (
     <Styled>
       <Text type="title" size="title2">
@@ -101,7 +95,6 @@ const RecoveryPage = ({
                     icon: tokenInfo?.icon ?? unknwonToken,
                   },
                 }}
-                txFactory={() => txSelector.bridgeOut.ibcOut(token.denom)}
               />
             )
           );

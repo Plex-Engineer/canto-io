@@ -2,13 +2,15 @@ import styled from "@emotion/styled";
 import Step2TxBox from "./components/step2TxBox";
 import { NativeTransaction, UserERC20BridgeToken } from "./config/interfaces";
 import Step1TxBox from "./components/step1TxBox";
-import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
-import { ADDRESSES } from "global/config/addresses";
 import QBoxList from "./components/QBoxList";
 import { NATIVE_COMSOS_TOKENS } from "./config/bridgingTokens";
 import { TokenGroups } from "global/config/interfaces/tokens";
-import { BigNumberish } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
+import { sendToComsosTx } from "./utils/transactions";
+import { useTransactionStore } from "global/stores/transactionStore";
+import { useNetworkInfo } from "global/stores/networkInfo";
+import { getGravityBridgeAddress } from "global/utils/getAddressUtils";
 
 interface BridgeInProps {
   ethAddress?: string;
@@ -19,26 +21,10 @@ interface BridgeInProps {
   step2Transactions: NativeTransaction[];
 }
 const BridgeIn = (props: BridgeInProps) => {
-  const transactionHooks = useBridgingTransactions();
+  const txStore = useTransactionStore();
+  const networkInfo = useNetworkInfo();
   const selectedToken = props.selectedEthToken;
-  const needAllowance =
-    selectedToken.symbol !== "choose token" &&
-    (selectedToken.allowance.lt(selectedToken.erc20Balance) ||
-      selectedToken.allowance.isZero());
-  const approveToken = transactionHooks.bridgeIn.approveToken(
-    selectedToken.address
-  );
-  const sendToCosmos = transactionHooks.bridgeIn.sendToCosmos(
-    ADDRESSES.ETHMainnet.GravityBridge,
-    selectedToken.address,
-    props.cantoAddress ?? "ibc"
-  );
-  const sendToCosmosWeth = transactionHooks.bridgeIn.sendToCosmosWithWrap(
-    props.ethAddress,
-    ADDRESSES.ETHMainnet.GravityBridge,
-    selectedToken.address,
-    props.cantoAddress ?? "ibc"
-  );
+
   return (
     <BridgeStyled>
       <div className="left">
@@ -148,26 +134,21 @@ const BridgeIn = (props: BridgeInProps) => {
           ]}
           selectedToken={props.selectedEthToken}
           selectToken={props.selectEthToken}
-          txHook={() => {
-            if (needAllowance) {
-              return approveToken;
-            } else if (selectedToken.symbol === "WETH") {
-              return sendToCosmosWeth;
-            } else {
-              return sendToCosmos;
-            }
-          }}
+          tx={async (amount: BigNumber) =>
+            await sendToComsosTx(
+              txStore,
+              getGravityBridgeAddress(Number(networkInfo.chainId)),
+              selectedToken.address,
+              props.cantoAddress ?? "",
+              amount,
+              selectedToken.allowance,
+              selectedToken.symbol
+            )
+          }
         />
         <Step2TxBox
           bridgeIn
           transactions={props.step2Transactions}
-          txHook={(tokenName: string) =>
-            transactionHooks.convertCoin.convertTx(
-              tokenName,
-              props.cantoAddress ?? "",
-              true
-            )
-          }
           cantoAddress={props.cantoAddress ?? ""}
           ethAddress={props.ethAddress ?? ""}
         />

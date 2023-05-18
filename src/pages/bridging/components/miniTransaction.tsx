@@ -1,46 +1,35 @@
 import styled from "@emotion/styled";
 import { formatUnits } from "ethers/lib/utils";
-import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { CantoMainnet } from "global/providers";
 import { truncateNumber } from "global/utils/formattingNumbers";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 import { NativeTransaction } from "../config/interfaces";
-import { BridgeTransaction } from "../hooks/useBridgingTransactions";
-import {
-  convertSecondsToString,
-  formatAddress,
-  toastBridgeTx,
-} from "../utils/utils";
+import { convertSecondsToString, formatAddress } from "../utils/utils";
 import ConfirmTxModal, {
   TokenWithIcon,
 } from "global/components/modals/confirmTxModal";
 import { getBridgeExtraDetails } from "./bridgeDetails";
-import { getShortTxStatusFromState } from "global/utils/formatTxDetails";
+import OngoingTxModal from "global/components/modals/ongoingTxModal";
 
 interface Props {
   transaction: NativeTransaction;
-  txFactory: () => BridgeTransaction;
   cantoAddress: string;
   ethAddress: string;
   recover: boolean;
+  isIBCTransfer: boolean;
+  tx?: (...args: any[]) => void;
 }
 const MiniTransaction = (props: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const txStats = props.txFactory();
-  const isIBCTransfer = txStats.txType == CantoTransactionType.IBC_OUT;
   //just for ibc out
   const tokenNetworks = props.transaction.token.supportedOutChannels ?? [0];
   const [selectedNetwork, setSelectedNetwork] = useState<
     keyof typeof ALL_BRIDGE_OUT_NETWORKS
   >(tokenNetworks ? tokenNetworks[0] : 0);
   const [userInputAddress, setUserInputAddress] = useState("");
-
-  useEffect(() => {
-    toastBridgeTx(txStats.state, txStats.txName);
-  }, [txStats.state]);
 
   return (
     <Styled>
@@ -51,9 +40,10 @@ const MiniTransaction = (props: Props) => {
           setModalOpen(false);
         }}
       >
+        <OngoingTxModal onClose={() => setModalOpen(false)} />
         <ConfirmTxModal
           networkId={CantoMainnet.chainId}
-          title={txStats.txName}
+          title={"CONFIRMATION"}
           titleIcon={TokenWithIcon({
             icon: props.transaction.token.icon,
             name: props.transaction.token.symbol,
@@ -62,7 +52,7 @@ const MiniTransaction = (props: Props) => {
             { title: "from", value: formatAddress(props.cantoAddress, 6) },
             {
               title: "to",
-              value: isIBCTransfer
+              value: props.isIBCTransfer
                 ? formatAddress(userInputAddress, 6)
                 : formatAddress(props.ethAddress, 6),
             },
@@ -80,7 +70,7 @@ const MiniTransaction = (props: Props) => {
             },
           ]}
           extraInputs={
-            isIBCTransfer
+            props.isIBCTransfer
               ? [
                   {
                     header: "address",
@@ -94,33 +84,24 @@ const MiniTransaction = (props: Props) => {
               : []
           }
           disableConfirm={
-            isIBCTransfer &&
+            props.isIBCTransfer &&
             !ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].checkAddress(
               userInputAddress
             )
           }
           onConfirm={() => {
-            isIBCTransfer
-              ? txStats.send(
-                  props.transaction.amount.toString(),
-                  userInputAddress,
-                  ALL_BRIDGE_OUT_NETWORKS[selectedNetwork]
+            props.isIBCTransfer
+              ? props.tx?.(
+                  ALL_BRIDGE_OUT_NETWORKS[selectedNetwork],
+                  userInputAddress
                 )
-              : txStats.send(props.transaction.amount.toString());
-          }}
-          loadingProps={{
-            transactionType: txStats.txType,
-            status: txStats.state,
-            tokenName: props.transaction.token.name,
-            onClose: () => {
-              setModalOpen(false);
-            },
+              : props.tx?.();
           }}
           extraDetails={getBridgeExtraDetails(
-            !isIBCTransfer,
+            !props.isIBCTransfer,
             true,
             formatAddress(props.cantoAddress, 6),
-            !isIBCTransfer
+            !props.isIBCTransfer
               ? formatAddress(props.ethAddress, 6)
               : ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].name
           )}
@@ -137,7 +118,11 @@ const MiniTransaction = (props: Props) => {
         }}
       >
         <Text size="text3" align="left">
-          {props.recover ? "denom" : isIBCTransfer ? "destination" : "origin"}
+          {props.recover
+            ? "denom"
+            : props.isIBCTransfer
+            ? "destination"
+            : "origin"}
         </Text>
         <Text type="title" align="left">
           {props.recover
@@ -160,7 +145,7 @@ const MiniTransaction = (props: Props) => {
           {props.recover ? "" : " " + props.transaction.token.symbol}
         </Text>
       </div>
-      {isIBCTransfer &&
+      {props.isIBCTransfer &&
         props.transaction.token.supportedOutChannels.length > 1 && (
           <ChooseNetwork>
             <div className="network-list">
@@ -221,13 +206,9 @@ const MiniTransaction = (props: Props) => {
             disabled={props.transaction.timeLeft !== "0"}
             weight="bold"
             filled
-            onClick={() => {
-              if (txStats.state == "Exception" || txStats.state == "Fail")
-                txStats.resetState();
-              setModalOpen(true);
-            }}
+            onClick={() => setModalOpen(true)}
           >
-            {getShortTxStatusFromState(txStats.state)}
+            complete
           </PrimaryButton>
         </div>
       )}

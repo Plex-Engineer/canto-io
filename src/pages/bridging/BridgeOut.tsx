@@ -1,11 +1,14 @@
-import { BigNumberish } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { BridgeStyled } from "./BridgeIn";
 import QBoxList from "./components/QBoxList";
 import Step1TxBox from "./components/step1TxBox";
 import Step2TxBox from "./components/step2TxBox";
 import { NativeTransaction, UserERC20BridgeToken } from "./config/interfaces";
-import { BridgingTransactionsSelector } from "./hooks/useBridgingTransactions";
+import { convertTx } from "./utils/transactions";
+import { useTransactionStore } from "global/stores/transactionStore";
+import { CantoMainnet } from "global/config/networks";
+import { chain, convertFee } from "global/config/cosmosConstants";
 
 interface BridgeOutProps {
   ethAddress?: string;
@@ -14,9 +17,9 @@ interface BridgeOutProps {
   selectedBridgeOutToken: UserERC20BridgeToken;
   selectToken: (tokenAddress: string) => void;
   step2Transactions: NativeTransaction[];
-  txSelector: BridgingTransactionsSelector;
 }
 const BridgeOut = (props: BridgeOutProps) => {
+  const txStore = useTransactionStore();
   return (
     <BridgeStyled>
       <div className="left">
@@ -90,18 +93,23 @@ const BridgeOut = (props: BridgeOutProps) => {
           ]}
           selectedToken={props.selectedBridgeOutToken}
           selectToken={props.selectToken}
-          txHook={() =>
-            props.txSelector.convertCoin.convertTx(
-              props.selectedBridgeOutToken.address,
+          tx={async (amount: BigNumber) =>
+            await convertTx(
+              txStore,
+              false,
               props.cantoAddress ?? "",
-              false
+              props.selectedBridgeOutToken.address,
+              amount.toString(),
+              CantoMainnet.cosmosAPIEndpoint,
+              convertFee,
+              chain,
+              ""
             )
           }
         />
         <Step2TxBox
           bridgeIn={false}
           transactions={props.step2Transactions}
-          txHook={(tokenName) => props.txSelector.bridgeOut.ibcOut(tokenName)}
           cantoAddress={props.cantoAddress ?? ""}
           ethAddress={props.ethAddress ?? ""}
         />

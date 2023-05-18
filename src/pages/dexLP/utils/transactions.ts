@@ -7,6 +7,7 @@ import {
 } from "global/stores/transactionUtils";
 import {
   CantoTransactionType,
+  ExtraProps,
   TransactionDetails,
 } from "global/config/interfaces/transactionTypes";
 import { getPairName } from "./utils";
@@ -34,6 +35,11 @@ export async function dexLPTx(
   account: string | undefined,
   deadline: number
 ): Promise<boolean> {
+  const extraProps = {
+    symbol: getPairName(pair.basePairInfo),
+    icon: pair.basePairInfo.token1.icon,
+    icon2: pair.basePairInfo.token2.icon,
+  };
   if (!account) {
     return false;
   }
@@ -50,7 +56,8 @@ export async function dexLPTx(
         amountMin2,
         account,
         deadline,
-        txType === LPTransaction.ADD_LIQUIDITY_AND_STAKE
+        txType === LPTransaction.ADD_LIQUIDITY_AND_STAKE,
+        extraProps
       );
     case LPTransaction.REMOVE_LIQUIDITY:
     case LPTransaction.REMOVE_LIQUIDITY_AND_UNSTAKE:
@@ -63,7 +70,8 @@ export async function dexLPTx(
         amountMin2,
         account,
         deadline,
-        txType === LPTransaction.REMOVE_LIQUIDITY_AND_UNSTAKE
+        txType === LPTransaction.REMOVE_LIQUIDITY_AND_UNSTAKE,
+        extraProps
       );
     default:
       return false;
@@ -80,7 +88,8 @@ async function addLiquidityTx(
   amountMin2: BigNumber,
   account: string,
   deadline: number,
-  stake: boolean
+  stake: boolean,
+  extraProps?: ExtraProps
 ): Promise<boolean> {
   const [enable1Details, enable2Details, addDetails] = [
     createTransactionDetails(txStore, CantoTransactionType.ENABLE, {
@@ -91,18 +100,24 @@ async function addLiquidityTx(
       icon: pair.basePairInfo.token2.icon,
       symbol: pair.basePairInfo.token2.symbol,
     }),
-    createTransactionDetails(txStore, CantoTransactionType.ADD_LIQUIDITY, {
-      symbol: getPairName(pair.basePairInfo),
-    }),
+    createTransactionDetails(
+      txStore,
+      CantoTransactionType.ADD_LIQUIDITY,
+      extraProps
+    ),
   ];
   const stakeDetails = stake
     ? [
-        createTransactionDetails(txStore, CantoTransactionType.ENABLE, {
-          symbol: getPairName(pair.basePairInfo),
-        }),
-        createTransactionDetails(txStore, CantoTransactionType.SUPPLY, {
-          symbol: getPairName(pair.basePairInfo),
-        }),
+        createTransactionDetails(
+          txStore,
+          CantoTransactionType.ENABLE,
+          extraProps
+        ),
+        createTransactionDetails(
+          txStore,
+          CantoTransactionType.SUPPLY,
+          extraProps
+        ),
       ]
     : [];
   txStore.addTransactions([
@@ -195,21 +210,24 @@ async function removeLiquidityTx(
   amountMin2: BigNumber,
   account: string,
   deadline: number,
-  unStake: boolean
+  unStake: boolean,
+  extraProps?: ExtraProps
 ): Promise<boolean> {
   const [enableLPDetails, removeDetails] = [
-    createTransactionDetails(txStore, CantoTransactionType.ENABLE, {
-      symbol: getPairName(pair.basePairInfo),
-    }),
-    createTransactionDetails(txStore, CantoTransactionType.REMOVE_LIQUIDITY, {
-      symbol: getPairName(pair.basePairInfo),
-    }),
+    createTransactionDetails(txStore, CantoTransactionType.ENABLE, extraProps),
+    createTransactionDetails(
+      txStore,
+      CantoTransactionType.REMOVE_LIQUIDITY,
+      extraProps
+    ),
   ];
   const unstakeProps = unStake
     ? [
-        createTransactionDetails(txStore, CantoTransactionType.WITHDRAW, {
-          symbol: getPairName(pair.basePairInfo),
-        }),
+        createTransactionDetails(
+          txStore,
+          CantoTransactionType.WITHDRAW,
+          extraProps
+        ),
       ]
     : [];
   txStore.addTransactions([...unstakeProps, enableLPDetails, removeDetails]);

@@ -24,14 +24,12 @@ import { parseUnits } from "ethers/lib/utils";
 import Tooltip from "global/packages/src/components/molecules/Tooltip";
 import { Text } from "global/packages/src";
 import guideImg from "assets/guide.svg";
-import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
 import RecoveryPage from "./Recovery";
 
 const Bridging = () => {
   const networkInfo = useNetworkInfo();
   const bridgingTokens = useBridgeTokenInfo();
   const bridgingHistory = useTransactionHistory();
-  const transactionHooks = useBridgingTransactions();
   const { activateBrowserWallet } = useEthers();
   const navigate = useNavigate();
   const [pubKeySuccess, setPubKeySuccess] = useState("None");
@@ -162,7 +160,6 @@ const Bridging = () => {
                     bridgingTokens.userNativeTokens,
                     false
                   )}
-                  txSelector={transactionHooks}
                 />,
                 <Transactions
                   key={"transaction"}
@@ -174,7 +171,6 @@ const Bridging = () => {
                         key={"recovery"}
                         tokens={bridgingTokens.unkownIBCTokens}
                         cantoAddress={networkInfo.cantoAddress}
-                        txSelector={transactionHooks}
                       />,
                     ]
                   : []),

@@ -22,6 +22,7 @@ import {
 } from "../utils/nativeBalances";
 import { useTokenBalances } from "./tokenBalances/useTokenBalances";
 import { TOKENS } from "global/config/tokenInfo";
+import { useEtherBalance } from "@usedapp/core";
 
 interface BridgeTokenInfo {
   userBridgeInTokens: UserERC20BridgeToken[];
@@ -38,6 +39,9 @@ interface BridgeTokenInfo {
 export function useBridgeTokenInfo(): BridgeTokenInfo {
   const networkInfo = useNetworkInfo();
   const tokenStore = useBridgeTokenStore();
+  const ethBalance = useEtherBalance(networkInfo.account, {
+    chainId: 1,
+  });
 
   //bridge in erc20 tokens on ETH mainnet
   const userEthBridgeInTokens = useTokenBalances(
@@ -49,7 +53,7 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
     ...token,
     erc20Balance:
       token.address === TOKENS.ETHMainnet.WETH.address
-        ? token.erc20Balance.add(networkInfo.balance)
+        ? token.erc20Balance.add(ethBalance ?? 0)
         : token.erc20Balance,
   }));
   //bridge out erc20 tokens on Canto Mainnet

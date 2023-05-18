@@ -1,4 +1,3 @@
-import { LoadingModalProps } from "global/components/modals/loading2";
 import { ReactNode } from "react";
 
 export interface ConfirmTxModalProps {
@@ -15,7 +14,6 @@ export interface ConfirmTxModalProps {
   }[];
   disableConfirm: boolean;
   onConfirm: () => void;
-  loadingProps: LoadingModalProps;
   extraDetails?: ReactNode;
   onClose: () => void;
 }

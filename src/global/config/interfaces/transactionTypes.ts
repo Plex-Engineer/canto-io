@@ -2,7 +2,11 @@ import { BigNumber, ContractInterface } from "ethers";
 import { CosmosTxResponse } from "../cosmosConstants";
 
 export enum CantoTransactionType {
+  //GENERAL
   ENABLE = "Enable",
+  WRAP = "Wrap",
+  UNWRAP = "Unwrap",
+
   //LENDING
   SUPPLY = "Supply",
   WITHDRAW = "Withdraw",
@@ -26,16 +30,12 @@ export enum CantoTransactionType {
   REDELEGATE = "Redelegate",
   CLAIM_REWARDS_STAKING = "Claim Staking Rewards",
 
-  INCREASE_ALLOWANCE = "Increase Allowance",
-  SEND_TOKEN = "Send Token",
-  BRIDGE_IN = "Bridge In",
-  IBC_OUT = "IBC Out",
+  //BRIDGEING
+  SEND_TO_COSMOS = "Send to Cosmos",
   CONVERT_TO_EVM = "Convert to EVM",
   CONVERT_TO_NATIVE = "Convert to Native",
-  BRIDGE = "Bridge",
+  IBC_OUT = "IBC Out",
   IBC_IN = "IBC in",
-  WRAP = "Wrap",
-  UNWRAP = "Unwrap",
 }
 
 //Do not change, same as useTransaction, but need for compatability with cosmos transactions
@@ -59,20 +59,10 @@ export const userTxMessages = {
   deniedTx: "user denied transaction",
 };
 
-interface TransactionMessages {
-  pending: string;
-  success: string;
-  error: string;
-}
-
 export interface TransactionDetails {
   txId: string;
   txType: CantoTransactionType;
-  extra?: {
-    icon?: string;
-    symbol?: string;
-    readableAmount?: string;
-  };
+  extra?: ExtraProps;
   status: TransactionState;
   currentMessage: string;
   messages: TransactionMessages;
@@ -93,4 +83,19 @@ export interface CosmosTransaction {
   details?: TransactionDetails;
   tx: (...args: any[]) => Promise<CosmosTxResponse>;
   params: unknown[];
+}
+
+export interface TransactionMessages {
+  short: string;
+  long: string;
+  pending: string;
+  success: string;
+  error: string;
+}
+
+export interface ExtraProps {
+  icon?: string;
+  symbol?: string;
+  readableAmount?: string;
+  icon2?: string; //if LP Token
 }
