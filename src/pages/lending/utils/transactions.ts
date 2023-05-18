@@ -6,16 +6,14 @@ import {
   TransactionDetails,
 } from "global/config/interfaces/transactionTypes";
 import { TransactionStore } from "global/stores/transactionStore";
-import { NetworkProps } from "global/stores/networkInfo";
 import { formatUnits } from "ethers/lib/utils";
 import {
   createTransactionDetails,
   _performEnable,
 } from "global/stores/transactionUtils";
-import { ADDRESSES } from "global/config/addresses";
-import { CantoTestnet } from "global/providers";
 import { TOKENS } from "global/config/tokenInfo";
 import { reservoirAdddress } from "../config/lendingMarketTokens";
+import { getComptrollerAddress } from "global/utils/getAddressUtils";
 
 interface TokenInfo {
   symbol: string;
@@ -25,7 +23,6 @@ interface TokenInfo {
 //claim rewards needs different inputs, so separate transaction
 export async function claimLendingRewardsTx(
   txStore: TransactionStore,
-  accountStore: NetworkProps,
   account: string | undefined,
   comptrollerAddress: string,
   amountToClaim: BigNumber,
@@ -40,7 +37,7 @@ export async function claimLendingRewardsTx(
     icon: TOKENS.cantoMainnet.CANTO.icon,
     amount: formatUnits(amountToClaim, 18),
   };
-  const [dripTx, claimTx] = [
+  const [dripDetails, claimDetails] = [
     createTransactionDetails(txStore, CantoTransactionType.DRIP, tokenInfo),
     createTransactionDetails(
       txStore,
@@ -49,30 +46,31 @@ export async function claimLendingRewardsTx(
     ),
   ];
   needDrip
-    ? txStore.addTransactions([dripTx, claimTx])
-    : txStore.addTransactions([claimTx]);
+    ? txStore.addTransactions([dripDetails, claimDetails])
+    : txStore.addTransactions([claimDetails]);
 
-  const comptrollerContract = accountStore.createContractWithSigner(
-    comptrollerAddress,
-    comptrollerAbi
-  );
-  const reservoirContract = accountStore.createContractWithSigner(
-    reservoirAdddress,
-    reservoirAbi
-  );
   const dripDone = !needDrip
     ? true
-    : await txStore.performTx(
-        async () => await reservoirContract.drip(),
-        dripTx
-      );
+    : await txStore.performEVMTx({
+        details: dripDetails,
+        address: reservoirAdddress,
+        abi: reservoirAbi,
+        method: "drip",
+        params: [],
+        value: "0",
+      });
+
   if (!dripDone) {
     return false;
   }
-  return await txStore.performTx(
-    async () => await comptrollerContract.claimComp(account),
-    claimTx
-  );
+  return await txStore.performEVMTx({
+    details: claimDetails,
+    address: comptrollerAddress,
+    abi: comptrollerAbi,
+    method: "claimComp",
+    params: [account],
+    value: "0",
+  });
 }
 //This will create the correct contracts before calling _functions
 export async function lendingMarketTx(
@@ -116,13 +114,9 @@ export async function lendingMarketTx(
       return await withdrawTx(txStore, cToken.data.address, amount, tokenInfo);
     case LendingTransaction.COLLATERALIZE:
     case LendingTransaction.DECOLLATERLIZE:
-      const comptrollerAddress =
-        chainId == CantoTestnet.chainId
-          ? ADDRESSES.testnet.Comptroller
-          : ADDRESSES.cantoMainnet.Comptroller;
       return await collateralizeTx(
         txStore,
-        comptrollerAddress,
+        getComptrollerAddress(chainId),
         cToken.data.address,
         txType === LendingTransaction.COLLATERALIZE,
         tokenInfo

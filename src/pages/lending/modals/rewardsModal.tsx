@@ -8,7 +8,6 @@ import { RewardsContainer } from "../components/Styled";
 import TokenSymbol from "global/packages/src/components/atoms/NoteSymbol";
 import { claimLendingRewardsTx } from "../utils/transactions";
 import { useTransactionStore } from "global/stores/transactionStore";
-import { useNetworkInfo } from "global/stores/networkInfo";
 
 interface Props {
   rewardsObj: UserLMRewards;
@@ -16,7 +15,6 @@ interface Props {
 const formatUnits = ethers.utils.formatUnits;
 const RewardsModal = ({ rewardsObj }: Props) => {
   const txStore = useTransactionStore();
-  const networkStore = useNetworkInfo();
 
   return (
     <RewardsContainer>
@@ -70,7 +68,6 @@ const RewardsModal = ({ rewardsObj }: Props) => {
         onClick={() =>
           claimLendingRewardsTx(
             txStore,
-            networkStore,
             rewardsObj.wallet,
             rewardsObj.cantroller,
             rewardsObj.accrued,

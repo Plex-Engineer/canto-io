@@ -1,4 +1,5 @@
 import { BigNumber, ContractInterface } from "ethers";
+import { CosmosTxResponse } from "../cosmosConstants";
 
 export enum CantoTransactionType {
   ENABLE = "Enable",
@@ -81,4 +82,9 @@ export interface EVMTransaction {
   params: unknown[];
   //if sending canto
   value: string | BigNumber;
+}
+export interface CosmosTransaction {
+  details?: TransactionDetails;
+  tx: (...args: any[]) => Promise<CosmosTxResponse>;
+  params: unknown[];
 }

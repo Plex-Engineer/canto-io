@@ -1,6 +1,6 @@
 import { TransactionStore } from "global/stores/transactionStore";
 import { LPTransaction, UserLPPairInfo } from "../config/interfaces";
-import { BigNumber, Contract, ethers } from "ethers";
+import { BigNumber, Contract } from "ethers";
 import {
   _performEnable,
   createTransactionDetails,
@@ -12,22 +12,15 @@ import {
 import { getPairName } from "./utils";
 import { ERC20Abi, cERC20Abi, routerAbi } from "global/config/abi";
 import { isTokenCanto } from "./pairCheck";
-import { CantoMainnet, CantoTestnet } from "global/config/networks";
 import {
   _performSupply,
   _performWithdraw,
 } from "pages/lending/utils/transactions";
+import {
+  getCurrentProvider,
+  getRouterAddress,
+} from "global/utils/getAddressUtils";
 
-function getRouterAddress(chainId: number | undefined) {
-  return CantoTestnet.chainId == chainId
-    ? CantoTestnet.addresses.PriceFeed
-    : CantoMainnet.addresses.PriceFeed;
-}
-function getRPCURL(chainId: number | undefined) {
-  return CantoTestnet.chainId == chainId
-    ? CantoTestnet.rpcUrl
-    : CantoMainnet.rpcUrl;
-}
 export async function dexLPTx(
   chainId: number,
   txStore: TransactionStore,
@@ -157,16 +150,13 @@ async function addLiquidityTx(
     return addLiquidityDone;
   }
   //dont need a signer for these contracts since we are just viewing balances
+  const provider = getCurrentProvider(chainId);
   const cLPToken = new Contract(
     pair.basePairInfo.cLPaddress,
     cERC20Abi,
-    new ethers.providers.JsonRpcProvider(getRPCURL(chainId))
+    provider
   );
-  const LPToken = new Contract(
-    pair.basePairInfo.address,
-    ERC20Abi,
-    new ethers.providers.JsonRpcProvider(getRPCURL(chainId))
-  );
+  const LPToken = new Contract(pair.basePairInfo.address, ERC20Abi, provider);
 
   //check the new balance for the LP token to supply
   const addedBalance = (await LPToken.balanceOf(account)).sub(

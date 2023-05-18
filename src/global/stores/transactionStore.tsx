@@ -1,11 +1,10 @@
 import {
+  CosmosTransaction,
   EVMTransaction,
   TransactionDetails,
 } from "global/config/interfaces/transactionTypes";
-import { TransactionResponse } from "@ethersproject/abstract-provider";
 import create from "zustand";
 import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/transactionChecks";
-import { CosmosTxResponse } from "global/config/cosmosConstants";
 import { useNetworkInfo } from "./networkInfo";
 
 export interface TransactionStore {
@@ -15,15 +14,8 @@ export interface TransactionStore {
   generateTxId: () => string;
   addTransactions: (transactions: TransactionDetails[]) => void;
   updateTx: (txId: string, params: Partial<TransactionDetails>) => void;
-  performTx: (
-    tx: () => Promise<TransactionResponse>,
-    txProps: TransactionDetails
-  ) => Promise<boolean>;
   performEVMTx: (tx: EVMTransaction) => Promise<boolean>;
-  performCosmosTx: (
-    tx: () => Promise<CosmosTxResponse>,
-    txProps: TransactionDetails
-  ) => Promise<boolean>;
+  performCosmosTx: (tx: CosmosTransaction) => Promise<boolean>;
 }
 
 export const useTransactionStore = create<TransactionStore>()((set, get) => ({
@@ -53,37 +45,6 @@ export const useTransactionStore = create<TransactionStore>()((set, get) => ({
         ...get().transactions.slice(index + 1),
       ],
     });
-  },
-  performTx: async (tx, txProps) => {
-    try {
-      const transaction = await tx();
-      get().updateTx(txProps.txId, {
-        status: "Mining",
-        currentMessage: txProps.messages.pending,
-        hash: transaction.hash,
-      });
-      const receipt = await transaction.wait();
-      if (receipt.status === 1) {
-        get().updateTx(txProps.txId, {
-          status: "Success",
-          currentMessage: txProps.messages.success,
-        });
-        return true;
-      } else {
-        get().updateTx(txProps.txId, {
-          status: "Fail",
-          currentMessage: txProps.messages.error,
-        });
-        return false;
-      }
-    } catch (e) {
-      get().updateTx(txProps.txId, {
-        status: "Fail",
-        currentMessage: txProps.messages.error,
-        errorReason: (e as Error).message ? (e as Error).message : "",
-      });
-      return false;
-    }
   },
   performEVMTx: async (tx) => {
     try {
@@ -126,37 +87,42 @@ export const useTransactionStore = create<TransactionStore>()((set, get) => ({
       return false;
     }
   },
-  performCosmosTx: async (tx, txProps) => {
+  performCosmosTx: async (tx) => {
     let transaction;
     try {
-      transaction = await tx();
-      get().updateTx(txProps.txId, {
-        status: "Mining",
-        currentMessage: txProps.messages.pending,
-        hash: transaction.tx_response.txhash,
-      });
-      const txSuccess = await checkCosmosTxConfirmation(
-        transaction.tx_response.txhash
-      );
-      if (txSuccess) {
-        get().updateTx(txProps.txId, {
-          status: "Success",
-          currentMessage: txProps.messages.success,
+      transaction = await tx.tx(...tx.params);
+      if (tx.details) {
+        get().updateTx(tx.details.txId, {
+          status: "Mining",
+          currentMessage: tx.details.messages.pending,
+          hash: transaction.tx_response.txhash,
         });
-        return true;
-      } else {
-        get().updateTx(txProps.txId, {
-          status: "Fail",
-          currentMessage: txProps.messages.error,
-        });
-        return false;
+        const txSuccess = await checkCosmosTxConfirmation(
+          transaction.tx_response.txhash
+        );
+        if (txSuccess) {
+          get().updateTx(tx.details.txId, {
+            status: "Success",
+            currentMessage: tx.details.messages.success,
+          });
+          return true;
+        } else {
+          get().updateTx(tx.details.txId, {
+            status: "Fail",
+            currentMessage: tx.details.messages.error,
+          });
+          return false;
+        }
       }
+      return true;
     } catch (e) {
-      get().updateTx(txProps.txId, {
-        status: "Fail",
-        currentMessage: txProps.messages.error,
-        errorReason: (e as Error).message ? (e as Error).message : "",
-      });
+      if (tx.details) {
+        get().updateTx(tx.details.txId, {
+          status: "Fail",
+          currentMessage: tx.details.messages.error,
+          errorReason: (e as Error).message ? (e as Error).message : "",
+        });
+      }
       return false;
     }
   },

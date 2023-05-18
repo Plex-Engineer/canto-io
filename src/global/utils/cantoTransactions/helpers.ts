@@ -11,16 +11,9 @@ import {
 import { signatureToPubkey } from "@hanchon/signature-to-pubkey";
 import { ethers } from "ethers";
 import { Buffer } from "buffer";
-import { CantoMainnet, CantoTestnet } from "global/config/networks";
+import { CantoMainnet } from "global/config/networks";
 import { BigNumber } from "ethers";
 import { Chain, CosmosMsg, Sender } from "global/config/cosmosConstants";
-
-export const nodeURL = (chain: number | undefined) => {
-  if (chain == CantoTestnet.chainId) {
-    return CantoTestnet.cosmosAPIEndpoint;
-  }
-  return CantoMainnet.cosmosAPIEndpoint;
-};
 
 const JSONHeader = "application/json";
 /**

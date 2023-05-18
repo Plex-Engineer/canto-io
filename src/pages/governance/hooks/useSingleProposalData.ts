@@ -3,7 +3,6 @@ import { formatUnits } from "ethers/lib/utils";
 import { chain, memo, votingFee } from "global/config/cosmosConstants";
 import { CantoMainnet } from "global/config/networks";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import { nodeURL } from "global/utils/cantoTransactions/helpers";
 import { Mixpanel } from "mixpanel";
 import { DelegationResponse } from "pages/staking/config/interfaces";
 import { calculateTotalStaked } from "pages/staking/utils/allUserValidatorInfo";
@@ -29,6 +28,7 @@ import {
 import { getAccountVote } from "../utils/voting";
 import { useTransactionStore } from "global/stores/transactionStore";
 import { voteTx } from "../utils/transactions";
+import { getCosmosAPIEndpoint } from "global/utils/getAddressUtils";
 
 interface SingleProposalReturnProps {
   loading: boolean;
@@ -100,7 +100,10 @@ export function useSingleProposalData(): SingleProposalReturnProps {
   async function showAccountVote() {
     if (proposal.status == VoteStatus.votingOngoing) {
       setAccountVote(
-        await getAccountVote(proposal.proposal_id, nodeURL(chainId))
+        await getAccountVote(
+          proposal.proposal_id,
+          getCosmosAPIEndpoint(chainId)
+        )
       );
     }
   }
@@ -147,7 +150,7 @@ export function useSingleProposalData(): SingleProposalReturnProps {
         account,
         Number(proposal.proposal_id),
         convertToVoteNumber(vote),
-        nodeURL(chainId),
+        getCosmosAPIEndpoint(chainId),
         votingFee,
         chain,
         memo
