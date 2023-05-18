@@ -1,9 +1,8 @@
 import { TransactionStore } from "global/stores/transactionStore";
 import { LPTransaction, UserLPPairInfo } from "../config/interfaces";
-import { NetworkProps } from "global/stores/networkInfo";
-import { BigNumber } from "ethers";
+import { BigNumber, Contract, ethers } from "ethers";
 import {
-  _enable,
+  _performEnable,
   createTransactionDetails,
 } from "global/stores/transactionUtils";
 import {
@@ -12,18 +11,26 @@ import {
 } from "global/config/interfaces/transactionTypes";
 import { getPairName } from "./utils";
 import { ERC20Abi, cERC20Abi, routerAbi } from "global/config/abi";
-import { checkForCantoInPair } from "./pairCheck";
-import { _supply, _withdraw } from "pages/lending/utils/transactions";
+import { isTokenCanto } from "./pairCheck";
 import { CantoMainnet, CantoTestnet } from "global/config/networks";
+import {
+  _performSupply,
+  _performWithdraw,
+} from "pages/lending/utils/transactions";
 
 function getRouterAddress(chainId: number | undefined) {
   return CantoTestnet.chainId == chainId
     ? CantoTestnet.addresses.PriceFeed
     : CantoMainnet.addresses.PriceFeed;
 }
+function getRPCURL(chainId: number | undefined) {
+  return CantoTestnet.chainId == chainId
+    ? CantoTestnet.rpcUrl
+    : CantoMainnet.rpcUrl;
+}
 export async function dexLPTx(
+  chainId: number,
   txStore: TransactionStore,
-  accountStore: NetworkProps,
   txType: LPTransaction,
   pair: UserLPPairInfo,
   amountLPOut: BigNumber,
@@ -41,8 +48,8 @@ export async function dexLPTx(
     case LPTransaction.ADD_LIQUIDITY:
     case LPTransaction.ADD_LIQUIDITY_AND_STAKE:
       return await addLiquidityTx(
+        chainId,
         txStore,
-        accountStore,
         pair,
         amount1,
         amount2,
@@ -55,8 +62,8 @@ export async function dexLPTx(
     case LPTransaction.REMOVE_LIQUIDITY:
     case LPTransaction.REMOVE_LIQUIDITY_AND_UNSTAKE:
       return await removeLiquidityTx(
+        chainId,
         txStore,
-        accountStore,
         pair,
         amountLPOut,
         amountMin1,
@@ -71,8 +78,8 @@ export async function dexLPTx(
 }
 
 async function addLiquidityTx(
+  chainId: number,
   txStore: TransactionStore,
-  accountStore: NetworkProps,
   pair: UserLPPairInfo,
   amount1: BigNumber,
   amount2: BigNumber,
@@ -82,7 +89,7 @@ async function addLiquidityTx(
   deadline: number,
   stake: boolean
 ): Promise<boolean> {
-  const [enableT1Props, enableT2Props, addProps] = [
+  const [enable1Details, enable2Details, addDetails] = [
     createTransactionDetails(txStore, CantoTransactionType.ENABLE, {
       icon: pair.basePairInfo.token1.icon,
       symbol: pair.basePairInfo.token1.symbol,
@@ -95,7 +102,7 @@ async function addLiquidityTx(
       symbol: getPairName(pair.basePairInfo),
     }),
   ];
-  const stakeTransactions = stake
+  const stakeDetails = stake
     ? [
         createTransactionDetails(txStore, CantoTransactionType.ENABLE, {
           symbol: getPairName(pair.basePairInfo),
@@ -106,60 +113,92 @@ async function addLiquidityTx(
       ]
     : [];
   txStore.addTransactions([
-    enableT1Props,
-    enableT2Props,
-    addProps,
-    ...stakeTransactions,
+    enable1Details,
+    enable2Details,
+    addDetails,
+    ...stakeDetails,
   ]);
-  const addLiquidityDone = await _addLiquidity(
+  const [enable1Done, enable2Done] = await Promise.all([
+    await _performEnable(
+      txStore,
+      pair.basePairInfo.token1.address,
+      getRouterAddress(chainId),
+      pair.allowance.token1,
+      amount1,
+      enable1Details
+    ),
+    await _performEnable(
+      txStore,
+      pair.basePairInfo.token2.address,
+      getRouterAddress(chainId),
+      pair.allowance.token2,
+      amount2,
+      enable2Details
+    ),
+  ]);
+  if (!enable1Done || !enable2Done) {
+    return false;
+  }
+  const addLiquidityDone = await _performAddLiquidity(
+    chainId,
     txStore,
-    accountStore,
-    enableT1Props,
-    enableT2Props,
-    addProps,
-    pair,
+    pair.basePairInfo.token1.address,
+    pair.basePairInfo.token2.address,
+    pair.basePairInfo.stable,
     amount1,
     amount2,
     amountMin1,
     amountMin2,
     account,
-    deadline
+    deadline,
+    addDetails
   );
-  if (!stake) {
+  if (!stake || !addLiquidityDone) {
     return addLiquidityDone;
   }
-  //create cToken
-  const cLPToken = accountStore.createContractWithSigner(
+  //dont need a signer for these contracts since we are just viewing balances
+  const cLPToken = new Contract(
     pair.basePairInfo.cLPaddress,
-    cERC20Abi
+    cERC20Abi,
+    new ethers.providers.JsonRpcProvider(getRPCURL(chainId))
   );
-  const LPToken = accountStore.createContractWithSigner(
+  const LPToken = new Contract(
     pair.basePairInfo.address,
-    ERC20Abi
+    ERC20Abi,
+    new ethers.providers.JsonRpcProvider(getRPCURL(chainId))
   );
+
   //check the new balance for the LP token to supply
   const addedBalance = (await LPToken.balanceOf(account)).sub(
     pair.userSupply.totalLP
   );
   //check current allowance for cToken, (stored is of the router)
-  const currentAllowance = await cLPToken.allowance(
+  const currentAllowance = await LPToken.allowance(
     account,
     pair.basePairInfo.cLPaddress
   );
-  return await _supply(
+  const enableLPDone = await _performEnable(
     txStore,
-    stakeTransactions[0],
-    stakeTransactions[1],
-    cLPToken,
-    LPToken,
-    addedBalance,
+    pair.basePairInfo.address,
+    pair.basePairInfo.cLPaddress,
     currentAllowance,
-    false
+    addedBalance,
+    stakeDetails[0]
+  );
+  if (!enableLPDone) {
+    return false;
+  }
+  return await _performSupply(
+    txStore,
+    cLPToken.address,
+    false,
+    addedBalance,
+    stakeDetails[1]
   );
 }
 async function removeLiquidityTx(
+  chainId: number,
   txStore: TransactionStore,
-  accountStore: NetworkProps,
   pair: UserLPPairInfo,
   LPOut: BigNumber,
   amountMin1: BigNumber,
@@ -168,7 +207,7 @@ async function removeLiquidityTx(
   deadline: number,
   unStake: boolean
 ): Promise<boolean> {
-  const [enableLPProps, removeProps] = [
+  const [enableLPDetails, removeDetails] = [
     createTransactionDetails(txStore, CantoTransactionType.ENABLE, {
       symbol: getPairName(pair.basePairInfo),
     }),
@@ -183,179 +222,141 @@ async function removeLiquidityTx(
         }),
       ]
     : [];
-  txStore.addTransactions([...unstakeProps, enableLPProps, removeProps]);
+  txStore.addTransactions([...unstakeProps, enableLPDetails, removeDetails]);
   //if unstaking, we must do this first
   if (unStake) {
-    //create cToken
-    const cLPToken = accountStore.createContractWithSigner(
+    const unstakeDone = await _performWithdraw(
+      txStore,
       pair.basePairInfo.cLPaddress,
-      cERC20Abi
+      LPOut,
+      unstakeProps[0]
     );
-    const unstakeDone = _withdraw(txStore, unstakeProps[0], cLPToken, LPOut);
     if (!unstakeDone) {
       return false;
     }
   }
-  //done withdrawing, so now we can remove liquidity
-  return await _removeLiquidity(
+  //done withdrawing, so now we can remove liquidity after adding allowance from router
+  const lpAllowanceDone = await _performEnable(
     txStore,
-    accountStore,
-    enableLPProps,
-    removeProps,
-    pair,
+    pair.basePairInfo.address,
+    getRouterAddress(chainId),
+    pair.allowance.LPtoken,
+    LPOut,
+    enableLPDetails
+  );
+  if (!lpAllowanceDone) {
+    return false;
+  }
+  return await _performRemoveLiquidity(
+    chainId,
+    txStore,
+    pair.basePairInfo.token1.address,
+    pair.basePairInfo.token2.address,
+    pair.basePairInfo.stable,
     LPOut,
     amountMin1,
     amountMin2,
     account,
-    deadline
+    deadline,
+    removeDetails
   );
 }
 
-//must create TransactionProps for each transaction first
-//These will create Contracts for each address needed
-async function _addLiquidity(
+//Will create EVM Transactions
+//Expects transaction details to be created before calling this function
+async function _performAddLiquidity(
+  chainId: number,
   txStore: TransactionStore,
-  accountStore: NetworkProps,
-  enableT1Props: TransactionDetails,
-  enableT2Props: TransactionDetails,
-  addProps: TransactionDetails,
-  pair: UserLPPairInfo,
+  token1Address: string,
+  token2Address: string,
+  stable: boolean,
   amount1: BigNumber,
   amount2: BigNumber,
   amountMin1: BigNumber,
   amountMin2: BigNumber,
   account: string,
-  deadline: number
+  deadline: number,
+  addDetails?: TransactionDetails
 ): Promise<boolean> {
-  const [token1Contract, token2Contract, routerContract] = [
-    accountStore.createContractWithSigner(
-      pair.basePairInfo.token1.address,
-      ERC20Abi
-    ),
-    accountStore.createContractWithSigner(
-      pair.basePairInfo.token2.address,
-      ERC20Abi
-    ),
-    accountStore.createContractWithSigner(
-      getRouterAddress(Number(accountStore.chainId)),
-      routerAbi
-    ),
-  ];
-  const [enable1Done, enable2Done] = await Promise.all([
-    await _enable(
-      txStore,
-      token1Contract,
-      enableT1Props,
-      routerContract.address,
-      pair.allowance.token1,
-      amount1
-    ),
-    await _enable(
-      txStore,
-      token2Contract,
-      enableT2Props,
-      routerContract.address,
-      pair.allowance.token2,
-      amount2
-    ),
-  ]);
-  if (!enable1Done || !enable2Done) {
-    return false;
-  }
   //check for canto in pair
-  const [isToken1Canto, isToken2Canto] = checkForCantoInPair(
-    pair.basePairInfo,
-    Number(accountStore.chainId)
-  );
-  return await txStore.performTx(
-    async () =>
-      isToken1Canto || isToken2Canto
-        ? await routerContract.addLiquidityCANTO(
-            isToken1Canto
-              ? pair.basePairInfo.token2.address
-              : pair.basePairInfo.token1.address,
-            pair.basePairInfo.stable,
-            isToken1Canto ? amount2 : amount1,
-            isToken1Canto ? amountMin2 : amountMin1,
-            isToken1Canto ? amountMin1 : amountMin2,
-            account,
-            deadline,
-            { value: isToken1Canto ? amount1 : amount2 }
-          )
-        : await routerContract.addLiquidity(
-            pair.basePairInfo.token1.address,
-            pair.basePairInfo.token2.address,
-            pair.basePairInfo.stable,
-            amount1,
-            amount2,
-            amountMin1,
-            amountMin2,
-            account,
-            deadline
-          ),
-    addProps
-  );
+  const [isToken1Canto, isToken2Canto] = [
+    isTokenCanto(token1Address, chainId),
+    isTokenCanto(token2Address, chainId),
+  ];
+  const cantoInPair = isToken1Canto || isToken2Canto;
+  return await txStore.performEVMTx({
+    details: addDetails,
+    address: getRouterAddress(chainId),
+    abi: routerAbi,
+    method: cantoInPair ? "addLiquidityCANTO" : "addLiquidity",
+    params: cantoInPair
+      ? [
+          isToken1Canto ? token2Address : token1Address,
+          stable,
+          isToken1Canto ? amount2 : amount1,
+          isToken1Canto ? amountMin2 : amountMin1,
+          isToken1Canto ? amountMin1 : amountMin2,
+          account,
+          deadline,
+        ]
+      : [
+          token1Address,
+          token2Address,
+          stable,
+          amount1,
+          amount2,
+          amountMin1,
+          amountMin2,
+          account,
+          deadline,
+        ],
+    value: isToken1Canto ? amount1 : isToken2Canto ? amount2 : "0",
+  });
 }
-async function _removeLiquidity(
+async function _performRemoveLiquidity(
+  chainId: number,
   txStore: TransactionStore,
-  accountStore: NetworkProps,
-  enableLPProps: TransactionDetails,
-  removeProps: TransactionDetails,
-  pair: UserLPPairInfo,
+  token1Address: string,
+  token2Address: string,
+  stable: boolean,
   LPOut: BigNumber,
   amountMin1: BigNumber,
   amountMin2: BigNumber,
   account: string,
-  deadline: number
+  deadline: number,
+  removeDetails?: TransactionDetails
 ): Promise<boolean> {
-  //need allowance from Router on LP token
-  const [lpTokenContract, routerContract] = [
-    accountStore.createContractWithSigner(pair.basePairInfo.address, ERC20Abi),
-    accountStore.createContractWithSigner(
-      getRouterAddress(Number(accountStore.chainId)),
-      routerAbi
-    ),
-  ];
-  const enableDone = await _enable(
-    txStore,
-    lpTokenContract,
-    enableLPProps,
-    routerContract.address,
-    pair.allowance.LPtoken,
-    LPOut
-  );
-  if (!enableDone) {
-    return false;
-  }
   //check for canto in pair
-  const [isToken1Canto, isToken2Canto] = checkForCantoInPair(
-    pair.basePairInfo,
-    Number(accountStore.chainId)
-  );
-  return await txStore.performTx(
-    async () =>
-      isToken1Canto || isToken2Canto
-        ? await routerContract.removeLiquidityCANTO(
-            isToken1Canto
-              ? pair.basePairInfo.token2.address
-              : pair.basePairInfo.token1.address,
-            pair.basePairInfo.stable,
-            LPOut,
-            isToken1Canto ? amountMin2 : amountMin1,
-            isToken1Canto ? amountMin1 : amountMin2,
-            account,
-            deadline
-          )
-        : await routerContract.removeLiquidity(
-            pair.basePairInfo.token1.address,
-            pair.basePairInfo.token2.address,
-            pair.basePairInfo.stable,
-            LPOut,
-            amountMin1,
-            amountMin2,
-            account,
-            deadline
-          ),
-    removeProps
-  );
+  const [isToken1Canto, isToken2Canto] = [
+    isTokenCanto(token1Address, chainId),
+    isTokenCanto(token2Address, chainId),
+  ];
+  const cantoInPair = isToken1Canto || isToken2Canto;
+  return await txStore.performEVMTx({
+    details: removeDetails,
+    address: getRouterAddress(chainId),
+    abi: routerAbi,
+    method: cantoInPair ? "removeLiquidityCANTO" : "removeLiquidity",
+    params: cantoInPair
+      ? [
+          isToken1Canto ? token2Address : token1Address,
+          stable,
+          LPOut,
+          isToken1Canto ? amountMin2 : amountMin1,
+          isToken1Canto ? amountMin1 : amountMin2,
+          account,
+          deadline,
+        ]
+      : [
+          token1Address,
+          token2Address,
+          stable,
+          LPOut,
+          amountMin1,
+          amountMin2,
+          account,
+          deadline,
+        ],
+    value: "0",
+  });
 }

@@ -8,11 +8,17 @@ import { routerAbi } from "global/config/abi";
 //function returns if pair contains WCANTO, since we must call a different function for supplying or Withdrawing liquidity
 //returns [isToken1Canto, isToken2Canto]
 export function checkForCantoInPair(pair: PAIR, chainId?: number) {
+  return [
+    isTokenCanto(pair.token1.address, chainId),
+    isTokenCanto(pair.token2.address),
+  ];
+}
+export function isTokenCanto(token: string, chainId?: number): boolean {
   const WCANTO =
     chainId == CantoTestnet.chainId
       ? TOKENS.cantoTestnet.WCANTO.address
       : TOKENS.cantoMainnet.WCANTO.address;
-  return [pair.token1.address == WCANTO, pair.token2.address == WCANTO];
+  return token == WCANTO;
 }
 export async function getExpectedLP(
   chainId: number,

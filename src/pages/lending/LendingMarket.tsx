@@ -127,7 +127,7 @@ const LendingMarket = () => {
                   {ongoingTransactions.map((tx) => (
                     <TransactionRow
                       key={tx.txId}
-                      icon={tx.details.token?.icon ?? ""}
+                      icon={tx.extra?.icon ?? ""}
                       name={tx.currentMessage ?? ""}
                       status={getShortTxStatusFromState(tx.status)}
                       date={new Date()}

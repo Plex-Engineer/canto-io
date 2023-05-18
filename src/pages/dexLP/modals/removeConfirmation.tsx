@@ -155,8 +155,8 @@ export const RemoveLiquidityConfirmation = ({ activePair }: Props) => {
         disabled={currentBlockTimeStamp == 0}
         onClick={() =>
           dexLPTx(
+            Number(networkStore.chainId),
             txStore,
-            networkStore,
             LPTransaction.REMOVE_LIQUIDITY,
             activePair,
             LPOut,

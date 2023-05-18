@@ -119,7 +119,7 @@ const SupplyModal = ({ position }: IProps) => {
     const [buttonText, disabled] = getButtonText(
       convertStringToBigNumber(userAmount, token.data.underlying.decimals),
       totalLimit,
-      CantoTransactionType.BORROW
+      CantoTransactionType.WITHDRAW
     );
     return (
       <TabPanel>

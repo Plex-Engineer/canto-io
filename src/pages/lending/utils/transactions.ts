@@ -265,7 +265,7 @@ async function collateralizeTx(
 
 //Will create EVM Transactions
 //Expects transaction details to be created before calling this function
-async function _performSupply(
+export async function _performSupply(
   txStore: TransactionStore,
   cTokenAddress: string,
   isCanto: boolean,
@@ -312,7 +312,7 @@ async function _performRepay(
     value: isCanto ? amount : "0",
   });
 }
-async function _performWithdraw(
+export async function _performWithdraw(
   txStore: TransactionStore,
   cTokenAddress: string,
   amount: BigNumber,

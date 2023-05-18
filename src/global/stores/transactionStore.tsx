@@ -90,7 +90,9 @@ export const useTransactionStore = create<TransactionStore>()((set, get) => ({
       const contract = useNetworkInfo
         .getState()
         .createContractWithSigner(tx.address, tx.abi);
-      const transaction = await contract[tx.method](...tx.params);
+      const transaction = await contract[tx.method](...tx.params, {
+        value: tx.value,
+      });
       if (tx.details) {
         get().updateTx(tx.details.txId, {
           status: "Mining",

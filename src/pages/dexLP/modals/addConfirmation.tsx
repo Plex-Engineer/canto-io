@@ -167,8 +167,8 @@ export const AddLiquidityConfirmation = ({
         filled
         onClick={async () =>
           dexLPTx(
+            Number(networkStore.chainId),
             txStore,
-            networkStore,
             confirmSupply
               ? LPTransaction.ADD_LIQUIDITY_AND_STAKE
               : LPTransaction.ADD_LIQUIDITY,
