@@ -6,7 +6,7 @@ import { useNetworkInfo } from "global/stores/networkInfo";
 import { Mixpanel } from "mixpanel";
 import { DelegationResponse } from "pages/staking/config/interfaces";
 import { calculateTotalStaked } from "pages/staking/utils/allUserValidatorInfo";
-import { getDelegationsForAddress } from "pages/staking/utils/transactions";
+import { getDelegationsForAddress } from "pages/staking/utils/transactionHelpers";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {

@@ -41,7 +41,7 @@ export async function claimLendingRewardsTx(
     createTransactionDetails(txStore, CantoTransactionType.DRIP, tokenInfo),
     createTransactionDetails(
       txStore,
-      CantoTransactionType.CLAIM_REWARDS,
+      CantoTransactionType.CLAIM_REWARDS_LENDING,
       tokenInfo
     ),
   ];

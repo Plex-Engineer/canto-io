@@ -5,9 +5,8 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 import { ValidatorTable } from "../components/stakingTable";
 import { MasterValidatorProps } from "../config/interfaces";
-import { Selected } from "../modals/redelgationModal";
-
-import { levenshteinDistance } from "../utils/utils";
+import { Selected } from "pages/staking/components/selected";
+import { levenshteinDistance } from "global/utils/search";
 import warningImg from "assets/warning.svg";
 import styled from "@emotion/styled";
 import useStakingStore from "../stores/stakingStore";

@@ -186,7 +186,7 @@ export const transactionStatusActions = (
         inAction: "adding liquidity",
         postAction: "added liquidity",
       };
-    case CantoTransactionType.CLAIM_REWARDS:
+    case CantoTransactionType.CLAIM_REWARDS_LENDING:
       return {
         action: "claim",
         inAction: "claiming",

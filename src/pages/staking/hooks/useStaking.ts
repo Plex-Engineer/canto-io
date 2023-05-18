@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import {
   DelegationResponse,
   MasterValidatorProps,
-  StakingTransactionType,
   TxFeeBalanceCheck,
   UndelegationMap,
   Validator,
@@ -13,8 +12,7 @@ import {
   getDistributionRewards,
   getUndelegationsForAddress,
   getValidators,
-  txClaimRewards,
-} from "pages/staking/utils/transactions";
+} from "pages/staking/utils/transactionHelpers";
 import { CantoMainnet } from "global/config/networks";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { BigNumber } from "ethers";
@@ -22,7 +20,6 @@ import {
   getAllValidatorData,
   getStakingApr,
 } from "../utils/allUserValidatorInfo";
-import useTransactionStore from "../stores/transactionStore";
 import { chain, Fee, memo } from "global/config/cosmosConstants";
 import {
   claimRewardFee,
@@ -30,11 +27,12 @@ import {
   reDelegateFee,
   unbondingFee,
 } from "../config/fees";
+import { parseEther } from "ethers/lib/utils";
+import { claimStakingRewards } from "../utils/transactions";
+import { useTransactionStore } from "global/stores/transactionStore";
 import useValidatorModalStore, {
   ValidatorModalType,
 } from "../stores/validatorModalStore";
-import { performTxAndSetStatus } from "../utils/utils";
-import { parseEther } from "ethers/lib/utils";
 
 const useStaking = (): {
   validators: Validator[];
@@ -47,9 +45,9 @@ const useStaking = (): {
   stakingApr: string;
   txFeeCheck: TxFeeBalanceCheck;
 } => {
+  const modalStore = useValidatorModalStore();
   const networkInfo = useNetworkInfo();
-  const transactionStore = useTransactionStore();
-  const validatorModalStore = useValidatorModalStore();
+  const txStore = useTransactionStore();
   // get all of the validators
   const [validators, setValidators] = useState<Validator[]>([]);
   const [stakingApr, setStakingApr] = useState("0");
@@ -63,25 +61,17 @@ const useStaking = (): {
   const [rewards, setRewards] = useState<BigNumber>(BigNumber.from("0"));
 
   async function handleClaimRewards() {
-    validatorModalStore.open(ValidatorModalType.STAKE);
-    performTxAndSetStatus(
-      async () =>
-        await txClaimRewards(
-          networkInfo.account ?? "",
-          CantoMainnet.cosmosAPIEndpoint,
-          claimRewardFee,
-          chain,
-          memo,
-          userValidators
-        ),
-      StakingTransactionType.CLAIM_REWARDS,
-      transactionStore.setTransactionStatus,
-      validatorModalStore.close,
-      "",
-      rewards
+    modalStore.open(ValidatorModalType.CLAIM_REWARDS);
+    claimStakingRewards(
+      txStore,
+      networkInfo.account ?? "",
+      CantoMainnet.cosmosAPIEndpoint,
+      claimRewardFee,
+      chain,
+      memo,
+      userValidators
     );
   }
-
   async function getAllData() {
     if (networkInfo.account) {
       setDelegations(

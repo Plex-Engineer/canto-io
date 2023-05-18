@@ -5,12 +5,10 @@ import useValidatorModalStore, {
 } from "../stores/validatorModalStore";
 import { StakingModal } from "./stakingModal";
 import close from "assets/icons/close.svg";
-import DelegationModal from "./delegationModal";
-import RedelgationModal from "./redelgationModal";
-import useTransactionStore from "../stores/transactionStore";
 import { useEffect } from "react";
 import { Mixpanel } from "mixpanel";
 import { StyledPopup } from "global/components/Styled";
+import OngoingTxModal from "global/components/modals/ongoingTxModal";
 
 interface ModalManagerProps {
   allValidators: Validator[];
@@ -18,7 +16,6 @@ interface ModalManagerProps {
 }
 export const ModalManager = (props: ModalManagerProps) => {
   const validatorModals = useValidatorModalStore();
-  const transactionStore = useTransactionStore();
   const networkInfo = useNetworkInfo();
 
   useEffect(() => {
@@ -34,9 +31,7 @@ export const ModalManager = (props: ModalManagerProps) => {
     <StyledPopup
       open={validatorModals.currentModal != ValidatorModalType.NONE}
       onClose={() => {
-        validatorModals.close(() =>
-          transactionStore.setTransactionStatus(undefined)
-        );
+        validatorModals.close();
         Mixpanel.events.stakingActions.modalInteraction(
           validatorModals.activeValidator.validator.description.moniker,
           false
@@ -47,15 +42,7 @@ export const ModalManager = (props: ModalManagerProps) => {
       position="center center"
       nested
     >
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={() =>
-          validatorModals.close(() =>
-            transactionStore.setTransactionStatus(undefined)
-          )
-        }
-      >
+      <div role="button" tabIndex={0} onClick={validatorModals.close}>
         <img
           src={close}
           style={{
@@ -69,31 +56,8 @@ export const ModalManager = (props: ModalManagerProps) => {
           alt="close"
         />
       </div>
-      {validatorModals.currentModal == ValidatorModalType.DELEGATE && (
-        <DelegationModal
-          validator={validatorModals.activeValidator}
-          allValidators={props.allValidators}
-          balance={networkInfo.balance}
-          account={networkInfo.account}
-        />
-      )}
-      {validatorModals.currentModal == ValidatorModalType.UNDELEGATE && (
-        <DelegationModal
-          undelegation
-          validator={validatorModals.activeValidator}
-          allValidators={props.allValidators}
-          balance={networkInfo.balance}
-          account={networkInfo.account}
-        />
-      )}
-      {validatorModals.currentModal == ValidatorModalType.REDELEGATE && (
-        <RedelgationModal
-          validator={validatorModals.activeValidator}
-          allValidators={props.allValidators}
-          balance={networkInfo.balance}
-          account={networkInfo.account}
-        />
-      )}
+      <OngoingTxModal onClose={validatorModals.close} />
+
       {validatorModals.currentModal === ValidatorModalType.STAKE && (
         <StakingModal
           validator={validatorModals.activeValidator}
@@ -101,11 +65,6 @@ export const ModalManager = (props: ModalManagerProps) => {
           balance={networkInfo.balance}
           account={networkInfo.account}
           txFeeCheck={props.txBalanceChecks}
-          onClose={() =>
-            validatorModals.close(() =>
-              transactionStore.setTransactionStatus(undefined)
-            )
-          }
         />
       )}
     </StyledPopup>

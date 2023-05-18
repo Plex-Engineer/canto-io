@@ -86,17 +86,14 @@ const OngoingTxModal = (props: LoadingProps) => {
               {transaction.currentMessage}
             </Text>
             <br />
-            {transaction.hash ? (
+            {transaction.blockExplorerLink ? (
               <OutlinedButton
                 className="btn"
                 onClick={() => {
                   Mixpanel.events.loadingModal.blockExplorerOpened(
                     transaction.hash
                   );
-                  window.open(
-                    "https://tuber.build/tx/" + transaction.hash,
-                    "_blank"
-                  );
+                  window.open(transaction.blockExplorerLink, "_blank");
                 }}
               >
                 open in block explorer

@@ -11,15 +11,20 @@ export enum CantoTransactionType {
   COLLATERALIZE = "Collateralize",
   DECOLLATERLIZE = "Decollateralize",
   DRIP = "Drip",
-  CLAIM_REWARDS = "Claim Rewards",
+  CLAIM_REWARDS_LENDING = "Claim Rewards",
 
   //LP
   ADD_LIQUIDITY = "Add Liquidity",
   REMOVE_LIQUIDITY = "Remove Liquidity",
-  STAKE = "Stake",
 
   //GOVERNANCE
   VOTING = "Voting",
+
+  //STAKING
+  DELEGATE = "Delegate",
+  UNDELEGATE = "Undelegate",
+  REDELEGATE = "Redelegate",
+  CLAIM_REWARDS_STAKING = "Claim Staking Rewards",
 
   INCREASE_ALLOWANCE = "Increase Allowance",
   SEND_TOKEN = "Send Token",
@@ -72,6 +77,7 @@ export interface TransactionDetails {
   currentMessage: string;
   messages: TransactionMessages;
   hash?: string;
+  blockExplorerLink?: string;
   errorReason?: string;
 }
 export interface EVMTransaction {

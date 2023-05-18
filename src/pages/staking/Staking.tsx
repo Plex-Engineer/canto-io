@@ -12,7 +12,7 @@ import {
 } from "./utils/allUserValidatorInfo";
 import { ModalManager } from "./modals/modalManager";
 import HelmetSEO from "global/components/seo";
-import { Selected } from "./modals/redelgationModal";
+import { Selected } from "pages/staking/components/selected";
 import Select from "react-select";
 
 import { CSearch } from "global/packages/src/components/atoms/Input";

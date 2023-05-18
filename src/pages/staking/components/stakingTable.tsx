@@ -9,7 +9,7 @@ import useValidatorModalStore, {
 } from "../stores/validatorModalStore";
 import Table from "./table";
 import FadeIn from "react-fade-in";
-import { levenshteinDistance } from "../utils/utils";
+import { levenshteinDistance } from "global/utils/search";
 import jailedSymbol from "assets/lock.svg";
 import { ToolTipL } from "pages/lending/components/Styled";
 import Popup from "reactjs-popup";

@@ -16,6 +16,15 @@ export const createTransactionMessges = (
         success: `successfully enabled ${token}`,
         error: `unable to enable ${token}`,
       };
+    case CantoTransactionType.CLAIM_REWARDS_LENDING:
+    case CantoTransactionType.CLAIM_REWARDS_STAKING:
+      return {
+        short: "claim rewards",
+        pending: "claiming rewards...",
+        success: "successfully claimed rewards",
+        error: "unable to claim rewards",
+      };
+    //LENDING
     case CantoTransactionType.SUPPLY:
       return {
         short: "supply",
@@ -58,13 +67,6 @@ export const createTransactionMessges = (
         success: `successfully decollateralized ${token}`,
         error: `unable to decollateralize ${token}`,
       };
-    case CantoTransactionType.CLAIM_REWARDS:
-      return {
-        short: "claim rewards",
-        pending: "claiming rewards...",
-        success: "successfully claimed rewards",
-        error: "unable to claim rewards",
-      };
     case CantoTransactionType.DRIP:
       return {
         short: "drip",
@@ -72,6 +74,7 @@ export const createTransactionMessges = (
         success: "successfully dripped",
         error: "unable to drip",
       };
+    //LP
     case CantoTransactionType.ADD_LIQUIDITY:
       return {
         short: "add liquidity",
@@ -86,12 +89,35 @@ export const createTransactionMessges = (
         success: `successfully removed liquidity for ${token}`,
         error: `unable to remove liquidity for ${token}`,
       };
+    //GOVERNANCE
     case CantoTransactionType.VOTING:
       return {
         short: "vote",
         pending: `voting ${token}...}`,
         success: `successfully voted ${token}`,
         error: `unable to vote ${token}`,
+      };
+    //STAKING
+    case CantoTransactionType.DELEGATE:
+      return {
+        short: "delegate",
+        pending: `delegating to ${token}...`,
+        success: `successfully delegated to ${token}`,
+        error: `unable to delegate to ${token}`,
+      };
+    case CantoTransactionType.UNDELEGATE:
+      return {
+        short: "undelegate",
+        pending: `undelegating from ${token}...`,
+        success: `successfully undelegated from ${token}`,
+        error: `unable to undelegate from ${token}`,
+      };
+    case CantoTransactionType.REDELEGATE:
+      return {
+        short: "redelegate",
+        pending: `redelegating ${token}...`,
+        success: `successfully redelegated ${token}`,
+        error: `unable to redelegate ${token}`,
       };
     default:
       return {

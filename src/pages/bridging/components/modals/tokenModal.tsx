@@ -3,7 +3,7 @@ import { Text } from "global/packages/src";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import { BaseToken, Step1TokenGroups } from "pages/bridging/config/interfaces";
 import { useState } from "react";
-import { levenshteinDistance } from "pages/staking/utils/utils";
+import { levenshteinDistance } from "global/utils/search";
 
 interface Props {
   tokenGroups: Step1TokenGroups[];

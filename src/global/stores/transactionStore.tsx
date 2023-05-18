@@ -59,6 +59,7 @@ export const useTransactionStore = create<TransactionStore>()((set, get) => ({
           status: "Mining",
           currentMessage: tx.details.messages.pending,
           hash: transaction.hash,
+          blockExplorerLink: "https://tuber.build/tx/" + transaction.hash,
         });
         const receipt = await transaction.wait();
         if (receipt.status === 1) {
@@ -96,6 +97,9 @@ export const useTransactionStore = create<TransactionStore>()((set, get) => ({
           status: "Mining",
           currentMessage: tx.details.messages.pending,
           hash: transaction.tx_response.txhash,
+          blockExplorerLink:
+            "https://www.mintscan.io/canto/txs/" +
+            transaction.tx_response.txhash,
         });
         const txSuccess = await checkCosmosTxConfirmation(
           transaction.tx_response.txhash
