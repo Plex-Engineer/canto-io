@@ -1,7 +1,7 @@
 import { TransactionState, useContractFunction } from "@usedapp/core";
 import { BigNumber, Contract, ethers, utils } from "ethers";
 import { ERC20Abi, gravityBridgeAbi, wethAbi } from "global/config/abi";
-import { chain, convertFee, ibcFee, memo } from "global/config/cosmosConstants";
+import { convertFee, ibcFee } from "global/config/cosmosConstants";
 import { CantoMainnet, ETHMainnet } from "global/config/networks";
 import { useEffect, useState } from "react";
 import {
@@ -15,6 +15,10 @@ import { BridgeOutNetworkInfo } from "../config/interfaces";
 import { CANTO_IBC_NETWORK } from "../config/bridgeOutNetworks";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 
+const chain = {
+  chainId: 7700,
+  cosmosChainId: "canto_7700-1",
+};
 export interface BridgeTransaction {
   state: TransactionState;
   send: (...args: any[]) => Promise<unknown>;
@@ -93,7 +97,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
       },
       resetState,
       txName: "bridge to canto",
-      txType: CantoTransactionType.BRIDGE_IN,
+      txType: CantoTransactionType.CONVERT_TO_EVM,
     };
   }
   function useSendToCosmosWithWrap(
@@ -155,7 +159,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
       txType:
         cosmosState.status === "None"
           ? CantoTransactionType.WRAP
-          : CantoTransactionType.BRIDGE_IN,
+          : CantoTransactionType.BORROW,
     };
   }
   /**
@@ -179,7 +183,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
               CantoMainnet.cosmosAPIEndpoint,
               convertFee,
               chain,
-              memo
+              ""
             )
           : await txConvertERC20(
               tokenName,
@@ -188,7 +192,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
               CantoMainnet.cosmosAPIEndpoint,
               convertFee,
               chain,
-              memo
+              ""
             );
         setConvertState("Mining");
         const confirmed = await checkCosmosTxConfirmation(
@@ -235,7 +239,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
           bridgeOutNetwork.latestBlockEndpoint,
           ibcFee,
           chain,
-          memo
+          ""
         );
         setIbcState("Mining");
         const confirmed = await checkCosmosTxConfirmation(

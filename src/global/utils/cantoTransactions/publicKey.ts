@@ -1,7 +1,6 @@
 import { generateEndpointAccount } from "@tharsis/provider";
 import { createMessageSend } from "@tharsis/transactions";
-import { CantoMainnet } from "global/config/networks";
-import { pubKeyFee, memo } from "global/config/cosmosConstants";
+import { pubKeyFee } from "global/config/cosmosConstants";
 import { getCantoAddressFromMetaMask } from "../walletConnect/addCantoToWallet";
 import {
   checkCantoBalance,
@@ -109,7 +108,7 @@ async function txSend(
 ) {
   const senderObj = await getSenderObj(
     senderHexAddress,
-    CantoMainnet.cosmosAPIEndpoint
+    getCosmosAPIEndpoint(chainId)
   );
   const params = {
     destinationAddress: destinationBech32,
@@ -120,14 +119,14 @@ async function txSend(
     getCosmosChainObj(chainId),
     senderObj,
     pubKeyFee,
-    memo,
+    "",
     params
   );
   return signAndBroadcastTxMsg(
     msg,
     senderObj,
     getCosmosChainObj(chainId),
-    CantoMainnet.cosmosAPIEndpoint,
+    getCosmosAPIEndpoint(chainId),
     senderHexAddress
   );
 }

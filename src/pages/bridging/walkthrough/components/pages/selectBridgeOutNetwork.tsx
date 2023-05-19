@@ -5,13 +5,13 @@ import TextSwitch from "../TextSwitch";
 import BaseStyled from "../layout";
 import {
   BridgeOutNetworkInfo,
-  BridgeOutNetworks,
+  CantoMainBridgeOutNetworks,
 } from "pages/bridging/config/interfaces";
-import { ALL_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
+import { CANTO_MAIN_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
 
 interface SelectBridgeProps {
   activeNetwork: BridgeOutNetworkInfo;
-  onSelect: (network: BridgeOutNetworks) => void;
+  onSelect: (network: CantoMainBridgeOutNetworks) => void;
   canContinue: boolean;
   canGoBack: boolean;
   onPrev: () => void;
@@ -39,23 +39,23 @@ const SelectBridgeOutNetwork = (props: SelectBridgeProps) => {
       </header>
       <section>
         <div className="network-list">
-          {Object.keys(ALL_BRIDGE_OUT_NETWORKS).map((key, network) => (
+          {Object.keys(CANTO_MAIN_BRIDGE_OUT_NETWORKS).map((key, network) => (
             <TextSwitch
               key={key}
               text=""
               onClick={() => props.onSelect(network)}
               active={
                 props.activeNetwork.name ==
-                ALL_BRIDGE_OUT_NETWORKS[
-                  network as keyof typeof ALL_BRIDGE_OUT_NETWORKS
+                CANTO_MAIN_BRIDGE_OUT_NETWORKS[
+                  network as keyof typeof CANTO_MAIN_BRIDGE_OUT_NETWORKS
                 ].name
               }
             >
               <span>
                 <img
                   src={
-                    ALL_BRIDGE_OUT_NETWORKS[
-                      network as keyof typeof ALL_BRIDGE_OUT_NETWORKS
+                    CANTO_MAIN_BRIDGE_OUT_NETWORKS[
+                      network as keyof typeof CANTO_MAIN_BRIDGE_OUT_NETWORKS
                     ].icon
                   }
                   alt=""
@@ -63,8 +63,8 @@ const SelectBridgeOutNetwork = (props: SelectBridgeProps) => {
                 />
                 <Text type="text">
                   {
-                    ALL_BRIDGE_OUT_NETWORKS[
-                      network as keyof typeof ALL_BRIDGE_OUT_NETWORKS
+                    CANTO_MAIN_BRIDGE_OUT_NETWORKS[
+                      network as keyof typeof CANTO_MAIN_BRIDGE_OUT_NETWORKS
                     ].name
                   }
                 </Text>

@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
 import { PrimaryButton, Text } from "global/packages/src";
-import ethIcon from "assets/icons/ETH.svg";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
 import cantoIcon from "assets/icons/canto-evm.svg";
 import CopyIcon from "assets/copy.svg";
 import {
+  BridgeNetworkPair,
   EMPTY_NATIVE_TOKEN,
   NativeToken,
   Step1TokenGroups,
@@ -21,7 +21,6 @@ import CopyToClipboard from "react-copy-to-clipboard";
 import { useState } from "react";
 import { copyAddress, formatAddress, getStep1ButtonText } from "../utils/utils";
 import Modal from "global/packages/src/components/molecules/Modal";
-import { CantoMainnet, ETHMainnet } from "global/config/networks";
 import { TokenWallet } from "./tokenSelect";
 import IBCGuideModal from "./modals/ibcGuideModal";
 import { TokenGroups } from "global/config/interfaces/tokens";
@@ -39,6 +38,7 @@ interface Step1TxBoxProps {
   selectedToken: UserERC20BridgeToken;
   selectToken: (tokenAddress: string) => void;
   tx: (amount: BigNumber) => Promise<boolean>;
+  networkPair: BridgeNetworkPair;
 }
 const Step1TxBox = (props: Step1TxBoxProps) => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -74,7 +74,11 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         onClose={() => setModalOpen(false)}
       >
         <ConfirmTxModal
-          networkId={props.bridgeIn ? ETHMainnet.chainId : CantoMainnet.chainId}
+          networkId={
+            props.bridgeIn
+              ? props.networkPair.sending.network.chainId
+              : props.networkPair.receiving.network.chainId
+          }
           title={"CONFIRM"}
           titleIcon={TokenWithIcon({
             icon: props.selectedToken.icon,
@@ -112,12 +116,20 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
       <div className="icons-indicator">
         <div className="center-element">
           <img
-            src={props.bridgeIn ? ethIcon : cantoIcon}
+            src={
+              props.bridgeIn
+                ? props.networkPair.sending.network.icon
+                : props.networkPair.receiving.network.icon
+            }
             alt={props.bridgeIn ? "ethereum" : "canto"}
             height={42}
             style={{ marginBottom: "10px" }}
           />
-          <Text type="title">{props.bridgeIn ? "Ethereum" : "Canto"}</Text>
+          <Text type="title">
+            {props.bridgeIn
+              ? props.networkPair.sending.network.name
+              : props.networkPair.receiving.network.name}
+          </Text>
           <CopyToClipboard text={props.fromAddress ?? ""} onCopy={copyAddress}>
             <Text
               type="text"

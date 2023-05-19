@@ -1,7 +1,7 @@
 import { TransactionState } from "@usedapp/core";
 import { BigNumber } from "ethers";
 import {
-  BridgeOutNetworks,
+  CantoMainBridgeOutNetworks,
   UserERC20BridgeToken,
   UserNativeToken,
 } from "pages/bridging/config/interfaces";
@@ -20,7 +20,7 @@ export function didPassBridgeOutWalkthroughCheck(
   convertOutAmount: BigNumber,
   maxConvertOutAmount: BigNumber,
   convertTxState: TransactionState,
-  bridgeOutNetwork: BridgeOutNetworks,
+  bridgeOutNetwork: CantoMainBridgeOutNetworks,
   bridgeOutToken: UserNativeToken,
   bridgeOutStatus: TransactionState,
   bridgeOutSendAddress: string

@@ -1,12 +1,7 @@
-import { ADDRESSES } from "global/config/addresses";
-import { CantoMainnet, ETHMainnet } from "global/config/networks";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { useEffect, useState } from "react";
 import {
-  CONVERT_COIN_TOKENS,
-  ETH_GRAVITY_BRIDGE_IN_TOKENS,
-} from "../config/bridgingTokens";
-import {
+  BridgeNetworkPair,
   EMPTY_ERC20_BRIDGE_TOKEN,
   IBCTokenTrace,
   UserERC20BridgeToken,
@@ -21,8 +16,9 @@ import {
   getUnknownIBCTokens,
 } from "../utils/nativeBalances";
 import { useTokenBalances } from "./tokenBalances/useTokenBalances";
-import { TOKENS } from "global/config/tokenInfo";
 import { useEtherBalance } from "@usedapp/core";
+import { getNetworkPair } from "../config/networkPairs";
+import { getCosmosAPIEndpoint } from "global/utils/getAddressUtils";
 
 interface BridgeTokenInfo {
   userBridgeInTokens: UserERC20BridgeToken[];
@@ -34,36 +30,41 @@ interface BridgeTokenInfo {
     bridgeOutToken: UserERC20BridgeToken;
   };
   setSelectedToken: (selectedToken: string, type: SelectedTokens) => void;
+  networkPair: BridgeNetworkPair;
 }
 
 export function useBridgeTokenInfo(): BridgeTokenInfo {
-  const networkInfo = useNetworkInfo();
+  const [account, chainId, cantoAddress] = useNetworkInfo((state) => [
+    state.account,
+    Number(state.chainId),
+    state.cantoAddress,
+  ]);
   const tokenStore = useBridgeTokenStore();
-  const ethBalance = useEtherBalance(networkInfo.account, {
-    chainId: 1,
+
+  //will use these to determine what tokens to show
+  const networkPair = getNetworkPair(chainId);
+  const [sendingNetwork, receivingNetwork] = [
+    networkPair.sending,
+    networkPair.receiving,
+  ];
+
+  const ethBalance = useEtherBalance(account, {
+    chainId: sendingNetwork.network.chainId,
   });
 
   //bridge in erc20 tokens on ETH mainnet
   const userEthBridgeInTokens = useTokenBalances(
-    networkInfo.account,
-    ETH_GRAVITY_BRIDGE_IN_TOKENS,
-    ETHMainnet.chainId,
-    ADDRESSES.ETHMainnet.GravityBridge
-  ).tokens.map((token) => ({
-    ...token,
-    erc20Balance:
-      token.address === TOKENS.ETHMainnet.WETH.address
-        ? token.erc20Balance.add(ethBalance ?? 0)
-        : token.erc20Balance,
-  }));
+    account,
+    sendingNetwork.tokens,
+    sendingNetwork.network.chainId,
+    sendingNetwork.network.coreContracts.GravityBridge
+  ).tokens;
   //bridge out erc20 tokens on Canto Mainnet
-  const { tokens: userCantoBridgeOutTokens, fail: cantoERC20Fail } =
-    useTokenBalances(
-      networkInfo.account,
-      CONVERT_COIN_TOKENS,
-      CantoMainnet.chainId,
-      undefined
-    );
+  const { tokens: userCantoBridgeOutTokens } = useTokenBalances(
+    account,
+    receivingNetwork.convertCoinTokens,
+    receivingNetwork.network.chainId
+  );
   const [userNativeTokens, setUserNativeTokens] = useState<UserNativeToken[]>(
     []
   );
@@ -72,18 +73,23 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
   const [allUnknownIBC, setAllUnknownIBC] = useState<IBCTokenTrace[]>([]);
   async function getAllNativeTokens() {
     const { foundTokens, notFoundTokens } = await getNativeCantoBalances(
-      CantoMainnet.cosmosAPIEndpoint,
-      networkInfo.cantoAddress,
-      CONVERT_COIN_TOKENS
+      getCosmosAPIEndpoint(receivingNetwork.network.chainId),
+      cantoAddress,
+      receivingNetwork.convertCoinTokens
     );
     setUserNativeTokens(foundTokens);
-    setAllUnknownIBC(await getUnknownIBCTokens(notFoundTokens));
+    setAllUnknownIBC(
+      await getUnknownIBCTokens(
+        notFoundTokens,
+        getCosmosAPIEndpoint(receivingNetwork.network.chainId)
+      )
+    );
   }
 
   //initialize data on sign in
   useEffect(() => {
     getAllNativeTokens();
-  }, [networkInfo.account, networkInfo.cantoAddress]);
+  }, [account, cantoAddress, chainId]);
 
   //call data per block
   useEffect(() => {
@@ -91,7 +97,7 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
       await getAllNativeTokens();
     }, 6000);
     return () => clearInterval(interval);
-  }, [networkInfo.cantoAddress]);
+  }, [cantoAddress, chainId]);
 
   return {
     userBridgeInTokens: userEthBridgeInTokens,
@@ -113,5 +119,6 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
         ) ?? EMPTY_ERC20_BRIDGE_TOKEN,
     },
     setSelectedToken: tokenStore.setSelectedToken,
+    networkPair,
   };
 }

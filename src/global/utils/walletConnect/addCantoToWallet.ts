@@ -1,10 +1,4 @@
-import {
-  CantoMainnet,
-  CantoTestnet,
-  NodeAddresses,
-} from "global/config/networks";
-import { ethers } from "ethers";
-import { getCosmosAPIEndpoint } from "../getAddressUtils";
+import { getCosmosAPIEndpoint, getETHNetwork } from "../getAddressUtils";
 
 export async function switchNetwork(chainId: number) {
   //@ts-ignore
@@ -20,20 +14,16 @@ export async function switchNetwork(chainId: number) {
     }
   }
 }
-export function getProvider(chainId: number) {
-  const providerURL =
-    CantoTestnet.chainId == chainId ? CantoTestnet.rpcUrl : CantoMainnet.rpcUrl;
-  return new ethers.providers.JsonRpcProvider(providerURL);
-}
 
-export async function addNetwork() {
+export async function addNetwork(chainId?: number) {
+  const network = getETHNetwork(chainId);
   //@ts-ignore
   if (window.ethereum) {
     try {
       //@ts-ignore
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: "0x" + CantoMainnet.chainId.toString(16) }],
+        params: [{ chainId: "0x" + network.chainId.toString(16) }],
       });
     } catch (error: unknown) {
       //@ts-ignore
@@ -44,15 +34,15 @@ export async function addNetwork() {
             method: "wallet_addEthereumChain",
             params: [
               {
-                chainId: "0x" + CantoMainnet.chainId.toString(16),
-                chainName: "Canto",
+                chainId: "0x" + network.chainId.toString(16),
+                chainName: network.name,
                 nativeCurrency: {
-                  name: "Canto Coin",
-                  symbol: "CANTO",
+                  name: network.symbol,
+                  symbol: network.symbol,
                   decimals: 18,
                 },
-                rpcUrls: [NodeAddresses.CantoMainnet.Plex.rpcUrl],
-                blockExplorerUrls: [CantoMainnet.blockExplorerUrl],
+                rpcUrls: [network.rpcUrl],
+                blockExplorerUrls: [network.blockExplorerUrl],
               },
             ],
           })

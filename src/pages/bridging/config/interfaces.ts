@@ -4,10 +4,34 @@ import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import { ReactNode } from "react";
 import { IBCPathInfo } from "../utils/nativeBalances";
 import { Token } from "global/config/interfaces/tokens";
+import { CantoNetwork, ETHNetwork } from "global/config/networks";
+import { IBCTOKENS } from "./bridgingTokens";
+import { BridgeOutNetworkData } from "./bridgeOutNetworks";
 
 /**
  * NETWORK INTERFACES
  */
+
+/**
+ * When bridging in, there must be a sending network and a receiving network
+ * Ex. ETH -> Canto
+ * Ex. GravityTest -> CantoTest
+ * Each will be in a pair, for correct contract calls to be made and correct tokens to display when on either network
+ */
+export interface BridgeNetworkPair {
+  pairId: string;
+  sending: {
+    network: ETHNetwork;
+    tokens: Token[];
+  };
+  receiving: {
+    network: CantoNetwork;
+    convertCoinTokens: NativeToken[];
+    nativeCosmosTokens: NativeToken[];
+    ibcTokens: IBCTOKENS;
+    bridgeOutNetworks: BridgeOutNetworkData;
+  };
+}
 
 /**
  * cantoChannel is the channel that you must use to ibc FROM canto
@@ -28,21 +52,21 @@ export interface BridgeOutNetworkInfo {
   addressBeginning: string;
   checkAddress: (address?: string) => boolean;
 }
-export enum BridgeOutNetworks {
-  GRAVITY_BRIDGE,
-  COSMOS_HUB,
-  COMDEX,
-  OSMOSIS,
-  SOMMELIER,
-  INJECTIVE,
-  KAVA,
-  AKASH,
-  CRESCENT,
-  SENTINEL,
-  EVMOS,
-  PERSISTENCE,
-  STRIDE,
-  QUICKSILVER,
+export enum CantoMainBridgeOutNetworks {
+  GRAVITY_BRIDGE = "Gravity Bridge",
+  COSMOS_HUB = "Cosmos Hub",
+  COMDEX = "Comdex",
+  OSMOSIS = "Osmosis",
+  SOMMELIER = "Sommelier",
+  INJECTIVE = "Injective",
+  KAVA = "Kava",
+  AKASH = "Akash",
+  CRESCENT = "Crescent",
+  SENTINEL = "Sentinel",
+  EVMOS = "Evmos",
+  PERSISTENCE = "Persistence",
+  STRIDE = "Stride",
+  QUICKSILVER = "Quicksilver",
 }
 
 /**
@@ -65,7 +89,7 @@ export interface UserERC20BridgeToken extends BaseToken {
 export interface NativeToken extends BaseToken {
   ibcDenom: string;
   nativeName: string;
-  supportedOutChannels: BridgeOutNetworks[];
+  supportedOutChannels: CantoMainBridgeOutNetworks[];
 }
 export interface UserNativeToken extends NativeToken {
   nativeBalance: BigNumber;

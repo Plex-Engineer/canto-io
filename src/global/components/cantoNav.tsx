@@ -10,7 +10,7 @@ import { formatEther, parseUnits } from "ethers/lib/utils";
 import { ShowAlerts } from "global/utils/alerts";
 import { pageList, PageObject } from "global/config/pageList";
 import { Mixpanel } from "mixpanel";
-import { CantoMainnet } from "global/config/networks";
+import { getCantoNetwork } from "global/utils/getAddressUtils";
 
 export const CantoNav = () => {
   const networkInfo = useNetworkInfo();
@@ -18,7 +18,7 @@ export const CantoNav = () => {
   const { activateBrowserWallet, account, chainId, active } = useEthers();
   const balance = useEtherBalance(account);
   const cantoBalance = useEtherBalance(account, {
-    chainId: CantoMainnet.chainId,
+    chainId: getCantoNetwork(Number(networkInfo.chainId)).chainId,
   });
   const ethBalance = useEtherBalance(networkInfo.account, { chainId: 1 });
   const signer = useSigner();

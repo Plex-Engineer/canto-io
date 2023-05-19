@@ -15,7 +15,6 @@ import BalanceTableModal from "./walkthrough/components/modals/BalanceTableModal
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
 import { GenPubKeyWalkthrough } from "./walkthrough/components/pages/genPubKey";
-import { CantoMainnet } from "global/config/networks";
 import { useState } from "react";
 import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
 import { PubKeyStyled } from "./walkthrough/Walkthrough";
@@ -25,8 +24,11 @@ import Tooltip from "global/packages/src/components/molecules/Tooltip";
 import { Text } from "global/packages/src";
 import guideImg from "assets/guide.svg";
 import RecoveryPage from "./Recovery";
+import { onCantoNetwork } from "global/utils/getAddressUtils";
+import { useTransactionStore } from "global/stores/transactionStore";
 
 const Bridging = () => {
+  const txStore = useTransactionStore();
   const networkInfo = useNetworkInfo();
   const bridgingTokens = useBridgeTokenInfo();
   const bridgingHistory = useTransactionHistory();
@@ -34,7 +36,9 @@ const Bridging = () => {
   const navigate = useNavigate();
   const [pubKeySuccess, setPubKeySuccess] = useState("None");
   const hasRecoveryToken = bridgingTokens.unkownIBCTokens.length > 0;
-  const ethBalance = useEtherBalance(networkInfo.account, { chainId: 1 });
+  const ethBalance = useEtherBalance(networkInfo.account, {
+    chainId: bridgingTokens.networkPair.sending.network.chainId,
+  });
   const canPubKey =
     (ethBalance?.gte(parseUnits("0.01")) ||
       networkInfo.balance?.gte(parseUnits("0.5"))) ??
@@ -66,6 +70,9 @@ const Bridging = () => {
           ethTokens={bridgingTokens.userBridgeInTokens}
           cantoTokens={bridgingTokens.userBridgeOutTokens}
           nativeTokens={bridgingTokens.userNativeTokens}
+          allConvertCoinTokens={
+            bridgingTokens.networkPair.receiving.convertCoinTokens
+          }
         />
         <Tooltip
           position="bottom right"
@@ -114,8 +121,12 @@ const Bridging = () => {
                     step2Transactions={createConvertTransactions(
                       bridgingHistory.pendingBridgeInTransactions,
                       bridgingTokens.userNativeTokens,
-                      true
+                      true,
+                      Number(networkInfo.chainId)
                     )}
+                    chainId={Number(networkInfo.chainId)}
+                    txStore={txStore}
+                    networkPair={bridgingTokens.networkPair}
                   />
                 ) : !canPubKey ? (
                   <PubKeyStyled>
@@ -132,8 +143,8 @@ const Bridging = () => {
                 ) : (
                   <GenPubKeyWalkthrough
                     txGenPubKey={() => {
-                      if (Number(networkInfo.chainId) != CantoMainnet.chainId) {
-                        addNetwork();
+                      if (!onCantoNetwork(Number(networkInfo.chainId))) {
+                        addNetwork(Number(networkInfo.chainId));
                       } else {
                         generatePubKey(
                           networkInfo.account,
@@ -162,8 +173,12 @@ const Bridging = () => {
                   step2Transactions={createConvertTransactions(
                     [],
                     bridgingTokens.userNativeTokens,
-                    false
+                    false,
+                    Number(networkInfo.chainId)
                   )}
+                  chainId={Number(networkInfo.chainId)}
+                  txStore={txStore}
+                  networkPair={bridgingTokens.networkPair}
                 />,
                 <Transactions
                   key={"transaction"}
@@ -175,6 +190,7 @@ const Bridging = () => {
                         key={"recovery"}
                         tokens={bridgingTokens.unkownIBCTokens}
                         cantoAddress={networkInfo.cantoAddress}
+                        txStore={txStore}
                       />,
                     ]
                   : []),

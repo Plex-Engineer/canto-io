@@ -8,12 +8,18 @@ import {
 import RecoveryTransactionBox from "./components/recoveryTransaction";
 import { BigNumber } from "ethers";
 import unknwonToken from "assets/icons/info.svg";
+import { TransactionStore } from "global/stores/transactionStore";
 
 interface RecoveryModalProps {
   tokens: IBCTokenTrace[];
   cantoAddress: string;
+  txStore: TransactionStore;
 }
-const RecoveryPage = ({ tokens, cantoAddress }: RecoveryModalProps) => {
+const RecoveryPage = ({
+  tokens,
+  cantoAddress,
+  txStore,
+}: RecoveryModalProps) => {
   return (
     <Styled>
       <Text type="title" size="title2">
@@ -77,6 +83,7 @@ const RecoveryPage = ({ tokens, cantoAddress }: RecoveryModalProps) => {
             token.denom !== "acanto" && (
               <RecoveryTransactionBox
                 key={token.denom}
+                txStore={txStore}
                 cantoAddress={cantoAddress}
                 transaction={{
                   origin: transferFrom.name,

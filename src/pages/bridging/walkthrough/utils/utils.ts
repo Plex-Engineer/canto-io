@@ -1,6 +1,6 @@
 import { formatUnits } from "ethers/lib/utils";
-import { CONVERT_COIN_TOKENS } from "pages/bridging/config/bridgingTokens";
 import {
+  NativeToken,
   UserERC20BridgeToken,
   UserNativeToken,
 } from "pages/bridging/config/interfaces";
@@ -14,9 +14,10 @@ interface TokenTableProps {
 export function formatTokensAmountsbyChain(
   ethTokens: UserERC20BridgeToken[],
   cantoTokens: UserERC20BridgeToken[],
-  nativeTokens: UserNativeToken[]
+  nativeTokens: UserNativeToken[],
+  allConvertCoinTokens: NativeToken[]
 ): TokenTableProps[] {
-  return CONVERT_COIN_TOKENS.map((token) => {
+  return allConvertCoinTokens.map((token) => {
     const ethToken = ethTokens.find(
       (eTok) =>
         eTok.name == token.name || (token.name == "ETH" && eTok.name == "WETH")

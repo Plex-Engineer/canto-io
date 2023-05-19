@@ -1,9 +1,3 @@
-export const chain = {
-  chainId: 7700,
-  cosmosChainId: "canto_7700-1",
-};
-export const memo = "";
-
 //convert coin constants
 export const convertFee = {
   amount: "2300000000000000000",

@@ -11,7 +11,7 @@ import { BridgeTransaction } from "pages/bridging/hooks/useBridgingTransactions"
 import { BridgeOutStep } from "../config/interfaces";
 import {
   BridgeOutNetworkInfo,
-  BridgeOutNetworks,
+  CantoMainBridgeOutNetworks,
   UserERC20BridgeToken,
   UserNativeToken,
 } from "pages/bridging/config/interfaces";
@@ -38,7 +38,7 @@ interface BridgeOutManagerProps {
     address: string;
     setAddress: (s: string) => void;
     selectedNetwork: BridgeOutNetworkInfo;
-    setNetwork: (network: BridgeOutNetworks) => void;
+    setNetwork: (network: CantoMainBridgeOutNetworks) => void;
   };
   currentStep: BridgeOutStep;
   canContinue: boolean;

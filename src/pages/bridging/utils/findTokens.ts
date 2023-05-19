@@ -1,23 +1,24 @@
-import { NativeToken } from "../config/interfaces";
-import {
-  ALL_IBC_TOKENS_WITH_DENOMS,
-  CONVERT_COIN_TOKENS,
-  ETH_GRAVITY_BRIDGE_IN_TOKENS,
-} from "../config/bridgingTokens";
+import { CantoMainBridgeOutNetworks, NativeToken } from "../config/interfaces";
 import { TOKENS } from "global/config/tokenInfo";
-import {
-  ALL_BRIDGE_OUT_NETWORKS,
-  EMPTY_IBC_NETWORK,
-} from "../config/bridgeOutNetworks";
+import { EMPTY_IBC_NETWORK } from "../config/bridgeOutNetworks";
 import { Token } from "global/config/interfaces/tokens";
+import { getNetworkPair } from "../config/networkPairs";
 
-export function findNativeToken(nativeName: string): NativeToken | undefined {
-  return CONVERT_COIN_TOKENS.find(
+export function findNativeToken(
+  nativeName: string,
+  chainId?: number
+): NativeToken | undefined {
+  return getNetworkPair(chainId).receiving.convertCoinTokens.find(
     (token) => token.nativeName.toLowerCase() == nativeName.toLowerCase()
   );
 }
-export function getNetworkFromAddress(address: string): string {
-  for (const [, value] of Object.entries(ALL_BRIDGE_OUT_NETWORKS)) {
+export function getNetworkFromAddress(
+  address: string,
+  chainId?: number
+): string {
+  for (const [, value] of Object.entries(
+    getNetworkPair(chainId).receiving.bridgeOutNetworks
+  )) {
     if (
       value.addressBeginning == address.slice(0, value.addressBeginning.length)
     )
@@ -25,38 +26,42 @@ export function getNetworkFromAddress(address: string): string {
   }
   return "canto";
 }
-export function findBridgeInToken(tokenAddress: string): Token | undefined {
+export function findBridgeInToken(
+  tokenAddress: string,
+  chainId?: number
+): Token | undefined {
   if (tokenAddress === "uatom") {
     return TOKENS.cantoMainnet.ATOM;
   }
-  return ETH_GRAVITY_BRIDGE_IN_TOKENS.find(
+  return getNetworkPair(chainId).sending.tokens.find(
     (token) => token.address.toLowerCase() === tokenAddress.toLowerCase()
   );
 }
 
 export function getNetworkFromTokenName(
   ibcDenom: string,
-  bridgeIn: boolean
+  bridgeIn: boolean,
+  chainId?: number
 ): string {
-  const ibcEthList = [
-    ALL_IBC_TOKENS_WITH_DENOMS.USDC.ibcDenom,
-    ALL_IBC_TOKENS_WITH_DENOMS.USDT.ibcDenom,
-    ALL_IBC_TOKENS_WITH_DENOMS.ETH.ibcDenom,
-    ALL_IBC_TOKENS_WITH_DENOMS.WSTETH.ibcDenom,
-  ];
-  if (ibcEthList.includes(ibcDenom) && bridgeIn) return "ETH";
-
-  for (const [, value] of Object.entries(ALL_BRIDGE_OUT_NETWORKS)) {
+  for (const [, value] of Object.entries(
+    getNetworkPair(chainId).receiving.bridgeOutNetworks
+  )) {
     for (const token of value.tokens) {
       if (token.ibcDenom == ibcDenom) {
-        return value.name;
+        return token.supportedOutChannels.includes(
+          CantoMainBridgeOutNetworks.GRAVITY_BRIDGE
+        ) && bridgeIn
+          ? "ETH"
+          : value.name;
       }
     }
   }
   return "cosmos";
 }
-export function getNetworkFromCantoChannel(channel: string) {
-  for (const [, value] of Object.entries(ALL_BRIDGE_OUT_NETWORKS)) {
+export function getNetworkFromCantoChannel(channel: string, chainId?: number) {
+  for (const [, value] of Object.entries(
+    getNetworkPair(chainId).receiving.bridgeOutNetworks
+  )) {
     if (value.cantoChannel === channel) return value;
   }
   return EMPTY_IBC_NETWORK;

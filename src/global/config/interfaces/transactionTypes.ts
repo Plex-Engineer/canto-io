@@ -30,7 +30,7 @@ export enum CantoTransactionType {
   REDELEGATE = "Redelegate",
   CLAIM_REWARDS_STAKING = "Claim Staking Rewards",
 
-  //BRIDGEING
+  //BRIDGING
   SEND_TO_COSMOS = "Send to Cosmos",
   CONVERT_TO_EVM = "Convert to EVM",
   CONVERT_TO_NATIVE = "Convert to Native",

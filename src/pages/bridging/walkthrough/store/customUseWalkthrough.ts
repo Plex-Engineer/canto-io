@@ -3,10 +3,10 @@ import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
 import { ADDRESSES } from "global/config/addresses";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
-import { ALL_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
+import { CANTO_MAIN_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
 import {
   BridgeOutNetworkInfo,
-  BridgeOutNetworks,
+  CantoMainBridgeOutNetworks,
   EMPTY_ERC20_BRIDGE_TOKEN,
   EMPTY_NATIVE_TOKEN,
   UserERC20BridgeToken,
@@ -83,7 +83,7 @@ interface Props {
     address: string;
     setAddress: (s: string) => void;
     selectedNetwork: BridgeOutNetworkInfo;
-    setNetwork: (network: BridgeOutNetworks) => void;
+    setNetwork: (network: CantoMainBridgeOutNetworks) => void;
   };
 }
 export function useCustomWalkthrough(): Props {
@@ -97,7 +97,7 @@ export function useCustomWalkthrough(): Props {
   const [amount, setAmount] = useState("");
   const [userCosmosSendAddress, setUserCosmosSendAddress] = useState("");
   const [selectedCosmoNetwork, setSelectedCosmosNetwork] =
-    useState<BridgeOutNetworks>(0);
+    useState<CantoMainBridgeOutNetworks>(0);
 
   //token selector
   const [selectedTokens, setSelectedTokens] = useState({
@@ -321,7 +321,7 @@ export function useCustomWalkthrough(): Props {
       setAmount,
       address: userCosmosSendAddress,
       setAddress: setUserCosmosSendAddress,
-      selectedNetwork: ALL_BRIDGE_OUT_NETWORKS[selectedCosmoNetwork],
+      selectedNetwork: CANTO_MAIN_BRIDGE_OUT_NETWORKS[selectedCosmoNetwork],
       setNetwork: setSelectedCosmosNetwork,
     },
   };

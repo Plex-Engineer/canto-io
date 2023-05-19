@@ -1,9 +1,9 @@
 import { TransactionState } from "@usedapp/core";
 import { BigNumber } from "ethers";
 import { CantoMainnet, ETHMainnet } from "global/config/networks";
-import { ALL_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
+import { CANTO_MAIN_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
 import {
-  BridgeOutNetworks,
+  CantoMainBridgeOutNetworks,
   UserERC20BridgeToken,
   UserNativeToken,
 } from "pages/bridging/config/interfaces";
@@ -164,8 +164,8 @@ export const BridgeOutWalkthroughSteps: WalkthroughTracker = {
     isCheckpoint: false,
     prev: BridgeOutStep.SWITCH_TO_CANTO_2,
     next: BridgeOutStep.SELECT_NATIVE_TOKEN,
-    checkFunction: (network: BridgeOutNetworks, cosmosAddress: string) => {
-      return ALL_BRIDGE_OUT_NETWORKS[network].checkAddress(cosmosAddress);
+    checkFunction: (network: CantoMainBridgeOutNetworks, cosmosAddress: string) => {
+      return CANTO_MAIN_BRIDGE_OUT_NETWORKS[network].checkAddress(cosmosAddress);
     },
   },
   [BridgeOutStep.SELECT_NATIVE_TOKEN]: {

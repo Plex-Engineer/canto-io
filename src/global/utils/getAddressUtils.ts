@@ -8,19 +8,29 @@ import {
 } from "global/config/networks";
 
 //DEFAULTS WILL BE CANTOMAINNET && ETHMAINNET
-export function getAddressesForCantoNetwork(chainId?: number | undefined) {
+export function getETHNetwork(chainId?: number | undefined) {
   return (
-    ALL_SUPPORTED_CANTO_NETWORKS.find((network) => network.chainId == chainId)
-      ?.coreContracts ?? CantoMainnet.coreContracts
+    ALL_SUPPORTED_ETH_NETWORKS.find((network) => network.chainId == chainId) ??
+    ETHMainnet
   );
 }
-export function getAddressesForEthNetwork(chainId?: number | undefined) {
+export function getCantoNetwork(chainId?: number | undefined) {
   return (
-    ALL_SUPPORTED_ETH_NETWORKS.find((network) => network.chainId == chainId)
-      ?.coreContracts ?? ETHMainnet.coreContracts
+    ALL_SUPPORTED_CANTO_NETWORKS.find(
+      (network) => network.chainId == chainId
+    ) ?? CantoMainnet
   );
 }
 
+//get addresses for network
+export function getAddressesForCantoNetwork(chainId?: number | undefined) {
+  return getCantoNetwork(chainId).coreContracts;
+}
+export function getAddressesForEthNetwork(chainId?: number | undefined) {
+  return getETHNetwork(chainId).coreContracts;
+}
+
+//rpc and api calls
 function getRPCURL(chainId?: number | undefined) {
   return (
     ALL_SUPPORTED_NETWORKS.find((network) => network.chainId == chainId)
@@ -31,16 +41,10 @@ export function getCurrentProvider(chainId?: number) {
   return new ethers.providers.JsonRpcProvider(getRPCURL(chainId));
 }
 export function getCosmosAPIEndpoint(chainId?: number | undefined) {
-  return (
-    ALL_SUPPORTED_CANTO_NETWORKS.find((network) => network.chainId == chainId)
-      ?.cosmosAPIEndpoint ?? CantoMainnet.cosmosAPIEndpoint
-  );
+  return getCantoNetwork(chainId).cosmosAPIEndpoint;
 }
 export function getCosmosChainObj(chainId?: number | undefined) {
-  const network =
-    ALL_SUPPORTED_CANTO_NETWORKS.find(
-      (network) => network.chainId == chainId
-    ) ?? CantoMainnet;
+  const network = getCantoNetwork(chainId);
   return {
     chainId: network.chainId,
     cosmosChainId: network.cosmosChainId,

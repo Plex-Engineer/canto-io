@@ -2,11 +2,9 @@ import styled from "@emotion/styled";
 import { formatUnits } from "ethers/lib/utils";
 import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
-import { CantoMainnet } from "global/providers";
 import { truncateNumber } from "global/utils/formattingNumbers";
 import { useState } from "react";
-import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
-import { NativeTransaction } from "../config/interfaces";
+import { BridgeNetworkPair, NativeTransaction } from "../config/interfaces";
 import { convertSecondsToString, formatAddress } from "../utils/utils";
 import ConfirmTxModal, {
   TokenWithIcon,
@@ -20,14 +18,18 @@ interface Props {
   ethAddress: string;
   recover: boolean;
   isIBCTransfer: boolean;
+  correctChainId: number;
   tx?: (...args: any[]) => void;
+  networkPair: BridgeNetworkPair;
 }
 const MiniTransaction = (props: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   //just for ibc out
   const tokenNetworks = props.transaction.token.supportedOutChannels ?? [0];
+  const allNetworks = props.networkPair.receiving.bridgeOutNetworks;
+
   const [selectedNetwork, setSelectedNetwork] = useState<
-    keyof typeof ALL_BRIDGE_OUT_NETWORKS
+    keyof typeof allNetworks
   >(tokenNetworks ? tokenNetworks[0] : 0);
   const [userInputAddress, setUserInputAddress] = useState("");
 
@@ -42,7 +44,7 @@ const MiniTransaction = (props: Props) => {
       >
         <OngoingTxModal onClose={() => setModalOpen(false)} />
         <ConfirmTxModal
-          networkId={CantoMainnet.chainId}
+          networkId={props.correctChainId}
           title={"CONFIRMATION"}
           titleIcon={TokenWithIcon({
             icon: props.transaction.token.icon,
@@ -75,8 +77,7 @@ const MiniTransaction = (props: Props) => {
                   {
                     header: "address",
                     placeholder:
-                      ALL_BRIDGE_OUT_NETWORKS[selectedNetwork]
-                        .addressBeginning + "1...",
+                      allNetworks[selectedNetwork].addressBeginning + "1...",
                     value: userInputAddress,
                     setValue: setUserInputAddress,
                   },
@@ -85,16 +86,11 @@ const MiniTransaction = (props: Props) => {
           }
           disableConfirm={
             props.isIBCTransfer &&
-            !ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].checkAddress(
-              userInputAddress
-            )
+            !allNetworks[selectedNetwork].checkAddress(userInputAddress)
           }
           onConfirm={() => {
             props.isIBCTransfer
-              ? props.tx?.(
-                  ALL_BRIDGE_OUT_NETWORKS[selectedNetwork],
-                  userInputAddress
-                )
+              ? props.tx?.(allNetworks[selectedNetwork], userInputAddress)
               : props.tx?.();
           }}
           extraDetails={getBridgeExtraDetails(
@@ -103,7 +99,7 @@ const MiniTransaction = (props: Props) => {
             formatAddress(props.cantoAddress, 6),
             !props.isIBCTransfer
               ? formatAddress(props.ethAddress, 6)
-              : ALL_BRIDGE_OUT_NETWORKS[selectedNetwork].name
+              : allNetworks[selectedNetwork].name
           )}
           onClose={() => {
             setModalOpen(false);
@@ -166,18 +162,12 @@ const MiniTransaction = (props: Props) => {
                     <span>
                       <img
                         src={
-                          ALL_BRIDGE_OUT_NETWORKS[
-                            network as keyof typeof ALL_BRIDGE_OUT_NETWORKS
-                          ].icon
+                          allNetworks[network as keyof typeof allNetworks].icon
                         }
                         alt=""
                       />
                       <p>
-                        {
-                          ALL_BRIDGE_OUT_NETWORKS[
-                            network as keyof typeof ALL_BRIDGE_OUT_NETWORKS
-                          ].name
-                        }
+                        {allNetworks[network as keyof typeof allNetworks].name}
                       </p>
                     </span>
                   </div>

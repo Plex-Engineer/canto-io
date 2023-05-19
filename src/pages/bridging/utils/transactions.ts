@@ -11,13 +11,17 @@ import {
   createTransactionDetails,
 } from "global/stores/transactionUtils";
 import { CANTO_IBC_NETWORK } from "../config/bridgeOutNetworks";
-import { Chain, Fee } from "global/config/cosmosConstants";
+import { Chain, Fee, convertFee, ibcFee } from "global/config/cosmosConstants";
 import {
   txConvertCoin,
   txConvertERC20,
 } from "./convertCoin/convertTransactions";
 import { txIBCTransfer } from "./IBC/IBCTransfer";
 import { BridgeOutNetworkInfo } from "../config/interfaces";
+import {
+  getCosmosAPIEndpoint,
+  getCosmosChainObj,
+} from "global/utils/getAddressUtils";
 
 //will take care of wrapping ETH for WETH before bridging
 export async function sendToComsosTx(
@@ -72,15 +76,12 @@ export async function sendToComsosTx(
  * @notice This will perform check on cantoAddress to make sure it is valid
  */
 export async function convertTx(
+  chainId: number | undefined,
   txStore: TransactionStore,
   convertIn: boolean,
   cantoAddress: string,
   tokenAddressOrDenom: string,
   amount: string,
-  endpoint: string,
-  fee: Fee,
-  chain: Chain,
-  memo: string,
   extraProps?: ExtraProps
 ): Promise<boolean> {
   const convertDetails = createTransactionDetails(
@@ -97,25 +98,23 @@ export async function convertTx(
     cantoAddress,
     tokenAddressOrDenom,
     amount,
-    endpoint,
-    fee,
-    chain,
-    memo,
-    convertDetails
+    getCosmosAPIEndpoint(chainId),
+    convertFee,
+    getCosmosChainObj(chainId),
+    "",
+    convertDetails,
+    chainId
   );
 }
 
 //will check on the address on the receiving network
 export async function ibcOutTx(
+  chainId: number | undefined,
   txStore: TransactionStore,
   bridgeOutNetwork: BridgeOutNetworkInfo,
   toChainAddress: string,
   tokenDenom: string,
-  amount: string,
-  endpoint: string,
-  fee: Fee,
-  chain: Chain,
-  memo: string
+  amount: string
 ) {
   const ibcDetails = createTransactionDetails(
     txStore,
@@ -136,13 +135,14 @@ export async function ibcOutTx(
     bridgeOutNetwork.cantoChannel,
     amount,
     tokenDenom,
-    endpoint,
+    getCosmosAPIEndpoint(chainId),
     bridgeOutNetwork.restEndpoint,
     bridgeOutNetwork.latestBlockEndpoint,
-    fee,
-    chain,
-    memo,
-    ibcDetails
+    ibcFee,
+    getCosmosChainObj(chainId),
+    "",
+    ibcDetails,
+    chainId
   );
 }
 
@@ -178,9 +178,11 @@ async function _performConvertCoin(
   fee: Fee,
   chain: Chain,
   memo: string,
-  convertDetails?: TransactionDetails
+  convertDetails?: TransactionDetails,
+  chainId?: number
 ): Promise<boolean> {
   return await txStore.performCosmosTx({
+    chainId,
     details: convertDetails,
     tx: convertIn ? txConvertCoin : txConvertERC20,
     params: [
@@ -206,9 +208,11 @@ async function _performIBCTransferOut(
   fee: Fee,
   chain: Chain,
   memo: string,
-  ibcDetails?: TransactionDetails
+  ibcDetails?: TransactionDetails,
+  chainId?: number
 ): Promise<boolean> {
   return await txStore.performCosmosTx({
+    chainId,
     details: ibcDetails,
     tx: txIBCTransfer,
     params: [

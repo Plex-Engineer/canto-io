@@ -1,6 +1,9 @@
 import { CORE_ADDRESSES } from "./addresses";
 import { Token } from "./interfaces/tokens";
 import { TOKENS } from "./tokenInfo";
+import ethIcon from "assets/icons/ETH.svg";
+import bridgeIcon from "assets/icons/canto-bridge.svg";
+import cantoIcon from "assets/icons/canto-evm.svg";
 
 interface Network {
   name: string;
@@ -10,8 +13,9 @@ interface Network {
   rpcUrl: string;
   isTestChain: boolean;
   blockExplorerUrl: string;
+  icon: string;
 }
-interface CantoNetwork extends Network {
+export interface CantoNetwork extends Network {
   coreContracts: {
     Router: string;
     Comptroller: string;
@@ -23,14 +27,14 @@ interface CantoNetwork extends Network {
   multicall1Address: string;
   multicall2Address: string;
 }
-interface ETHNetwork extends Network {
+export interface ETHNetwork extends Network {
   coreContracts: {
     GravityBridge: string;
   };
 }
 const emptyBlockExplorerLink = "https://www.nothing.com";
 export const CantoMainnet: CantoNetwork = {
-  name: "Canto Mainnet",
+  name: "Canto",
   symbol: "CANTO",
   chainId: 7700,
   coreContracts: CORE_ADDRESSES.CantoMainnet,
@@ -42,6 +46,7 @@ export const CantoMainnet: CantoNetwork = {
   blockExplorerUrl: "https://tuber.build/",
   multicall1Address: "0x210b88d5Ad4BEbc8FAC4383cC7F84Cd4F03d18c6",
   multicall2Address: "0x637490E68AA50Ea810688a52D7464E10c25A77c1",
+  icon: cantoIcon,
 };
 
 export const CantoTestnet: CantoNetwork = {
@@ -57,11 +62,12 @@ export const CantoTestnet: CantoNetwork = {
   blockExplorerUrl: emptyBlockExplorerLink,
   multicall1Address: "0xe536cF7B00069894da25faC787d7aD9D211a2C1A",
   multicall2Address: "0x0e356B86FA2aE1bEB93174C18AD373207a40F2A3",
+  icon: cantoIcon,
 };
 
 //Gravity Bridge Chains
 export const ETHMainnet: ETHNetwork = {
-  name: "Ethereum Mainnet",
+  name: "Ethereum",
   symbol: "ETH",
   chainId: 1,
   coreContracts: CORE_ADDRESSES.ETHMainnet,
@@ -69,6 +75,7 @@ export const ETHMainnet: ETHNetwork = {
   rpcUrl: import.meta.env.VITE_MAINNET_RPC,
   isTestChain: false,
   blockExplorerUrl: emptyBlockExplorerLink,
+  icon: ethIcon,
 };
 
 export const GravityTestnet: ETHNetwork = {
@@ -80,6 +87,7 @@ export const GravityTestnet: ETHNetwork = {
   rpcUrl: "https://testnet.gravitychain.io",
   isTestChain: true,
   blockExplorerUrl: emptyBlockExplorerLink,
+  icon: bridgeIcon,
 };
 
 export const NodeAddresses = {

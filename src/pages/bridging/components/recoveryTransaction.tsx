@@ -4,7 +4,6 @@ import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { truncateNumber } from "global/utils/formattingNumbers";
 import { useState } from "react";
-import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 import {
   BridgeOutNetworkInfo,
   RecoveryTransaction,
@@ -17,22 +16,28 @@ import ConfirmTxModal, {
 import rightArrow from "assets/next.svg";
 import { getBridgeExtraDetails } from "./bridgeDetails";
 import { ibcOutTx } from "../utils/transactions";
-import { useTransactionStore } from "global/stores/transactionStore";
+import { TransactionStore } from "global/stores/transactionStore";
 import { CantoMainnet } from "global/config/networks";
-import { chain, ibcFee } from "global/config/cosmosConstants";
+import { getNetworkPair } from "../config/networkPairs";
 
 interface Props {
   transaction: RecoveryTransaction;
   cantoAddress: string;
+  txStore: TransactionStore;
 }
-const RecoveryTransactionBox = ({ transaction, cantoAddress }: Props) => {
-  const txStore = useTransactionStore();
+const RecoveryTransactionBox = ({
+  transaction,
+  cantoAddress,
+  txStore,
+}: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isNetworkSelectModalOpen, setNetworkSelectModalOpen] = useState(false);
   const [selectedNetwork, setSelectedNetwork] = useState<BridgeOutNetworkInfo>(
     transaction.defaultNetwork
   );
   const [userInputAddress, setUserInputAddress] = useState("");
+  const bridgeOutNetworks = getNetworkPair(CantoMainnet.chainId).receiving
+    .bridgeOutNetworks;
 
   return (
     <Styled>
@@ -83,15 +88,12 @@ const RecoveryTransactionBox = ({ transaction, cantoAddress }: Props) => {
           disableConfirm={!selectedNetwork.checkAddress(userInputAddress)}
           onConfirm={() => {
             ibcOutTx(
+              CantoMainnet.chainId,
               txStore,
               selectedNetwork,
               userInputAddress,
               transaction.token.ibcDenom,
-              transaction.amount.toString(),
-              CantoMainnet.cosmosAPIEndpoint,
-              ibcFee,
-              chain,
-              ""
+              transaction.amount.toString()
             );
           }}
           extraDetails={getBridgeExtraDetails(
@@ -185,31 +187,29 @@ const RecoveryTransactionBox = ({ transaction, cantoAddress }: Props) => {
           >
             <ChooseNetwork>
               <div className="network-list">
-                {Object.entries(ALL_BRIDGE_OUT_NETWORKS).map(
-                  ([key, network]) => (
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      key={key}
-                      className="network-item"
-                      onClick={() => {
-                        setNetworkSelectModalOpen(false);
-                        setSelectedNetwork(network);
-                      }}
-                      style={{
-                        background:
-                          selectedNetwork.chainId === network.chainId
-                            ? "#1d1d1d"
-                            : "",
-                      }}
-                    >
-                      <span>
-                        <img src={network.icon} />
-                        <Text>{network.name}</Text>
-                      </span>
-                    </div>
-                  )
-                )}
+                {Object.entries(bridgeOutNetworks).map(([key, network]) => (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    key={key}
+                    className="network-item"
+                    onClick={() => {
+                      setNetworkSelectModalOpen(false);
+                      setSelectedNetwork(network);
+                    }}
+                    style={{
+                      background:
+                        selectedNetwork.chainId === network.chainId
+                          ? "#1d1d1d"
+                          : "",
+                    }}
+                  >
+                    <span>
+                      <img src={network.icon} />
+                      <Text>{network.name}</Text>
+                    </span>
+                  </div>
+                ))}
               </div>
             </ChooseNetwork>
           </Modal>

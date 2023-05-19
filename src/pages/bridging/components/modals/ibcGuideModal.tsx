@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { PrimaryButton, Text } from "global/packages/src";
-import { ALL_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
+import { CANTO_MAIN_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
 import { NativeToken } from "pages/bridging/config/interfaces";
 import { copyAddress, formatAddress } from "pages/bridging/utils/utils";
 import CopyToClipboard from "react-copy-to-clipboard";
@@ -36,7 +36,8 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
   const [keplrClient, setKeplrClient] = useState<SigningStargateClient>();
   const [amount, setAmount] = useState("");
   const [txStatus, setTxStatus] = useState<TransactionState>("None");
-  const network = ALL_BRIDGE_OUT_NETWORKS[props.token.supportedOutChannels[0]];
+  const network =
+    CANTO_MAIN_BRIDGE_OUT_NETWORKS[props.token.supportedOutChannels[0]];
   const canIBC = !(
     network.chainId === "evmos_9001-2" || network.chainId === "injective-1"
   );

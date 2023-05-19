@@ -1,16 +1,17 @@
 import styled from "@emotion/styled";
 import Step2TxBox from "./components/step2TxBox";
-import { NativeTransaction, UserERC20BridgeToken } from "./config/interfaces";
+import {
+  BridgeNetworkPair,
+  NativeTransaction,
+  UserERC20BridgeToken,
+} from "./config/interfaces";
 import Step1TxBox from "./components/step1TxBox";
 import QBoxList from "./components/QBoxList";
-import { NATIVE_COMSOS_TOKENS } from "./config/bridgingTokens";
 import { TokenGroups } from "global/config/interfaces/tokens";
 import { BigNumber, BigNumberish } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { sendToComsosTx } from "./utils/transactions";
-import { useTransactionStore } from "global/stores/transactionStore";
-import { useNetworkInfo } from "global/stores/networkInfo";
-import { getAddressesForEthNetwork } from "global/utils/getAddressUtils";
+import { TransactionStore } from "global/stores/transactionStore";
 
 interface BridgeInProps {
   ethAddress?: string;
@@ -19,12 +20,12 @@ interface BridgeInProps {
   selectedEthToken: UserERC20BridgeToken;
   selectEthToken: (tokenAddress: string) => void;
   step2Transactions: NativeTransaction[];
+  chainId: number;
+  txStore: TransactionStore;
+  networkPair: BridgeNetworkPair;
 }
 const BridgeIn = (props: BridgeInProps) => {
-  const txStore = useTransactionStore();
-  const networkInfo = useNetworkInfo();
   const selectedToken = props.selectedEthToken;
-
   return (
     <BridgeStyled>
       <div className="left">
@@ -97,7 +98,7 @@ const BridgeIn = (props: BridgeInProps) => {
               groupName: "canto dex tokens",
               tokens: [
                 ...props.ethGBridgeTokens,
-                ...NATIVE_COMSOS_TOKENS,
+                ...props.networkPair.receiving.nativeCosmosTokens,
               ].filter((token) =>
                 token.tokenGroups.includes(TokenGroups.DEX_TOKENS)
               ),
@@ -116,7 +117,7 @@ const BridgeIn = (props: BridgeInProps) => {
               groupName: "other tokens",
               tokens: [
                 ...props.ethGBridgeTokens,
-                ...NATIVE_COMSOS_TOKENS,
+                ...props.networkPair.receiving.nativeCosmosTokens,
               ].filter(
                 (token) => !token.tokenGroups.includes(TokenGroups.DEX_TOKENS)
               ),
@@ -136,9 +137,8 @@ const BridgeIn = (props: BridgeInProps) => {
           selectToken={props.selectEthToken}
           tx={async (amount: BigNumber) =>
             await sendToComsosTx(
-              txStore,
-              getAddressesForEthNetwork(Number(networkInfo.chainId))
-                .GravityBridge,
+              props.txStore,
+              props.networkPair.sending.network.coreContracts.GravityBridge,
               selectedToken.address,
               props.cantoAddress ?? "",
               amount,
@@ -146,12 +146,16 @@ const BridgeIn = (props: BridgeInProps) => {
               selectedToken.symbol
             )
           }
+          networkPair={props.networkPair}
         />
         <Step2TxBox
           bridgeIn
           transactions={props.step2Transactions}
           cantoAddress={props.cantoAddress ?? ""}
           ethAddress={props.ethAddress ?? ""}
+          txStore={props.txStore}
+          networkPair={props.networkPair}
+          chainId={props.chainId}
         />
       </div>
       <div className="right"></div>
