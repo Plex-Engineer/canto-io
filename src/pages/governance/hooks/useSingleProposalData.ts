@@ -1,7 +1,6 @@
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
-import { chain, memo, votingFee } from "global/config/cosmosConstants";
-import { CantoMainnet } from "global/config/networks";
+import { memo, votingFee } from "global/config/cosmosConstants";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { Mixpanel } from "mixpanel";
 import { DelegationResponse } from "pages/staking/config/interfaces";
@@ -18,7 +17,6 @@ import {
   VotingOption,
 } from "../config/interfaces";
 import { queryTally } from "../stores/proposals";
-import { convertToVoteNumber } from "../utils/formattingStrings";
 import {
   calculatePercentVotes,
   getSingleProposalData,
@@ -28,7 +26,10 @@ import {
 import { getAccountVote } from "../utils/voting";
 import { useTransactionStore } from "global/stores/transactionStore";
 import { voteTx } from "../utils/transactions";
-import { getCosmosAPIEndpoint } from "global/utils/getAddressUtils";
+import {
+  getCosmosAPIEndpoint,
+  getCosmosChainObj,
+} from "global/utils/getAddressUtils";
 
 interface SingleProposalReturnProps {
   loading: boolean;
@@ -64,11 +65,10 @@ export function useSingleProposalData(): SingleProposalReturnProps {
   const [delegations, setDelegations] = useState<DelegationResponse[]>([]);
   const totalUserStake = calculateTotalStaked(delegations);
   const [totalGlobalStake, setTotalGlobalStake] = useState(BigNumber.from(0));
-
   async function getUserDelegations() {
     if (account) {
       setDelegations(
-        await getDelegationsForAddress(CantoMainnet.cosmosAPIEndpoint, account)
+        await getDelegationsForAddress(getCosmosAPIEndpoint(chainId), account)
       );
     }
   }
@@ -149,10 +149,10 @@ export function useSingleProposalData(): SingleProposalReturnProps {
         txStore,
         account,
         Number(proposal.proposal_id),
-        convertToVoteNumber(vote),
+        vote,
         getCosmosAPIEndpoint(chainId),
         votingFee,
-        chain,
+        getCosmosChainObj(chainId),
         memo
       );
       showAccountVote();

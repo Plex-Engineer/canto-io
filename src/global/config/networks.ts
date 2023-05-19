@@ -19,6 +19,7 @@ interface CantoNetwork extends Network {
     WCANTO: string;
   };
   cosmosAPIEndpoint: string;
+  cosmosChainId: string;
   multicall1Address: string;
   multicall2Address: string;
 }
@@ -36,6 +37,7 @@ export const CantoMainnet: CantoNetwork = {
   tokens: TOKENS.CantoMainnet,
   rpcUrl: "https://mainnode.plexnode.org:8545",
   cosmosAPIEndpoint: "https://mainnode.plexnode.org:1317",
+  cosmosChainId: "canto_7700-1",
   isTestChain: false,
   blockExplorerUrl: "https://tuber.build/",
   multicall1Address: "0x210b88d5Ad4BEbc8FAC4383cC7F84Cd4F03d18c6",
@@ -50,6 +52,7 @@ export const CantoTestnet: CantoNetwork = {
   tokens: TOKENS.CantoTestnet,
   rpcUrl: "https://canto-testnet.plexnode.wtf",
   cosmosAPIEndpoint: "https://api-testnet.plexnode.wtf",
+  cosmosChainId: "canto_7701-1",
   isTestChain: true,
   blockExplorerUrl: emptyBlockExplorerLink,
   multicall1Address: "0xe536cF7B00069894da25faC787d7aD9D211a2C1A",

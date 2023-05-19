@@ -123,7 +123,7 @@ export const createTransactionMessges = (
       return {
         short: "vote",
         long: `vote ${token}`,
-        pending: `voting ${token}...}`,
+        pending: `voting ${token}...`,
         success: `successfully voted ${token}`,
         error: `unable to vote ${token}`,
       };

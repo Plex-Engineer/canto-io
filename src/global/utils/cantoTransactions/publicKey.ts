@@ -1,14 +1,14 @@
 import { generateEndpointAccount } from "@tharsis/provider";
 import { createMessageSend } from "@tharsis/transactions";
 import { CantoMainnet } from "global/config/networks";
-import { chain, pubKeyFee, memo } from "global/config/cosmosConstants";
+import { pubKeyFee, memo } from "global/config/cosmosConstants";
 import { getCantoAddressFromMetaMask } from "../walletConnect/addCantoToWallet";
 import {
   checkCantoBalance,
   getSenderObj,
   signAndBroadcastTxMsg,
 } from "./helpers";
-import { getCosmosAPIEndpoint } from "../getAddressUtils";
+import { getCosmosAPIEndpoint, getCosmosChainObj } from "../getAddressUtils";
 
 export async function checkPubKey(bech32Address: string, chainId?: number) {
   const endPointAccount = generateEndpointAccount(bech32Address);
@@ -63,7 +63,13 @@ export async function generatePubKey(
   }
   // await generate pub key
   setIsSuccess("waiting for the metamask transaction to be signed...");
-  const response = await txSend(botAddress, hexAddress, bech32Address, "1"); // await txSend to bot
+  const response = await txSend(
+    botAddress,
+    hexAddress,
+    bech32Address,
+    "1",
+    chainId
+  ); // await txSend to bot
   setIsSuccess("generating account...");
   const wrapper = async () => {
     const hasPubKey = await checkPubKey(bech32Address, chainId);
@@ -94,11 +100,12 @@ async function callBot(cantoAddress: string, hexAddress: string) {
 
   return await fetch(CANTO_BOT_URL, options);
 }
-export async function txSend(
+async function txSend(
   destinationBech32: string,
   senderHexAddress: string,
   senderBech32address: string,
-  amount: string
+  amount: string,
+  chainId?: number
 ) {
   const senderObj = await getSenderObj(
     senderHexAddress,
@@ -109,11 +116,17 @@ export async function txSend(
     amount: amount,
     denom: "acanto",
   };
-  const msg = createMessageSend(chain, senderObj, pubKeyFee, memo, params);
+  const msg = createMessageSend(
+    getCosmosChainObj(chainId),
+    senderObj,
+    pubKeyFee,
+    memo,
+    params
+  );
   return signAndBroadcastTxMsg(
     msg,
     senderObj,
-    chain,
+    getCosmosChainObj(chainId),
     CantoMainnet.cosmosAPIEndpoint,
     senderHexAddress
   );

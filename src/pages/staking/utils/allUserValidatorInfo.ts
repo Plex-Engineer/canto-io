@@ -65,7 +65,7 @@ export async function getStakingApr() {
     .then((result) => {
       return parseFloat(result.pool.bonded_tokens);
     })
-    .catch((err) => {
+    .catch(() => {
       return 0;
     });
 
@@ -74,7 +74,7 @@ export async function getStakingApr() {
     .then((result) => {
       return parseFloat(result.epoch_mint_provision.amount);
     })
-    .catch((err) => {
+    .catch(() => {
       return 0;
     });
 

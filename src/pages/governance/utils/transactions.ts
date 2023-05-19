@@ -5,14 +5,18 @@ import {
 } from "global/config/interfaces/transactionTypes";
 import { TransactionStore } from "global/stores/transactionStore";
 import { createTransactionDetails } from "global/stores/transactionUtils";
-import { convertVoteNumberToString } from "./formattingStrings";
+import {
+  convertToVoteNumber,
+  convertVoteNumberToString,
+} from "./formattingStrings";
 import { txVote } from "./voting";
+import { VotingOption } from "../config/interfaces";
 
 export async function voteTx(
   txStore: TransactionStore,
   account: string | undefined,
   proposalID: number,
-  option: number,
+  option: VotingOption,
   nodeAddressIP: string,
   fee: Fee,
   chain: Chain,
@@ -34,7 +38,7 @@ export async function voteTx(
     txStore,
     account,
     proposalID,
-    option,
+    convertToVoteNumber(option),
     nodeAddressIP,
     fee,
     chain,

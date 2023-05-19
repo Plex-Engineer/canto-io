@@ -36,6 +36,16 @@ export function getCosmosAPIEndpoint(chainId?: number | undefined) {
       ?.cosmosAPIEndpoint ?? CantoMainnet.cosmosAPIEndpoint
   );
 }
+export function getCosmosChainObj(chainId?: number | undefined) {
+  const network =
+    ALL_SUPPORTED_CANTO_NETWORKS.find(
+      (network) => network.chainId == chainId
+    ) ?? CantoMainnet;
+  return {
+    chainId: network.chainId,
+    cosmosChainId: network.cosmosChainId,
+  };
+}
 
 //will return if we are on a supported canto-type network
 export function onCantoNetwork(chainId?: number | undefined): boolean {
