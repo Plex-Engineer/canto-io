@@ -19,6 +19,7 @@ import { useTokenBalances } from "./tokenBalances/useTokenBalances";
 import { useEtherBalance } from "@usedapp/core";
 import { getNetworkPair } from "../config/networkPairs";
 import { getCosmosAPIEndpoint } from "global/utils/getAddressUtils";
+import { BigNumber } from "ethers";
 
 interface BridgeTokenInfo {
   userBridgeInTokens: UserERC20BridgeToken[];
@@ -58,7 +59,15 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
     sendingNetwork.tokens,
     sendingNetwork.network.chainId,
     sendingNetwork.network.coreContracts.GravityBridge
-  ).tokens;
+  ).tokens.map((token) => {
+    return {
+      ...token,
+      erc20Balance:
+        sendingNetwork.network.coreContracts.WETH === token.address
+          ? token.erc20Balance.add(ethBalance ?? BigNumber.from(0))
+          : token.erc20Balance,
+    };
+  });
   //bridge out erc20 tokens on Canto Mainnet
   const { tokens: userCantoBridgeOutTokens } = useTokenBalances(
     account,

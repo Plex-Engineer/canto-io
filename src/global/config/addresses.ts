@@ -82,8 +82,10 @@ export const CORE_ADDRESSES = {
   },
   gravityBridgeTest: {
     GravityBridge: "0x7580bFE88Dd3d07947908FAE12d95872a260F2D8",
+    WETH: "",
   },
   ETHMainnet: {
     GravityBridge: "0xa4108aA1Ec4967F8b52220a4f7e94A8201F2D906",
+    WETH: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   },
 };

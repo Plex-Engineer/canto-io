@@ -1,5 +1,5 @@
-import { BigNumber } from "ethers";
-import { gravityBridgeAbi } from "global/config/abi";
+import { BigNumber, Contract } from "ethers";
+import { ERC20Abi, gravityBridgeAbi, wethAbi } from "global/config/abi";
 import {
   CantoTransactionType,
   ExtraProps,
@@ -21,18 +21,46 @@ import { BridgeOutNetworkInfo } from "../config/interfaces";
 import {
   getCosmosAPIEndpoint,
   getCosmosChainObj,
+  getCurrentProvider,
 } from "global/utils/getAddressUtils";
+import { formatUnits } from "ethers/lib/utils";
 
 //will take care of wrapping ETH for WETH before bridging
 export async function sendToComsosTx(
   txStore: TransactionStore,
   gravityAddresss: string,
+  WETHAddress: string,
   tokenAddress: string,
   cantoAddress: string,
+  ethAddress: string,
   amount: BigNumber,
   currentAllowance: BigNumber,
-  tokenSymbol?: string
+  tokenSymbol?: string,
+  chainId?: number
 ): Promise<boolean> {
+  //must check if we need to wrap any ETH before sending to cosmos
+  let needToWrap = false;
+  let amountToWrap = BigNumber.from(0);
+  const wrapDetails = [];
+  if (tokenAddress === WETHAddress) {
+    //dealing with WETH, so we must check the balance of WETH and wrap if needed
+    const wethContract = new Contract(
+      WETHAddress,
+      ERC20Abi,
+      getCurrentProvider(chainId)
+    );
+    const wethBalance = await wethContract.balanceOf(ethAddress);
+    if (wethBalance.lt(amount)) {
+      needToWrap = true;
+      amountToWrap = amount.sub(wethBalance);
+      wrapDetails.push(
+        createTransactionDetails(txStore, CantoTransactionType.WRAP, {
+          symbol: "WETH",
+          amount: formatUnits(amountToWrap),
+        })
+      );
+    }
+  }
   const [enableDetails, sendToCosmosDetails] = [
     createTransactionDetails(txStore, CantoTransactionType.ENABLE, {
       symbol: tokenSymbol,
@@ -41,7 +69,21 @@ export async function sendToComsosTx(
       symbol: tokenSymbol,
     }),
   ];
-  txStore.addTransactions([enableDetails, sendToCosmosDetails]);
+  txStore.addTransactions([...wrapDetails, enableDetails, sendToCosmosDetails]);
+
+  if (needToWrap) {
+    const wrapDone = await _performWrap(
+      txStore,
+      WETHAddress,
+      amountToWrap,
+      wrapDetails[0]
+    );
+    if (!wrapDone) {
+      return false;
+    }
+  }
+
+  //proceed with normal transactions after wrapping
   const enableDone = await _performEnable(
     txStore,
     tokenAddress,
@@ -227,5 +269,20 @@ async function _performIBCTransferOut(
       chain,
       memo,
     ],
+  });
+}
+async function _performWrap(
+  txStore: TransactionStore,
+  wethAddress: string,
+  amount: BigNumber,
+  wrapDetails?: TransactionDetails
+): Promise<boolean> {
+  return await txStore.performEVMTx({
+    details: wrapDetails,
+    address: wethAddress,
+    abi: wethAbi,
+    method: "deposit",
+    params: [],
+    value: amount,
   });
 }

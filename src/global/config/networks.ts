@@ -30,6 +30,7 @@ export interface CantoNetwork extends Network {
 export interface ETHNetwork extends Network {
   coreContracts: {
     GravityBridge: string;
+    WETH: string;
   };
 }
 const emptyBlockExplorerLink = "https://www.nothing.com";

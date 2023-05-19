@@ -139,11 +139,14 @@ const BridgeIn = (props: BridgeInProps) => {
             await sendToComsosTx(
               props.txStore,
               props.networkPair.sending.network.coreContracts.GravityBridge,
+              props.networkPair.sending.network.coreContracts.WETH,
               selectedToken.address,
               props.cantoAddress ?? "",
+              props.ethAddress ?? "",
               amount,
               selectedToken.allowance,
-              selectedToken.symbol
+              selectedToken.symbol,
+              props.networkPair.sending.network.chainId
             )
           }
           networkPair={props.networkPair}
