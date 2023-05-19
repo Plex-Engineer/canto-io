@@ -78,9 +78,11 @@ export interface EVMTransaction {
   params: unknown[];
   //if sending canto
   value: string | BigNumber;
+  chainId?: number; // if not set, mainnet defaults are used
 }
 export interface CosmosTransaction {
   details?: TransactionDetails;
+  chainId?: number; // if not set, mainnet defaults are used
   tx: (...args: any[]) => Promise<CosmosTxResponse>;
   params: unknown[];
 }

@@ -1,4 +1,4 @@
-import { Chain, Fee } from "global/config/cosmosConstants";
+import { Chain, Fee, votingFee } from "global/config/cosmosConstants";
 import {
   CantoTransactionType,
   TransactionDetails,
@@ -11,16 +11,17 @@ import {
 } from "./formattingStrings";
 import { txVote } from "./voting";
 import { VotingOption } from "../config/interfaces";
+import {
+  getCosmosAPIEndpoint,
+  getCosmosChainObj,
+} from "global/utils/getAddressUtils";
 
 export async function voteTx(
   txStore: TransactionStore,
+  chainId: number | undefined,
   account: string | undefined,
   proposalID: number,
-  option: VotingOption,
-  nodeAddressIP: string,
-  fee: Fee,
-  chain: Chain,
-  memo: string
+  option: VotingOption
 ): Promise<boolean> {
   if (!account) {
     return false;
@@ -39,11 +40,12 @@ export async function voteTx(
     account,
     proposalID,
     convertToVoteNumber(option),
-    nodeAddressIP,
-    fee,
-    chain,
-    memo,
-    voteTransaction
+    getCosmosAPIEndpoint(chainId),
+    votingFee,
+    getCosmosChainObj(chainId),
+    "",
+    voteTransaction,
+    chainId
   );
 }
 async function _performVote(
@@ -55,10 +57,12 @@ async function _performVote(
   fee: Fee,
   chain: Chain,
   memo: string,
-  voteDetails?: TransactionDetails
+  voteDetails?: TransactionDetails,
+  chainId?: number
 ): Promise<boolean> {
   return await txStore.performCosmosTx({
     details: voteDetails,
+    chainId,
     tx: txVote,
     params: [account, proposalID, option, nodeAddressIP, fee, chain, memo],
   });

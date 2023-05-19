@@ -102,7 +102,8 @@ export const useTransactionStore = create<TransactionStore>()((set, get) => ({
             transaction.tx_response.txhash,
         });
         const txSuccess = await checkCosmosTxConfirmation(
-          transaction.tx_response.txhash
+          transaction.tx_response.txhash,
+          tx.chainId
         );
         if (txSuccess) {
           get().updateTx(tx.details.txId, {

@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { Mixpanel } from "mixpanel";
 import { StyledPopup } from "global/components/Styled";
 import OngoingTxModal from "global/components/modals/ongoingTxModal";
+import { useTransactionStore } from "global/stores/transactionStore";
 
 interface ModalManagerProps {
   allValidators: Validator[];
@@ -16,6 +17,7 @@ interface ModalManagerProps {
 }
 export const ModalManager = (props: ModalManagerProps) => {
   const validatorModals = useValidatorModalStore();
+  const txStore = useTransactionStore();
   const networkInfo = useNetworkInfo();
 
   useEffect(() => {
@@ -65,6 +67,8 @@ export const ModalManager = (props: ModalManagerProps) => {
           balance={networkInfo.balance}
           account={networkInfo.account}
           txFeeCheck={props.txBalanceChecks}
+          txStore={txStore}
+          chainId={Number(networkInfo.chainId)}
         />
       )}
     </StyledPopup>

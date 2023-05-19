@@ -1,5 +1,5 @@
 import { Text } from "global/packages/src";
-import { CInput, CSearch } from "global/packages/src/components/atoms/Input";
+import { CSearch } from "global/packages/src/components/atoms/Input";
 
 import { useEffect, useState } from "react";
 import Select from "react-select";
@@ -84,7 +84,7 @@ const AllDerevatives = (props: AllDerevativesProps) => {
           <Select
             className="react-select-container"
             styles={{
-              dropdownIndicator: (baseStyles, state) => ({
+              dropdownIndicator: (baseStyles) => ({
                 ...baseStyles,
                 color: "var(--primary-color)",
               }),

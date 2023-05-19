@@ -11,9 +11,9 @@ import {
 import { signatureToPubkey } from "@hanchon/signature-to-pubkey";
 import { ethers } from "ethers";
 import { Buffer } from "buffer";
-import { CantoMainnet } from "global/config/networks";
 import { BigNumber } from "ethers";
 import { Chain, CosmosMsg, Sender } from "global/config/cosmosConstants";
+import { getCosmosAPIEndpoint } from "../getAddressUtils";
 
 const JSONHeader = "application/json";
 /**
@@ -136,8 +136,11 @@ async function reformatSender(addressData: any) {
   };
 }
 
-export async function checkCantoBalance(bech32Address: string) {
-  const nodeURLMain = CantoMainnet.cosmosAPIEndpoint;
+export async function checkCantoBalance(
+  bech32Address: string,
+  chainId?: number
+) {
+  const nodeURLMain = getCosmosAPIEndpoint(chainId);
   const result = await fetch(
     nodeURLMain +
       "/cosmos/bank/v1beta1/balances/" +

@@ -1,6 +1,5 @@
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
-import { memo, votingFee } from "global/config/cosmosConstants";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { Mixpanel } from "mixpanel";
 import { DelegationResponse } from "pages/staking/config/interfaces";
@@ -26,10 +25,7 @@ import {
 import { getAccountVote } from "../utils/voting";
 import { useTransactionStore } from "global/stores/transactionStore";
 import { voteTx } from "../utils/transactions";
-import {
-  getCosmosAPIEndpoint,
-  getCosmosChainObj,
-} from "global/utils/getAddressUtils";
+import { getCosmosAPIEndpoint } from "global/utils/getAddressUtils";
 
 interface SingleProposalReturnProps {
   loading: boolean;
@@ -147,13 +143,10 @@ export function useSingleProposalData(): SingleProposalReturnProps {
     txVote: async (vote) => {
       await voteTx(
         txStore,
+        chainId,
         account,
         Number(proposal.proposal_id),
-        vote,
-        getCosmosAPIEndpoint(chainId),
-        votingFee,
-        getCosmosChainObj(chainId),
-        memo
+        vote
       );
       showAccountVote();
     },

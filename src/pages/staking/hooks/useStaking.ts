@@ -13,14 +13,13 @@ import {
   getUndelegationsForAddress,
   getValidators,
 } from "pages/staking/utils/transactionHelpers";
-import { CantoMainnet } from "global/config/networks";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { BigNumber } from "ethers";
 import {
   getAllValidatorData,
   getStakingApr,
 } from "../utils/allUserValidatorInfo";
-import { chain, Fee, memo } from "global/config/cosmosConstants";
+import { Fee } from "global/config/cosmosConstants";
 import {
   claimRewardFee,
   delegateFee,
@@ -33,6 +32,7 @@ import { useTransactionStore } from "global/stores/transactionStore";
 import useValidatorModalStore, {
   ValidatorModalType,
 } from "../stores/validatorModalStore";
+import { getCosmosAPIEndpoint } from "global/utils/getAddressUtils";
 
 const useStaking = (): {
   validators: Validator[];
@@ -64,11 +64,8 @@ const useStaking = (): {
     modalStore.open(ValidatorModalType.CLAIM_REWARDS);
     claimStakingRewards(
       txStore,
+      Number(networkInfo.chainId),
       networkInfo.account ?? "",
-      CantoMainnet.cosmosAPIEndpoint,
-      claimRewardFee,
-      chain,
-      memo,
       userValidators
     );
   }
@@ -76,25 +73,29 @@ const useStaking = (): {
     if (networkInfo.account) {
       setDelegations(
         await getDelegationsForAddress(
-          CantoMainnet.cosmosAPIEndpoint,
+          getCosmosAPIEndpoint(Number(networkInfo.chainId)),
           networkInfo.account
         )
       );
       setRewards(
         await getDistributionRewards(
-          CantoMainnet.cosmosAPIEndpoint,
+          getCosmosAPIEndpoint(Number(networkInfo.chainId)),
           networkInfo.account
         )
       );
       setUndelegations(
         await getUndelegationsForAddress(
-          CantoMainnet.cosmosAPIEndpoint,
+          getCosmosAPIEndpoint(Number(networkInfo.chainId)),
           networkInfo.account
         )
       );
     }
-    setValidators(await getValidators(CantoMainnet.cosmosAPIEndpoint));
-    setStakingApr(await getStakingApr());
+    setValidators(
+      await getValidators(getCosmosAPIEndpoint(Number(networkInfo.chainId)))
+    );
+    setStakingApr(
+      await getStakingApr(getCosmosAPIEndpoint(Number(networkInfo.chainId)))
+    );
   }
 
   //get new data every 6 seconds for the block time

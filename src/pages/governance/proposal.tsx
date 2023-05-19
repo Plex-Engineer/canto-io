@@ -201,7 +201,7 @@ const Proposal = () => {
         />
         <div className="voting-wrapper">
           <PrimaryButton
-            disabled={false}
+            disabled={voteEnded}
             autoFocus={false}
             onClick={() => {
               setVotingOpen(true);

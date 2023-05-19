@@ -15,9 +15,16 @@ import {
   StakingTransactionType,
 } from "../config/interfaces";
 import { createTransactionDetails } from "global/stores/transactionUtils";
+import {
+  getCosmosAPIEndpoint,
+  getCosmosChainObj,
+} from "global/utils/getAddressUtils";
+import { claimRewardFee, delegateFee, unbondingFee } from "../config/fees";
 
 interface GeneralStakingParams {
   account: string;
+  chainId?: number;
+  amount: string;
   newOperator?: {
     address: string;
     name: string;
@@ -26,11 +33,6 @@ interface GeneralStakingParams {
     address: string;
     name: string;
   };
-  amount: string;
-  endpoint: string;
-  fee: Fee;
-  chain: Chain;
-  memo: string;
 }
 export async function stakingTx(
   txStore: TransactionStore,
@@ -60,11 +62,12 @@ export async function stakingTx(
         params.operator.address,
         params.newOperator?.address ?? "",
         params.amount,
-        params.endpoint,
-        params.fee,
-        params.chain,
-        params.memo,
-        delegateDetails
+        getCosmosAPIEndpoint(params.chainId),
+        unbondingFee,
+        getCosmosChainObj(params.chainId),
+        "",
+        delegateDetails,
+        params.chainId
       )
     : await _performDelegate(
         txStore,
@@ -72,20 +75,18 @@ export async function stakingTx(
         params.account,
         params.operator.address,
         params.amount,
-        params.endpoint,
-        params.fee,
-        params.chain,
-        params.memo,
-        delegateDetails
+        getCosmosAPIEndpoint(params.chainId),
+        delegateFee,
+        getCosmosChainObj(params.chainId),
+        "",
+        delegateDetails,
+        params.chainId
       );
 }
 export async function claimStakingRewards(
   txStore: TransactionStore,
+  chainId: number | undefined,
   account: string,
-  endpoint: string,
-  fee: Fee,
-  chain: Chain,
-  memo: string,
   userValidators: MasterValidatorProps[]
 ): Promise<boolean> {
   if (!account) {
@@ -97,9 +98,17 @@ export async function claimStakingRewards(
   );
   txStore.addTransactions([claimDetails]);
   return await txStore.performCosmosTx({
+    chainId,
     details: claimDetails,
     tx: txClaimRewards,
-    params: [account, endpoint, fee, chain, memo, userValidators],
+    params: [
+      account,
+      getCosmosAPIEndpoint(chainId),
+      claimRewardFee,
+      getCosmosChainObj(chainId),
+      "",
+      userValidators,
+    ],
   });
 }
 
@@ -114,12 +123,14 @@ async function _performDelegate(
   fee: Fee,
   chain: Chain,
   memo: string,
-  delegateDetails?: TransactionDetails
+  delegateDetails?: TransactionDetails,
+  chainId?: number
 ): Promise<boolean> {
   if (!operatorAddress) {
     return false;
   }
   return await txStore.performCosmosTx({
+    chainId,
     details: delegateDetails,
     tx: isStaking ? txStake : txUnstake,
     params: [account, operatorAddress, amount, endpoint, fee, chain, memo],
@@ -135,12 +146,14 @@ async function _performRedelegate(
   fee: Fee,
   chain: Chain,
   memo: string,
-  redelegateDetails?: TransactionDetails
+  redelegateDetails?: TransactionDetails,
+  chainId?: number
 ): Promise<boolean> {
   if (!fromOperatorAddress || !toOperatorAddress) {
     return false;
   }
   return await txStore.performCosmosTx({
+    chainId,
     details: redelegateDetails,
     tx: txRedelegate,
     params: [

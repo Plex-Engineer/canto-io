@@ -1,9 +1,10 @@
 import { CallResult } from "@usedapp/core";
 import { Contract } from "ethers";
-import { CantoMainnet } from "global/config/networks";
+import { getCosmosAPIEndpoint } from "../getAddressUtils";
 
 export async function checkCosmosTxConfirmation(
-  txHash: string
+  txHash: string,
+  chainId?: number
 ): Promise<boolean> {
   const fetchOptions = {
     method: "GET",
@@ -15,7 +16,7 @@ export async function checkCosmosTxConfirmation(
   while (numberOfBlocksChecked < 5) {
     const tx = await (
       await fetch(
-        CantoMainnet.cosmosAPIEndpoint + "/cosmos/tx/v1beta1/txs/" + txHash,
+        getCosmosAPIEndpoint(chainId) + "/cosmos/tx/v1beta1/txs/" + txHash,
         fetchOptions
       )
     ).json();

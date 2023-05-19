@@ -13,17 +13,15 @@ import { formatEther, parseEther } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { useState } from "react";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
-import { CantoMainnet } from "global/config/networks";
 import Select from "react-select";
-import { delegateFee, unbondingFee } from "../config/fees";
-import { chain, memo } from "global/config/cosmosConstants";
+import { delegateFee } from "../config/fees";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import styled from "@emotion/styled";
 import CheckBox from "global/components/checkBox";
 import { ConfirmUndelegationModal } from "./confirmUndelegationModal";
-import { useTransactionStore as usetxStore } from "global/stores/transactionStore";
+import { TransactionStore } from "global/stores/transactionStore";
 import { stakingTx } from "../utils/transactions";
 
 interface StakingModalProps {
@@ -32,6 +30,8 @@ interface StakingModalProps {
   balance: BigNumber;
   account?: string;
   txFeeCheck: TxFeeBalanceCheck;
+  txStore: TransactionStore;
+  chainId: number;
 }
 export const StakingModal = ({
   validator,
@@ -39,8 +39,9 @@ export const StakingModal = ({
   balance,
   account,
   txFeeCheck,
+  txStore,
+  chainId,
 }: StakingModalProps) => {
-  const txStore = usetxStore();
   const [amount, setAmount] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [newValidator, setNewValidator] = useState<Validator | undefined>();
@@ -49,6 +50,8 @@ export const StakingModal = ({
 
   const delegationDetails = {
     account: account ?? "",
+    chainId,
+    amount: convertStringToBigNumber(amount, 18).toString(),
     newOperator: {
       address: newValidator?.operator_address ?? "",
       name: newValidator?.description.moniker ?? "",
@@ -57,21 +60,13 @@ export const StakingModal = ({
       address: validator.validator.operator_address,
       name: validator.validator.description.moniker,
     },
-    amount: convertStringToBigNumber(amount, 18).toString(),
-    endpoint: CantoMainnet.cosmosAPIEndpoint,
-    fee: delegateFee,
-    chain,
-    memo,
   };
   const handleDelegate = () =>
     stakingTx(txStore, StakingTransactionType.DELEGATE, delegationDetails);
   const handleUndelegate = () =>
     stakingTx(txStore, StakingTransactionType.UNDELEGATE, delegationDetails);
   const handleRedelegate = () =>
-    stakingTx(txStore, StakingTransactionType.REDELEGATE, {
-      ...delegationDetails,
-      fee: unbondingFee,
-    });
+    stakingTx(txStore, StakingTransactionType.REDELEGATE, delegationDetails);
 
   return (
     <StakingModalContainer>

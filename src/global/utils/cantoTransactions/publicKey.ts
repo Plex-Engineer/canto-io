@@ -41,7 +41,7 @@ export async function generatePubKey(
   setIsSuccess("please wait...");
 
   const bech32Address = await getCantoAddressFromMetaMask(hexAddress, chainId);
-  const hasCanto = await checkCantoBalance(bech32Address);
+  const hasCanto = await checkCantoBalance(bech32Address, chainId);
 
   const hasPubKey = await checkPubKey(bech32Address, chainId);
   if (hasPubKey) {
