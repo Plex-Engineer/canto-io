@@ -1,18 +1,19 @@
 import { ADDRESSES } from "global/config/addresses";
-import { Token } from "global/config/interfaces/tokens";
 import { CTOKENS, TOKENS } from "global/config/tokenInfo";
+import { PAIR } from "./interfaces";
+import { CantoMainnet, CantoTestnet } from "global/config/networks";
 
-export interface PAIR {
-  address: string;
-  cLPaddress: string;
-  token1: Token;
-  token2: Token;
-  decimals: number;
-  cDecimals: number;
-  stable: boolean;
+export function getPairsForChainId(chainId?: number) {
+  switch (chainId) {
+    case CantoTestnet.chainId:
+      return CANTO_TEST_PAIRS;
+    case CantoMainnet.chainId:
+    default:
+      return CANTO_MAIN_PAIRS;
+  }
 }
 
-export const TESTPAIRS: PAIR[] = [
+const CANTO_TEST_PAIRS: PAIR[] = [
   {
     address: ADDRESSES.testnet.CantoNoteLP,
     cLPaddress: ADDRESSES.testnet.cCantoNoteLP,
@@ -59,7 +60,7 @@ export const TESTPAIRS: PAIR[] = [
     stable: true,
   },
 ];
-export const MAINPAIRS: PAIR[] = [
+const CANTO_MAIN_PAIRS: PAIR[] = [
   {
     address: ADDRESSES.cantoMainnet.CantoNoteLP,
     cLPaddress: ADDRESSES.cantoMainnet.cCantoNoteLP,

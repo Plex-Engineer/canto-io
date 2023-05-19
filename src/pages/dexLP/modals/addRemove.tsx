@@ -1,6 +1,6 @@
 import { truncateNumber } from "global/utils/formattingNumbers";
 import IconPair from "../components/iconPair";
-import useModals, { ModalType } from "../hooks/useModals";
+import { ModalType } from "../hooks/useModals";
 import { UserLPPairInfo } from "../config/interfaces";
 import { valueInNote } from "../utils/utils";
 import { formatUnits } from "ethers/lib/utils";
@@ -10,12 +10,9 @@ import { noteSymbol } from "global/config/tokenInfo";
 interface Props {
   activePair: UserLPPairInfo;
   onClose: () => void;
-  chainId?: number;
-  account?: string;
+  setModalType: (modalType: ModalType) => void;
 }
-const AddRemoveModal = ({ activePair }: Props) => {
-  const setModalType = useModals((state) => state.setModalType);
-
+const AddRemoveModal = ({ activePair, setModalType }: Props) => {
   return (
     <AddRemoveContainer>
       <p id="position">position overview</p>

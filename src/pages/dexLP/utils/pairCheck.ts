@@ -1,9 +1,9 @@
 import { CantoMainnet, CantoTestnet } from "global/config/networks";
-import { PAIR } from "../config/pairs";
 import { TOKENS } from "global/config/tokenInfo";
 import { BigNumber, Contract, ethers } from "ethers";
 import { ADDRESSES } from "global/config/addresses";
 import { routerAbi } from "global/config/abi";
+import { PAIR } from "../config/interfaces";
 
 //function returns if pair contains WCANTO, since we must call a different function for supplying or Withdrawing liquidity
 //returns [isToken1Canto, isToken2Canto]

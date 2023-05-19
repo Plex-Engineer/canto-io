@@ -8,18 +8,24 @@ import { useEffect } from "react";
 import { Mixpanel } from "mixpanel";
 import Modal from "global/packages/src/components/molecules/Modal";
 import OngoingTxModal from "global/components/modals/ongoingTxModal";
+import { TransactionStore } from "global/stores/transactionStore";
 
 interface Props {
   onClose: () => void;
+  txStore: TransactionStore;
   chainId?: number;
   account?: string;
 }
 
 const ModalManager = (props: Props) => {
-  const [modalType, activePair] = useModals((state) => [
-    state.modalType,
-    state.activePair,
-  ]);
+  const [modalType, activePair, confirmValues, setModal, setConfirmation] =
+    useModals((state) => [
+      state.modalType,
+      state.activePair,
+      state.confirmationValues,
+      state.setModalType,
+      state.setConfirmationValues,
+    ]);
 
   function getTitle(modalType: ModalType): string | undefined {
     switch (modalType) {
@@ -29,6 +35,8 @@ const ModalManager = (props: Props) => {
         return "Remove Liquidity";
       case ModalType.ADD_OR_REMOVE:
         return "Liquidity";
+      default:
+        return "confirm";
     }
   }
   useEffect(() => {
@@ -63,24 +71,23 @@ const ModalManager = (props: Props) => {
         <AddModal
           onClose={props.onClose}
           activePair={activePair}
-          chainId={props.chainId}
-          account={props.account}
+          setModalType={setModal}
+          setConfirmationValues={setConfirmation}
         />
       )}
       {modalType === ModalType.REMOVE && (
         <RemoveModal
           onClose={props.onClose}
           activePair={activePair}
-          chainId={props.chainId}
-          account={props.account}
+          setModalType={setModal}
+          setConfirmationValues={setConfirmation}
         />
       )}
       {modalType === ModalType.ADD_OR_REMOVE && (
         <AddRemoveModal
           onClose={props.onClose}
           activePair={activePair}
-          chainId={props.chainId}
-          account={props.account}
+          setModalType={setModal}
         />
       )}
       {modalType === ModalType.REMOVE_CONFIRM && (
@@ -89,6 +96,8 @@ const ModalManager = (props: Props) => {
           activePair={activePair}
           chainId={props.chainId}
           account={props.account}
+          confirmValues={confirmValues}
+          txStore={props.txStore}
         />
       )}
       {modalType === ModalType.ADD_CONFIRM && (
@@ -97,6 +106,8 @@ const ModalManager = (props: Props) => {
           activePair={activePair}
           chainId={props.chainId}
           account={props.account}
+          confirmValues={confirmValues}
+          txStore={props.txStore}
         />
       )}
     </Modal>

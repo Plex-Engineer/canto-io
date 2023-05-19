@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { truncateNumber } from "global/utils/formattingNumbers";
 import SettingsIcon from "assets/settings.svg";
 import IconPair from "../components/iconPair";
-import useModals, { ModalType } from "../hooks/useModals";
+import { LPConfirmationValues, ModalType } from "../hooks/useModals";
 import { UserLPPairInfo } from "../config/interfaces";
 import { BigNumber } from "ethers";
 import {
@@ -43,14 +43,14 @@ export const RowCell = (props: RowCellProps) => {
 interface Props {
   activePair: UserLPPairInfo;
   onClose: () => void;
-  chainId?: number;
-  account?: string;
+  setModalType: (modalType: ModalType) => void;
+  setConfirmationValues: (values: LPConfirmationValues) => void;
 }
-const RemoveModal = ({ activePair }: Props) => {
-  const [setModalType, setConfirmationValues] = useModals((state) => [
-    state.setModalType,
-    state.setConfirmationValues,
-  ]);
+const RemoveModal = ({
+  activePair,
+  setModalType,
+  setConfirmationValues,
+}: Props) => {
   const [percentage, setPercentage] = useState("1");
   const [slippage, setSlippage] = useState("1");
   const [deadline, setDeadline] = useState("10");

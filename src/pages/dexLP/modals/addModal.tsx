@@ -11,7 +11,7 @@ import {
   getTokenBFromA,
   valueInNote,
 } from "pages/dexLP/utils/utils";
-import useModals, { ModalType } from "../hooks/useModals";
+import { LPConfirmationValues, ModalType } from "../hooks/useModals";
 import {
   convertStringToBigNumber,
   truncateNumber,
@@ -25,15 +25,15 @@ import { PrimaryButton, Text } from "global/packages/src";
 interface Props {
   activePair: UserLPPairInfo;
   onClose: () => void;
-  chainId?: number;
-  account?: string;
+  setModalType: (modalType: ModalType) => void;
+  setConfirmationValues: (values: LPConfirmationValues) => void;
 }
 
-const AddModal = ({ activePair }: Props) => {
-  const [setModalType, setConfirmationValues] = useModals((state) => [
-    state.setModalType,
-    state.setConfirmationValues,
-  ]);
+const AddModal = ({
+  activePair,
+  setModalType,
+  setConfirmationValues,
+}: Props) => {
   const [value1, setValue1] = useState("");
   const [value2, setValue2] = useState("");
   const [slippage, setSlippage] = useState("1");

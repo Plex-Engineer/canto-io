@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 import { RowCell } from "./removeModal";
 import { useEffect } from "react";
 import { useState } from "react";
-import useModals from "../hooks/useModals";
+import { LPConfirmationValues } from "../hooks/useModals";
 import { PrimaryButton } from "global/packages/src";
 import { truncateNumber } from "global/utils/formattingNumbers";
 import { getReserveRatioAtoB, getTokenValueFromPercent } from "../utils/utils";
@@ -11,20 +11,24 @@ import { formatUnits } from "ethers/lib/utils";
 import { DexModalContainer } from "../components/Styled";
 import { getCurrentBlockTimestamp } from "global/utils/blockInfo";
 import { dexLPTx } from "../utils/transactions";
-import { useNetworkInfo } from "global/stores/networkInfo";
-import { useTransactionStore } from "global/stores/transactionStore";
+import { TransactionStore } from "global/stores/transactionStore";
 
 interface Props {
   activePair: UserLPPairInfo;
   onClose: () => void;
+  txStore: TransactionStore;
+  confirmValues: LPConfirmationValues;
   chainId?: number;
   account?: string;
 }
 
-export const RemoveLiquidityConfirmation = ({ activePair }: Props) => {
-  const networkStore = useNetworkInfo();
-  const txStore = useTransactionStore();
-  const [confirmValues] = useModals((state) => [state.confirmationValues]);
+export const RemoveLiquidityConfirmation = ({
+  activePair,
+  chainId,
+  account,
+  txStore,
+  confirmValues,
+}: Props) => {
   const displayReserveRatio = getReserveRatioAtoB(
     activePair.totalSupply.ratio.ratio,
     activePair.totalSupply.ratio.aTob,
@@ -51,9 +55,7 @@ export const RemoveLiquidityConfirmation = ({ activePair }: Props) => {
   const [currentBlockTimeStamp, setCurrentBlockTimeStamp] = useState(0);
 
   async function blockTimeStamp() {
-    setCurrentBlockTimeStamp(
-      await getCurrentBlockTimestamp(Number(networkStore.chainId))
-    );
+    setCurrentBlockTimeStamp(await getCurrentBlockTimestamp(chainId));
   }
 
   useEffect(() => {
@@ -155,7 +157,7 @@ export const RemoveLiquidityConfirmation = ({ activePair }: Props) => {
         disabled={currentBlockTimeStamp == 0}
         onClick={() =>
           dexLPTx(
-            Number(networkStore.chainId),
+            chainId,
             txStore,
             LPTransaction.REMOVE_LIQUIDITY,
             activePair,
@@ -164,7 +166,7 @@ export const RemoveLiquidityConfirmation = ({ activePair }: Props) => {
             BigNumber.from(0),
             amountMinOut1,
             amountMinOut2,
-            networkStore.account,
+            account,
             currentBlockTimeStamp +
               Math.floor(Number(confirmValues.deadline)) * 60
           )

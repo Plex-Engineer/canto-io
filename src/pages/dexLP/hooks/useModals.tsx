@@ -11,6 +11,13 @@ export enum ModalType {
   REMOVE_CONFIRM = "REMOVE_CONFIRM",
   ADD_OR_REMOVE = "ADD_OR_REMOVE",
 }
+export interface LPConfirmationValues {
+  amount1: BigNumber;
+  amount2: BigNumber;
+  percentage: number;
+  slippage: number;
+  deadline: number;
+}
 
 interface ModalProps {
   loading: boolean;
@@ -22,20 +29,8 @@ interface ModalProps {
   modalType: ModalType;
   prevModalType: ModalType;
   setModalType: (modalType: ModalType) => void;
-  confirmationValues: {
-    amount1: BigNumber;
-    amount2: BigNumber;
-    percentage: number;
-    slippage: number;
-    deadline: number;
-  };
-  setConfirmationValues: (value: {
-    amount1: BigNumber;
-    amount2: BigNumber;
-    percentage: number;
-    slippage: number;
-    deadline: number;
-  }) => void;
+  confirmationValues: LPConfirmationValues;
+  setConfirmationValues: (value: LPConfirmationValues) => void;
 }
 
 const useModals = create<ModalProps>()(

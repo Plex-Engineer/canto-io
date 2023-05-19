@@ -3,7 +3,7 @@ import { formatUnits } from "ethers/lib/utils";
 import IconPair from "../components/iconPair";
 import { RowCell } from "./removeModal";
 import { useEffect, useState } from "react";
-import useModals from "../hooks/useModals";
+import { LPConfirmationValues } from "../hooks/useModals";
 import { truncateNumber } from "global/utils/formattingNumbers";
 import {
   calculateExpectedShareIfSupplying,
@@ -16,13 +16,14 @@ import { PrimaryButton } from "global/packages/src";
 import CheckBox from "global/components/checkBox";
 import { getExpectedLP } from "../utils/pairCheck";
 import { dexLPTx } from "../utils/transactions";
-import { useTransactionStore } from "global/stores/transactionStore";
-import { useNetworkInfo } from "global/stores/networkInfo";
+import { TransactionStore } from "global/stores/transactionStore";
 import { getCurrentBlockTimestamp } from "global/utils/blockInfo";
 
 interface Props {
   activePair: UserLPPairInfo;
   onClose: () => void;
+  txStore: TransactionStore;
+  confirmValues: LPConfirmationValues;
   chainId?: number;
   account?: string;
 }
@@ -31,12 +32,11 @@ export const AddLiquidityConfirmation = ({
   activePair,
   chainId,
   account,
+  txStore,
+  confirmValues,
 }: Props) => {
-  const [confirmValues] = useModals((state) => [state.confirmationValues]);
   const [expectedLP, setExpectedLP] = useState(BigNumber.from(0));
   const [confirmSupply, setConfirmSupply] = useState(false);
-  const txStore = useTransactionStore();
-  const networkStore = useNetworkInfo();
 
   async function setLPExpected() {
     setExpectedLP(
@@ -167,7 +167,7 @@ export const AddLiquidityConfirmation = ({
         filled
         onClick={async () =>
           dexLPTx(
-            Number(networkStore.chainId),
+            chainId,
             txStore,
             confirmSupply
               ? LPTransaction.ADD_LIQUIDITY_AND_STAKE

@@ -23,7 +23,7 @@ import {
 } from "global/utils/getAddressUtils";
 
 export async function dexLPTx(
-  chainId: number,
+  chainId: number | undefined,
   txStore: TransactionStore,
   txType: LPTransaction,
   pair: UserLPPairInfo,
@@ -79,7 +79,7 @@ export async function dexLPTx(
 }
 
 async function addLiquidityTx(
-  chainId: number,
+  chainId: number | undefined,
   txStore: TransactionStore,
   pair: UserLPPairInfo,
   amount1: BigNumber,
@@ -130,7 +130,7 @@ async function addLiquidityTx(
     await _performEnable(
       txStore,
       pair.basePairInfo.token1.address,
-      getAddressesForCantoNetwork(chainId).PriceFeed,
+      getAddressesForCantoNetwork(chainId).Router,
       pair.allowance.token1,
       amount1,
       enable1Details
@@ -138,7 +138,7 @@ async function addLiquidityTx(
     await _performEnable(
       txStore,
       pair.basePairInfo.token2.address,
-      getAddressesForCantoNetwork(chainId).PriceFeed,
+      getAddressesForCantoNetwork(chainId).Router,
       pair.allowance.token2,
       amount2,
       enable2Details
@@ -202,7 +202,7 @@ async function addLiquidityTx(
   );
 }
 async function removeLiquidityTx(
-  chainId: number,
+  chainId: number | undefined,
   txStore: TransactionStore,
   pair: UserLPPairInfo,
   LPOut: BigNumber,
@@ -247,7 +247,7 @@ async function removeLiquidityTx(
   const lpAllowanceDone = await _performEnable(
     txStore,
     pair.basePairInfo.address,
-    getAddressesForCantoNetwork(chainId).PriceFeed,
+    getAddressesForCantoNetwork(chainId).Router,
     pair.allowance.LPtoken,
     LPOut,
     enableLPDetails
@@ -273,7 +273,7 @@ async function removeLiquidityTx(
 //Will create EVM Transactions
 //Expects transaction details to be created before calling this function
 async function _performAddLiquidity(
-  chainId: number,
+  chainId: number | undefined,
   txStore: TransactionStore,
   token1Address: string,
   token2Address: string,
@@ -294,7 +294,7 @@ async function _performAddLiquidity(
   const cantoInPair = isToken1Canto || isToken2Canto;
   return await txStore.performEVMTx({
     details: addDetails,
-    address: getAddressesForCantoNetwork(chainId).PriceFeed,
+    address: getAddressesForCantoNetwork(chainId).Router,
     abi: routerAbi,
     method: cantoInPair ? "addLiquidityCANTO" : "addLiquidity",
     params: cantoInPair
@@ -322,7 +322,7 @@ async function _performAddLiquidity(
   });
 }
 async function _performRemoveLiquidity(
-  chainId: number,
+  chainId: number | undefined,
   txStore: TransactionStore,
   token1Address: string,
   token2Address: string,
@@ -342,7 +342,7 @@ async function _performRemoveLiquidity(
   const cantoInPair = isToken1Canto || isToken2Canto;
   return await txStore.performEVMTx({
     details: removeDetails,
-    address: getAddressesForCantoNetwork(chainId).PriceFeed,
+    address: getAddressesForCantoNetwork(chainId).Router,
     abi: routerAbi,
     method: cantoInPair ? "removeLiquidityCANTO" : "removeLiquidity",
     params: cantoInPair

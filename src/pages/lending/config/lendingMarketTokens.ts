@@ -3,17 +3,17 @@ import { CantoTestnet } from "global/config/networks";
 import { CantoMainnet } from "global/config/networks";
 import { CTOKENS } from "global/config/tokenInfo";
 
-export function getCTokensForChainId(chainId: number | undefined) {
+export function getCTokensForChainId(chainId?: number) {
   switch (chainId) {
     case CantoTestnet.chainId:
-      return cantoTestCTokens;
+      return CANTO_TEST_C_TOKENS;
     case CantoMainnet.chainId:
     default:
-      return cantoMainCTokens;
+      return CANTO_MAIN_C_TOKENS;
   }
 }
 
-const cantoTestCTokens: CTOKEN[] = [
+const CANTO_TEST_C_TOKENS: CTOKEN[] = [
   CTOKENS.cantoTestnet.CCANTO,
   CTOKENS.cantoTestnet.CNOTE,
   CTOKENS.cantoTestnet.CETH,
@@ -27,7 +27,7 @@ const cantoTestCTokens: CTOKEN[] = [
   CTOKENS.cantoTestnet.CCantoETH,
 ];
 
-const cantoMainCTokens = [
+const CANTO_MAIN_C_TOKENS = [
   CTOKENS.cantoMainnet.CCANTO,
   CTOKENS.cantoMainnet.CNOTE,
   CTOKENS.cantoMainnet.CETH,

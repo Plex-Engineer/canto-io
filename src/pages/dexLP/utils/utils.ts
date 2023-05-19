@@ -1,8 +1,8 @@
 import { BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { truncateNumber } from "global/utils/formattingNumbers";
-import { PAIR } from "../config/pairs";
 import { convertFromScientificNotation } from "global/utils/formattingNumbers";
+import { PAIR } from "../config/interfaces";
 
 //ratio that returns is scaled to 1e18 for accuracy
 export function getLPPairRatio(

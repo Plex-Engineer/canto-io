@@ -25,6 +25,7 @@ import { getShortTxStatusFromState } from "global/utils/formatTxDetails";
 
 const LP_Interface = () => {
   const networkInfo = useNetworkInfo();
+  const txStore = useTransactionStore();
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);
   useOngoingTransactions(notifications, notifs, setNotifs);
@@ -75,6 +76,7 @@ const LP_Interface = () => {
             onClose={() => {
               setModalType(ModalType.NONE);
             }}
+            txStore={txStore}
           />
         </div>
         <div
