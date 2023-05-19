@@ -8,8 +8,9 @@ import {
   getSenderObj,
   signAndBroadcastTxMsg,
 } from "./helpers";
+import { getCosmosAPIEndpoint } from "../getAddressUtils";
 
-export async function checkPubKey(bech32Address: string) {
+export async function checkPubKey(bech32Address: string, chainId?: number) {
   const endPointAccount = generateEndpointAccount(bech32Address);
   const options = {
     method: "GET",
@@ -17,7 +18,7 @@ export async function checkPubKey(bech32Address: string) {
   };
   try {
     const addressRawData = await fetch(
-      CantoMainnet.cosmosAPIEndpoint + endPointAccount,
+      getCosmosAPIEndpoint(chainId) + endPointAccount,
       options
     );
     const addressData = await addressRawData.json();
@@ -29,7 +30,8 @@ export async function checkPubKey(bech32Address: string) {
 
 export async function generatePubKey(
   hexAddress: string | undefined,
-  setIsSuccess: (s: string) => void
+  setIsSuccess: (s: string) => void,
+  chainId?: number
 ) {
   const botAddress = "canto1efrhdukv096tmjs7r80m8pqkr3udp9g0uadjfv";
   if (hexAddress === undefined) {
@@ -38,10 +40,10 @@ export async function generatePubKey(
   }
   setIsSuccess("please wait...");
 
-  const bech32Address = await getCantoAddressFromMetaMask(hexAddress);
+  const bech32Address = await getCantoAddressFromMetaMask(hexAddress, chainId);
   const hasCanto = await checkCantoBalance(bech32Address);
 
-  const hasPubKey = await checkPubKey(bech32Address);
+  const hasPubKey = await checkPubKey(bech32Address, chainId);
   if (hasPubKey) {
     setIsSuccess("user already has a public key for account: " + hexAddress);
     return;
@@ -64,7 +66,7 @@ export async function generatePubKey(
   const response = await txSend(botAddress, hexAddress, bech32Address, "1"); // await txSend to bot
   setIsSuccess("generating account...");
   const wrapper = async () => {
-    const hasPubKey = await checkPubKey(bech32Address);
+    const hasPubKey = await checkPubKey(bech32Address, chainId);
     if (hasPubKey) {
       setIsSuccess("account successfully generated!");
       window.location.reload();

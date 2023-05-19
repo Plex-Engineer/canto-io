@@ -135,7 +135,11 @@ const Bridging = () => {
                       if (Number(networkInfo.chainId) != CantoMainnet.chainId) {
                         addNetwork();
                       } else {
-                        generatePubKey(networkInfo.account, setPubKeySuccess);
+                        generatePubKey(
+                          networkInfo.account,
+                          setPubKeySuccess,
+                          Number(networkInfo.chainId)
+                        );
                       }
                     }}
                     txStatus={pubKeySuccess}

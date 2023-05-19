@@ -4,6 +4,7 @@ import {
   NodeAddresses,
 } from "global/config/networks";
 import { ethers } from "ethers";
+import { getCosmosAPIEndpoint } from "../getAddressUtils";
 
 export async function switchNetwork(chainId: number) {
   //@ts-ignore
@@ -63,8 +64,11 @@ export async function addNetwork() {
   }
 }
 
-export async function getCantoAddressFromMetaMask(address: string | undefined) {
-  const nodeURLMain = CantoMainnet.cosmosAPIEndpoint;
+export async function getCantoAddressFromMetaMask(
+  address: string | undefined,
+  chainId?: number
+) {
+  const nodeURLMain = getCosmosAPIEndpoint(chainId);
   const result = await fetch(
     nodeURLMain + "/ethermint/evm/v1/cosmos_account/" + address,
     {

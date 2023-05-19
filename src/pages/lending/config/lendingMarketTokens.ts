@@ -1,6 +1,19 @@
-import { CTOKENS, TOKENS } from "global/config/tokenInfo";
+import { CTOKEN } from "global/config/interfaces/tokens";
+import { CantoTestnet } from "global/config/networks";
+import { CantoMainnet } from "global/config/networks";
+import { CTOKENS } from "global/config/tokenInfo";
 
-export const cTokensBase = [
+export function getCTokensForChainId(chainId: number | undefined) {
+  switch (chainId) {
+    case CantoTestnet.chainId:
+      return cantoTestCTokens;
+    case CantoMainnet.chainId:
+    default:
+      return cantoMainCTokens;
+  }
+}
+
+const cantoTestCTokens: CTOKEN[] = [
   CTOKENS.cantoTestnet.CCANTO,
   CTOKENS.cantoTestnet.CNOTE,
   CTOKENS.cantoTestnet.CETH,
@@ -14,7 +27,7 @@ export const cTokensBase = [
   CTOKENS.cantoTestnet.CCantoETH,
 ];
 
-export const mainnetBasecTokens = [
+const cantoMainCTokens = [
   CTOKENS.cantoMainnet.CCANTO,
   CTOKENS.cantoMainnet.CNOTE,
   CTOKENS.cantoMainnet.CETH,
@@ -27,13 +40,3 @@ export const mainnetBasecTokens = [
   CTOKENS.cantoMainnet.CNoteUSDT,
   CTOKENS.cantoMainnet.CCantoETH,
 ];
-
-export const mainnetTokens = [
-  TOKENS.cantoMainnet.CANTO,
-  TOKENS.cantoMainnet.NOTE,
-  TOKENS.cantoMainnet.ETH,
-  TOKENS.cantoMainnet.ATOM,
-  TOKENS.cantoMainnet.USDC,
-  TOKENS.cantoMainnet.USDT,
-];
-export const reservoirAdddress = "0x07C50Bf0804A06860AeACAcFaf029F9a1c014F91";

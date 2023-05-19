@@ -1,7 +1,6 @@
 import { CallResult, useCalls, useEtherBalance } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { ethers } from "ethers";
-import { CantoTestnet, CantoMainnet } from "global/config/networks";
 import {
   UserLMTokenDetails,
   LMTokenDetails,
@@ -15,29 +14,26 @@ import { cERC20Abi, comptrollerAbi, ERC20Abi } from "global/config/abi";
 import { parseUnits } from "ethers/lib/utils";
 import { getSupplyBalanceFromCTokens } from "pages/lending/utils/supplyWithdrawLimits";
 import { valueInNote } from "pages/dexLP/utils/utils";
-import { ADDRESSES } from "global/config/addresses";
 import { checkMultiCallForUndefined } from "global/utils/cantoTransactions/transactionChecks";
+import {
+  getAddressesForCantoNetwork,
+  onCantoNetwork,
+} from "global/utils/getAddressUtils";
 export function useUserLMTokenData(
   LMTokens: LMTokenDetails[],
   account: string | undefined,
-  chainId?: string
+  chainId?: number
 ): {
   userLMTokens: UserLMTokenDetails[];
   position: UserLMPosition;
   rewards: UserLMRewards;
 } {
-  const onCanto =
-    Number(chainId) == CantoMainnet.chainId ||
-    Number(chainId) == CantoTestnet.chainId;
-  const address =
-    Number(chainId) == CantoTestnet.chainId
-      ? ADDRESSES.testnet
-      : ADDRESSES.cantoMainnet;
+  const coreContracts = getAddressesForCantoNetwork(chainId);
 
   const bal = useEtherBalance(account) ?? BigNumber.from(0);
   //comptroller contract
-  const comptroller = new Contract(address?.Comptroller, comptrollerAbi);
-  const WCanto = new Contract(address?.WCANTO, ERC20Abi);
+  const comptroller = new Contract(coreContracts.Comptroller, comptrollerAbi);
+  const WCanto = new Contract(coreContracts.WCANTO, ERC20Abi);
 
   //canto contract
   const calls =
@@ -109,7 +105,8 @@ export function useUserLMTokenData(
     },
   ];
 
-  const results = useCalls(LMTokens && onCanto ? globalCalls : []) ?? {};
+  const results =
+    useCalls(LMTokens && onCantoNetwork(chainId) ? globalCalls : []) ?? {};
   const chuckSize = !LMTokens ? 0 : (results.length - 2) / LMTokens.length;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let processedTokens: Array<any>;
@@ -208,7 +205,7 @@ export function useUserLMTokenData(
       walletBalance: canto?.balanceOf ?? parseUnits("0"),
       price: canto?.price ?? parseUnits("0"),
       accrued: totalRewards.add(cantoAccrued),
-      cantroller: address.Comptroller,
+      cantroller: coreContracts.Comptroller,
       wallet: account,
       comptrollerBalance,
     };

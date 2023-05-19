@@ -14,10 +14,10 @@ interface IProviderProps {
   children: React.ReactNode;
 }
 
-export const getAddressLink = (explorerUrl: string) => (address: string) =>
+const getAddressLink = (explorerUrl: string) => (address: string) =>
   `${explorerUrl}/address/${address}`;
 
-export const getTransactionLink = (explorerUrl: string) => (txnId: string) =>
+const getTransactionLink = (explorerUrl: string) => (txnId: string) =>
   `${explorerUrl}/tx/${txnId}`;
 
 export const CantoMainnet: Chain = {

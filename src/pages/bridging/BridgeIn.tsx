@@ -10,7 +10,7 @@ import { formatUnits } from "ethers/lib/utils";
 import { sendToComsosTx } from "./utils/transactions";
 import { useTransactionStore } from "global/stores/transactionStore";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import { getGravityBridgeAddress } from "global/utils/getAddressUtils";
+import { getAddressesForEthNetwork } from "global/utils/getAddressUtils";
 
 interface BridgeInProps {
   ethAddress?: string;
@@ -137,7 +137,8 @@ const BridgeIn = (props: BridgeInProps) => {
           tx={async (amount: BigNumber) =>
             await sendToComsosTx(
               txStore,
-              getGravityBridgeAddress(Number(networkInfo.chainId)),
+              getAddressesForEthNetwork(Number(networkInfo.chainId))
+                .GravityBridge,
               selectedToken.address,
               props.cantoAddress ?? "",
               amount,

@@ -66,3 +66,24 @@ export const ADDRESSES = {
     GravityBridge: "0xa4108aA1Ec4967F8b52220a4f7e94A8201F2D906",
   },
 };
+
+export const CORE_ADDRESSES = {
+  CantoMainnet: {
+    Router: "0xa252eEE9BDe830Ca4793F054B506587027825a8e",
+    Comptroller: "0x5E23dC409Fc2F832f83CEc191E245A191a4bCc5C",
+    Reservoir: "0x07C50Bf0804A06860AeACAcFaf029F9a1c014F91",
+    WCANTO: "0x826551890Dc65655a0Aceca109aB11AbDbD7a07B",
+  },
+  CantoTestnet: {
+    Router: "0x463e7d4DF8fE5fb42D024cb57c77b76e6e74417a",
+    Comptroller: "0x9514c07bC6e80B652e4264E64f589C59065C231f",
+    Reservoir: "0x07C50Bf0804A06860AeACAcFaf029F9a1c014F91",
+    WCANTO: "0x04a72466De69109889Db059Cb1A4460Ca0648d9D",
+  },
+  gravityBridgeTest: {
+    GravityBridge: "0x7580bFE88Dd3d07947908FAE12d95872a260F2D8",
+  },
+  ETHMainnet: {
+    GravityBridge: "0xa4108aA1Ec4967F8b52220a4f7e94A8201F2D906",
+  },
+};

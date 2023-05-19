@@ -22,17 +22,20 @@ import { getShortTxStatusFromState } from "global/utils/formatTxDetails";
 
 const LendingMarket = () => {
   const networkInfo = useNetworkInfo();
+  const txStore = useTransactionStore();
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);
   useOngoingTransactions(notifications, notifs, setNotifs);
   const modalStore = useModalStore();
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 1000);
 
-  const lmTokenData: LMTokenDetails[] = useLMTokenData(networkInfo.chainId);
+  const lmTokenData: LMTokenDetails[] = useLMTokenData(
+    Number(networkInfo.chainId)
+  );
   const { userLMTokens, position, rewards } = useUserLMTokenData(
     lmTokenData,
     networkInfo.account,
-    networkInfo.chainId
+    Number(networkInfo.chainId)
   );
 
   const [onLeftTab, setOnLeftTab] = useState(true);
@@ -62,6 +65,8 @@ const LendingMarket = () => {
           isOpen={modalStore.currentModal != ModalType.NONE}
           position={position}
           rewards={rewards}
+          chainId={Number(networkInfo.chainId)}
+          txStore={txStore}
         />
 
         <LMPositionBar
@@ -74,6 +79,7 @@ const LendingMarket = () => {
           borrowBalance={position.totalBorrow}
           borrowLimit={position.totalBorrowLimit}
           supplyBalance={position.totalSupply}
+          openClaim={() => modalStore.open(ModalType.BALANCE)}
         />
         {isMobile ? (
           <SpecialTabs

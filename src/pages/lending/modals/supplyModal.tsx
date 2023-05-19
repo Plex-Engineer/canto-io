@@ -3,10 +3,10 @@ import LendingField from "../components/lendingField";
 import { useState } from "react";
 import { Details } from "../components/BorrowLimits";
 import { truncateNumber } from "global/utils/formattingNumbers";
-import useModalStore from "pages/lending/stores/useModals";
 import {
   LendingTransaction,
   UserLMPosition,
+  UserLMTokenDetails,
 } from "pages/lending/config/interfaces";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { userMaximumWithdrawal } from "pages/lending/utils/supplyWithdrawLimits";
@@ -14,25 +14,26 @@ import { SupplyBorrowContainer } from "../components/Styled";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
 import { lendingMarketTx } from "../utils/transactions";
-import { useTransactionStore } from "global/stores/transactionStore";
-import { useNetworkInfo } from "global/stores/networkInfo";
+import { TransactionStore } from "global/stores/transactionStore";
 import { convertStringToBigNumber } from "global/utils/formattingNumbers";
 import { getButtonText } from "../utils/modalButtonParams";
 interface IProps {
   position: UserLMPosition;
+  activeToken: UserLMTokenDetails;
+  chainId: number;
+  txStore: TransactionStore;
 }
 
-const SupplyModal = ({ position }: IProps) => {
-  const txStore = useTransactionStore();
-  const networkInfo = useNetworkInfo();
-
-  const token = useModalStore().activeToken;
+const SupplyModal = ({ position, chainId, txStore, activeToken }: IProps) => {
   const [userAmount, setUserAmount] = useState("");
 
   const SupplyTab = () => {
     const [buttonText, disabled] = getButtonText(
-      convertStringToBigNumber(userAmount, token.data.underlying.decimals),
-      token.balanceOf,
+      convertStringToBigNumber(
+        userAmount,
+        activeToken.data.underlying.decimals
+      ),
+      activeToken.balanceOf,
       CantoTransactionType.SUPPLY
     );
     return (
@@ -45,16 +46,16 @@ const SupplyModal = ({ position }: IProps) => {
         />
         {/* supply */}
         <LendingField
-          token={token}
+          token={activeToken}
           value={userAmount}
           canDoMax={true}
           onMax={() => {
             setUserAmount(
               formatUnits(
-                token.data.underlying.symbol === "CANTO"
-                  ? token.balanceOf.sub(parseUnits("1", 17))
-                  : token.balanceOf,
-                token.data.underlying.decimals
+                activeToken.data.underlying.symbol === "CANTO"
+                  ? activeToken.balanceOf.sub(parseUnits("1", 17))
+                  : activeToken.balanceOf,
+                activeToken.data.underlying.decimals
               )
             );
           }}
@@ -62,7 +63,10 @@ const SupplyModal = ({ position }: IProps) => {
             setUserAmount(value);
           }}
           balance={truncateNumber(
-            formatUnits(token.balanceOf, token.data.underlying.decimals)
+            formatUnits(
+              activeToken.balanceOf,
+              activeToken.data.underlying.decimals
+            )
           )}
         />
         {/* 1st tab */}
@@ -70,10 +74,10 @@ const SupplyModal = ({ position }: IProps) => {
           transactionType={CantoTransactionType.SUPPLY}
           stringAmount={truncateNumber(
             userAmount,
-            token.data.underlying.decimals
+            activeToken.data.underlying.decimals
           )}
-          token={token}
-          icon={token.data.underlying.icon}
+          token={activeToken}
+          icon={activeToken.data.underlying.icon}
           isBorrowing={false}
           borrowLimit={position.totalBorrowLimit}
           borrowBalance={position.totalBorrow}
@@ -90,13 +94,13 @@ const SupplyModal = ({ position }: IProps) => {
             disabled={disabled}
             onClick={() => {
               lendingMarketTx(
-                Number(networkInfo.chainId),
+                chainId,
                 txStore,
                 LendingTransaction.SUPPLY,
-                token,
+                activeToken,
                 convertStringToBigNumber(
                   userAmount,
-                  token.data.underlying.decimals
+                  activeToken.data.underlying.decimals
                 )
               );
             }}
@@ -109,15 +113,18 @@ const SupplyModal = ({ position }: IProps) => {
   };
   const WithdrawTab = () => {
     const [limit80Percent, totalLimit, isMax] = userMaximumWithdrawal(
-      token.supplyBalance,
+      activeToken.supplyBalance,
       position.totalBorrow,
       position.totalBorrowLimit,
-      token.collateralFactor,
-      token.price,
-      token.collateral
+      activeToken.collateralFactor,
+      activeToken.price,
+      activeToken.collateral
     );
     const [buttonText, disabled] = getButtonText(
-      convertStringToBigNumber(userAmount, token.data.underlying.decimals),
+      convertStringToBigNumber(
+        userAmount,
+        activeToken.data.underlying.decimals
+      ),
       totalLimit,
       CantoTransactionType.WITHDRAW
     );
@@ -130,28 +137,31 @@ const SupplyModal = ({ position }: IProps) => {
           }}
         />
         <LendingField
-          token={token}
+          token={activeToken}
           value={userAmount}
           canDoMax={isMax}
           //Withdraw
           onMax={() =>
             setUserAmount(
-              formatUnits(limit80Percent, token.data.underlying.decimals)
+              formatUnits(limit80Percent, activeToken.data.underlying.decimals)
             )
           }
           onChange={(value) => setUserAmount(value)}
           balance={truncateNumber(
-            formatUnits(token.supplyBalance, token.data.underlying.decimals)
+            formatUnits(
+              activeToken.supplyBalance,
+              activeToken.data.underlying.decimals
+            )
           )}
         />
         {/* 2nd tab */}
         <Details
           transactionType={CantoTransactionType.WITHDRAW}
-          icon={token.data.underlying.icon}
-          token={token}
+          icon={activeToken.data.underlying.icon}
+          token={activeToken}
           stringAmount={truncateNumber(
             userAmount,
-            token.data.underlying.decimals
+            activeToken.data.underlying.decimals
           )}
           borrowLimit={position.totalBorrowLimit}
           borrowBalance={position.totalBorrow}
@@ -169,13 +179,13 @@ const SupplyModal = ({ position }: IProps) => {
             disabled={disabled}
             onClick={() =>
               lendingMarketTx(
-                Number(networkInfo.chainId),
+                chainId,
                 txStore,
                 LendingTransaction.WITHDRAW,
-                token,
+                activeToken,
                 convertStringToBigNumber(
                   userAmount,
-                  token.data.underlying.decimals
+                  activeToken.data.underlying.decimals
                 )
               )
             }
@@ -198,11 +208,11 @@ const SupplyModal = ({ position }: IProps) => {
             width: "30px",
             height: "30px",
           }}
-          src={token.data.underlying.icon}
-          alt={token.data.underlying.name}
+          src={activeToken.data.underlying.icon}
+          alt={activeToken.data.underlying.name}
         />
         <Text type="title" size="title2">
-          {token.data.underlying.name}
+          {activeToken.data.underlying.name}
         </Text>
       </div>
       <Tabs

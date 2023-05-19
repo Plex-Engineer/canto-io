@@ -7,15 +7,14 @@ import { PrimaryButton, Text } from "global/packages/src";
 import { RewardsContainer } from "../components/Styled";
 import TokenSymbol from "global/packages/src/components/atoms/NoteSymbol";
 import { claimLendingRewardsTx } from "../utils/transactions";
-import { useTransactionStore } from "global/stores/transactionStore";
+import { TransactionStore } from "global/stores/transactionStore";
 
 interface Props {
   rewardsObj: UserLMRewards;
+  txStore: TransactionStore;
 }
 const formatUnits = ethers.utils.formatUnits;
-const RewardsModal = ({ rewardsObj }: Props) => {
-  const txStore = useTransactionStore();
-
+const RewardsModal = ({ rewardsObj, txStore }: Props) => {
   return (
     <RewardsContainer>
       <div className="container">

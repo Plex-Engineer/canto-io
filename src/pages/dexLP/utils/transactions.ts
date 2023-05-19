@@ -18,8 +18,8 @@ import {
   _performWithdraw,
 } from "pages/lending/utils/transactions";
 import {
+  getAddressesForCantoNetwork,
   getCurrentProvider,
-  getRouterAddress,
 } from "global/utils/getAddressUtils";
 
 export async function dexLPTx(
@@ -130,7 +130,7 @@ async function addLiquidityTx(
     await _performEnable(
       txStore,
       pair.basePairInfo.token1.address,
-      getRouterAddress(chainId),
+      getAddressesForCantoNetwork(chainId).PriceFeed,
       pair.allowance.token1,
       amount1,
       enable1Details
@@ -138,7 +138,7 @@ async function addLiquidityTx(
     await _performEnable(
       txStore,
       pair.basePairInfo.token2.address,
-      getRouterAddress(chainId),
+      getAddressesForCantoNetwork(chainId).PriceFeed,
       pair.allowance.token2,
       amount2,
       enable2Details
@@ -247,7 +247,7 @@ async function removeLiquidityTx(
   const lpAllowanceDone = await _performEnable(
     txStore,
     pair.basePairInfo.address,
-    getRouterAddress(chainId),
+    getAddressesForCantoNetwork(chainId).PriceFeed,
     pair.allowance.LPtoken,
     LPOut,
     enableLPDetails
@@ -294,7 +294,7 @@ async function _performAddLiquidity(
   const cantoInPair = isToken1Canto || isToken2Canto;
   return await txStore.performEVMTx({
     details: addDetails,
-    address: getRouterAddress(chainId),
+    address: getAddressesForCantoNetwork(chainId).PriceFeed,
     abi: routerAbi,
     method: cantoInPair ? "addLiquidityCANTO" : "addLiquidity",
     params: cantoInPair
@@ -342,7 +342,7 @@ async function _performRemoveLiquidity(
   const cantoInPair = isToken1Canto || isToken2Canto;
   return await txStore.performEVMTx({
     details: removeDetails,
-    address: getRouterAddress(chainId),
+    address: getAddressesForCantoNetwork(chainId).PriceFeed,
     abi: routerAbi,
     method: cantoInPair ? "removeLiquidityCANTO" : "removeLiquidity",
     params: cantoInPair

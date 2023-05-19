@@ -34,8 +34,14 @@ export const useNetworkInfo = create<NetworkProps>()(
     setAccount: async (account) => {
       if (account) {
         set({ account: account });
-        const cantoAddress = await getCantoAddressFromMetaMask(account);
-        const hasPubKey = await checkPubKey(cantoAddress);
+        const cantoAddress = await getCantoAddressFromMetaMask(
+          account,
+          Number(get().chainId)
+        );
+        const hasPubKey = await checkPubKey(
+          cantoAddress,
+          Number(get().chainId)
+        );
         set({ cantoAddress: cantoAddress });
         set({ hasPubKey: hasPubKey });
       }

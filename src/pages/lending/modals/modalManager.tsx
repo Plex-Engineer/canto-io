@@ -7,14 +7,23 @@ import useModalStore, { ModalType } from "pages/lending/stores/useModals";
 import { UserLMPosition, UserLMRewards } from "pages/lending/config/interfaces";
 import Modal from "global/packages/src/components/molecules/Modal";
 import OngoingTxModal from "global/components/modals/ongoingTxModal";
+import { TransactionStore } from "global/stores/transactionStore";
 
 interface Props {
   isOpen: boolean;
   position: UserLMPosition;
   rewards: UserLMRewards;
+  chainId: number;
+  txStore: TransactionStore;
 }
 
-const ModalManager = ({ isOpen, position, rewards }: Props) => {
+const ModalManager = ({
+  isOpen,
+  position,
+  rewards,
+  chainId,
+  txStore,
+}: Props) => {
   const modalStore = useModalStore();
   return (
     <Modal open={isOpen} onClose={modalStore.close}>
@@ -23,24 +32,47 @@ const ModalManager = ({ isOpen, position, rewards }: Props) => {
         <WalletModal onClose={modalStore.close} />
       )}
       {modalStore.currentModal === ModalType.LENDING && (
-        <SupplyModal position={position} />
+        <SupplyModal
+          position={position}
+          chainId={chainId}
+          txStore={txStore}
+          activeToken={modalStore.activeToken}
+        />
       )}
 
       {modalStore.currentModal === ModalType.BORROW && (
-        <BorrowModal position={position} />
+        <BorrowModal
+          position={position}
+          chainId={chainId}
+          txStore={txStore}
+          activeToken={modalStore.activeToken}
+        />
       )}
 
       {modalStore.currentModal === ModalType.COLLATERAL && (
-        <CollatModal position={position} decollateralize={false} />
+        <CollatModal
+          position={position}
+          decollateralize={false}
+          chainId={chainId}
+          txStore={txStore}
+          activeToken={modalStore.activeToken}
+        />
       )}
 
       {modalStore.currentModal === ModalType.DECOLLATERAL && (
-        <CollatModal decollateralize={true} position={position} />
+        <CollatModal
+          decollateralize={true}
+          position={position}
+          chainId={chainId}
+          txStore={txStore}
+          activeToken={modalStore.activeToken}
+        />
       )}
       {modalStore.currentModal === ModalType.BALANCE && (
         <RewardsModal
           // passin LMBalance to this
           rewardsObj={rewards}
+          txStore={txStore}
         />
       )}
     </Modal>

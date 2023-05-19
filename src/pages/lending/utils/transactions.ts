@@ -13,8 +13,7 @@ import {
   _performEnable,
 } from "global/stores/transactionUtils";
 import { TOKENS } from "global/config/tokenInfo";
-import { reservoirAdddress } from "../config/lendingMarketTokens";
-import { getComptrollerAddress } from "global/utils/getAddressUtils";
+import { getAddressesForCantoNetwork } from "global/utils/getAddressUtils";
 
 //claim rewards needs different inputs, so separate transaction
 export async function claimLendingRewardsTx(
@@ -49,7 +48,7 @@ export async function claimLendingRewardsTx(
     ? true
     : await txStore.performEVMTx({
         details: dripDetails,
-        address: reservoirAdddress,
+        address: getAddressesForCantoNetwork().Reservoir,
         abi: reservoirAbi,
         method: "drip",
         params: [],
@@ -70,7 +69,7 @@ export async function claimLendingRewardsTx(
 }
 //This will create the correct contracts before calling _functions
 export async function lendingMarketTx(
-  chainId: number,
+  chainId: number | undefined,
   txStore: TransactionStore,
   txType: LendingTransaction,
   cToken: UserLMTokenDetails,
@@ -112,7 +111,7 @@ export async function lendingMarketTx(
     case LendingTransaction.DECOLLATERLIZE:
       return await collateralizeTx(
         txStore,
-        getComptrollerAddress(chainId),
+        getAddressesForCantoNetwork(chainId).Comptroller,
         cToken.data.address,
         txType === LendingTransaction.COLLATERALIZE,
         tokenInfo

@@ -3,30 +3,28 @@ import { useState } from "react";
 import { truncateNumber } from "global/utils/formattingNumbers";
 import LendingField from "../components/lendingField";
 import { Details } from "../components/BorrowLimits";
-import useModalStore from "pages/lending/stores/useModals";
 import {
   LendingTransaction,
   UserLMPosition,
+  UserLMTokenDetails,
 } from "pages/lending/config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
 import { maxBorrowInUnderlying } from "pages/lending/utils/borrowRepayLimits";
 import { SupplyBorrowContainer } from "../components/Styled";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
-import { useTransactionStore } from "global/stores/transactionStore";
-import { useNetworkInfo } from "global/stores/networkInfo";
+import { TransactionStore } from "global/stores/transactionStore";
 import { lendingMarketTx } from "../utils/transactions";
 import { convertStringToBigNumber } from "global/utils/formattingNumbers";
 import { getButtonText } from "../utils/modalButtonParams";
 import { BigNumber } from "ethers";
 interface IProps {
   position: UserLMPosition;
+  activeToken: UserLMTokenDetails;
+  chainId: number;
+  txStore: TransactionStore;
 }
-const BorrowModal = ({ position }: IProps) => {
-  const txStore = useTransactionStore();
-  const networkInfo = useNetworkInfo();
-
-  const token = useModalStore().activeToken;
+const BorrowModal = ({ position, chainId, txStore, activeToken }: IProps) => {
   const [userAmount, setUserAmount] = useState("");
 
   const BorrowTab = () => {
@@ -34,16 +32,19 @@ const BorrowModal = ({ position }: IProps) => {
       position.totalBorrow,
       position.totalBorrowLimit,
       80,
-      token.price
+      activeToken.price
     );
     const borrowLimit100 = maxBorrowInUnderlying(
       position.totalBorrow,
       position.totalBorrowLimit,
       100,
-      token.price
+      activeToken.price
     );
     const [buttonText, disabled] = getButtonText(
-      convertStringToBigNumber(userAmount, token.data.underlying.decimals),
+      convertStringToBigNumber(
+        userAmount,
+        activeToken.data.underlying.decimals
+      ),
       borrowLimit100,
       CantoTransactionType.BORROW
     );
@@ -57,7 +58,7 @@ const BorrowModal = ({ position }: IProps) => {
         />
         {/* borrow */}
         <LendingField
-          token={token}
+          token={activeToken}
           value={userAmount}
           canDoMax={false}
           onMax={() => {
@@ -65,13 +66,16 @@ const BorrowModal = ({ position }: IProps) => {
               setUserAmount("0");
             } else {
               setUserAmount(
-                formatUnits(borrowLimit80, token.data.underlying.decimals)
+                formatUnits(borrowLimit80, activeToken.data.underlying.decimals)
               );
             }
           }}
           onChange={(value) => setUserAmount(value)}
           balance={truncateNumber(
-            formatUnits(token.borrowBalance, token.data.underlying.decimals)
+            formatUnits(
+              activeToken.borrowBalance,
+              activeToken.data.underlying.decimals
+            )
           )}
         />
         {/* 1st tab */}
@@ -79,10 +83,10 @@ const BorrowModal = ({ position }: IProps) => {
           transactionType={CantoTransactionType.BORROW}
           stringAmount={truncateNumber(
             userAmount,
-            token.data.underlying.decimals
+            activeToken.data.underlying.decimals
           )}
-          token={token}
-          icon={token.data.underlying.icon}
+          token={activeToken}
+          icon={activeToken.data.underlying.icon}
           isBorrowing={true}
           borrowLimit={position.totalBorrowLimit}
           borrowBalance={position.totalBorrow}
@@ -94,13 +98,13 @@ const BorrowModal = ({ position }: IProps) => {
           disabled={disabled}
           onClick={() =>
             lendingMarketTx(
-              Number(networkInfo.chainId),
+              chainId,
               txStore,
               LendingTransaction.BORROW,
-              token,
+              activeToken,
               convertStringToBigNumber(
                 userAmount,
-                token.data.underlying.decimals
+                activeToken.data.underlying.decimals
               )
             )
           }
@@ -112,11 +116,14 @@ const BorrowModal = ({ position }: IProps) => {
     );
   };
   const RepayTab = () => {
-    const repayLimit = token.balanceOf.lt(token.borrowBalance)
-      ? token.balanceOf
-      : token.borrowBalance;
+    const repayLimit = activeToken.balanceOf.lt(activeToken.borrowBalance)
+      ? activeToken.balanceOf
+      : activeToken.borrowBalance;
     const [buttonText, disabled] = getButtonText(
-      convertStringToBigNumber(userAmount, token.data.underlying.decimals),
+      convertStringToBigNumber(
+        userAmount,
+        activeToken.data.underlying.decimals
+      ),
       repayLimit,
       CantoTransactionType.REPAY
     );
@@ -130,13 +137,13 @@ const BorrowModal = ({ position }: IProps) => {
           }}
         />
         <LendingField
-          token={token}
+          token={activeToken}
           value={userAmount}
           canDoMax={true}
           //repay
           onMax={() => {
             setUserAmount(
-              formatUnits(repayLimit, token.data.underlying.decimals)
+              formatUnits(repayLimit, activeToken.data.underlying.decimals)
             );
             setRepayMax(true);
           }}
@@ -145,7 +152,10 @@ const BorrowModal = ({ position }: IProps) => {
             setRepayMax(false);
           }}
           balance={truncateNumber(
-            formatUnits(token.borrowBalance, token.data.underlying.decimals)
+            formatUnits(
+              activeToken.borrowBalance,
+              activeToken.data.underlying.decimals
+            )
           )}
         />
         {/* 2nd tab */}
@@ -153,10 +163,10 @@ const BorrowModal = ({ position }: IProps) => {
           transactionType={CantoTransactionType.REPAY}
           stringAmount={truncateNumber(
             userAmount,
-            token.data.underlying.decimals
+            activeToken.data.underlying.decimals
           )}
-          icon={token.data.underlying.icon}
-          token={token}
+          icon={activeToken.data.underlying.icon}
+          token={activeToken}
           isBorrowing={true}
           borrowLimit={position.totalBorrowLimit}
           borrowBalance={position.totalBorrow}
@@ -168,17 +178,18 @@ const BorrowModal = ({ position }: IProps) => {
           disabled={disabled}
           onClick={() =>
             lendingMarketTx(
-              Number(networkInfo.chainId),
+              chainId,
               txStore,
               LendingTransaction.REPAY,
-              token,
-              repayMax && token.balanceOf.gt(token.borrowBalance.add(1000))
+              activeToken,
+              repayMax &&
+                activeToken.balanceOf.gt(activeToken.borrowBalance.add(1000))
                 ? BigNumber.from(
                     "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
                   )
                 : convertStringToBigNumber(
                     userAmount,
-                    token.data.underlying.decimals
+                    activeToken.data.underlying.decimals
                   )
             )
           }
@@ -198,8 +209,8 @@ const BorrowModal = ({ position }: IProps) => {
             width: "26px",
             height: "26px",
           }}
-          src={token.data.underlying.icon}
-          alt={token.data.underlying.name}
+          src={activeToken.data.underlying.icon}
+          alt={activeToken.data.underlying.name}
         />
         <p
           style={{
@@ -209,7 +220,7 @@ const BorrowModal = ({ position }: IProps) => {
             color: "white",
           }}
         >
-          {token.data.underlying.name}
+          {activeToken.data.underlying.name}
         </p>
       </div>
       <Tabs
