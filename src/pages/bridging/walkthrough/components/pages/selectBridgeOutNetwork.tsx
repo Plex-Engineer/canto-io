@@ -43,7 +43,7 @@ const SelectBridgeOutNetwork = (props: SelectBridgeProps) => {
             <TextSwitch
               key={key}
               text=""
-              onClick={() => props.onSelect(network)}
+              onClick={() => props.onSelect(key as CantoMainBridgeOutNetworks)}
               active={
                 props.activeNetwork.name ==
                 CANTO_MAIN_BRIDGE_OUT_NETWORKS[

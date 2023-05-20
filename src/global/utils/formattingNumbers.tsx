@@ -168,18 +168,6 @@ export const transactionStatusActions = (
         inAction: `enabling ${token}`,
         postAction: `enabled ${token}`,
       };
-    case CantoTransactionType.INCREASE_ALLOWANCE:
-      return {
-        action: "increase allowance",
-        inAction: "increasing allowance",
-        postAction: "increased allowance",
-      };
-    case CantoTransactionType.SEND_TOKEN:
-      return {
-        action: `send ${token}`,
-        inAction: `sending ${token}`,
-        postAction: `sent ${token}`,
-      };
     case CantoTransactionType.ADD_LIQUIDITY:
       return {
         action: "add liquidity",
@@ -239,12 +227,6 @@ export const transactionStatusActions = (
         action: "cast vote",
         inAction: "casting vote",
         postAction: "casted vote",
-      };
-    case CantoTransactionType.BRIDGE_IN:
-      return {
-        action: "bridge in",
-        inAction: "bridging in",
-        postAction: "bridged in",
       };
     case CantoTransactionType.IBC_OUT:
       return {

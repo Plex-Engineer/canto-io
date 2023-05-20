@@ -17,6 +17,7 @@ import { BridgeInManager } from "./managers/BridgeInManager";
 import { BridgeOutManager } from "./managers/BridgeOutManager";
 import { CantoMainnet } from "global/providers";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
+import { CANTO_MAIN_CONVERT_COIN_TOKENS } from "../config/bridgingTokens";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
@@ -83,6 +84,7 @@ const Walkthrough = () => {
         ethTokens={tokens.allUserTokens.userBridgeInTokens}
         nativeTokens={tokens.allUserTokens.userNativeTokens}
         cantoTokens={tokens.allUserTokens.userBridgeOutTokens}
+        allConvertCoinTokens={CANTO_MAIN_CONVERT_COIN_TOKENS}
       />
       <LoadingWalkthrough delay={2500} />
       {!hasFunds && <NoFunds />}

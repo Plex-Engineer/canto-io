@@ -97,7 +97,9 @@ export function useCustomWalkthrough(): Props {
   const [amount, setAmount] = useState("");
   const [userCosmosSendAddress, setUserCosmosSendAddress] = useState("");
   const [selectedCosmoNetwork, setSelectedCosmosNetwork] =
-    useState<CantoMainBridgeOutNetworks>(0);
+    useState<CantoMainBridgeOutNetworks>(
+      CantoMainBridgeOutNetworks.GRAVITY_BRIDGE
+    );
 
   //token selector
   const [selectedTokens, setSelectedTokens] = useState({
