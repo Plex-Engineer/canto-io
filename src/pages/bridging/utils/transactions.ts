@@ -17,7 +17,7 @@ import {
   txConvertERC20,
 } from "./convertCoin/convertTransactions";
 import { txIBCTransfer } from "./IBC/IBCTransfer";
-import { BridgeOutNetworkInfo } from "../config/interfaces";
+import { BridgeOutNetworkInfo, NativeTransaction } from "../config/interfaces";
 import {
   getCosmosAPIEndpoint,
   getCosmosChainObj,
@@ -147,6 +147,43 @@ export async function convertTx(
     convertDetails,
     chainId
   );
+}
+export async function completeAllConvertIn(
+  chainId: number | undefined,
+  txStore: TransactionStore,
+  cantoAddress: string,
+  transactions: NativeTransaction[]
+): Promise<boolean> {
+  const allTxDetails: TransactionDetails[] = [];
+  for (const tx of transactions) {
+    allTxDetails.push(
+      createTransactionDetails(txStore, CantoTransactionType.CONVERT_TO_EVM, {
+        symbol: tx.token.symbol,
+        icon: tx.token.icon,
+        amount: formatUnits(tx.amount, tx.token.decimals),
+      })
+    );
+  }
+  txStore.addTransactions(allTxDetails);
+  const allDone = await Promise.all(
+    transactions.map(
+      async (tx, index) =>
+        await _performConvertCoin(
+          txStore,
+          true,
+          cantoAddress,
+          tx.token.ibcDenom,
+          tx.amount.toString(),
+          getCosmosAPIEndpoint(chainId),
+          convertFee,
+          getCosmosChainObj(chainId),
+          "",
+          allTxDetails[index],
+          chainId
+        )
+    )
+  );
+  return allDone.every((done) => done);
 }
 
 //will check on the address on the receiving network

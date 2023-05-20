@@ -1,9 +1,13 @@
 import styled from "@emotion/styled";
-import { Text } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
 import { BridgeNetworkPair, NativeTransaction } from "../config/interfaces";
 import MiniTransaction from "./miniTransaction";
 import { TransactionStore } from "global/stores/transactionStore";
-import { convertTx, ibcOutTx } from "../utils/transactions";
+import {
+  completeAllConvertIn,
+  convertTx,
+  ibcOutTx,
+} from "../utils/transactions";
 import { formatUnits } from "ethers/lib/utils";
 
 interface Step2TxBoxProps {
@@ -18,6 +22,20 @@ interface Step2TxBoxProps {
 const Step2TxBox = (props: Step2TxBoxProps) => {
   return (
     <Styled>
+      {props.transactions.length > 0 && props.bridgeIn && (
+        <PrimaryButton
+          onClick={() =>
+            completeAllConvertIn(
+              props.chainId,
+              props.txStore,
+              props.cantoAddress,
+              props.transactions
+            )
+          }
+        >
+          Complete All
+        </PrimaryButton>
+      )}
       <Text type="title" size="title2">
         Bridge Queue
       </Text>
@@ -60,10 +78,7 @@ const Step2TxBox = (props: Step2TxBoxProps) => {
                             {
                               icon: tx.token.icon,
                               symbol: tx.token.symbol,
-                              readableAmount: formatUnits(
-                                tx.amount,
-                                tx.token.decimals
-                              ),
+                              amount: formatUnits(tx.amount, tx.token.decimals),
                             }
                           )
                       : (bridgeOutNetwork, address) =>

@@ -108,7 +108,7 @@ const BridgeOut = (props: BridgeOutProps) => {
               {
                 icon: props.selectedBridgeOutToken.icon,
                 symbol: props.selectedBridgeOutToken.symbol,
-                readableAmount: formatUnits(
+                amount: formatUnits(
                   amount,
                   props.selectedBridgeOutToken.decimals
                 ),

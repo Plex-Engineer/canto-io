@@ -98,6 +98,6 @@ export interface TransactionMessages {
 export interface ExtraProps {
   icon?: string;
   symbol?: string;
-  readableAmount?: string;
+  amount?: string;
   icon2?: string; //if LP Token
 }
