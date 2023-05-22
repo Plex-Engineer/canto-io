@@ -137,6 +137,7 @@ const BridgeIn = (props: BridgeInProps) => {
           selectToken={props.selectEthToken}
           tx={async (amount: BigNumber) =>
             await sendToComsosTx(
+              props.networkPair.sending.network.chainId,
               props.txStore,
               props.networkPair.sending.network.coreContracts.GravityBridge,
               props.networkPair.sending.network.coreContracts.WETH,
@@ -145,8 +146,11 @@ const BridgeIn = (props: BridgeInProps) => {
               props.ethAddress ?? "",
               amount,
               selectedToken.allowance,
-              selectedToken.symbol,
-              props.networkPair.sending.network.chainId
+              {
+                symbol: selectedToken.symbol,
+                amount: formatUnits(amount, selectedToken.decimals),
+                icon: selectedToken.icon,
+              }
             )
           }
           networkPair={props.networkPair}

@@ -1,5 +1,6 @@
 import {
   CantoTransactionType,
+  ExtraProps,
   TransactionDetails,
 } from "global/config/interfaces/transactionTypes";
 import { TransactionStore } from "./transactionStore";
@@ -7,20 +8,17 @@ import { BigNumber } from "ethers";
 import { MaxUint256 } from "@ethersproject/constants";
 import { createTransactionMessges } from "global/utils/formatTxDetails";
 import { ERC20Abi } from "global/config/abi";
+import { truncateNumber } from "global/utils/formattingNumbers";
 
 export function createTransactionDetails(
   txStore: TransactionStore,
   txType: CantoTransactionType,
-  extra?: {
-    symbol?: string;
-    icon?: string;
-    amount?: string;
-  }
+  extra?: ExtraProps
 ): TransactionDetails {
   const transactionMessages = createTransactionMessges(
     txType,
     extra?.symbol,
-    extra?.amount
+    extra?.amount ? truncateNumber(extra?.amount) : undefined
   );
   return {
     txId: txStore.generateTxId(),

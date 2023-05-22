@@ -88,7 +88,11 @@ const Step2TxBox = (props: Step2TxBoxProps) => {
                             bridgeOutNetwork,
                             address,
                             tx.token.ibcDenom,
-                            tx.amount.toString()
+                            tx.amount.toString(),
+                            {
+                              symbol: `${tx.token.symbol} to ${bridgeOutNetwork.name}`,
+                              amount: formatUnits(tx.amount, tx.token.decimals),
+                            }
                           )
                   }
                 />

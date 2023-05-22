@@ -94,7 +94,7 @@ export const AddLiquidityConfirmation = ({
         }}
       >
         <RowCell
-          type={activePair.basePairInfo.token1.symbol + " rate : "}
+          type={activePair.basePairInfo.token1.symbol + " rate"}
           value={
             "1 " +
             activePair.basePairInfo.token1.symbol +
@@ -105,7 +105,7 @@ export const AddLiquidityConfirmation = ({
           }
         />
         <RowCell
-          type={activePair.basePairInfo.token2.symbol + " rate : "}
+          type={activePair.basePairInfo.token2.symbol + " rate"}
           value={
             "1 " +
             activePair.basePairInfo.token2.symbol +
@@ -129,7 +129,7 @@ export const AddLiquidityConfirmation = ({
         }}
       >
         <RowCell
-          type={activePair.basePairInfo.token1.symbol + " deposited : "}
+          type={activePair.basePairInfo.token1.symbol + " deposited"}
           value={truncateNumber(
             formatUnits(
               confirmValues.amount1,
@@ -138,7 +138,7 @@ export const AddLiquidityConfirmation = ({
           )}
         />
         <RowCell
-          type={activePair.basePairInfo.token2.symbol + " deposited : "}
+          type={activePair.basePairInfo.token2.symbol + " deposited"}
           value={truncateNumber(
             formatUnits(
               confirmValues.amount2,
@@ -147,7 +147,7 @@ export const AddLiquidityConfirmation = ({
           )}
         />
         <RowCell
-          type="share of pool : "
+          type="share of pool"
           value={
             truncateNumber(
               calculateExpectedShareIfSupplying(

@@ -133,25 +133,25 @@ export const createTransactionMessges = (
     case CantoTransactionType.DELEGATE:
       return {
         short: "delegate",
-        long: `delegate ${amount} to ${token}`,
-        pending: `delegating ${amount} to ${token}...`,
-        success: `successfully delegated ${amount} to ${token}`,
+        long: `delegate ${amount + " CANTO"} to ${token}`,
+        pending: `delegating ${amount + " CANTO"} to ${token}...`,
+        success: `successfully delegated ${amount + " CANTO"} to ${token}`,
         error: `unable to delegate to ${token}`,
       };
     case CantoTransactionType.UNDELEGATE:
       return {
         short: "undelegate",
-        long: `undelegate ${amount} from ${token}`,
-        pending: `undelegating ${amount} from ${token}...`,
-        success: `successfully ${amount} undelegated from ${token}`,
+        long: `undelegate ${amount + " CANTO"} from ${token}`,
+        pending: `undelegating ${amount + " CANTO"} from ${token}...`,
+        success: `successfully ${amount + " CANTO"} undelegated from ${token}`,
         error: `unable to undelegate from ${token}`,
       };
     case CantoTransactionType.REDELEGATE:
       return {
         short: "redelegate",
-        long: `redelegate ${amount} ${token}`,
-        pending: `redelegating ${amount} ${token}...`,
-        success: `successfully ${amount} redelegated ${token}`,
+        long: `redelegate ${amount + " CANTO"} ${token}`,
+        pending: `redelegating ${amount + " CANTO"} ${token}...`,
+        success: `successfully ${amount + " CANTO"} redelegated ${token}`,
         error: `unable to redelegate ${token}`,
       };
     //BRIDGING

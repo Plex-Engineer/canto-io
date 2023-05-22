@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 import { RowCell } from "./removeModal";
 import { useEffect } from "react";
 import { useState } from "react";
-import { PrimaryButton, Text } from "global/packages/src";
+import { PrimaryButton } from "global/packages/src";
 import { truncateNumber } from "global/utils/formattingNumbers";
 import { LPConfirmationValues } from "../hooks/useModals";
 import { getReserveRatioAtoB, getTokenValueFromPercent } from "../utils/utils";
@@ -90,7 +90,7 @@ export const RemoveLiquidityConfirmation = ({
         }}
       >
         <RowCell
-          type={" rates: "}
+          type={activePair.basePairInfo.token1.symbol + " rate"}
           value={
             "1 " +
             activePair.basePairInfo.token1.symbol +
@@ -101,7 +101,7 @@ export const RemoveLiquidityConfirmation = ({
           }
         />
         <RowCell
-          type={""}
+          type={activePair.basePairInfo.token2.symbol + " rate"}
           value={
             "1 " +
             activePair.basePairInfo.token2.symbol +
@@ -125,7 +125,7 @@ export const RemoveLiquidityConfirmation = ({
         }}
       >
         <RowCell
-          type={activePair.basePairInfo.token1.symbol + " withdrawing: "}
+          type={activePair.basePairInfo.token1.symbol + " withdrawing"}
           value={truncateNumber(
             formatUnits(
               confirmValues.amount1,
@@ -134,7 +134,7 @@ export const RemoveLiquidityConfirmation = ({
           )}
         />
         <RowCell
-          type={activePair.basePairInfo.token2.symbol + " withdrawing: "}
+          type={activePair.basePairInfo.token2.symbol + " withdrawing"}
           value={truncateNumber(
             formatUnits(
               confirmValues.amount2,
@@ -143,7 +143,7 @@ export const RemoveLiquidityConfirmation = ({
           )}
         />
         <RowCell
-          type={"burned: "}
+          type={"burned"}
           value={truncateNumber(
             formatUnits(LPOut, activePair.basePairInfo.decimals)
           )}

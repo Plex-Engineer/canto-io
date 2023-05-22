@@ -23,9 +23,6 @@ export async function claimLendingRewardsTx(
   amountToClaim: BigNumber,
   comptrollerBalance: BigNumber
 ): Promise<boolean> {
-  if (!account) {
-    return false;
-  }
   const needDrip = comptrollerBalance.lte(amountToClaim);
   const tokenInfo = {
     symbol: "WCANTO",
@@ -56,6 +53,13 @@ export async function claimLendingRewardsTx(
       });
 
   if (!dripDone) {
+    return false;
+  }
+  if (!account) {
+    txStore.updateTx(claimDetails.txId, {
+      status: "Fail",
+      currentMessage: "No account detected",
+    });
     return false;
   }
   return await txStore.performEVMTx({

@@ -27,6 +27,7 @@ import { formatUnits } from "ethers/lib/utils";
 
 //will take care of wrapping ETH for WETH before bridging
 export async function sendToComsosTx(
+  chainId: number | undefined,
   txStore: TransactionStore,
   gravityAddresss: string,
   WETHAddress: string,
@@ -35,8 +36,7 @@ export async function sendToComsosTx(
   ethAddress: string,
   amount: BigNumber,
   currentAllowance: BigNumber,
-  tokenSymbol?: string,
-  chainId?: number
+  extraDetails?: ExtraProps
 ): Promise<boolean> {
   //must check if we need to wrap any ETH before sending to cosmos
   let needToWrap = false;
@@ -55,19 +55,23 @@ export async function sendToComsosTx(
       amountToWrap = amount.sub(wethBalance);
       wrapDetails.push(
         createTransactionDetails(txStore, CantoTransactionType.WRAP, {
-          symbol: "WETH",
+          symbol: "ETH",
           amount: formatUnits(amountToWrap),
         })
       );
     }
   }
   const [enableDetails, sendToCosmosDetails] = [
-    createTransactionDetails(txStore, CantoTransactionType.ENABLE, {
-      symbol: tokenSymbol,
-    }),
-    createTransactionDetails(txStore, CantoTransactionType.SEND_TO_COSMOS, {
-      symbol: tokenSymbol,
-    }),
+    createTransactionDetails(
+      txStore,
+      CantoTransactionType.ENABLE,
+      extraDetails
+    ),
+    createTransactionDetails(
+      txStore,
+      CantoTransactionType.SEND_TO_COSMOS,
+      extraDetails
+    ),
   ];
   txStore.addTransactions([...wrapDetails, enableDetails, sendToCosmosDetails]);
 
@@ -193,12 +197,13 @@ export async function ibcOutTx(
   bridgeOutNetwork: BridgeOutNetworkInfo,
   toChainAddress: string,
   tokenDenom: string,
-  amount: string
+  amount: string,
+  extra?: ExtraProps
 ) {
   const ibcDetails = createTransactionDetails(
     txStore,
     CantoTransactionType.IBC_OUT,
-    { symbol: `to ${bridgeOutNetwork.name}` }
+    extra
   );
   txStore.addTransactions([ibcDetails]);
   if (!bridgeOutNetwork.checkAddress(toChainAddress)) {

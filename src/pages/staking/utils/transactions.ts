@@ -20,6 +20,7 @@ import {
   getCosmosChainObj,
 } from "global/utils/getAddressUtils";
 import { claimRewardFee, delegateFee, unbondingFee } from "../config/fees";
+import { formatUnits } from "ethers/lib/utils";
 
 interface GeneralStakingParams {
   account: string;
@@ -42,9 +43,11 @@ export async function stakingTx(
   if (!params.account) {
     return false;
   }
+  const readableAmount = formatUnits(params.amount, 18);
   const isRedelegate = txType === StakingTransactionType.REDELEGATE;
   const delegateDetails = isRedelegate
     ? createTransactionDetails(txStore, CantoTransactionType.REDELEGATE, {
+        amount: readableAmount,
         symbol: `from ${params.operator?.name} to ${params.newOperator?.name}`,
       })
     : createTransactionDetails(
@@ -52,7 +55,7 @@ export async function stakingTx(
         txType === StakingTransactionType.DELEGATE
           ? CantoTransactionType.DELEGATE
           : CantoTransactionType.UNDELEGATE,
-        { symbol: params.operator.name }
+        { amount: readableAmount, symbol: params.operator.name }
       );
   txStore.addTransactions([delegateDetails]);
   return isRedelegate

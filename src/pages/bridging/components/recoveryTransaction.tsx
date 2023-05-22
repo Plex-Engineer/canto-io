@@ -93,7 +93,14 @@ const RecoveryTransactionBox = ({
               selectedNetwork,
               userInputAddress,
               transaction.token.ibcDenom,
-              transaction.amount.toString()
+              transaction.amount.toString(),
+              {
+                symbol: `${transaction.token.symbol} to ${selectedNetwork.name}`,
+                amount: formatUnits(
+                  transaction.amount,
+                  transaction.token.decimals
+                ),
+              }
             );
           }}
           extraDetails={getBridgeExtraDetails(

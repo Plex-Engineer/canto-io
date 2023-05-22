@@ -21,6 +21,7 @@ import {
   getAddressesForCantoNetwork,
   getCurrentProvider,
 } from "global/utils/getAddressUtils";
+import { formatUnits } from "ethers/lib/utils";
 
 export async function dexLPTx(
   chainId: number | undefined,
@@ -193,12 +194,22 @@ async function addLiquidityTx(
   if (!enableLPDone) {
     return false;
   }
+  //update supply tx to reflect amount of LP received
+  const newStakeDetails = createTransactionDetails(
+    txStore,
+    CantoTransactionType.SUPPLY,
+    {
+      ...extraProps,
+      amount: formatUnits(addedBalance, pair.basePairInfo.decimals),
+    }
+  );
+  txStore.updateTx(stakeDetails[1].txId, newStakeDetails);
   return await _performSupply(
     txStore,
     cLPToken.address,
     false,
     addedBalance,
-    stakeDetails[1]
+    newStakeDetails
   );
 }
 async function removeLiquidityTx(
