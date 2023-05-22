@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
 import { useState } from "react";
 import {
-  LendingTransaction,
   UserLMPosition,
   UserLMTokenDetails,
 } from "pages/lending/config/interfaces";
@@ -12,6 +11,7 @@ import { EnableCollateralContainer } from "../components/Styled";
 import { TransactionStore } from "global/stores/transactionStore";
 import { lendingMarketTx } from "../utils/transactions";
 import { BigNumber } from "ethers";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 
 const APY = styled.div`
   display: flex;
@@ -99,8 +99,8 @@ const CollatModal = (props: Props) => {
                 props.chainId,
                 props.txStore,
                 props.decollateralize
-                  ? LendingTransaction.DECOLLATERLIZE
-                  : LendingTransaction.COLLATERALIZE,
+                  ? CantoTransactionType.DECOLLATERLIZE
+                  : CantoTransactionType.COLLATERALIZE,
                 props.activeToken,
                 BigNumber.from("0")
               )

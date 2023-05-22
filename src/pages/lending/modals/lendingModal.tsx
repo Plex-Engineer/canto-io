@@ -1,9 +1,5 @@
 import styled from "@emotion/styled";
-import {
-  LendingTransaction,
-  UserLMPosition,
-  UserLMTokenDetails,
-} from "../config/interfaces";
+import { UserLMPosition, UserLMTokenDetails } from "../config/interfaces";
 import { PrimaryButton, Text } from "global/packages/src";
 import { ReactNode, useState } from "react";
 import { formatUnits } from "ethers/lib/utils";
@@ -21,150 +17,84 @@ import { CantoTransactionType } from "global/config/interfaces/transactionTypes"
 import { Details } from "../components/BorrowLimits";
 import { lendingMarketTx } from "../utils/transactions";
 import { TransactionStore } from "global/stores/transactionStore";
+import { ModalWallet } from "../components/Styled";
 
 interface IProps {
   onClose: () => void;
   position: UserLMPosition;
   modalType: "supply_withdraw" | "repay_borrow";
-
   activeToken: UserLMTokenDetails;
   chainId: number;
   txStore: TransactionStore;
 }
 
-type ActionType = "withdraw" | "repay" | "borrow" | "supply";
 const LendingModal = ({
   position,
-  onClose,
   modalType,
   activeToken,
   chainId,
   txStore,
 }: IProps) => {
-  const [actionType, setActionType] = useState<ActionType>("supply");
-  const [userAmount, setUserAmount] = useState("");
-
-  const SupplyTab = () => {
+  interface LendingTabProps {
+    txType: CantoTransactionType;
+    balance: BigNumber;
+    max: BigNumber;
+    canDoMax: boolean;
+    limit80Percent?: BigNumber;
+  }
+  const LendingTab = ({
+    txType,
+    balance,
+    max,
+    canDoMax,
+    limit80Percent,
+  }: LendingTabProps) => {
     const [buttonText, disabled] = getButtonText(
       convertStringToBigNumber(
         userAmount,
         activeToken.data.underlying.decimals
       ),
-      activeToken.balanceOf,
-      CantoTransactionType.SUPPLY
+      max,
+      txType
     );
+    const [maxClicked, setMaxClicked] = useState(false);
     return (
       <TabPanel>
         <Details
-          transactionType={CantoTransactionType.SUPPLY}
+          transactionType={txType}
           stringAmount={truncateNumber(
             userAmount,
             activeToken.data.underlying.decimals
           )}
-          token={activeToken}
           icon={activeToken.data.underlying.icon}
-          isBorrowing={false}
+          token={activeToken}
+          isBorrowing={modalType === "repay_borrow"}
           borrowLimit={position.totalBorrowLimit}
           borrowBalance={position.totalBorrow}
         />
         <AmountField
           token={activeToken}
           value={userAmount}
-          canDoMax={true}
-          onMax={() =>
+          canDoMax={canDoMax}
+          onMax={() => {
             setUserAmount(
               formatUnits(
-                activeToken.balanceOf,
+                limit80Percent
+                  ? limit80Percent.lte(0)
+                    ? "0"
+                    : limit80Percent
+                  : max,
                 activeToken.data.underlying.decimals
               )
-            )
-          }
+            );
+            setMaxClicked(true);
+          }}
           onChange={(value) => {
             setUserAmount(value);
+            setMaxClicked(false);
           }}
           balance={truncateNumber(
-            formatUnits(
-              activeToken.balanceOf,
-              activeToken.data.underlying.decimals
-            )
-          )}
-        />
-        <div
-          style={{
-            marginTop: "16px",
-          }}
-        >
-          <PrimaryButton
-            height="big"
-            filled
-            weight="bold"
-            disabled={disabled}
-            onClick={() => {
-              lendingMarketTx(
-                chainId,
-                txStore,
-                LendingTransaction.SUPPLY,
-                activeToken,
-                convertStringToBigNumber(
-                  userAmount,
-                  activeToken.data.underlying.decimals
-                )
-              );
-            }}
-          >
-            {buttonText}
-          </PrimaryButton>
-        </div>
-      </TabPanel>
-    );
-  };
-
-  const WithdrawTab = () => {
-    const [limit80Percent, totalLimit, isMax] = userMaximumWithdrawal(
-      activeToken.supplyBalance,
-      position.totalBorrow,
-      position.totalBorrowLimit,
-      activeToken.collateralFactor,
-      activeToken.price,
-      activeToken.collateral
-    );
-    const [buttonText, disabled] = getButtonText(
-      convertStringToBigNumber(
-        userAmount,
-        activeToken.data.underlying.decimals
-      ),
-      totalLimit,
-      CantoTransactionType.WITHDRAW
-    );
-    return (
-      <TabPanel>
-        <Details
-          transactionType={CantoTransactionType.WITHDRAW}
-          icon={activeToken.data.underlying.icon}
-          token={activeToken}
-          stringAmount={truncateNumber(
-            userAmount,
-            activeToken.data.underlying.decimals
-          )}
-          borrowLimit={position.totalBorrowLimit}
-          borrowBalance={position.totalBorrow}
-          isBorrowing={false}
-        />
-        <AmountField
-          token={activeToken}
-          value={userAmount}
-          canDoMax={isMax}
-          onMax={() =>
-            setUserAmount(
-              formatUnits(limit80Percent, activeToken.data.underlying.decimals)
-            )
-          }
-          onChange={(value) => setUserAmount(value)}
-          balance={truncateNumber(
-            formatUnits(
-              activeToken.supplyBalance,
-              activeToken.data.underlying.decimals
-            )
+            formatUnits(balance, activeToken.data.underlying.decimals)
           )}
         />
         <div
@@ -181,179 +111,73 @@ const LendingModal = ({
               lendingMarketTx(
                 chainId,
                 txStore,
-                LendingTransaction.WITHDRAW,
+                txType,
                 activeToken,
-                convertStringToBigNumber(
-                  userAmount,
-                  activeToken.data.underlying.decimals
-                )
+                maxClicked &&
+                  txType === CantoTransactionType.REPAY &&
+                  activeToken.balanceOf.gt(activeToken.borrowBalance.add(1000))
+                  ? BigNumber.from(
+                      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                    )
+                  : convertStringToBigNumber(
+                      userAmount,
+                      activeToken.data.underlying.decimals
+                    )
               )
             }
           >
+            {" "}
             {buttonText}
           </PrimaryButton>
         </div>
+        <ModalWallet>
+          <p>
+            {modalType === "repay_borrow"
+              ? "currently borrowing"
+              : txType === CantoTransactionType.SUPPLY
+              ? "balance"
+              : "supply balance"}
+          </p>
+          <p>
+            {truncateNumber(
+              formatUnits(balance, activeToken.data.underlying.decimals)
+            )}{" "}
+            {activeToken.data.underlying.symbol}
+          </p>
+        </ModalWallet>
       </TabPanel>
     );
   };
 
-  const BorrowTab = () => {
-    const borrowLimit80 = maxBorrowInUnderlying(
+  const [userAmount, setUserAmount] = useState("");
+
+  //limits
+  const [limit80Percent, totalLimit, isMax] = userMaximumWithdrawal(
+    activeToken.supplyBalance,
+    position.totalBorrow,
+    position.totalBorrowLimit,
+    activeToken.collateralFactor,
+    activeToken.price,
+    activeToken.collateral
+  );
+  const borrowLimit80 = () =>
+    maxBorrowInUnderlying(
       position.totalBorrow,
       position.totalBorrowLimit,
       80,
       activeToken.price
     );
-    const borrowLimit100 = maxBorrowInUnderlying(
+  const borrowLimit100 = () =>
+    maxBorrowInUnderlying(
       position.totalBorrow,
       position.totalBorrowLimit,
       100,
       activeToken.price
     );
-    const [buttonText, disabled] = getButtonText(
-      convertStringToBigNumber(
-        userAmount,
-        activeToken.data.underlying.decimals
-      ),
-      borrowLimit100,
-      CantoTransactionType.BORROW
-    );
-    return (
-      <TabPanel>
-        <Details
-          transactionType={CantoTransactionType.BORROW}
-          stringAmount={truncateNumber(
-            userAmount,
-            activeToken.data.underlying.decimals
-          )}
-          token={activeToken}
-          icon={activeToken.data.underlying.icon}
-          isBorrowing={true}
-          borrowLimit={position.totalBorrowLimit}
-          borrowBalance={position.totalBorrow}
-        />
-        <AmountField
-          token={activeToken}
-          value={userAmount}
-          canDoMax={false}
-          onMax={() => {
-            if (borrowLimit80.lte(0)) {
-              setUserAmount("0");
-            } else {
-              setUserAmount(
-                formatUnits(borrowLimit80, activeToken.data.underlying.decimals)
-              );
-            }
-          }}
-          onChange={(value) => setUserAmount(value)}
-          balance={truncateNumber(
-            formatUnits(
-              activeToken.borrowBalance,
-              activeToken.data.underlying.decimals
-            )
-          )}
-        />
-        <PrimaryButton
-          height="big"
-          filled
-          weight="bold"
-          disabled={disabled}
-          onClick={() =>
-            lendingMarketTx(
-              chainId,
-              txStore,
-              LendingTransaction.BORROW,
-              activeToken,
-              convertStringToBigNumber(
-                userAmount,
-                activeToken.data.underlying.decimals
-              )
-            )
-          }
-        >
-          {" "}
-          {buttonText}
-        </PrimaryButton>
-      </TabPanel>
-    );
-  };
-  const RepayTab = () => {
-    const repayLimit = activeToken.balanceOf.lt(activeToken.borrowBalance)
+  const repayLimit = () =>
+    activeToken.balanceOf.lt(activeToken.borrowBalance)
       ? activeToken.balanceOf
       : activeToken.borrowBalance;
-    const [buttonText, disabled] = getButtonText(
-      convertStringToBigNumber(
-        userAmount,
-        activeToken.data.underlying.decimals
-      ),
-      repayLimit,
-      CantoTransactionType.REPAY
-    );
-    const [repayMax, setRepayMax] = useState(false);
-    return (
-      <TabPanel>
-        <Details
-          transactionType={CantoTransactionType.REPAY}
-          stringAmount={truncateNumber(
-            userAmount,
-            activeToken.data.underlying.decimals
-          )}
-          icon={activeToken.data.underlying.icon}
-          token={activeToken}
-          isBorrowing={true}
-          borrowLimit={position.totalBorrowLimit}
-          borrowBalance={position.totalBorrow}
-        />
-        <AmountField
-          token={activeToken}
-          value={userAmount}
-          canDoMax={true}
-          onMax={() => {
-            setUserAmount(
-              formatUnits(repayLimit, activeToken.data.underlying.decimals)
-            );
-            setRepayMax(true);
-          }}
-          onChange={(value) => {
-            setUserAmount(value);
-            setRepayMax(false);
-          }}
-          balance={truncateNumber(
-            formatUnits(
-              activeToken.borrowBalance,
-              activeToken.data.underlying.decimals
-            )
-          )}
-        />
-        <PrimaryButton
-          height="big"
-          filled
-          weight="bold"
-          disabled={disabled}
-          onClick={() =>
-            lendingMarketTx(
-              chainId,
-              txStore,
-              LendingTransaction.REPAY,
-              activeToken,
-              repayMax &&
-                activeToken.balanceOf.gt(activeToken.borrowBalance.add(1000))
-                ? BigNumber.from(
-                    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-                  )
-                : convertStringToBigNumber(
-                    userAmount,
-                    activeToken.data.underlying.decimals
-                  )
-            )
-          }
-        >
-          {" "}
-          {buttonText}
-        </PrimaryButton>
-      </TabPanel>
-    );
-  };
 
   return (
     <Styled>
@@ -374,17 +198,22 @@ const LendingModal = ({
         getTabs(
           {
             name: "Supply",
-            child: SupplyTab(),
-            onClick() {
-              setActionType("supply");
-            },
+            child: LendingTab({
+              txType: CantoTransactionType.SUPPLY,
+              balance: activeToken.balanceOf,
+              max: activeToken.balanceOf,
+              canDoMax: true,
+            }),
           },
           {
             name: "Withdraw",
-            child: WithdrawTab(),
-            onClick() {
-              setActionType("withdraw");
-            },
+            child: LendingTab({
+              txType: CantoTransactionType.WITHDRAW,
+              balance: activeToken.supplyBalance,
+              max: totalLimit,
+              canDoMax: isMax,
+              limit80Percent: limit80Percent,
+            }),
           }
         )}
 
@@ -392,17 +221,22 @@ const LendingModal = ({
         getTabs(
           {
             name: "Borrow",
-            child: BorrowTab(),
-            onClick() {
-              setActionType("borrow");
-            },
+            child: LendingTab({
+              txType: CantoTransactionType.BORROW,
+              balance: activeToken.borrowBalance,
+              max: borrowLimit100(),
+              canDoMax: false,
+              limit80Percent: borrowLimit80(),
+            }),
           },
           {
             name: "Repay",
-            child: RepayTab(),
-            onClick() {
-              setActionType("repay");
-            },
+            child: LendingTab({
+              txType: CantoTransactionType.REPAY,
+              balance: activeToken.borrowBalance,
+              max: repayLimit(),
+              canDoMax: true,
+            }),
           }
         )}
     </Styled>
@@ -410,7 +244,6 @@ const LendingModal = ({
 
   interface ITabs {
     name: string;
-    onClick: () => void;
     child: ReactNode;
   }
   function getTabs(tab1: ITabs, tab2: ITabs) {
@@ -421,18 +254,10 @@ const LendingModal = ({
         className={"tabs"}
       >
         <TabList className={"tablist"}>
-          <Tab
-            className={"tab"}
-            selectedClassName="tab-selected"
-            onClick={tab1.onClick}
-          >
+          <Tab className={"tab"} selectedClassName="tab-selected">
             <Text type="title">{tab1.name}</Text>
           </Tab>
-          <Tab
-            className={"tab"}
-            selectedClassName="tab-selected"
-            onClick={tab2.onClick}
-          >
+          <Tab className={"tab"} selectedClassName="tab-selected">
             <Text type="title">{tab2.name}</Text>
           </Tab>
         </TabList>

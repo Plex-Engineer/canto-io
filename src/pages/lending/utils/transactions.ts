@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { LendingTransaction, UserLMTokenDetails } from "../config/interfaces";
+import { UserLMTokenDetails } from "../config/interfaces";
 import { cERC20Abi, comptrollerAbi, reservoirAbi } from "global/config/abi";
 import {
   CantoTransactionType,
@@ -71,7 +71,7 @@ export async function claimLendingRewardsTx(
 export async function lendingMarketTx(
   chainId: number | undefined,
   txStore: TransactionStore,
-  txType: LendingTransaction,
+  txType: CantoTransactionType,
   cToken: UserLMTokenDetails,
   amount: BigNumber
 ): Promise<boolean> {
@@ -82,7 +82,7 @@ export async function lendingMarketTx(
   };
   const isCanto = cToken.data.underlying.symbol === "CANTO";
   switch (txType) {
-    case LendingTransaction.SUPPLY:
+    case CantoTransactionType.SUPPLY:
       return await supplyTx(
         txStore,
         cToken.data.address,
@@ -92,7 +92,7 @@ export async function lendingMarketTx(
         isCanto,
         tokenInfo
       );
-    case LendingTransaction.REPAY:
+    case CantoTransactionType.REPAY:
       return await repayTx(
         txStore,
         cToken.data.address,
@@ -102,18 +102,17 @@ export async function lendingMarketTx(
         isCanto,
         tokenInfo
       );
-
-    case LendingTransaction.BORROW:
+    case CantoTransactionType.BORROW:
       return await borrowTx(txStore, cToken.data.address, amount, tokenInfo);
-    case LendingTransaction.WITHDRAW:
+    case CantoTransactionType.WITHDRAW:
       return await withdrawTx(txStore, cToken.data.address, amount, tokenInfo);
-    case LendingTransaction.COLLATERALIZE:
-    case LendingTransaction.DECOLLATERLIZE:
+    case CantoTransactionType.COLLATERALIZE:
+    case CantoTransactionType.DECOLLATERLIZE:
       return await collateralizeTx(
         txStore,
         getAddressesForCantoNetwork(chainId).Comptroller,
         cToken.data.address,
-        txType === LendingTransaction.COLLATERALIZE,
+        txType === CantoTransactionType.COLLATERALIZE,
         tokenInfo
       );
     default:
@@ -183,7 +182,7 @@ async function repayTx(
 ): Promise<boolean> {
   const [enableDetails, repayDetails] = [
     createTransactionDetails(txStore, CantoTransactionType.ENABLE, tokenInfo),
-    createTransactionDetails(txStore, CantoTransactionType.SUPPLY, tokenInfo),
+    createTransactionDetails(txStore, CantoTransactionType.REPAY, tokenInfo),
   ];
   isCanto
     ? txStore.addTransactions([repayDetails])

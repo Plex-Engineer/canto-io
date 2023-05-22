@@ -1,9 +1,8 @@
 import styled from "@emotion/styled";
-import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { Text } from "global/packages/src";
 import { CInput } from "global/packages/src/components/atoms/Input";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import { useState } from "react";
 interface Props {
   tokenBalance: string;
