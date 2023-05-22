@@ -4,7 +4,10 @@ import CheckBox from "global/components/checkBox";
 import { PrimaryButton } from "../atoms/Button";
 import { Text } from "../atoms/Text";
 import { CInput } from "../atoms/Input";
-import { getSupportedNetwork } from "global/utils/getAddressUtils";
+import {
+  getSupportedNetwork,
+  onCantoNetwork,
+} from "global/utils/getAddressUtils";
 import { getCTokensForChainId } from "pages/lending/config/lendingMarketTokens";
 
 const Styled = styled.div`
@@ -90,7 +93,9 @@ const fullTokenList = (chainId: number): TokenListCategory[] => {
         });
       }
     });
-  const allCTokens = getCTokensForChainId(chainId);
+  const allCTokens = onCantoNetwork(chainId)
+    ? getCTokensForChainId(chainId)
+    : [];
   for (const token of allCTokens) {
     cTokens.push({
       symbol: token.name,
