@@ -17,7 +17,11 @@ export function createTransactionDetails(
     amount?: string;
   }
 ): TransactionDetails {
-  const transactionMessages = createTransactionMessges(txType, extra?.symbol);
+  const transactionMessages = createTransactionMessges(
+    txType,
+    extra?.symbol,
+    extra?.amount
+  );
   return {
     txId: txStore.generateTxId(),
     txType: txType,

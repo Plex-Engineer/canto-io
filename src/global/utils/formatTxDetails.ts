@@ -6,9 +6,11 @@ import {
 
 export const createTransactionMessges = (
   txType: CantoTransactionType,
-  tokenName?: string
+  tokenName?: string,
+  tokenAmount?: string
 ): TransactionMessages => {
   const token = tokenName ?? "token";
+  const amount = tokenAmount ?? "";
   switch (txType) {
     //GENERAL
     case CantoTransactionType.ENABLE:
@@ -31,50 +33,50 @@ export const createTransactionMessges = (
     case CantoTransactionType.WRAP:
       return {
         short: "wrap",
-        long: `wrap ${token}`,
-        pending: `wrapping ${token}...`,
-        success: `successfully wrapped ${token}`,
+        long: `wrap ${amount + " " + token}`,
+        pending: `wrapping ${amount + " " + token}...`,
+        success: `successfully wrapped ${amount + " " + token}`,
         error: `unable to wrap ${token}`,
       };
     case CantoTransactionType.UNWRAP:
       return {
         short: "unwrap",
-        long: `unwrap ${token}`,
-        pending: `unwrapping ${token}...`,
-        success: `successfully unwrapped ${token}`,
+        long: `unwrap ${amount + " " + token}`,
+        pending: `unwrapping ${amount + " " + token}...`,
+        success: `successfully unwrapped ${amount + " " + token}`,
         error: `unable to unwrap ${token}`,
       };
     //LENDING
     case CantoTransactionType.SUPPLY:
       return {
         short: "supply",
-        long: `supply ${token}`,
-        pending: `supplying ${token}...`,
-        success: `successfully supplied ${token}`,
+        long: `supply ${amount + " " + token}`,
+        pending: `supplying ${amount + " " + token}...`,
+        success: `successfully supplied ${amount + " " + token}`,
         error: `unable to supply ${token}`,
       };
     case CantoTransactionType.BORROW:
       return {
         short: "borrow",
-        long: `borrow ${token}`,
-        pending: `borrowing ${token}...`,
-        success: `successfully borrowed ${token}`,
+        long: `borrow ${amount + " " + token}`,
+        pending: `borrowing ${amount + " " + token}...`,
+        success: `successfully borrowed ${amount + " " + token}`,
         error: `unable to borrow ${token}`,
       };
     case CantoTransactionType.REPAY:
       return {
         short: "repay",
-        long: `repay ${token}`,
-        pending: `repaying ${token}...`,
-        success: `successfully repaid ${token}`,
+        long: `repay ${amount + " " + token}`,
+        pending: `repaying ${amount + " " + token}...`,
+        success: `successfully repaid ${amount + " " + token}`,
         error: `unable to repay ${token}`,
       };
     case CantoTransactionType.WITHDRAW:
       return {
         short: "withdraw",
-        long: `withdraw ${token}`,
-        pending: `withdrawing ${token}...`,
-        success: `successfully withdrew ${token}`,
+        long: `withdraw ${amount + " " + token}`,
+        pending: `withdrawing ${amount + " " + token}...`,
+        success: `successfully withdrew ${amount + " " + token}`,
         error: `unable to withdraw ${token}`,
       };
     case CantoTransactionType.COLLATERALIZE:
@@ -131,66 +133,66 @@ export const createTransactionMessges = (
     case CantoTransactionType.DELEGATE:
       return {
         short: "delegate",
-        long: `delegate to ${token}`,
-        pending: `delegating to ${token}...`,
-        success: `successfully delegated to ${token}`,
+        long: `delegate ${amount} to ${token}`,
+        pending: `delegating ${amount} to ${token}...`,
+        success: `successfully delegated ${amount} to ${token}`,
         error: `unable to delegate to ${token}`,
       };
     case CantoTransactionType.UNDELEGATE:
       return {
         short: "undelegate",
-        long: `undelegate from ${token}`,
-        pending: `undelegating from ${token}...`,
-        success: `successfully undelegated from ${token}`,
+        long: `undelegate ${amount} from ${token}`,
+        pending: `undelegating ${amount} from ${token}...`,
+        success: `successfully ${amount} undelegated from ${token}`,
         error: `unable to undelegate from ${token}`,
       };
     case CantoTransactionType.REDELEGATE:
       return {
         short: "redelegate",
-        long: `redelegate ${token}`,
-        pending: `redelegating ${token}...`,
-        success: `successfully redelegated ${token}`,
+        long: `redelegate ${amount} ${token}`,
+        pending: `redelegating ${amount} ${token}...`,
+        success: `successfully ${amount} redelegated ${token}`,
         error: `unable to redelegate ${token}`,
       };
     //BRIDGING
     case CantoTransactionType.SEND_TO_COSMOS:
       return {
         short: "bridge in",
-        long: `bridge in ${token}...`,
-        pending: `bridging ${token}...`,
-        success: `successfully bridged ${token}`,
+        long: `bridge in ${amount + " " + token}...`,
+        pending: `bridging ${amount + " " + token}...`,
+        success: `successfully bridged ${amount + " " + token}`,
         error: `unable to bridge ${token}`,
       };
     case CantoTransactionType.CONVERT_TO_EVM:
       return {
         short: "convert to ERC20",
-        long: `convert ${token} to ERC20`,
-        pending: `converting ${token}...`,
-        success: `successfully converted ${token}`,
+        long: `convert ${amount + " " + token} to ERC20`,
+        pending: `converting ${amount + " " + token}...`,
+        success: `successfully converted ${amount + " " + token}`,
         error: `unable to convert ${token}`,
       };
     case CantoTransactionType.CONVERT_TO_NATIVE:
       return {
         short: "convert to native",
-        long: `convert ${token} to native`,
-        pending: `converting ${token}...`,
-        success: `successfully converted ${token}`,
+        long: `convert ${amount + " " + token} to native`,
+        pending: `converting ${amount + " " + token}...`,
+        success: `successfully converted ${amount + " " + token}`,
         error: `unable to convert ${token}`,
       };
     case CantoTransactionType.IBC_OUT:
       return {
         short: "bridge out",
-        long: `bridge out ${token}`,
-        pending: `bridging out ${token}...`,
-        success: `successfully bridged out ${token}`,
+        long: `bridge out ${amount + " " + token}`,
+        pending: `bridging out ${amount + " " + token}...`,
+        success: `successfully bridged out ${amount + " " + token}`,
         error: `unable to bridge out ${token}`,
       };
     case CantoTransactionType.IBC_IN:
       return {
         short: "bridge in",
-        long: `bridge in ${token}`,
-        pending: `bridging in ${token}...`,
-        success: `successfully bridged in ${token}`,
+        long: `bridge in ${amount + " " + token}`,
+        pending: `bridging in ${amount + " " + token}...`,
+        success: `successfully bridged in ${amount + " " + token}`,
         error: `unable to bridge in ${token}`,
       };
     default:
