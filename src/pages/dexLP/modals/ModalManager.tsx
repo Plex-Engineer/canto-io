@@ -36,7 +36,7 @@ const ModalManager = (props: Props) => {
       case ModalType.ADD_OR_REMOVE:
         return "Liquidity";
       default:
-        return "confirm";
+        return "Confirmation";
     }
   }
   useEffect(() => {

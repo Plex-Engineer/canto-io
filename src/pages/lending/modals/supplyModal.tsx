@@ -41,7 +41,7 @@ const SupplyModal = ({ position, chainId, txStore, activeToken }: IProps) => {
         <div
           style={{
             display: "flex",
-            marginTop: "2rem",
+            marginTop: "1rem",
           }}
         />
         {/* supply */}
@@ -133,7 +133,7 @@ const SupplyModal = ({ position, chainId, txStore, activeToken }: IProps) => {
         <div
           style={{
             display: "flex",
-            marginTop: "2rem",
+            marginTop: "1rem",
           }}
         />
         <LendingField

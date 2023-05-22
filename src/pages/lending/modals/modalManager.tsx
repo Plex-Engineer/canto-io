@@ -1,13 +1,12 @@
 import WalletModal from "./walletModal";
 import CollatModal from "./enableCollateral";
-import SupplyModal from "./supplyModal";
-import BorrowModal from ".//borrowModal";
 import RewardsModal from "./rewardsModal";
 import useModalStore, { ModalType } from "pages/lending/stores/useModals";
 import { UserLMPosition, UserLMRewards } from "pages/lending/config/interfaces";
 import Modal from "global/packages/src/components/molecules/Modal";
 import OngoingTxModal from "global/components/modals/ongoingTxModal";
 import { TransactionStore } from "global/stores/transactionStore";
+import LendingModal from "./lendingModal";
 
 interface Props {
   isOpen: boolean;
@@ -32,16 +31,19 @@ const ModalManager = ({
         <WalletModal onClose={modalStore.close} />
       )}
       {modalStore.currentModal === ModalType.LENDING && (
-        <SupplyModal
+        <LendingModal
+          modalType="supply_withdraw"
+          onClose={modalStore.close}
           position={position}
           chainId={chainId}
           txStore={txStore}
           activeToken={modalStore.activeToken}
         />
       )}
-
       {modalStore.currentModal === ModalType.BORROW && (
-        <BorrowModal
+        <LendingModal
+          modalType="repay_borrow"
+          onClose={modalStore.close}
           position={position}
           chainId={chainId}
           txStore={txStore}

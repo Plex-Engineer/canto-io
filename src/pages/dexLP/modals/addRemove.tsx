@@ -15,81 +15,94 @@ interface Props {
 const AddRemoveModal = ({ activePair, setModalType }: Props) => {
   return (
     <AddRemoveContainer>
-      <p id="position">position overview</p>
-      <div className="row">
-        <IconPair
-          iconLeft={activePair.basePairInfo.token1.icon}
-          iconRight={activePair.basePairInfo.token2.icon}
-        />
-      </div>
-      <div className="row">
-        <Text type="title">{activePair.basePairInfo.token1.symbol}</Text>
-
-        <Text type="title">/</Text>
-
-        <Text type="title">{activePair.basePairInfo.token2.symbol}</Text>
-      </div>
-      <h4>
-        pool share {(activePair.userSupply.percentOwned * 100).toFixed(4)}%
-      </h4>
-      <div className="fields">
-        <div className="token">
-          <img
-            src={activePair.basePairInfo.token1.icon}
-            height={50}
-            width={50}
+      <div className="center">
+        <p id="position">position overview</p>
+        <div className="row">
+          <IconPair
+            iconLeft={activePair.basePairInfo.token1.icon}
+            iconRight={activePair.basePairInfo.token2.icon}
           />
-          <p>
-            {noteSymbol}
-            {truncateNumber(
-              formatUnits(
-                valueInNote(
+        </div>
+        <div className="row">
+          <Text type="title">{activePair.basePairInfo.token1.symbol}</Text>
+
+          <Text type="title">/</Text>
+
+          <Text type="title">{activePair.basePairInfo.token2.symbol}</Text>
+        </div>
+        <h4>
+          pool share {(activePair.userSupply.percentOwned * 100).toFixed(4)}%
+        </h4>
+        <div className="fields">
+          <div
+            className="token"
+            style={{
+              width: "40%",
+            }}
+          >
+            <img
+              src={activePair.basePairInfo.token1.icon}
+              height={50}
+              width={50}
+            />
+            <p>
+              {noteSymbol}
+              {truncateNumber(
+                formatUnits(
+                  valueInNote(
+                    activePair.userSupply.token1,
+                    activePair.prices.token1
+                  )
+                )
+              )}
+            </p>
+
+            <p>
+              {truncateNumber(
+                formatUnits(
                   activePair.userSupply.token1,
-                  activePair.prices.token1
+                  activePair.basePairInfo.token1.decimals
                 )
-              )
-            )}
-          </p>
+              )}{" "}
+              {activePair.basePairInfo.token1.symbol}
+            </p>
+          </div>
+          <div
+            className="token"
+            style={{
+              width: "40%",
+            }}
+          >
+            <img
+              src={activePair.basePairInfo.token2.icon}
+              height={50}
+              width={50}
+            />
+            <p>
+              {noteSymbol}
+              {truncateNumber(
+                formatUnits(
+                  valueInNote(
+                    activePair.userSupply.token2,
+                    activePair.prices.token2
+                  )
+                )
+              )}
+            </p>
 
-          <p>
-            {truncateNumber(
-              formatUnits(
-                activePair.userSupply.token1,
-                activePair.basePairInfo.token1.decimals
-              )
-            )}{" "}
-            {activePair.basePairInfo.token1.symbol}
-          </p>
-        </div>
-        <div className="token">
-          <img
-            src={activePair.basePairInfo.token2.icon}
-            height={50}
-            width={50}
-          />
-          <p>
-            {noteSymbol}
-            {truncateNumber(
-              formatUnits(
-                valueInNote(
+            <p>
+              {truncateNumber(
+                formatUnits(
                   activePair.userSupply.token2,
-                  activePair.prices.token2
+                  activePair.basePairInfo.token2.decimals
                 )
-              )
-            )}
-          </p>
-
-          <p>
-            {truncateNumber(
-              formatUnits(
-                activePair.userSupply.token2,
-                activePair.basePairInfo.token2.decimals
-              )
-            )}{" "}
-            {activePair.basePairInfo.token2.symbol}
-          </p>
+              )}{" "}
+              {activePair.basePairInfo.token2.symbol}
+            </p>
+          </div>
         </div>
       </div>
+
       <div className="btns">
         <OutlinedButton
           height="big"

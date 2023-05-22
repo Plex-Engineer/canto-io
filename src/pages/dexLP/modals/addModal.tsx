@@ -218,7 +218,9 @@ const AddModal = ({
       <div style={{ color: "white", marginTop: "4rem" }}>
         {
           <div className="row">
-            <Text type="title">reserve ratio : </Text>
+            <Text type="title" align="left">
+              reserve ratio :{" "}
+            </Text>
             <Text color="white">
               1 {activePair.basePairInfo.token1.symbol} ={" "}
               {truncateNumber(displayReserveRatio.toString())}{" "}
@@ -229,7 +231,7 @@ const AddModal = ({
         <br />
         {activePair.basePairInfo.stable ? (
           <div className="row">
-            <Text style={{ textAlign: "left" }} type="title">
+            <Text align="left" type="title">
               price :
             </Text>{" "}
             <Text style={{ textAlign: "right" }} color="white">
@@ -259,7 +261,11 @@ const AddModal = ({
       >
         <SettingsPopIn
           show={openSettings}
-          style={!openSettings ? { zIndex: "-1" } : { marginBottom: "-15px" }}
+          style={
+            !openSettings
+              ? { zIndex: "-1" }
+              : { marginBottom: "-15px", zIndex: 2 }
+          }
         >
           <div className="field">
             <Input
@@ -277,6 +283,9 @@ const AddModal = ({
           </div>
           <PrimaryButton
             disabled={Number(slippage) <= 0 || Number(deadline) <= 0}
+            height="big"
+            weight="bold"
+            filled
             onClick={() => setOpenSettings(false)}
           >
             save settings

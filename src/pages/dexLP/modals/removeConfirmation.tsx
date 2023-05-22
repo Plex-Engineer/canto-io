@@ -2,9 +2,9 @@ import { BigNumber } from "ethers";
 import { RowCell } from "./removeModal";
 import { useEffect } from "react";
 import { useState } from "react";
-import { LPConfirmationValues } from "../hooks/useModals";
-import { PrimaryButton } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
 import { truncateNumber } from "global/utils/formattingNumbers";
+import { LPConfirmationValues } from "../hooks/useModals";
 import { getReserveRatioAtoB, getTokenValueFromPercent } from "../utils/utils";
 import { LPTransaction, UserLPPairInfo } from "../config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
@@ -150,7 +150,7 @@ export const RemoveLiquidityConfirmation = ({
         />
       </div>
       <PrimaryButton
-        style={{ marginTop: "1.5rem" }}
+        style={{ marginBottom: "1.5rem" }}
         filled
         height="big"
         weight="bold"

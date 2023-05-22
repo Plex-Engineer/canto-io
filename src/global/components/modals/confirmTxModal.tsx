@@ -120,11 +120,20 @@ const Styled = styled.div`
   padding: 0 40px;
   padding-bottom: 2rem;
   gap: 1rem;
+  .expanded {
+    flex-grow: 1;
+  }
+
   .loading {
     flex-grow: 1;
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+  .expanded {
+    flex-grow: 2;
+    display: grid;
+    place-items: center;
   }
   .network-change {
     display: flex;
@@ -149,6 +158,24 @@ const Styled = styled.div`
 
       .header {
         color: #9b9b9b;
+      }
+    }
+  }
+
+  .locked {
+    position: relative;
+    margin: 2rem 0;
+    .icons {
+      position: absolute;
+      bottom: -10px;
+      left: 60px;
+      border: 1px solid var(--primary-color);
+      border-radius: 50px;
+      background-color: #111;
+      padding: 2px 4px;
+
+      img {
+        transform: translateY(3px);
       }
     }
   }

@@ -5,7 +5,7 @@ import { UserLMTokenDetails } from "../config/interfaces";
 type styleProps = {
   focused: boolean;
 };
-const Container = styled.div<styleProps>`
+const Styled = styled.div<styleProps>`
   display: flex;
   flex-direction: column;
   background-color: ${(props) => (props.focused ? "#001A0E" : "#191919")};
@@ -90,7 +90,7 @@ const LendingField = (props: Props) => {
     />
   );
   return (
-    <Container onClick={() => setIsFocused(true)} focused={isFocused}>
+    <Styled onClick={() => setIsFocused(true)} focused={isFocused}>
       <div
         style={{
           display: "flex",
@@ -112,7 +112,7 @@ const LendingField = (props: Props) => {
           </Max>
         </p>
       </div>
-    </Container>
+    </Styled>
   );
 };
 

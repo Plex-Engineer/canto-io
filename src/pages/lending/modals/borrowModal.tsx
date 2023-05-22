@@ -10,7 +10,7 @@ import {
 } from "pages/lending/config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
 import { maxBorrowInUnderlying } from "pages/lending/utils/borrowRepayLimits";
-import { SupplyBorrowContainer } from "../components/Styled";
+import { ModalWallet, SupplyBorrowContainer } from "../components/Styled";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { PrimaryButton, Text } from "global/packages/src";
 import { TransactionStore } from "global/stores/transactionStore";
@@ -26,6 +26,40 @@ interface IProps {
 }
 const BorrowModal = ({ position, chainId, txStore, activeToken }: IProps) => {
   const [userAmount, setUserAmount] = useState("");
+
+  function WalletForBorrow() {
+    return (
+      <ModalWallet>
+        <p>currently borrowing</p>
+        <p>
+          {truncateNumber(
+            formatUnits(
+              activeToken.borrowBalance,
+              activeToken.data.underlying.decimals
+            )
+          )}{" "}
+          {activeToken.data.underlying.symbol}
+        </p>
+      </ModalWallet>
+    );
+  }
+
+  function WalletForRepay() {
+    return (
+      <ModalWallet>
+        <p>wallet balance</p>
+        <p>
+          {truncateNumber(
+            formatUnits(
+              activeToken.balanceOf,
+              activeToken.data.underlying.decimals
+            )
+          )}{" "}
+          {activeToken.data.underlying.symbol}
+        </p>
+      </ModalWallet>
+    );
+  }
 
   const BorrowTab = () => {
     const borrowLimit80 = maxBorrowInUnderlying(

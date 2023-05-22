@@ -1,41 +1,35 @@
 import Input from "../components/input";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { truncateNumber } from "global/utils/formattingNumbers";
 import SettingsIcon from "assets/settings.svg";
 import IconPair from "../components/iconPair";
 import { LPConfirmationValues, ModalType } from "../hooks/useModals";
 import { UserLPPairInfo } from "../config/interfaces";
 import { BigNumber } from "ethers";
+
 import {
   getReserveRatioAtoB,
   getTokenValueFromPercent,
   valueInNote,
 } from "../utils/utils";
 import { formatUnits } from "ethers/lib/utils";
-import { PrimaryButton } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
 import { getRemoveButtonTextAndOnClick } from "../utils/modalButtonParams";
 import { DexModalContainer, SettingsPopIn } from "../components/Styled";
-import { noteSymbol } from "global/config/tokenInfo";
+import NoteSymbol from "global/packages/src/components/atoms/NoteSymbol";
 
 interface RowCellProps {
   type: string;
-  value?: string;
+  value?: ReactNode;
   color?: string;
 }
 export const RowCell = (props: RowCellProps) => {
   return (
-    <div
-      className="rowCell"
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        color: "white",
-        width: "100%",
-        padding: "0 1rem",
-      }}
-    >
-      <p>{props.type}</p>&nbsp;
-      <p>{props.value}</p>
+    <div className="row">
+      <Text className="header">{props.type} :</Text>
+      <Text type="title" className="value">
+        {props.value}
+      </Text>
     </div>
   );
 };
@@ -81,103 +75,114 @@ const RemoveModal = ({
   return (
     <DexModalContainer>
       <div
+        className="center"
         style={{
-          position: "absolute",
-          right: "60px",
-          top: "15px",
-          zIndex: "10",
+          justifyContent: "start",
+          gap: "1rem",
         }}
       >
         <div
-          role="button"
-          tabIndex={0}
-          onClick={() => {
-            setOpenSettings(!openSettings);
+          style={{
+            position: "absolute",
+            right: "60px",
+            top: "15px",
+            zIndex: "10",
           }}
         >
-          <img
-            src={SettingsIcon}
-            height="30px"
-            style={{
-              cursor: "pointer",
-              zIndex: "5",
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => {
+              setOpenSettings(!openSettings);
+            }}
+          >
+            <img
+              src={SettingsIcon}
+              height="30px"
+              style={{
+                cursor: "pointer",
+                zIndex: "5",
+              }}
+            />
+          </div>
+        </div>
+
+        <div
+          style={{
+            marginTop: "1rem",
+          }}
+        >
+          <div className="row">
+            <IconPair
+              iconLeft={activePair.basePairInfo.token1.icon}
+              iconRight={activePair.basePairInfo.token2.icon}
+            />
+          </div>
+        </div>
+        <div className="field" style={{ width: "100%", marginTop: "1rem" }}>
+          <Input
+            name="percent to remove"
+            value={percentage}
+            onChange={(percentage) => {
+              setPercentage(percentage);
             }}
           />
         </div>
-      </div>
-      <div
-        style={{
-          marginTop: "1rem",
-        }}
-      >
-        <div className="row">
-          <IconPair
-            iconLeft={activePair.basePairInfo.token1.icon}
-            iconRight={activePair.basePairInfo.token2.icon}
+        <Text type="title">
+          1 {activePair.basePairInfo.token1.symbol} ={" "}
+          {truncateNumber(displayReserveRatio.toString())}{" "}
+          {activePair.basePairInfo.token2.symbol}
+        </Text>
+
+        <div className="tokenBox">
+          <Text
+            // type="title"
+            color="white"
+            style={{
+              marginBottom: "1rem",
+            }}
+          >
+            You will receive
+          </Text>
+          <RowCell
+            type={
+              truncateNumber(
+                formatUnits(value1, activePair.basePairInfo.token1.decimals)
+              ) +
+              " " +
+              activePair.basePairInfo.token1.symbol
+            }
+            value={
+              <>
+                <NoteSymbol token="note" />
+                {truncateNumber(
+                  formatUnits(valueInNote(value1, activePair.prices.token1))
+                )}
+              </>
+            }
+          />
+          <RowCell
+            type={
+              truncateNumber(
+                formatUnits(value2, activePair.basePairInfo.token2.decimals)
+              ) +
+              " " +
+              activePair.basePairInfo.token2.symbol
+            }
+            value={
+              <>
+                <NoteSymbol token="note" />
+                {truncateNumber(
+                  formatUnits(valueInNote(value2, activePair.prices.token2))
+                )}
+              </>
+            }
           />
         </div>
-      </div>
-      <div className="field" style={{ width: "100%", marginTop: "1rem" }}>
-        <Input
-          name="percent to remove"
-          value={percentage}
-          onChange={(percentage) => {
-            setPercentage(percentage);
-          }}
-        />
-      </div>
-      <div style={{ color: "white" }}>
-        1 {activePair.basePairInfo.token1.symbol} ={" "}
-        {truncateNumber(displayReserveRatio.toString())}{" "}
-        {activePair.basePairInfo.token2.symbol}
-      </div>
-
-      <div className="tokenBox">
-        <p
-          style={{
-            color: "white",
-            textAlign: "center",
-            width: "18rem",
-            marginBottom: "1rem",
-          }}
-        >
-          you&apos;ll receive
-        </p>
-        <RowCell
-          type={
-            truncateNumber(
-              formatUnits(value1, activePair.basePairInfo.token1.decimals)
-            ) +
-            " " +
-            activePair.basePairInfo.token1.symbol
-          }
-          value={
-            noteSymbol +
-            truncateNumber(
-              formatUnits(valueInNote(value1, activePair.prices.token1))
-            )
-          }
-        />
-        <RowCell
-          type={
-            truncateNumber(
-              formatUnits(value2, activePair.basePairInfo.token2.decimals)
-            ) +
-            " " +
-            activePair.basePairInfo.token2.symbol
-          }
-          value={
-            noteSymbol +
-            truncateNumber(
-              formatUnits(valueInNote(value2, activePair.prices.token2))
-            )
-          }
-        />
-      </div>
-      <div className="style" style={{ height: "100%" }}>
+        {/* <div className="style" style={{ height: "100%" }}>
         {" "}
+      </div> */}
       </div>
-
       <PrimaryButton
         height="big"
         filled
@@ -206,7 +211,11 @@ const RemoveModal = ({
       >
         <SettingsPopIn
           show={openSettings}
-          style={!openSettings ? { zIndex: "-1" } : { marginBottom: "-15px" }}
+          style={
+            !openSettings
+              ? { zIndex: "-1" }
+              : { marginBottom: "-15px", zIndex: 2 }
+          }
         >
           <div className="field">
             <Input
@@ -223,6 +232,9 @@ const RemoveModal = ({
             />
           </div>
           <PrimaryButton
+            height="big"
+            weight="bold"
+            filled
             disabled={Number(slippage) <= 0 || Number(deadline) <= 0}
             onClick={() => setOpenSettings(false)}
           >
