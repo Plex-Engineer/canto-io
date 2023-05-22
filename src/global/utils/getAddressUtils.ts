@@ -21,6 +21,12 @@ export function getCantoNetwork(chainId?: number | undefined) {
     ) ?? CantoMainnet
   );
 }
+export function getSupportedNetwork(chainId?: number | undefined) {
+  return (
+    ALL_SUPPORTED_NETWORKS.find((network) => network.chainId == chainId) ??
+    CantoMainnet
+  );
+}
 
 //get addresses for network
 export function getAddressesForCantoNetwork(chainId?: number | undefined) {
