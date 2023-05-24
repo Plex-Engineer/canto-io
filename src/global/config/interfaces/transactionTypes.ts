@@ -80,6 +80,22 @@ export interface EVMTransaction {
   value: string | BigNumber;
   chainId?: number; // if not set, mainnet defaults are used
 }
+export interface EVMTransaction1 {
+  chainId?: number; // if not set, mainnet defaults are used
+  address: string;
+  abi: ContractInterface;
+  method: string;
+  params: unknown[];
+  //if sending canto
+  value: string | BigNumber;
+  //tx details for user
+  txType: CantoTransactionType;
+  extraDetails?: ExtraProps;
+}
+export interface EVMTransactionWithStatus {
+  details: TransactionDetails;
+  tx: EVMTransaction1;
+}
 export interface CosmosTransaction {
   details?: TransactionDetails;
   chainId?: number; // if not set, mainnet defaults are used

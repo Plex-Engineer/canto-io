@@ -2,11 +2,13 @@ import { TransactionStore } from "global/stores/transactionStore";
 import { LPTransaction, UserLPPairInfo } from "../config/interfaces";
 import { BigNumber, Contract } from "ethers";
 import {
+  _enable,
   _performEnable,
   createTransactionDetails,
 } from "global/stores/transactionUtils";
 import {
   CantoTransactionType,
+  EVMTransaction1,
   ExtraProps,
   TransactionDetails,
 } from "global/config/interfaces/transactionTypes";
@@ -22,6 +24,7 @@ import {
   getCurrentProvider,
 } from "global/utils/getAddressUtils";
 import { formatUnits } from "ethers/lib/utils";
+import { MaxUint256 } from "@ethersproject/constants";
 
 export async function dexLPTx(
   chainId: number | undefined,
@@ -77,6 +80,98 @@ export async function dexLPTx(
     default:
       return false;
   }
+}
+
+export async function addLiquidity1(
+  chainId: number | undefined,
+  txStore: TransactionStore,
+  txType: LPTransaction,
+  pair: UserLPPairInfo,
+  amountLPOut: BigNumber,
+  amount1: BigNumber,
+  amount2: BigNumber,
+  amountMin1: BigNumber,
+  amountMin2: BigNumber,
+  account: string | undefined,
+  deadline: number,
+  extraProps?: ExtraProps
+) {
+  return await txStore.performTxList([
+    [
+      _enable(
+        chainId,
+        pair.basePairInfo.token1.address,
+        getAddressesForCantoNetwork(chainId).Router,
+        {
+          icon: pair.basePairInfo.token1.icon,
+          symbol: pair.basePairInfo.token1.symbol,
+        }
+      ),
+      _enable(
+        chainId,
+        pair.basePairInfo.token2.address,
+        getAddressesForCantoNetwork(chainId).Router,
+        {
+          icon: pair.basePairInfo.token2.icon,
+          symbol: pair.basePairInfo.token2.symbol,
+        }
+      ),
+    ],
+    [
+      {
+        chainId: chainId,
+        txType: CantoTransactionType.ADD_LIQUIDITY,
+        address: getAddressesForCantoNetwork(chainId).Router,
+        abi: routerAbi,
+        method: "addLiquidity",
+        params: [
+          pair.basePairInfo.token1.address,
+          pair.basePairInfo.token2.address,
+          pair.basePairInfo.stable,
+          amount1,
+          amount2,
+          amountMin1,
+          amountMin2,
+          account,
+          deadline,
+        ],
+        value: "0",
+        extraDetails: extraProps,
+      },
+    ],
+    [
+      _enable(
+        chainId,
+        pair.basePairInfo.address,
+        pair.basePairInfo.cLPaddress,
+        extraProps
+      ),
+    ],
+    [
+      {
+        chainId: chainId,
+        txType: CantoTransactionType.SUPPLY,
+        address: pair.basePairInfo.cLPaddress,
+        abi: cERC20Abi,
+        method: "mint",
+        params: [
+          async () => {
+            const LPToken = new Contract(
+              pair.basePairInfo.address,
+              ERC20Abi,
+              getCurrentProvider(chainId)
+            );
+            //check the new balance for the LP token to supply
+            return (await LPToken.balanceOf(account)).sub(
+              pair.userSupply.totalLP
+            );
+          },
+        ],
+        value: "0",
+        extraDetails: extraProps,
+      },
+    ],
+  ]);
 }
 
 async function addLiquidityTx(

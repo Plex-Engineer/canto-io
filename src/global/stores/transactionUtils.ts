@@ -1,5 +1,6 @@
 import {
   CantoTransactionType,
+  EVMTransaction1,
   ExtraProps,
   TransactionDetails,
 } from "global/config/interfaces/transactionTypes";
@@ -55,4 +56,22 @@ export async function _performEnable(
       details: enableDetails,
     });
   }
+}
+
+export function _enable(
+  chainId: number | undefined,
+  tokenAddress: string,
+  spender: string,
+  extraDetails?: ExtraProps
+): EVMTransaction1 {
+  return {
+    chainId: chainId,
+    txType: CantoTransactionType.ENABLE,
+    address: tokenAddress,
+    abi: ERC20Abi,
+    method: "approve",
+    params: [spender, MaxUint256],
+    value: "0",
+    extraDetails,
+  };
 }

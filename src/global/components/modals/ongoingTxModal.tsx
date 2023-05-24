@@ -3,7 +3,7 @@ import loadingGif from "assets/loading.gif";
 import completeIcon from "assets/complete.svg";
 import warningIcon from "assets/warning.svg";
 import close from "assets/icons/close.svg";
-import { OutlinedButton, Text } from "global/packages/src";
+import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { Mixpanel } from "mixpanel";
 import { useTransactionStore } from "global/stores/transactionStore";
 
@@ -43,7 +43,7 @@ const OngoingTxModal = (props: LoadingProps) => {
   //     }
   //   }, [props.status]);
 
-  return transactionStore.modalOpen ? (
+  return true ? (
     <Styled>
       <div
         role="button"
@@ -64,6 +64,9 @@ const OngoingTxModal = (props: LoadingProps) => {
           }}
         />
       </div>
+      <PrimaryButton onClick={() => transactionStore.retryTx()}>
+        RETRY
+      </PrimaryButton>
       {transactionStore.transactions.map((transaction) => {
         return (
           <div key={transaction.txId}>

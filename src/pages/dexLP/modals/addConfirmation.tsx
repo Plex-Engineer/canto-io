@@ -15,9 +15,10 @@ import { DexModalContainer } from "../components/Styled";
 import { PrimaryButton } from "global/packages/src";
 import CheckBox from "global/components/checkBox";
 import { getExpectedLP } from "../utils/pairCheck";
-import { dexLPTx } from "../utils/transactions";
+import { addLiquidity1, dexLPTx } from "../utils/transactions";
 import { TransactionStore } from "global/stores/transactionStore";
 import { getCurrentBlockTimestamp } from "global/utils/blockInfo";
+import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 
 interface Props {
   activePair: UserLPPairInfo;
@@ -166,12 +167,12 @@ export const AddLiquidityConfirmation = ({
         height="big"
         filled
         onClick={async () =>
-          dexLPTx(
+          addLiquidity1(
             chainId,
             txStore,
             confirmSupply
-              ? LPTransaction.ADD_LIQUIDITY_AND_STAKE
-              : LPTransaction.ADD_LIQUIDITY,
+              ? CantoTransactionType.ADD_LIQUIDITY
+              : CantoTransactionType.ADD_LIQUIDITY,
             activePair,
             BigNumber.from(0),
             confirmValues.amount1,
