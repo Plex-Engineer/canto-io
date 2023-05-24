@@ -164,8 +164,13 @@ export const BridgeOutWalkthroughSteps: WalkthroughTracker = {
     isCheckpoint: false,
     prev: BridgeOutStep.SWITCH_TO_CANTO_2,
     next: BridgeOutStep.SELECT_NATIVE_TOKEN,
-    checkFunction: (network: CantoMainBridgeOutNetworks, cosmosAddress: string) => {
-      return CANTO_MAIN_BRIDGE_OUT_NETWORKS[network].checkAddress(cosmosAddress);
+    checkFunction: (
+      network: CantoMainBridgeOutNetworks,
+      cosmosAddress: string
+    ) => {
+      return CANTO_MAIN_BRIDGE_OUT_NETWORKS[network].checkAddress(
+        cosmosAddress
+      );
     },
   },
   [BridgeOutStep.SELECT_NATIVE_TOKEN]: {
