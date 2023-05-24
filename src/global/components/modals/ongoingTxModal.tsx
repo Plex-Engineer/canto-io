@@ -64,6 +64,7 @@ const OngoingTxModal = (props: LoadingProps) => {
           }}
         />
       </div>
+      <h1>{transactionStore.txListTitle}</h1>
       {transactionStore.transactions.map((tx) => {
         return (
           <div key={tx.details.txId}>

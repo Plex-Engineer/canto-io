@@ -30,9 +30,14 @@ const ModalManager = ({
       {modalStore.currentModal === ModalType.WALLET_CONNECTION && (
         <WalletModal onClose={modalStore.close} />
       )}
-      {modalStore.currentModal === ModalType.LENDING && (
+      {(modalStore.currentModal === ModalType.LENDING ||
+        modalStore.currentModal === ModalType.BORROW) && (
         <LendingModal
-          modalType="supply_withdraw"
+          modalType={
+            modalStore.currentModal === ModalType.LENDING
+              ? "supply_withdraw"
+              : "repay_borrow"
+          }
           onClose={modalStore.close}
           position={position}
           chainId={chainId}
@@ -40,31 +45,11 @@ const ModalManager = ({
           activeToken={modalStore.activeToken}
         />
       )}
-      {modalStore.currentModal === ModalType.BORROW && (
-        <LendingModal
-          modalType="repay_borrow"
-          onClose={modalStore.close}
-          position={position}
-          chainId={chainId}
-          txStore={txStore}
-          activeToken={modalStore.activeToken}
-        />
-      )}
-
-      {modalStore.currentModal === ModalType.COLLATERAL && (
+      {(modalStore.currentModal === ModalType.COLLATERAL ||
+        modalStore.currentModal === ModalType.DECOLLATERAL) && (
         <CollatModal
           position={position}
-          decollateralize={false}
-          chainId={chainId}
-          txStore={txStore}
-          activeToken={modalStore.activeToken}
-        />
-      )}
-
-      {modalStore.currentModal === ModalType.DECOLLATERAL && (
-        <CollatModal
-          decollateralize={true}
-          position={position}
+          decollateralize={modalStore.currentModal === ModalType.DECOLLATERAL}
           chainId={chainId}
           txStore={txStore}
           activeToken={modalStore.activeToken}

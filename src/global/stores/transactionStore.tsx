@@ -16,12 +16,14 @@ export enum TxMethod {
 }
 export interface TransactionStore {
   transactions: TransactionWithStatus[];
+  txListType: TxMethod;
+  txListTitle: string;
+  modalOpen: boolean;
   addTransactionList: (
     txList: EVMTx[] | CosmosTx[],
-    listType: TxMethod
+    listType: TxMethod,
+    title?: string
   ) => Promise<boolean>;
-  txListType: TxMethod;
-  modalOpen: boolean;
   setModalOpen: (modalOpen: boolean) => void;
   generateTxId: () => string;
   updateTx: (txId: string, params: Partial<TransactionDetails>) => void;
@@ -37,7 +39,10 @@ export interface TransactionStore {
 
 export const useTransactionStore = create<TransactionStore>((set, get) => ({
   transactions: [],
-  addTransactionList: (txList, type) => {
+  txListType: TxMethod.NONE,
+  modalOpen: false,
+  txListTitle: "",
+  addTransactionList: (txList, type, title) => {
     set({
       transactions: txList.map((tx) => ({
         tx,
@@ -48,12 +53,11 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
         ),
       })),
       txListType: type,
+      txListTitle: title ?? "",
     });
     //on adding txs, we will go ahead and start performing them as well
     return get().performTxList();
   },
-  txListType: TxMethod.NONE,
-  modalOpen: false,
   setModalOpen: (modalOpen) => set({ modalOpen: modalOpen }),
   generateTxId: () =>
     Math.ceil(Math.random() * Math.ceil(Math.random() * Date.now())).toString(),

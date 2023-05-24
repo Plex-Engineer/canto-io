@@ -42,7 +42,8 @@ export async function voteTx(
         }
       ),
     ],
-    TxMethod.COSMOS
+    TxMethod.COSMOS,
+    "Vote on Proposal"
   );
 }
 const _voteTx = (

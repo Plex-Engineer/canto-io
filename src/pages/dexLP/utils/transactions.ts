@@ -151,7 +151,8 @@ async function addLiquidityTx(
   ];
   return await txStore.addTransactionList(
     stake ? [...baseTransactions, ...stakingTransactions] : baseTransactions,
-    TxMethod.EVM
+    TxMethod.EVM,
+    stake ? "Add Liquidity and Stake" : "Add Liquidity"
   );
 }
 async function removeLiquidityTx(
@@ -200,7 +201,8 @@ async function removeLiquidityTx(
   );
   return await txStore.addTransactionList(
     unStake ? [unstakeTransaction, ...baseTransactions] : baseTransactions,
-    TxMethod.EVM
+    TxMethod.EVM,
+    unStake ? "Unstake and Remove Liquidity" : "Remove Liquidity"
   );
 }
 

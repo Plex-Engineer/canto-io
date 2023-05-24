@@ -82,7 +82,11 @@ export async function sendToComsosTx(
       extraDetails
     )
   );
-  return await txStore.addTransactionList(allTxs, TxMethod.EVM);
+  return await txStore.addTransactionList(
+    allTxs,
+    TxMethod.EVM,
+    "Bridge Into Canto"
+  );
 }
 /**
  * @notice If convertIn, tokenAddress must be its IBC denom
@@ -113,7 +117,8 @@ export async function convertTx(
         extraProps
       ),
     ],
-    TxMethod.COSMOS
+    TxMethod.COSMOS,
+    "Convert Coin"
   );
 }
 export async function completeAllConvertIn(
@@ -141,7 +146,8 @@ export async function completeAllConvertIn(
         }
       )
     ),
-    TxMethod.COSMOS
+    TxMethod.COSMOS,
+    "Convert Coin"
   );
 }
 //will check on the address on the receiving network
@@ -175,7 +181,8 @@ export async function ibcOutTx(
         extra
       ),
     ],
-    TxMethod.COSMOS
+    TxMethod.COSMOS,
+    "Bridge Out Of Canto"
   );
 }
 

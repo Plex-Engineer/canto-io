@@ -79,7 +79,8 @@ export async function stakingTx(
             }
           ),
     ],
-    TxMethod.COSMOS
+    TxMethod.COSMOS,
+    txType
   );
 }
 export async function claimStakingRewards(
@@ -107,7 +108,8 @@ export async function claimStakingRewards(
         ],
       },
     ],
-    TxMethod.COSMOS
+    TxMethod.COSMOS,
+    "Claim Staking Rewards"
   );
 }
 /**
