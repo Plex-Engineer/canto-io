@@ -1,6 +1,6 @@
 import {
   CantoTransactionType,
-  EVMTransaction1,
+  EVMTx,
   ExtraProps,
   TransactionDetails,
 } from "global/config/interfaces/transactionTypes";
@@ -63,7 +63,7 @@ export function _enable(
   tokenAddress: string,
   spender: string,
   extraDetails?: ExtraProps
-): EVMTransaction1 {
+): EVMTx {
   return {
     chainId: chainId,
     txType: CantoTransactionType.ENABLE,

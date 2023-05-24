@@ -117,3 +117,29 @@ export interface ExtraProps {
   amount?: string;
   icon2?: string; //if LP Token
 }
+
+///////////////////////////////
+export interface EVMTx {
+  chainId?: number; // if not set, mainnet defaults are used
+  address: string;
+  abi: ContractInterface;
+  method: string;
+  params: unknown[];
+  //if sending canto
+  value: string | BigNumber;
+  //tx details for user
+  txType: CantoTransactionType;
+  extraDetails?: ExtraProps;
+}
+export interface CosmosTx {
+  chainId?: number; // if not set, mainnet defaults are used
+  tx: (...args: any[]) => Promise<CosmosTxResponse>;
+  params: unknown[];
+  //tx details for user
+  txType: CantoTransactionType;
+  extraDetails?: ExtraProps;
+}
+export interface TransactionWithStatus {
+  tx: EVMTx | CosmosTx;
+  details: TransactionDetails;
+}

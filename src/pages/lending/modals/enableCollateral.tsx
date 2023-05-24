@@ -8,10 +8,10 @@ import { willWithdrawalGoOverLimit } from "pages/lending/utils/supplyWithdrawLim
 import { enableCollateralButtonAndModalText } from "../utils/modalButtonParams";
 import { PrimaryButton } from "global/packages/src";
 import { EnableCollateralContainer } from "../components/Styled";
-import { TransactionStore } from "global/stores/transactionStore";
 import { lendingMarketTx } from "../utils/transactions";
 import { BigNumber } from "ethers";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
+import { TransactionStore } from "global/stores/transactionStoreWithRetry";
 
 const APY = styled.div`
   display: flex;

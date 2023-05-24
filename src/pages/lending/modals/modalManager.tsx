@@ -5,8 +5,8 @@ import useModalStore, { ModalType } from "pages/lending/stores/useModals";
 import { UserLMPosition, UserLMRewards } from "pages/lending/config/interfaces";
 import Modal from "global/packages/src/components/molecules/Modal";
 import OngoingTxModal from "global/components/modals/ongoingTxModal";
-import { TransactionStore } from "global/stores/transactionStore";
 import LendingModal from "./lendingModal";
+import { TransactionStore } from "global/stores/transactionStoreWithRetry";
 
 interface Props {
   isOpen: boolean;
@@ -72,7 +72,7 @@ const ModalManager = ({
       )}
       {modalStore.currentModal === ModalType.BALANCE && (
         <RewardsModal
-          // passin LMBalance to this
+          chainId={chainId}
           rewardsObj={rewards}
           txStore={txStore}
         />

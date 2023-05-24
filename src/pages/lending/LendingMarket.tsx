@@ -17,8 +17,8 @@ import FadeIn from "react-fade-in";
 import HelmetSEO from "global/components/seo";
 import { LMPositionBar } from "./components/LMPositionBar";
 import { useOngoingTransactions } from "global/utils/handleOnGoingTransactions";
-import { useTransactionStore } from "global/stores/transactionStore";
 import { getShortTxStatusFromState } from "global/utils/formatTxDetails";
+import { useTransactionStore } from "global/stores/transactionStoreWithRetry";
 
 const LendingMarket = () => {
   const networkInfo = useNetworkInfo();
@@ -50,7 +50,7 @@ const LendingMarket = () => {
   }, []);
 
   const ongoingTransactions = useTransactionStore().transactions.filter(
-    (filterItem) => filterItem.status === "Mining"
+    (filterItem) => filterItem.details.status === "Mining"
   );
 
   return (
@@ -132,10 +132,10 @@ const LendingMarket = () => {
                 <LendingTable columns={["ongoing transactions"]} isLending>
                   {ongoingTransactions.map((tx) => (
                     <TransactionRow
-                      key={tx.txId}
-                      icon={tx.extra?.icon ?? ""}
-                      name={tx.currentMessage ?? ""}
-                      status={getShortTxStatusFromState(tx.status)}
+                      key={tx.details.txId}
+                      icon={tx.details.extra?.icon ?? ""}
+                      name={tx.details.currentMessage ?? ""}
+                      status={getShortTxStatusFromState(tx.details.status)}
                       date={new Date()}
                     />
                   ))}

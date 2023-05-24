@@ -1,25 +1,30 @@
 import {
-  EVMTransaction1,
-  EVMTransactionWithStatus,
+  CosmosTx,
+  EVMTx,
   TransactionDetails,
+  TransactionWithStatus,
 } from "global/config/interfaces/transactionTypes";
 import create from "zustand";
 import { useNetworkInfo } from "./networkInfo";
 import { createTransactionDetails } from "./transactionUtils";
 
 export interface TransactionStore {
-  transactions: EVMTransactionWithStatus[][];
+  transactions: TransactionWithStatus[];
   txListType: "EVM" | "COSMOS";
   modalOpen: boolean;
   setModalOpen: (modalOpen: boolean) => void;
   generateTxId: () => string;
   updateTx: (txId: string, params: Partial<TransactionDetails>) => void;
-  performEVMTx: (tx: EVMTransactionWithStatus) => Promise<boolean>;
+  performEVMTx: (tx: EVMTx, details?: TransactionDetails) => Promise<boolean>;
+  performCosmosTx: (
+    tx: CosmosTx,
+    details?: TransactionDetails
+  ) => Promise<boolean>;
   performTxList: (
-    txList: EVMTransaction1[][],
+    txList: EVMTx[] | CosmosTx[],
     listType: "EVM" | "COSMOS"
   ) => Promise<boolean>;
-  retryTxs: () => Promise<boolean>;
+  retryFrom: (txId: string) => Promise<boolean>;
 }
 
 export const useTransactionStore = create<TransactionStore>((set, get) => ({
@@ -30,89 +35,104 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
   generateTxId: () =>
     Math.ceil(Math.random() * Math.ceil(Math.random() * Date.now())).toString(),
   updateTx: (txId, params) => {
-    const newList = get().transactions;
-    for (let i = 0; i < get().transactions.length; i++) {
-      const currentGroup = get().transactions[i];
-      const index = currentGroup.findIndex((t) => t.details.txId === txId);
-      if (index !== -1) {
-        newList[i][index] = {
-          tx: newList[i][index].tx,
-          details: {
-            ...newList[i][index].details,
-            ...params,
-          },
-        };
-        set({ transactions: newList });
-        return;
-      }
+    const index = get().transactions.findIndex((t) => t.details.txId === txId);
+    if (index === -1) {
+      throw new Error("tx not found");
     }
-    //only here if tx is not found
-    throw new Error("tx not found");
+    const updatedTx = {
+      tx: {
+        ...get().transactions[index].tx,
+      },
+      details: { ...get().transactions[index].details, ...params },
+    };
+    set({
+      transactions: [
+        ...get().transactions.slice(0, index),
+        updatedTx,
+        ...get().transactions.slice(index + 1),
+      ],
+    });
   },
-  performEVMTx: async (tx) => {
+  performEVMTx: async (tx, details) => {
     try {
       const contract = useNetworkInfo
         .getState()
-        .createContractWithSigner(tx.tx.address, tx.tx.abi);
-      const transaction = await contract[tx.tx.method](...tx.tx.params, {
-        value: tx.tx.value,
+        .createContractWithSigner(tx.address, tx.abi);
+      const transaction = await contract[tx.method](...tx.params, {
+        value: tx.value,
       });
-      get().updateTx(tx.details.txId, {
-        status: "Mining",
-        hash: transaction.hash,
-        currentMessage: tx.details.messages.pending,
-        blockExplorerLink: "https://tuber.build/tx/" + transaction.hash,
-      });
-      const receipt = await transaction.wait();
-      if (receipt.status === 1) {
-        get().updateTx(tx.details.txId, {
-          status: "Success",
-          currentMessage: tx.details.messages.success,
+      if (details) {
+        get().updateTx(details.txId, {
+          status: "Mining",
+          hash: transaction.hash,
+          currentMessage: details.messages.pending,
+          blockExplorerLink: "https://tuber.build/tx/" + transaction.hash,
         });
-        return true;
-      } else {
-        get().updateTx(tx.details.txId, {
-          status: "Fail",
-          currentMessage: tx.details.messages.error,
-        });
-        return false;
+        const receipt = await transaction.wait();
+        if (receipt.status === 1) {
+          get().updateTx(details.txId, {
+            status: "Success",
+            currentMessage: details.messages.success,
+          });
+          return true;
+        } else {
+          get().updateTx(details.txId, {
+            status: "Fail",
+            currentMessage: details.messages.error,
+          });
+          return false;
+        }
       }
+      return true;
     } catch (e) {
-      get().updateTx(tx.details.txId, {
-        status: "Fail",
-        currentMessage: tx.details.messages.error,
-        errorReason: (e as Error).message ? (e as Error).message : "",
-      });
+      if (details) {
+        get().updateTx(details.txId, {
+          status: "Fail",
+          currentMessage: details.messages.error,
+          errorReason: (e as Error).message ? (e as Error).message : "",
+        });
+      }
       return false;
     }
   },
+  performCosmosTx: async (tx, details) => {},
   performTxList: async (txList, listType) => {
-    const transactionDetails = txList.map((txGroup) => {
-      return txGroup.map((tx) => {
-        return {
-          tx,
-          details: createTransactionDetails(get(), tx.txType, tx.extraDetails),
-        };
-      });
+    const txsWithStatus = txList.map((tx) => {
+      return {
+        tx,
+        details: createTransactionDetails(get(), tx.txType, tx.extraDetails),
+      };
     });
     set({
-      transactions: transactionDetails,
+      transactions: txsWithStatus,
       txListType: listType,
       modalOpen: true,
     });
-    for (const txGroup of transactionDetails) {
-      const txSuccess = await Promise.all(
-        txGroup.map(async (tx) =>
-          tx.details.status === "Success" ? true : await get().performEVMTx(tx)
-        )
-      );
-      if (!txSuccess.every((tx) => tx)) {
+    for (const tx of txsWithStatus) {
+      const txSuccess =
+        listType === "EVM"
+          ? await get().performEVMTx(tx.tx as EVMTx, tx.details)
+          : await get().performCosmosTx(tx.tx as CosmosTx, tx.details);
+      if (!txSuccess) {
         return false;
       }
     }
     return true;
   },
-  retryTxs: async () => {
-    return false;
+  retryFrom: async (txId) => {
+    const index = get().transactions.findIndex((t) => t.details.txId === txId);
+    if (index === -1) {
+      throw new Error("tx not found");
+    }
+    for (const tx of get().transactions.slice(index)) {
+      const txSuccess =
+        get().txListType === "EVM"
+          ? await get().performEVMTx(tx.tx as EVMTx, tx.details)
+          : await get().performCosmosTx(tx.tx as CosmosTx, tx.details);
+      if (!txSuccess) {
+        return false;
+      }
+    }
+    return true;
   },
 }));

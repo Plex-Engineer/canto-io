@@ -7,14 +7,15 @@ import { PrimaryButton, Text } from "global/packages/src";
 import { RewardsContainer } from "../components/Styled";
 import TokenSymbol from "global/packages/src/components/atoms/NoteSymbol";
 import { claimLendingRewardsTx } from "../utils/transactions";
-import { TransactionStore } from "global/stores/transactionStore";
+import { TransactionStore } from "global/stores/transactionStoreWithRetry";
 
 interface Props {
+  chainId: number;
   rewardsObj: UserLMRewards;
   txStore: TransactionStore;
 }
 const formatUnits = ethers.utils.formatUnits;
-const RewardsModal = ({ rewardsObj, txStore }: Props) => {
+const RewardsModal = ({ chainId, rewardsObj, txStore }: Props) => {
   return (
     <RewardsContainer>
       <div className="container">
@@ -66,6 +67,7 @@ const RewardsModal = ({ rewardsObj, txStore }: Props) => {
         disabled={rewardsObj.accrued.isZero()}
         onClick={() =>
           claimLendingRewardsTx(
+            chainId,
             txStore,
             rewardsObj.wallet,
             rewardsObj.cantroller,
