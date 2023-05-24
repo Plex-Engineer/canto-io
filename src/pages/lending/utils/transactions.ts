@@ -7,10 +7,13 @@ import {
   ExtraProps,
 } from "global/config/interfaces/transactionTypes";
 import { formatUnits } from "ethers/lib/utils";
-import { _enable } from "global/stores/transactionUtils";
+import { _enableTx } from "global/stores/transactionUtils";
 import { TOKENS } from "global/config/tokenInfo";
 import { getAddressesForCantoNetwork } from "global/utils/getAddressUtils";
-import { TransactionStore as NewTxStore } from "global/stores/transactionStoreWithRetry";
+import {
+  TransactionStore as NewTxStore,
+  TxMethod,
+} from "global/stores/transactionStore";
 
 //claim rewards needs different inputs, so separate transaction
 export async function claimLendingRewardsTx(
@@ -21,6 +24,9 @@ export async function claimLendingRewardsTx(
   amountToClaim: BigNumber,
   comptrollerBalance: BigNumber
 ): Promise<boolean> {
+  if (!account) {
+    return false;
+  }
   const needDrip = comptrollerBalance.lte(amountToClaim);
   const transactions = [];
   if (needDrip) {
@@ -34,11 +40,6 @@ export async function claimLendingRewardsTx(
       value: "0",
     });
   }
-  const tokenInfo = {
-    symbol: "WCANTO",
-    icon: TOKENS.cantoMainnet.CANTO.icon,
-    amount: formatUnits(amountToClaim, 18),
-  };
   transactions.push({
     chainId,
     txType: CantoTransactionType.CLAIM_REWARDS_LENDING,
@@ -47,11 +48,15 @@ export async function claimLendingRewardsTx(
     method: "claimComp",
     params: [account],
     value: "0",
-    extraDetails: tokenInfo,
+    extraDetails: {
+      symbol: "WCANTO",
+      icon: TOKENS.cantoMainnet.CANTO.icon,
+      amount: formatUnits(amountToClaim, 18),
+    },
   });
-  return await txStore.performTxList(transactions, "EVM");
+  return await txStore.addTransactionList(transactions, TxMethod.EVM);
 }
-
+//for all lending page txs
 export async function lendingMarketTx(
   chainId: number | undefined,
   txStore: NewTxStore,
@@ -75,14 +80,15 @@ export async function lendingMarketTx(
       if (
         (txType === CantoTransactionType.SUPPLY ||
           txType === CantoTransactionType.REPAY) &&
-        !isCanto &&
-        cToken.allowance.lt(amount)
+        !isCanto
       ) {
         transactions.push(
-          _enable(
+          _enableTx(
             chainId,
             cToken.data.underlying.address,
             cToken.data.address,
+            amount,
+            cToken.allowance,
             tokenInfo
           )
         );
@@ -110,9 +116,38 @@ export async function lendingMarketTx(
         )
       );
       break;
+    default:
+      //if none of these are true, then not valid for lending market
+      return false;
   }
-  return await txStore.performTxList(transactions, "EVM");
+  return await txStore.addTransactionList(transactions, TxMethod.EVM);
 }
+
+/**
+ * TRANSACTION CREATORS
+ * WILL NOT CHECK FOR VALIDITY OF PARAMS, MUST DO THIS BEFORE USING THESE CONSTRUCTORS
+ */
+
+//exported for use in DexLP
+export const _lendingTx = (
+  chainId: number | undefined,
+  txType: CantoTransactionType,
+  cTokenAddress: string,
+  isCanto: boolean,
+  //could be a function that returns a promise BigNumber
+  amount: BigNumber | (() => Promise<BigNumber>),
+  extraDetails?: ExtraProps
+): EVMTx => {
+  return {
+    chainId,
+    txType,
+    address: cTokenAddress,
+    abi: cERC20Abi,
+    method: methodFromLMTxType(txType, isCanto),
+    ...paramsAndValueFromLMTxType(txType, isCanto, amount),
+    extraDetails,
+  };
+};
 
 const _collateralizeTx = (
   chainId: number | undefined,
@@ -135,26 +170,7 @@ const _collateralizeTx = (
   };
 };
 
-const _lendingTx = (
-  chainId: number | undefined,
-  txType: CantoTransactionType,
-  cTokenAddress: string,
-  isCanto: boolean,
-  amount: BigNumber,
-  extraDetails?: ExtraProps
-): EVMTx => {
-  return {
-    chainId,
-    txType,
-    address: cTokenAddress,
-    abi: cERC20Abi,
-    method: methodFromLMTxType(txType, isCanto),
-    params: isCanto ? [] : [amount],
-    value: isCanto ? amount : "0",
-    extraDetails,
-  };
-};
-
+//functions for determing name and values for LM txs
 function methodFromLMTxType(txType: CantoTransactionType, isCanto: boolean) {
   switch (txType) {
     case CantoTransactionType.SUPPLY:
@@ -167,5 +183,23 @@ function methodFromLMTxType(txType: CantoTransactionType, isCanto: boolean) {
       return "redeem";
     default:
       return "";
+  }
+}
+function paramsAndValueFromLMTxType(
+  txType: CantoTransactionType,
+  isCanto: boolean,
+  amount: BigNumber | (() => Promise<BigNumber>)
+) {
+  switch (txType) {
+    case CantoTransactionType.SUPPLY:
+    case CantoTransactionType.REPAY:
+      return isCanto
+        ? { params: [], value: amount }
+        : { params: [amount], value: "0" };
+    case CantoTransactionType.BORROW:
+    case CantoTransactionType.WITHDRAW:
+      return { params: [amount], value: "0" };
+    default:
+      return { params: [], value: "0" };
   }
 }

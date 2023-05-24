@@ -6,7 +6,7 @@ import { UserLMPosition, UserLMRewards } from "pages/lending/config/interfaces";
 import Modal from "global/packages/src/components/molecules/Modal";
 import OngoingTxModal from "global/components/modals/ongoingTxModal";
 import LendingModal from "./lendingModal";
-import { TransactionStore } from "global/stores/transactionStoreWithRetry";
+import { TransactionStore } from "global/stores/transactionStore";
 
 interface Props {
   isOpen: boolean;

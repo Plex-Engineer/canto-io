@@ -59,7 +59,7 @@ const LP_Interface = () => {
     ).length > 0;
 
   const ongoingTransactions = useTransactionStore().transactions.filter(
-    (filterItem) => filterItem.status === "Mining"
+    (filterItem) => filterItem.details.status === "Mining"
   );
   return (
     <>
@@ -111,10 +111,10 @@ const LP_Interface = () => {
               <Table columns={["ongoing transactions"]}>
                 {ongoingTransactions.map((tx) => (
                   <TransactionRow
-                    key={tx.txId}
-                    icons={tx.extra?.icon ?? ""}
-                    name={tx.currentMessage ?? ""}
-                    status={getShortTxStatusFromState(tx.status)}
+                    key={tx.details.txId}
+                    icons={tx.details.extra?.icon ?? ""}
+                    name={tx.details.currentMessage ?? ""}
+                    status={getShortTxStatusFromState(tx.details.status)}
                     date={new Date()}
                   />
                 ))}

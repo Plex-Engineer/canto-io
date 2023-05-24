@@ -11,7 +11,7 @@ import { EnableCollateralContainer } from "../components/Styled";
 import { lendingMarketTx } from "../utils/transactions";
 import { BigNumber } from "ethers";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
-import { TransactionStore } from "global/stores/transactionStoreWithRetry";
+import { TransactionStore } from "global/stores/transactionStore";
 
 const APY = styled.div`
   display: flex;

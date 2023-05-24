@@ -48,17 +48,6 @@ export type TransactionState =
   | "Exception"
   | "CollectingSignaturePool";
 
-export type TransactionActionObject = {
-  action: string;
-  inAction: string;
-  postAction: string;
-};
-export const userTxMessages = {
-  waitSign: "waiting for the metamask transaction to be signed...",
-  waitVerify: "waiting for the transaction to be verified...",
-  deniedTx: "user denied transaction",
-};
-
 export interface TransactionDetails {
   txId: string;
   txType: CantoTransactionType;
@@ -70,39 +59,6 @@ export interface TransactionDetails {
   blockExplorerLink?: string;
   errorReason?: string;
 }
-export interface EVMTransaction {
-  details?: TransactionDetails;
-  address: string;
-  abi: ContractInterface;
-  method: string;
-  params: unknown[];
-  //if sending canto
-  value: string | BigNumber;
-  chainId?: number; // if not set, mainnet defaults are used
-}
-export interface EVMTransaction1 {
-  chainId?: number; // if not set, mainnet defaults are used
-  address: string;
-  abi: ContractInterface;
-  method: string;
-  params: unknown[];
-  //if sending canto
-  value: string | BigNumber;
-  //tx details for user
-  txType: CantoTransactionType;
-  extraDetails?: ExtraProps;
-}
-export interface EVMTransactionWithStatus {
-  details: TransactionDetails;
-  tx: EVMTransaction1;
-}
-export interface CosmosTransaction {
-  details?: TransactionDetails;
-  chainId?: number; // if not set, mainnet defaults are used
-  tx: (...args: any[]) => Promise<CosmosTxResponse>;
-  params: unknown[];
-}
-
 export interface TransactionMessages {
   short: string;
   long: string;
@@ -110,7 +66,6 @@ export interface TransactionMessages {
   success: string;
   error: string;
 }
-
 export interface ExtraProps {
   icon?: string;
   symbol?: string;
@@ -119,25 +74,24 @@ export interface ExtraProps {
 }
 
 ///////////////////////////////
-export interface EVMTx {
+interface BaseTx {
+  //will let the transaction store if this needs to be signed or skipped
+  mustPerform?: boolean; //if not set, default is true
   chainId?: number; // if not set, mainnet defaults are used
+  txType: CantoTransactionType;
+  extraDetails?: ExtraProps;
+}
+export interface EVMTx extends BaseTx {
   address: string;
   abi: ContractInterface;
   method: string;
   params: unknown[];
   //if sending canto
-  value: string | BigNumber;
-  //tx details for user
-  txType: CantoTransactionType;
-  extraDetails?: ExtraProps;
+  value: string | BigNumber | (() => Promise<string | BigNumber>);
 }
-export interface CosmosTx {
-  chainId?: number; // if not set, mainnet defaults are used
+export interface CosmosTx extends BaseTx {
   tx: (...args: any[]) => Promise<CosmosTxResponse>;
   params: unknown[];
-  //tx details for user
-  txType: CantoTransactionType;
-  extraDetails?: ExtraProps;
 }
 export interface TransactionWithStatus {
   tx: EVMTx | CosmosTx;

@@ -1,30 +1,21 @@
-import { TransactionStore } from "global/stores/transactionStore";
 import { LPTransaction, UserLPPairInfo } from "../config/interfaces";
 import { BigNumber, Contract } from "ethers";
-import {
-  _enable,
-  _performEnable,
-  createTransactionDetails,
-} from "global/stores/transactionUtils";
+import { _enableTx } from "global/stores/transactionUtils";
 import {
   CantoTransactionType,
-  EVMTransaction1,
+  EVMTx,
   ExtraProps,
-  TransactionDetails,
 } from "global/config/interfaces/transactionTypes";
 import { getPairName } from "./utils";
-import { ERC20Abi, cERC20Abi, routerAbi } from "global/config/abi";
+import { ERC20Abi, routerAbi } from "global/config/abi";
 import { isTokenCanto } from "./pairCheck";
-import {
-  _performSupply,
-  _performWithdraw,
-} from "pages/lending/utils/transactions";
+import { _lendingTx } from "pages/lending/utils/transactions";
 import {
   getAddressesForCantoNetwork,
   getCurrentProvider,
 } from "global/utils/getAddressUtils";
-import { formatUnits } from "ethers/lib/utils";
 import { MaxUint256 } from "@ethersproject/constants";
+import { TransactionStore, TxMethod } from "global/stores/transactionStore";
 
 export async function dexLPTx(
   chainId: number | undefined,
@@ -82,98 +73,6 @@ export async function dexLPTx(
   }
 }
 
-export async function addLiquidity1(
-  chainId: number | undefined,
-  txStore: TransactionStore,
-  txType: LPTransaction,
-  pair: UserLPPairInfo,
-  amountLPOut: BigNumber,
-  amount1: BigNumber,
-  amount2: BigNumber,
-  amountMin1: BigNumber,
-  amountMin2: BigNumber,
-  account: string | undefined,
-  deadline: number,
-  extraProps?: ExtraProps
-) {
-  return await txStore.performTxList([
-    [
-      _enable(
-        chainId,
-        pair.basePairInfo.token1.address,
-        getAddressesForCantoNetwork(chainId).Router,
-        {
-          icon: pair.basePairInfo.token1.icon,
-          symbol: pair.basePairInfo.token1.symbol,
-        }
-      ),
-      _enable(
-        chainId,
-        pair.basePairInfo.token2.address,
-        getAddressesForCantoNetwork(chainId).Router,
-        {
-          icon: pair.basePairInfo.token2.icon,
-          symbol: pair.basePairInfo.token2.symbol,
-        }
-      ),
-    ],
-    [
-      {
-        chainId: chainId,
-        txType: CantoTransactionType.ADD_LIQUIDITY,
-        address: getAddressesForCantoNetwork(chainId).Router,
-        abi: routerAbi,
-        method: "addLiquidity",
-        params: [
-          pair.basePairInfo.token1.address,
-          pair.basePairInfo.token2.address,
-          pair.basePairInfo.stable,
-          amount1,
-          amount2,
-          amountMin1,
-          amountMin2,
-          account,
-          deadline,
-        ],
-        value: "0",
-        extraDetails: extraProps,
-      },
-    ],
-    [
-      _enable(
-        chainId,
-        pair.basePairInfo.address,
-        pair.basePairInfo.cLPaddress,
-        extraProps
-      ),
-    ],
-    [
-      {
-        chainId: chainId,
-        txType: CantoTransactionType.SUPPLY,
-        address: pair.basePairInfo.cLPaddress,
-        abi: cERC20Abi,
-        method: "mint",
-        params: [
-          async () => {
-            const LPToken = new Contract(
-              pair.basePairInfo.address,
-              ERC20Abi,
-              getCurrentProvider(chainId)
-            );
-            //check the new balance for the LP token to supply
-            return (await LPToken.balanceOf(account)).sub(
-              pair.userSupply.totalLP
-            );
-          },
-        ],
-        value: "0",
-        extraDetails: extraProps,
-      },
-    ],
-  ]);
-}
-
 async function addLiquidityTx(
   chainId: number | undefined,
   txStore: TransactionStore,
@@ -185,126 +84,74 @@ async function addLiquidityTx(
   account: string,
   deadline: number,
   stake: boolean,
-  extraProps?: ExtraProps
+  extraDetails?: ExtraProps
 ): Promise<boolean> {
-  const [enable1Details, enable2Details, addDetails] = [
-    createTransactionDetails(txStore, CantoTransactionType.ENABLE, {
-      icon: pair.basePairInfo.token1.icon,
-      symbol: pair.basePairInfo.token1.symbol,
-    }),
-    createTransactionDetails(txStore, CantoTransactionType.ENABLE, {
-      icon: pair.basePairInfo.token2.icon,
-      symbol: pair.basePairInfo.token2.symbol,
-    }),
-    createTransactionDetails(
-      txStore,
-      CantoTransactionType.ADD_LIQUIDITY,
-      extraProps
-    ),
-  ];
-  const stakeDetails = stake
-    ? [
-        createTransactionDetails(
-          txStore,
-          CantoTransactionType.ENABLE,
-          extraProps
-        ),
-        createTransactionDetails(
-          txStore,
-          CantoTransactionType.SUPPLY,
-          extraProps
-        ),
-      ]
-    : [];
-  txStore.addTransactions([
-    enable1Details,
-    enable2Details,
-    addDetails,
-    ...stakeDetails,
-  ]);
-  const [enable1Done, enable2Done] = await Promise.all([
-    await _performEnable(
-      txStore,
+  const baseTransactions = [
+    _enableTx(
+      chainId,
       pair.basePairInfo.token1.address,
       getAddressesForCantoNetwork(chainId).Router,
-      pair.allowance.token1,
       amount1,
-      enable1Details
+      pair.allowance.token1,
+      {
+        icon: pair.basePairInfo.token1.icon,
+        symbol: pair.basePairInfo.token1.symbol,
+      }
     ),
-    await _performEnable(
-      txStore,
+    _enableTx(
+      chainId,
       pair.basePairInfo.token2.address,
       getAddressesForCantoNetwork(chainId).Router,
-      pair.allowance.token2,
       amount2,
-      enable2Details
+      pair.allowance.token2,
+      {
+        icon: pair.basePairInfo.token2.icon,
+        symbol: pair.basePairInfo.token2.symbol,
+      }
     ),
-  ]);
-  if (!enable1Done || !enable2Done) {
-    return false;
-  }
-  const addLiquidityDone = await _performAddLiquidity(
-    chainId,
-    txStore,
-    pair.basePairInfo.token1.address,
-    pair.basePairInfo.token2.address,
-    pair.basePairInfo.stable,
-    amount1,
-    amount2,
-    amountMin1,
-    amountMin2,
-    account,
-    deadline,
-    addDetails
-  );
-  if (!stake || !addLiquidityDone) {
-    return addLiquidityDone;
-  }
-  //dont need a signer for these contracts since we are just viewing balances
-  const provider = getCurrentProvider(chainId);
-  const cLPToken = new Contract(
-    pair.basePairInfo.cLPaddress,
-    cERC20Abi,
-    provider
-  );
-  const LPToken = new Contract(pair.basePairInfo.address, ERC20Abi, provider);
-
-  //check the new balance for the LP token to supply
-  const addedBalance = (await LPToken.balanceOf(account)).sub(
-    pair.userSupply.totalLP
-  );
-  //check current allowance for cToken, (stored is of the router)
-  const currentAllowance = await LPToken.allowance(
-    account,
-    pair.basePairInfo.cLPaddress
-  );
-  const enableLPDone = await _performEnable(
-    txStore,
-    pair.basePairInfo.address,
-    pair.basePairInfo.cLPaddress,
-    currentAllowance,
-    addedBalance,
-    stakeDetails[0]
-  );
-  if (!enableLPDone) {
-    return false;
-  }
-  //update supply tx to reflect amount of LP received
-  const newStakeDetails = createTransactionDetails(
-    txStore,
-    CantoTransactionType.SUPPLY,
-    {
-      ...extraProps,
-      amount: formatUnits(addedBalance, pair.basePairInfo.decimals),
-    }
-  );
-  txStore.updateTx(stakeDetails[1].txId, newStakeDetails);
-  return await _performSupply(
-    txStore,
-    cLPToken.address,
-    false,
-    addedBalance,
-    newStakeDetails
+    _addLiquidityTx(
+      chainId,
+      pair.basePairInfo.token1.address,
+      pair.basePairInfo.token2.address,
+      pair.basePairInfo.stable,
+      amount1,
+      amount2,
+      amountMin1,
+      amountMin2,
+      account,
+      deadline,
+      extraDetails
+    ),
+  ];
+  const stakingTransactions = [
+    _enableTx(
+      chainId,
+      pair.basePairInfo.address,
+      pair.basePairInfo.cLPaddress,
+      MaxUint256,
+      BigNumber.from(0),
+      extraDetails
+    ),
+    _lendingTx(
+      chainId,
+      CantoTransactionType.SUPPLY,
+      pair.basePairInfo.cLPaddress,
+      false,
+      async () => {
+        const LPToken = new Contract(
+          pair.basePairInfo.address,
+          ERC20Abi,
+          getCurrentProvider(chainId)
+        );
+        //check the new balance for the LP token to supply
+        return (await LPToken.balanceOf(account)).sub(pair.userSupply.totalLP);
+      },
+      extraDetails
+    ),
+  ];
+  return await txStore.addTransactionList(
+    stake ? [...baseTransactions, ...stakingTransactions] : baseTransactions,
+    TxMethod.EVM
   );
 }
 async function removeLiquidityTx(
@@ -319,68 +166,50 @@ async function removeLiquidityTx(
   unStake: boolean,
   extraProps?: ExtraProps
 ): Promise<boolean> {
-  const [enableLPDetails, removeDetails] = [
-    createTransactionDetails(txStore, CantoTransactionType.ENABLE, extraProps),
-    createTransactionDetails(
-      txStore,
-      CantoTransactionType.REMOVE_LIQUIDITY,
+  //must allow the LP token before removing liquidity
+  const baseTransactions = [
+    _enableTx(
+      chainId,
+      pair.basePairInfo.address,
+      getAddressesForCantoNetwork(chainId).Router,
+      LPOut,
+      pair.allowance.LPtoken,
+      extraProps
+    ),
+    _removeLiquidityTx(
+      chainId,
+      pair.basePairInfo.token1.address,
+      pair.basePairInfo.token2.address,
+      pair.basePairInfo.stable,
+      LPOut,
+      amountMin1,
+      amountMin2,
+      account,
+      deadline,
       extraProps
     ),
   ];
-  const unstakeProps = unStake
-    ? [
-        createTransactionDetails(
-          txStore,
-          CantoTransactionType.WITHDRAW,
-          extraProps
-        ),
-      ]
-    : [];
-  txStore.addTransactions([...unstakeProps, enableLPDetails, removeDetails]);
-  //if unstaking, we must do this first
-  if (unStake) {
-    const unstakeDone = await _performWithdraw(
-      txStore,
-      pair.basePairInfo.cLPaddress,
-      LPOut,
-      unstakeProps[0]
-    );
-    if (!unstakeDone) {
-      return false;
-    }
-  }
-  //done withdrawing, so now we can remove liquidity after adding allowance from router
-  const lpAllowanceDone = await _performEnable(
-    txStore,
-    pair.basePairInfo.address,
-    getAddressesForCantoNetwork(chainId).Router,
-    pair.allowance.LPtoken,
-    LPOut,
-    enableLPDetails
-  );
-  if (!lpAllowanceDone) {
-    return false;
-  }
-  return await _performRemoveLiquidity(
+  //withdraw from CLM first if unstaking
+  const unstakeTransaction = _lendingTx(
     chainId,
-    txStore,
-    pair.basePairInfo.token1.address,
-    pair.basePairInfo.token2.address,
-    pair.basePairInfo.stable,
+    CantoTransactionType.WITHDRAW,
+    pair.basePairInfo.cLPaddress,
+    false,
     LPOut,
-    amountMin1,
-    amountMin2,
-    account,
-    deadline,
-    removeDetails
+    extraProps
+  );
+  return await txStore.addTransactionList(
+    unStake ? [unstakeTransaction, ...baseTransactions] : baseTransactions,
+    TxMethod.EVM
   );
 }
 
-//Will create EVM Transactions
-//Expects transaction details to be created before calling this function
-async function _performAddLiquidity(
+/**
+ * TRANSACTION CREATORS
+ * WILL NOT CHECK FOR VALIDITY OF PARAMS, MUST DO THIS BEFORE USING THESE CONSTRUCTORS
+ */
+const _addLiquidityTx = (
   chainId: number | undefined,
-  txStore: TransactionStore,
   token1Address: string,
   token2Address: string,
   stable: boolean,
@@ -390,16 +219,17 @@ async function _performAddLiquidity(
   amountMin2: BigNumber,
   account: string,
   deadline: number,
-  addDetails?: TransactionDetails
-): Promise<boolean> {
+  extraDetails?: ExtraProps
+): EVMTx => {
   //check for canto in pair
   const [isToken1Canto, isToken2Canto] = [
     isTokenCanto(token1Address, chainId),
     isTokenCanto(token2Address, chainId),
   ];
   const cantoInPair = isToken1Canto || isToken2Canto;
-  return await txStore.performEVMTx({
-    details: addDetails,
+  return {
+    chainId,
+    txType: CantoTransactionType.ADD_LIQUIDITY,
     address: getAddressesForCantoNetwork(chainId).Router,
     abi: routerAbi,
     method: cantoInPair ? "addLiquidityCANTO" : "addLiquidity",
@@ -425,11 +255,11 @@ async function _performAddLiquidity(
           deadline,
         ],
     value: isToken1Canto ? amount1 : isToken2Canto ? amount2 : "0",
-  });
-}
-async function _performRemoveLiquidity(
+    extraDetails,
+  };
+};
+const _removeLiquidityTx = (
   chainId: number | undefined,
-  txStore: TransactionStore,
   token1Address: string,
   token2Address: string,
   stable: boolean,
@@ -438,16 +268,17 @@ async function _performRemoveLiquidity(
   amountMin2: BigNumber,
   account: string,
   deadline: number,
-  removeDetails?: TransactionDetails
-): Promise<boolean> {
+  extraDetails?: ExtraProps
+): EVMTx => {
   //check for canto in pair
   const [isToken1Canto, isToken2Canto] = [
     isTokenCanto(token1Address, chainId),
     isTokenCanto(token2Address, chainId),
   ];
   const cantoInPair = isToken1Canto || isToken2Canto;
-  return await txStore.performEVMTx({
-    details: removeDetails,
+  return {
+    chainId,
+    txType: CantoTransactionType.REMOVE_LIQUIDITY,
     address: getAddressesForCantoNetwork(chainId).Router,
     abi: routerAbi,
     method: cantoInPair ? "removeLiquidityCANTO" : "removeLiquidity",
@@ -472,5 +303,6 @@ async function _performRemoveLiquidity(
           deadline,
         ],
     value: "0",
-  });
-}
+    extraDetails,
+  };
+};

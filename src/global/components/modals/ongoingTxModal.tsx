@@ -5,7 +5,7 @@ import warningIcon from "assets/warning.svg";
 import close from "assets/icons/close.svg";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { Mixpanel } from "mixpanel";
-import { useTransactionStore } from "global/stores/transactionStoreWithRetry";
+import { useTransactionStore } from "global/stores/transactionStore";
 
 interface LoadingProps {
   onClose: () => void;
@@ -101,7 +101,7 @@ const OngoingTxModal = (props: LoadingProps) => {
             ) : null}
             {tx.details.status === "Fail" && (
               <PrimaryButton
-                onClick={() => transactionStore.retryFrom(tx.details.txId)}
+                onClick={() => transactionStore.performTxList(tx.details.txId)}
               >
                 RETRY
               </PrimaryButton>

@@ -18,7 +18,7 @@ import HelmetSEO from "global/components/seo";
 import { LMPositionBar } from "./components/LMPositionBar";
 import { useOngoingTransactions } from "global/utils/handleOnGoingTransactions";
 import { getShortTxStatusFromState } from "global/utils/formatTxDetails";
-import { useTransactionStore } from "global/stores/transactionStoreWithRetry";
+import { useTransactionStore } from "global/stores/transactionStore";
 
 const LendingMarket = () => {
   const networkInfo = useNetworkInfo();

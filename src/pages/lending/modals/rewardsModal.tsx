@@ -7,7 +7,7 @@ import { PrimaryButton, Text } from "global/packages/src";
 import { RewardsContainer } from "../components/Styled";
 import TokenSymbol from "global/packages/src/components/atoms/NoteSymbol";
 import { claimLendingRewardsTx } from "../utils/transactions";
-import { TransactionStore } from "global/stores/transactionStoreWithRetry";
+import { TransactionStore } from "global/stores/transactionStore";
 
 interface Props {
   chainId: number;

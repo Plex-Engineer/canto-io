@@ -4,16 +4,13 @@ import loadingGif from "assets/loading.gif";
 import completeIcon from "assets/complete.svg";
 import warningIcon from "assets/warning.svg";
 import {
-  getTransactionStatusString,
-  transactionStatusActions,
-} from "global/utils/formattingNumbers";
-import {
   CantoTransactionType,
   TransactionState,
 } from "global/config/interfaces/transactionTypes";
 import { ReactNode, useEffect, useState } from "react";
 import close from "assets/icons/close.svg";
 import { Mixpanel } from "mixpanel";
+import { createTransactionDetails } from "global/stores/transactionUtils";
 
 interface GlobalLoadingProps {
   transactionType: CantoTransactionType;
@@ -29,16 +26,30 @@ interface GlobalLoadingProps {
 const GlobalLoadingModal = (props: GlobalLoadingProps) => {
   const [txLogged, setTxLogged] = useState(false);
   const [txConfirmed, setTxConfirmed] = useState(false);
-  const actionObj = transactionStatusActions(
+
+  const txDetails = createTransactionDetails(
+    Math.ceil(Math.random() * Math.ceil(Math.random() * Date.now())).toString(),
     props.transactionType,
-    props.tokenName
+    {
+      symbol: props.tokenName,
+    }
   );
-  const currentStatus = getTransactionStatusString(
-    actionObj.action,
-    actionObj.inAction,
-    actionObj.postAction,
-    props.status
-  );
+  const currentStatus = () => {
+    switch (props.status) {
+      case "PendingSignature":
+        return "awaiting signature to " + txDetails.messages.long;
+      case "Mining":
+        return txDetails.messages.pending;
+      case "Success":
+        return txDetails.messages.success;
+      case "Fail":
+      case "Exception":
+        return txDetails.messages.error;
+      default:
+        return "Transaction failed";
+    }
+  };
+
   useEffect(() => {
     if (props.status == "PendingSignature" && !txLogged) {
       setTxLogged(true);
@@ -63,7 +74,7 @@ const GlobalLoadingModal = (props: GlobalLoadingProps) => {
       Mixpanel.events.transactions.transactionFailed(
         props.transactionType,
         props.txHash,
-        currentStatus,
+        currentStatus(),
         props.mixPanelEventInfo
       );
     }
@@ -107,7 +118,7 @@ const GlobalLoadingModal = (props: GlobalLoadingProps) => {
         {props.tokenName}
       </Text>
       <Text size="text1" type="text">
-        {props.customMessage ?? currentStatus}
+        {props.customMessage ?? currentStatus()}
       </Text>
       <br />
       <Text size="text1" type="text">
