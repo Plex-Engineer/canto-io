@@ -2,14 +2,12 @@ import { BigNumber, Contract } from "ethers";
 import { ERC20Abi, gravityBridgeAbi, wethAbi } from "global/config/abi";
 import {
   CantoTransactionType,
+  CosmosTx,
+  EVMTx,
   ExtraProps,
-  TransactionDetails,
 } from "global/config/interfaces/transactionTypes";
-import { TransactionStore } from "global/stores/transactionStore";
-import {
-  _performEnable,
-  createTransactionDetails,
-} from "global/stores/transactionUtils";
+import { TransactionStore, TxMethod } from "global/stores/transactionStore";
+import { _enableTx } from "global/stores/transactionUtils";
 import { CANTO_IBC_NETWORK } from "../config/bridgeOutNetworks";
 import { Chain, Fee, convertFee, ibcFee } from "global/config/cosmosConstants";
 import {
@@ -38,10 +36,13 @@ export async function sendToComsosTx(
   currentAllowance: BigNumber,
   extraDetails?: ExtraProps
 ): Promise<boolean> {
+  //check canto address
+  if (!CANTO_IBC_NETWORK.checkAddress(cantoAddress)) {
+    return false;
+  }
   //must check if we need to wrap any ETH before sending to cosmos
-  let needToWrap = false;
   let amountToWrap = BigNumber.from(0);
-  const wrapDetails = [];
+  const allTxs = [];
   if (tokenAddress === WETHAddress) {
     //dealing with WETH, so we must check the balance of WETH and wrap if needed
     const wethContract = new Contract(
@@ -51,71 +52,38 @@ export async function sendToComsosTx(
     );
     const wethBalance = await wethContract.balanceOf(ethAddress);
     if (wethBalance.lt(amount)) {
-      needToWrap = true;
       amountToWrap = amount.sub(wethBalance);
-      wrapDetails.push(
-        createTransactionDetails(txStore, CantoTransactionType.WRAP, {
+      allTxs.push(
+        _wrapTx(chainId, WETHAddress, amountToWrap, {
           symbol: "ETH",
           amount: formatUnits(amountToWrap),
         })
       );
     }
   }
-  const [enableDetails, sendToCosmosDetails] = [
-    createTransactionDetails(
-      txStore,
-      CantoTransactionType.ENABLE,
+  //need to enable and send to cosmos no matter what
+  allTxs.push(
+    _enableTx(
+      chainId,
+      tokenAddress,
+      gravityAddresss,
+      amount,
+      currentAllowance,
       extraDetails
-    ),
-    createTransactionDetails(
-      txStore,
-      CantoTransactionType.SEND_TO_COSMOS,
+    )
+  );
+  allTxs.push(
+    _sendToCosmosTx(
+      chainId,
+      gravityAddresss,
+      tokenAddress,
+      cantoAddress,
+      amount,
       extraDetails
-    ),
-  ];
-  txStore.addTransactions([...wrapDetails, enableDetails, sendToCosmosDetails]);
-
-  if (needToWrap) {
-    const wrapDone = await _performWrap(
-      txStore,
-      WETHAddress,
-      amountToWrap,
-      wrapDetails[0]
-    );
-    if (!wrapDone) {
-      return false;
-    }
-  }
-
-  //proceed with normal transactions after wrapping
-  const enableDone = await _performEnable(
-    txStore,
-    tokenAddress,
-    gravityAddresss,
-    currentAllowance,
-    amount,
-    enableDetails
+    )
   );
-  if (!enableDone) {
-    return false;
-  }
-  if (!CANTO_IBC_NETWORK.checkAddress(cantoAddress)) {
-    txStore.updateTx(sendToCosmosDetails.txId, {
-      status: "Fail",
-      errorReason: "Invalid Canto Address",
-    });
-    return false;
-  }
-  return await _performSendToCosmos(
-    txStore,
-    gravityAddresss,
-    tokenAddress,
-    cantoAddress,
-    amount,
-    sendToCosmosDetails
-  );
+  return await txStore.addTransactionList(allTxs, TxMethod.EVM);
 }
-
 /**
  * @notice If convertIn, tokenAddress must be its IBC denom
  * @notice If convertOut, tokenAddress must be its EVM address
@@ -130,26 +98,22 @@ export async function convertTx(
   amount: string,
   extraProps?: ExtraProps
 ): Promise<boolean> {
-  const convertDetails = createTransactionDetails(
-    txStore,
-    convertIn
-      ? CantoTransactionType.CONVERT_TO_EVM
-      : CantoTransactionType.CONVERT_TO_NATIVE,
-    extraProps
-  );
-  txStore.addTransactions([convertDetails]);
-  return await _performConvertCoin(
-    txStore,
-    convertIn,
-    cantoAddress,
-    tokenAddressOrDenom,
-    amount,
-    getCosmosAPIEndpoint(chainId),
-    convertFee,
-    getCosmosChainObj(chainId),
-    "",
-    convertDetails,
-    chainId
+  return await txStore.addTransactionList(
+    [
+      _convertCoinTx(
+        chainId,
+        convertIn,
+        cantoAddress,
+        tokenAddressOrDenom,
+        amount,
+        getCosmosAPIEndpoint(chainId),
+        convertFee,
+        getCosmosChainObj(chainId),
+        "",
+        extraProps
+      ),
+    ],
+    TxMethod.COSMOS
   );
 }
 export async function completeAllConvertIn(
@@ -158,38 +122,28 @@ export async function completeAllConvertIn(
   cantoAddress: string,
   transactions: NativeTransaction[]
 ): Promise<boolean> {
-  const allTxDetails: TransactionDetails[] = [];
-  for (const tx of transactions) {
-    allTxDetails.push(
-      createTransactionDetails(txStore, CantoTransactionType.CONVERT_TO_EVM, {
-        symbol: tx.token.symbol,
-        icon: tx.token.icon,
-        amount: formatUnits(tx.amount, tx.token.decimals),
-      })
-    );
-  }
-  txStore.addTransactions(allTxDetails);
-  const allDone = await Promise.all(
-    transactions.map(
-      async (tx, index) =>
-        await _performConvertCoin(
-          txStore,
-          true,
-          cantoAddress,
-          tx.token.ibcDenom,
-          tx.amount.toString(),
-          getCosmosAPIEndpoint(chainId),
-          convertFee,
-          getCosmosChainObj(chainId),
-          "",
-          allTxDetails[index],
-          chainId
-        )
-    )
+  return await txStore.addTransactionList(
+    transactions.map((tx) =>
+      _convertCoinTx(
+        chainId,
+        true,
+        cantoAddress,
+        tx.token.ibcDenom,
+        tx.amount.toString(),
+        getCosmosAPIEndpoint(chainId),
+        convertFee,
+        getCosmosChainObj(chainId),
+        "",
+        {
+          icon: tx.token.icon,
+          symbol: tx.token.symbol,
+          amount: formatUnits(tx.amount, tx.token.decimals),
+        }
+      )
+    ),
+    TxMethod.COSMOS
   );
-  return allDone.every((done) => done);
 }
-
 //will check on the address on the receiving network
 export async function ibcOutTx(
   chainId: number | undefined,
@@ -200,60 +154,59 @@ export async function ibcOutTx(
   amount: string,
   extra?: ExtraProps
 ) {
-  const ibcDetails = createTransactionDetails(
-    txStore,
-    CantoTransactionType.IBC_OUT,
-    extra
-  );
-  txStore.addTransactions([ibcDetails]);
+  //check receiver address
   if (!bridgeOutNetwork.checkAddress(toChainAddress)) {
-    txStore.updateTx(ibcDetails.txId, {
-      status: "Fail",
-      errorReason: "Invalid Address",
-    });
     return false;
   }
-  return await _performIBCTransferOut(
-    txStore,
-    toChainAddress,
-    bridgeOutNetwork.cantoChannel,
-    amount,
-    tokenDenom,
-    getCosmosAPIEndpoint(chainId),
-    bridgeOutNetwork.restEndpoint,
-    bridgeOutNetwork.latestBlockEndpoint,
-    ibcFee,
-    getCosmosChainObj(chainId),
-    "",
-    ibcDetails,
-    chainId
+  return await txStore.addTransactionList(
+    [
+      _ibcTransferOutTx(
+        chainId,
+        toChainAddress,
+        bridgeOutNetwork.cantoChannel,
+        amount,
+        tokenDenom,
+        getCosmosAPIEndpoint(chainId),
+        bridgeOutNetwork.restEndpoint,
+        bridgeOutNetwork.latestBlockEndpoint,
+        ibcFee,
+        getCosmosChainObj(chainId),
+        "",
+        extra
+      ),
+    ],
+    TxMethod.COSMOS
   );
 }
 
-//Will NOT check the address to make sure it is valid, must perform check before calling these functions
-async function _performSendToCosmos(
-  txStore: TransactionStore,
+/**
+ * TRANSACTION CREATORS
+ * WILL NOT CHECK FOR VALIDITY OF PARAMS, MUST DO THIS BEFORE USING THESE CONSTRUCTORS
+ */
+
+const _sendToCosmosTx = (
+  chainId: number | undefined,
   gravityAddress: string,
   tokenAddress: string,
   cantoReceiverAddress: string,
   amount: BigNumber,
-  sendToCosmosDetails?: TransactionDetails
-): Promise<boolean> {
-  return await txStore.performEVMTx({
-    details: sendToCosmosDetails,
-    address: gravityAddress,
-    abi: gravityBridgeAbi,
-    method: "sendToCosmos",
-    params: [tokenAddress, cantoReceiverAddress, amount],
-    value: "0",
-  });
-}
+  extraDetails?: ExtraProps
+): EVMTx => ({
+  chainId: chainId,
+  txType: CantoTransactionType.SEND_TO_COSMOS,
+  address: gravityAddress,
+  abi: gravityBridgeAbi,
+  method: "sendToCosmos",
+  params: [tokenAddress, cantoReceiverAddress, amount],
+  value: "0",
+  extraDetails,
+});
 /**
  * @notice If convertIn, tokenAddress must be its IBC denom
  * @notice If convertOut, tokenAddress must be its EVM address
  */
-async function _performConvertCoin(
-  txStore: TransactionStore,
+const _convertCoinTx = (
+  chainId: number | undefined,
   convertIn: boolean,
   cantoAddress: string,
   tokenAddressOrDenom: string,
@@ -262,26 +215,26 @@ async function _performConvertCoin(
   fee: Fee,
   chain: Chain,
   memo: string,
-  convertDetails?: TransactionDetails,
-  chainId?: number
-): Promise<boolean> {
-  return await txStore.performCosmosTx({
-    chainId,
-    details: convertDetails,
-    tx: convertIn ? txConvertCoin : txConvertERC20,
-    params: [
-      cantoAddress,
-      tokenAddressOrDenom,
-      amount,
-      endpoint,
-      fee,
-      chain,
-      memo,
-    ],
-  });
-}
-async function _performIBCTransferOut(
-  txStore: TransactionStore,
+  extraDetails?: ExtraProps
+): CosmosTx => ({
+  chainId,
+  txType: convertIn
+    ? CantoTransactionType.CONVERT_TO_EVM
+    : CantoTransactionType.CONVERT_TO_NATIVE,
+  tx: convertIn ? txConvertCoin : txConvertERC20,
+  params: [
+    cantoAddress,
+    tokenAddressOrDenom,
+    amount,
+    endpoint,
+    fee,
+    chain,
+    memo,
+  ],
+  extraDetails,
+});
+const _ibcTransferOutTx = (
+  chainId: number | undefined,
   toChainAddress: string,
   cantoChannel: string,
   amount: string,
@@ -292,39 +245,37 @@ async function _performIBCTransferOut(
   fee: Fee,
   chain: Chain,
   memo: string,
-  ibcDetails?: TransactionDetails,
-  chainId?: number
-): Promise<boolean> {
-  return await txStore.performCosmosTx({
-    chainId,
-    details: ibcDetails,
-    tx: txIBCTransfer,
-    params: [
-      toChainAddress,
-      cantoChannel,
-      amount,
-      tokenDenom,
-      cantoEndpoint,
-      toChainRestEndpoint,
-      toChainBlockEndpoint,
-      fee,
-      chain,
-      memo,
-    ],
-  });
-}
-async function _performWrap(
-  txStore: TransactionStore,
+  extraDetails?: ExtraProps
+): CosmosTx => ({
+  chainId: chainId,
+  txType: CantoTransactionType.IBC_OUT,
+  tx: txIBCTransfer,
+  params: [
+    toChainAddress,
+    cantoChannel,
+    amount,
+    tokenDenom,
+    cantoEndpoint,
+    toChainRestEndpoint,
+    toChainBlockEndpoint,
+    fee,
+    chain,
+    memo,
+  ],
+  extraDetails,
+});
+const _wrapTx = (
+  chainId: number | undefined,
   wethAddress: string,
   amount: BigNumber,
-  wrapDetails?: TransactionDetails
-): Promise<boolean> {
-  return await txStore.performEVMTx({
-    details: wrapDetails,
-    address: wethAddress,
-    abi: wethAbi,
-    method: "deposit",
-    params: [],
-    value: amount,
-  });
-}
+  extraDetails?: ExtraProps
+): EVMTx => ({
+  chainId: chainId,
+  txType: CantoTransactionType.WRAP,
+  address: wethAddress,
+  abi: wethAbi,
+  method: "deposit",
+  params: [],
+  value: amount,
+  extraDetails,
+});

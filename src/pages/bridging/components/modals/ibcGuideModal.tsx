@@ -119,6 +119,7 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
               props.onClose();
             }
           }}
+          tokenName={props.token.name}
           transactionType={CantoTransactionType.IBC_IN}
           status={txStatus}
           additionalMessage={

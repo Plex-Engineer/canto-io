@@ -1,8 +1,8 @@
 import {
   CantoTransactionType,
-  TransactionDetails,
+  CosmosTx,
+  ExtraProps,
 } from "global/config/interfaces/transactionTypes";
-import { TransactionStore } from "global/stores/transactionStore";
 import {
   txClaimRewards,
   txRedelegate,
@@ -14,13 +14,13 @@ import {
   MasterValidatorProps,
   StakingTransactionType,
 } from "../config/interfaces";
-import { createTransactionDetails } from "global/stores/transactionUtils";
 import {
   getCosmosAPIEndpoint,
   getCosmosChainObj,
 } from "global/utils/getAddressUtils";
 import { claimRewardFee, delegateFee, unbondingFee } from "../config/fees";
 import { formatUnits } from "ethers/lib/utils";
+import { TxMethod, TransactionStore } from "global/stores/transactionStore";
 
 interface GeneralStakingParams {
   account: string;
@@ -45,46 +45,42 @@ export async function stakingTx(
   }
   const readableAmount = formatUnits(params.amount, 18);
   const isRedelegate = txType === StakingTransactionType.REDELEGATE;
-  const delegateDetails = isRedelegate
-    ? createTransactionDetails(txStore, CantoTransactionType.REDELEGATE, {
-        amount: readableAmount,
-        symbol: `from ${params.operator?.name} to ${params.newOperator?.name}`,
-      })
-    : createTransactionDetails(
-        txStore,
-        txType === StakingTransactionType.DELEGATE
-          ? CantoTransactionType.DELEGATE
-          : CantoTransactionType.UNDELEGATE,
-        { amount: readableAmount, symbol: params.operator.name }
-      );
-  txStore.addTransactions([delegateDetails]);
-  return isRedelegate
-    ? await _performRedelegate(
-        txStore,
-        params.account,
-        params.operator.address,
-        params.newOperator?.address ?? "",
-        params.amount,
-        getCosmosAPIEndpoint(params.chainId),
-        unbondingFee,
-        getCosmosChainObj(params.chainId),
-        "",
-        delegateDetails,
-        params.chainId
-      )
-    : await _performDelegate(
-        txStore,
-        txType === StakingTransactionType.DELEGATE,
-        params.account,
-        params.operator.address,
-        params.amount,
-        getCosmosAPIEndpoint(params.chainId),
-        delegateFee,
-        getCosmosChainObj(params.chainId),
-        "",
-        delegateDetails,
-        params.chainId
-      );
+  return await txStore.addTransactionList(
+    [
+      isRedelegate
+        ? _redelegateTx(
+            params.chainId,
+            params.account,
+            params.operator.address,
+            params.newOperator?.address ?? "",
+            params.amount,
+            getCosmosAPIEndpoint(params.chainId),
+            unbondingFee,
+            getCosmosChainObj(params.chainId),
+            "",
+            {
+              amount: readableAmount,
+              symbol: `from ${params.operator?.name} to ${params.newOperator?.name}`,
+            }
+          )
+        : _delegateTx(
+            params.chainId,
+            txType === StakingTransactionType.DELEGATE,
+            params.account,
+            params.operator.address,
+            params.amount,
+            getCosmosAPIEndpoint(params.chainId),
+            delegateFee,
+            getCosmosChainObj(params.chainId),
+            "",
+            {
+              amount: readableAmount,
+              symbol: params.operator.name,
+            }
+          ),
+    ],
+    TxMethod.COSMOS
+  );
 }
 export async function claimStakingRewards(
   txStore: TransactionStore,
@@ -95,29 +91,33 @@ export async function claimStakingRewards(
   if (!account) {
     return false;
   }
-  const claimDetails = createTransactionDetails(
-    txStore,
-    CantoTransactionType.CLAIM_REWARDS_STAKING
-  );
-  txStore.addTransactions([claimDetails]);
-  return await txStore.performCosmosTx({
-    chainId,
-    details: claimDetails,
-    tx: txClaimRewards,
-    params: [
-      account,
-      getCosmosAPIEndpoint(chainId),
-      claimRewardFee,
-      getCosmosChainObj(chainId),
-      "",
-      userValidators,
+  return await txStore.addTransactionList(
+    [
+      {
+        chainId,
+        txType: CantoTransactionType.CLAIM_REWARDS_STAKING,
+        tx: txClaimRewards,
+        params: [
+          account,
+          getCosmosAPIEndpoint(chainId),
+          claimRewardFee,
+          getCosmosChainObj(chainId),
+          "",
+          userValidators,
+        ],
+      },
     ],
-  });
+    TxMethod.COSMOS
+  );
 }
+/**
+ * TRANSACTION CREATORS
+ * WILL NOT CHECK FOR VALIDITY OF PARAMS, MUST DO THIS BEFORE USING THESE CONSTRUCTORS
+ */
 
 //is staking will tell us if this is a delegate or undelegate
-async function _performDelegate(
-  txStore: TransactionStore,
+const _delegateTx = (
+  chainId: number | undefined,
   isStaking: boolean,
   account: string,
   operatorAddress: string,
@@ -126,21 +126,18 @@ async function _performDelegate(
   fee: Fee,
   chain: Chain,
   memo: string,
-  delegateDetails?: TransactionDetails,
-  chainId?: number
-): Promise<boolean> {
-  if (!operatorAddress) {
-    return false;
-  }
-  return await txStore.performCosmosTx({
-    chainId,
-    details: delegateDetails,
-    tx: isStaking ? txStake : txUnstake,
-    params: [account, operatorAddress, amount, endpoint, fee, chain, memo],
-  });
-}
-async function _performRedelegate(
-  txStore: TransactionStore,
+  extraDetails?: ExtraProps
+): CosmosTx => ({
+  chainId,
+  txType: isStaking
+    ? CantoTransactionType.DELEGATE
+    : CantoTransactionType.UNDELEGATE,
+  tx: isStaking ? txStake : txUnstake,
+  params: [account, operatorAddress, amount, endpoint, fee, chain, memo],
+  extraDetails,
+});
+const _redelegateTx = (
+  chainId: number | undefined,
   account: string,
   fromOperatorAddress: string,
   toOperatorAddress: string,
@@ -149,25 +146,20 @@ async function _performRedelegate(
   fee: Fee,
   chain: Chain,
   memo: string,
-  redelegateDetails?: TransactionDetails,
-  chainId?: number
-): Promise<boolean> {
-  if (!fromOperatorAddress || !toOperatorAddress) {
-    return false;
-  }
-  return await txStore.performCosmosTx({
-    chainId,
-    details: redelegateDetails,
-    tx: txRedelegate,
-    params: [
-      account,
-      amount,
-      endpoint,
-      fee,
-      chain,
-      memo,
-      fromOperatorAddress,
-      toOperatorAddress,
-    ],
-  });
-}
+  extraDetails?: ExtraProps
+): CosmosTx => ({
+  chainId,
+  txType: CantoTransactionType.REDELEGATE,
+  tx: txRedelegate,
+  params: [
+    account,
+    amount,
+    endpoint,
+    fee,
+    chain,
+    memo,
+    fromOperatorAddress,
+    toOperatorAddress,
+  ],
+  extraDetails,
+});

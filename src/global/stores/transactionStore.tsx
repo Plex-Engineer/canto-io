@@ -1,43 +1,73 @@
 import {
-  CosmosTransaction,
-  EVMTransaction,
+  CosmosTx,
+  EVMTx,
   TransactionDetails,
+  TransactionWithStatus,
 } from "global/config/interfaces/transactionTypes";
 import create from "zustand";
-import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/transactionChecks";
 import { useNetworkInfo } from "./networkInfo";
+import { createTransactionDetails } from "./transactionUtils";
+import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/transactionChecks";
 
+export enum TxMethod {
+  NONE,
+  EVM,
+  COSMOS,
+}
 export interface TransactionStore {
-  transactions: TransactionDetails[];
+  transactions: TransactionWithStatus[];
+  addTransactionList: (
+    txList: EVMTx[] | CosmosTx[],
+    listType: TxMethod
+  ) => Promise<boolean>;
+  txListType: TxMethod;
   modalOpen: boolean;
   setModalOpen: (modalOpen: boolean) => void;
   generateTxId: () => string;
-  addTransactions: (transactions: TransactionDetails[]) => void;
   updateTx: (txId: string, params: Partial<TransactionDetails>) => void;
-  performEVMTx: (tx: EVMTransaction) => Promise<boolean>;
-  performCosmosTx: (tx: CosmosTransaction) => Promise<boolean>;
+  performEVMTx: (tx: EVMTx, details?: TransactionDetails) => Promise<boolean>;
+  performCosmosTx: (
+    tx: CosmosTx,
+    details?: TransactionDetails
+  ) => Promise<boolean>;
+  //if txId is passed in, it will begin from this transaction
+  //used in retrying after failure
+  performTxList: (txId?: string) => Promise<boolean>;
 }
 
-export const useTransactionStore = create<TransactionStore>()((set, get) => ({
+export const useTransactionStore = create<TransactionStore>((set, get) => ({
   transactions: [],
+  addTransactionList: (txList, type) => {
+    set({
+      transactions: txList.map((tx) => ({
+        tx,
+        details: createTransactionDetails(
+          get().generateTxId(),
+          tx.txType,
+          tx.extraDetails
+        ),
+      })),
+      txListType: type,
+    });
+    //on adding txs, we will go ahead and start performing them as well
+    return get().performTxList();
+  },
+  txListType: TxMethod.NONE,
   modalOpen: false,
   setModalOpen: (modalOpen) => set({ modalOpen: modalOpen }),
-  generateTxId: () => {
-    return Math.ceil(
-      Math.random() * Math.ceil(Math.random() * Date.now())
-    ).toString();
-  },
-  addTransactions: (transactions) =>
-    set({
-      transactions: [...transactions],
-      modalOpen: true,
-    }),
+  generateTxId: () =>
+    Math.ceil(Math.random() * Math.ceil(Math.random() * Date.now())).toString(),
   updateTx: (txId, params) => {
-    const index = get().transactions.findIndex((t) => t.txId === txId);
+    const index = get().transactions.findIndex((t) => t.details.txId === txId);
     if (index === -1) {
       throw new Error("tx not found");
     }
-    const updatedTx = { ...get().transactions[index], ...params };
+    const updatedTx = {
+      tx: {
+        ...get().transactions[index].tx,
+      },
+      details: { ...get().transactions[index].details, ...params },
+    };
     set({
       transactions: [
         ...get().transactions.slice(0, index),
@@ -46,89 +76,130 @@ export const useTransactionStore = create<TransactionStore>()((set, get) => ({
       ],
     });
   },
-  performEVMTx: async (tx) => {
+  performEVMTx: async (tx, details) => {
+    if (tx.mustPerform === false) {
+      if (details)
+        get().updateTx(details.txId, {
+          status: "Success",
+          currentMessage: details.messages.success,
+        });
+      return true;
+    }
     try {
       const contract = useNetworkInfo
         .getState()
         .createContractWithSigner(tx.address, tx.abi);
-      const transaction = await contract[tx.method](...tx.params, {
-        value: tx.value,
+      const allParams = await Promise.all(
+        tx.params.map(async (p) => (p instanceof Function ? await p() : p))
+      );
+      const transaction = await contract[tx.method](...allParams, {
+        value: tx.value instanceof Function ? await tx.value() : tx.value,
       });
-      if (tx.details) {
-        get().updateTx(tx.details.txId, {
+      if (details) {
+        get().updateTx(details.txId, {
           status: "Mining",
-          currentMessage: tx.details.messages.pending,
           hash: transaction.hash,
+          currentMessage: details.messages.pending,
           blockExplorerLink: "https://tuber.build/tx/" + transaction.hash,
         });
         const receipt = await transaction.wait();
         if (receipt.status === 1) {
-          get().updateTx(tx.details.txId, {
+          get().updateTx(details.txId, {
             status: "Success",
-            currentMessage: tx.details.messages.success,
+            currentMessage: details.messages.success,
           });
           return true;
         } else {
-          get().updateTx(tx.details.txId, {
+          get().updateTx(details.txId, {
             status: "Fail",
-            currentMessage: tx.details.messages.error,
+            currentMessage: details.messages.error,
           });
           return false;
         }
       }
       return true;
     } catch (e) {
-      if (tx.details) {
-        get().updateTx(tx.details.txId, {
+      if (details) {
+        get().updateTx(details.txId, {
           status: "Fail",
-          currentMessage: tx.details.messages.error,
+          currentMessage: details.messages.error,
           errorReason: (e as Error).message ? (e as Error).message : "",
         });
       }
       return false;
     }
   },
-  performCosmosTx: async (tx) => {
-    let transaction;
+  performCosmosTx: async (tx, details) => {
+    if (tx.mustPerform === false) {
+      if (details)
+        get().updateTx(details.txId, {
+          status: "Success",
+          currentMessage: details.messages.success,
+        });
+      return true;
+    }
+    let txReceipt;
     try {
-      transaction = await tx.tx(...tx.params);
-      if (tx.details) {
-        get().updateTx(tx.details.txId, {
+      txReceipt = await tx.tx(...tx.params);
+      if (details) {
+        get().updateTx(details.txId, {
           status: "Mining",
-          currentMessage: tx.details.messages.pending,
-          hash: transaction.tx_response.txhash,
+          currentMessage: details.messages.pending,
+          hash: txReceipt.tx_response.txhash,
           blockExplorerLink:
-            "https://www.mintscan.io/canto/txs/" +
-            transaction.tx_response.txhash,
+            "https://www.mintscan.io/canto/txs/" + txReceipt.tx_response.txhash,
         });
         const txSuccess = await checkCosmosTxConfirmation(
-          transaction.tx_response.txhash,
+          txReceipt.tx_response.txhash,
           tx.chainId
         );
         if (txSuccess) {
-          get().updateTx(tx.details.txId, {
+          get().updateTx(details.txId, {
             status: "Success",
-            currentMessage: tx.details.messages.success,
+            currentMessage: details.messages.success,
           });
           return true;
         } else {
-          get().updateTx(tx.details.txId, {
+          get().updateTx(details.txId, {
             status: "Fail",
-            currentMessage: tx.details.messages.error,
+            currentMessage: details.messages.error,
           });
           return false;
         }
       }
       return true;
     } catch (e) {
-      if (tx.details) {
-        get().updateTx(tx.details.txId, {
+      if (details) {
+        get().updateTx(details.txId, {
           status: "Fail",
-          currentMessage: tx.details.messages.error,
+          currentMessage: details.messages.error,
           errorReason: (e as Error).message ? (e as Error).message : "",
         });
       }
       return false;
     }
+  },
+  performTxList: async (txId) => {
+    //if no txId is passed in, index will be -1, so we will start from the beginning
+    const index = get().transactions.findIndex((t) => t.details.txId === txId);
+    let txsToPerform;
+    if (index === -1) {
+      txsToPerform = get().transactions;
+    } else {
+      txsToPerform = get().transactions.slice(index);
+    }
+    set({
+      modalOpen: true,
+    });
+    for (const tx of txsToPerform) {
+      const txSuccess =
+        get().txListType === TxMethod.EVM
+          ? await get().performEVMTx(tx.tx as EVMTx, tx.details)
+          : await get().performCosmosTx(tx.tx as CosmosTx, tx.details);
+      if (!txSuccess) {
+        return false;
+      }
+    }
+    return true;
   },
 }));

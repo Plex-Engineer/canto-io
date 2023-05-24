@@ -1,10 +1,10 @@
 import { Chain, Fee, votingFee } from "global/config/cosmosConstants";
 import {
   CantoTransactionType,
-  TransactionDetails,
+  CosmosTx,
+  ExtraProps,
 } from "global/config/interfaces/transactionTypes";
-import { TransactionStore } from "global/stores/transactionStore";
-import { createTransactionDetails } from "global/stores/transactionUtils";
+import { TransactionStore, TxMethod } from "global/stores/transactionStore";
 import {
   convertToVoteNumber,
   convertVoteNumberToString,
@@ -26,30 +26,27 @@ export async function voteTx(
   if (!account) {
     return false;
   }
-  const voteTransaction = createTransactionDetails(
-    txStore,
-    CantoTransactionType.VOTING,
-    {
-      symbol: convertVoteNumberToString(option),
-      icon: "vote",
-    }
-  );
-  txStore.addTransactions([voteTransaction]);
-  return await _performVote(
-    txStore,
-    account,
-    proposalID,
-    convertToVoteNumber(option),
-    getCosmosAPIEndpoint(chainId),
-    votingFee,
-    getCosmosChainObj(chainId),
-    "",
-    voteTransaction,
-    chainId
+  return await txStore.addTransactionList(
+    [
+      _voteTx(
+        chainId,
+        account,
+        proposalID,
+        convertToVoteNumber(option),
+        getCosmosAPIEndpoint(chainId),
+        votingFee,
+        getCosmosChainObj(chainId),
+        "",
+        {
+          symbol: convertVoteNumberToString(option),
+        }
+      ),
+    ],
+    TxMethod.COSMOS
   );
 }
-async function _performVote(
-  txStore: TransactionStore,
+const _voteTx = (
+  chainId: number | undefined,
   account: string,
   proposalID: number,
   option: number,
@@ -57,13 +54,11 @@ async function _performVote(
   fee: Fee,
   chain: Chain,
   memo: string,
-  voteDetails?: TransactionDetails,
-  chainId?: number
-): Promise<boolean> {
-  return await txStore.performCosmosTx({
-    details: voteDetails,
-    chainId,
-    tx: txVote,
-    params: [account, proposalID, option, nodeAddressIP, fee, chain, memo],
-  });
-}
+  extraDetails?: ExtraProps
+): CosmosTx => ({
+  chainId,
+  txType: CantoTransactionType.VOTING,
+  tx: txVote,
+  params: [account, proposalID, option, nodeAddressIP, fee, chain, memo],
+  extraDetails,
+});

@@ -10,11 +10,12 @@ import { claimLendingRewardsTx } from "../utils/transactions";
 import { TransactionStore } from "global/stores/transactionStore";
 
 interface Props {
+  chainId: number;
   rewardsObj: UserLMRewards;
   txStore: TransactionStore;
 }
 const formatUnits = ethers.utils.formatUnits;
-const RewardsModal = ({ rewardsObj, txStore }: Props) => {
+const RewardsModal = ({ chainId, rewardsObj, txStore }: Props) => {
   return (
     <RewardsContainer>
       <div className="container">
@@ -66,6 +67,7 @@ const RewardsModal = ({ rewardsObj, txStore }: Props) => {
         disabled={rewardsObj.accrued.isZero()}
         onClick={() =>
           claimLendingRewardsTx(
+            chainId,
             txStore,
             rewardsObj.wallet,
             rewardsObj.cantroller,

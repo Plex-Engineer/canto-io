@@ -1,9 +1,9 @@
 import {
   CantoTransactionType,
+  EVMTx,
   ExtraProps,
   TransactionDetails,
 } from "global/config/interfaces/transactionTypes";
-import { TransactionStore } from "./transactionStore";
 import { BigNumber } from "ethers";
 import { MaxUint256 } from "@ethersproject/constants";
 import { createTransactionMessges } from "global/utils/formatTxDetails";
@@ -11,7 +11,7 @@ import { ERC20Abi } from "global/config/abi";
 import { truncateNumber } from "global/utils/formattingNumbers";
 
 export function createTransactionDetails(
-  txStore: TransactionStore,
+  randId: string,
   txType: CantoTransactionType,
   extra?: ExtraProps
 ): TransactionDetails {
@@ -21,7 +21,7 @@ export function createTransactionDetails(
     extra?.amount ? truncateNumber(extra?.amount) : undefined
   );
   return {
-    txId: txStore.generateTxId(),
+    txId: randId,
     txType: txType,
     extra,
     status: "None",
@@ -29,30 +29,24 @@ export function createTransactionDetails(
     messages: transactionMessages,
   };
 }
-export async function _performEnable(
-  txStore: TransactionStore,
+
+export function _enableTx(
+  chainId: number | undefined,
   tokenAddress: string,
   spender: string,
+  amount: BigNumber,
   currentAllowance: BigNumber,
-  amountNeeded: BigNumber,
-  enableDetails?: TransactionDetails
-) {
-  if (currentAllowance.gte(amountNeeded)) {
-    if (enableDetails) {
-      txStore.updateTx(enableDetails.txId, {
-        status: "Success",
-        currentMessage: enableDetails.messages.success,
-      });
-    }
-    return true;
-  } else {
-    return await txStore.performEVMTx({
-      address: tokenAddress,
-      abi: ERC20Abi,
-      method: "approve",
-      params: [spender, MaxUint256],
-      value: "0",
-      details: enableDetails,
-    });
-  }
+  extraDetails?: ExtraProps
+): EVMTx {
+  return {
+    mustPerform: currentAllowance.lt(amount),
+    chainId: chainId,
+    txType: CantoTransactionType.ENABLE,
+    address: tokenAddress,
+    abi: ERC20Abi,
+    method: "approve",
+    params: [spender, MaxUint256],
+    value: "0",
+    extraDetails,
+  };
 }

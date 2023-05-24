@@ -16,8 +16,8 @@ import {
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { Details } from "../components/BorrowLimits";
 import { lendingMarketTx } from "../utils/transactions";
-import { TransactionStore } from "global/stores/transactionStore";
 import { ModalWallet } from "../components/Styled";
+import { TransactionStore } from "global/stores/transactionStore";
 
 interface IProps {
   onClose: () => void;

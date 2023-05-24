@@ -16,8 +16,8 @@ import { PrimaryButton } from "global/packages/src";
 import CheckBox from "global/components/checkBox";
 import { getExpectedLP } from "../utils/pairCheck";
 import { dexLPTx } from "../utils/transactions";
-import { TransactionStore } from "global/stores/transactionStore";
 import { getCurrentBlockTimestamp } from "global/utils/blockInfo";
+import { TransactionStore } from "global/stores/transactionStore";
 
 interface Props {
   activePair: UserLPPairInfo;

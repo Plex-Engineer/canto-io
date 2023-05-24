@@ -3,7 +3,7 @@ import loadingGif from "assets/loading.gif";
 import completeIcon from "assets/complete.svg";
 import warningIcon from "assets/warning.svg";
 import close from "assets/icons/close.svg";
-import { OutlinedButton, Text } from "global/packages/src";
+import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { Mixpanel } from "mixpanel";
 import { useTransactionStore } from "global/stores/transactionStore";
 
@@ -64,15 +64,15 @@ const OngoingTxModal = (props: LoadingProps) => {
           }}
         />
       </div>
-      {transactionStore.transactions.map((transaction) => {
+      {transactionStore.transactions.map((tx) => {
         return (
-          <div key={transaction.txId}>
+          <div key={tx.details.txId}>
             <img
               src={
-                transaction.status == "Success"
+                tx.details.status == "Success"
                   ? completeIcon
-                  : transaction.status == "Fail" ||
-                    transaction.status == "Exception"
+                  : tx.details.status == "Fail" ||
+                    tx.details.status == "Exception"
                   ? warningIcon
                   : loadingGif
               }
@@ -83,22 +83,29 @@ const OngoingTxModal = (props: LoadingProps) => {
               width={80}
             />
             <Text size="text1" type="text">
-              {transaction.currentMessage}
+              {tx.details.currentMessage}
             </Text>
             <br />
-            {transaction.blockExplorerLink ? (
+            {tx.details.blockExplorerLink ? (
               <OutlinedButton
                 className="btn"
                 onClick={() => {
                   Mixpanel.events.loadingModal.blockExplorerOpened(
-                    transaction.hash
+                    tx.details.hash
                   );
-                  window.open(transaction.blockExplorerLink, "_blank");
+                  window.open(tx.details.blockExplorerLink, "_blank");
                 }}
               >
                 open in block explorer
               </OutlinedButton>
             ) : null}
+            {tx.details.status === "Fail" && (
+              <PrimaryButton
+                onClick={() => transactionStore.performTxList(tx.details.txId)}
+              >
+                RETRY
+              </PrimaryButton>
+            )}
           </div>
         );
       })}
