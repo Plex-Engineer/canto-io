@@ -8,6 +8,10 @@ import create from "zustand";
 import { useNetworkInfo } from "./networkInfo";
 import { createTransactionDetails } from "./transactionUtils";
 import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/transactionChecks";
+import {
+  getCantoNetwork,
+  getSupportedNetwork,
+} from "global/utils/getAddressUtils";
 
 export enum TxMethod {
   NONE,
@@ -104,7 +108,10 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
           status: "Mining",
           hash: transaction.hash,
           currentMessage: details.messages.pending,
-          blockExplorerLink: "https://tuber.build/tx/" + transaction.hash,
+          blockExplorerLink:
+            getSupportedNetwork(tx.chainId).blockExplorerUrl +
+            "/tx/" +
+            transaction.hash,
         });
         const receipt = await transaction.wait();
         if (receipt.status === 1) {
@@ -151,7 +158,9 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
           currentMessage: details.messages.pending,
           hash: txReceipt.tx_response.txhash,
           blockExplorerLink:
-            "https://www.mintscan.io/canto/txs/" + txReceipt.tx_response.txhash,
+            getCantoNetwork(tx.chainId).cosmosBlockExplorerUrl +
+            "/txs/" +
+            txReceipt.tx_response.txhash,
         });
         const txSuccess = await checkCosmosTxConfirmation(
           txReceipt.tx_response.txhash,

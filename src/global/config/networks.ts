@@ -22,6 +22,7 @@ export interface CantoNetwork extends Network {
     Reservoir: string;
     WCANTO: string;
   };
+  cosmosBlockExplorerUrl: string;
   cosmosAPIEndpoint: string;
   cosmosChainId: string;
   multicall1Address: string;
@@ -44,7 +45,8 @@ export const CantoMainnet: CantoNetwork = {
   cosmosAPIEndpoint: "https://mainnode.plexnode.org:1317",
   cosmosChainId: "canto_7700-1",
   isTestChain: false,
-  blockExplorerUrl: "https://tuber.build/",
+  blockExplorerUrl: "https://tuber.build",
+  cosmosBlockExplorerUrl: "https://www.mintscan.io/canto",
   multicall1Address: "0x210b88d5Ad4BEbc8FAC4383cC7F84Cd4F03d18c6",
   multicall2Address: "0x637490E68AA50Ea810688a52D7464E10c25A77c1",
   icon: cantoIcon,
@@ -60,7 +62,8 @@ export const CantoTestnet: CantoNetwork = {
   cosmosAPIEndpoint: "https://api-testnet.plexnode.wtf",
   cosmosChainId: "canto_7701-1",
   isTestChain: true,
-  blockExplorerUrl: emptyBlockExplorerLink,
+  blockExplorerUrl: "https://testnet.tuber.build",
+  cosmosBlockExplorerUrl: emptyBlockExplorerLink,
   multicall1Address: "0xe536cF7B00069894da25faC787d7aD9D211a2C1A",
   multicall2Address: "0x0e356B86FA2aE1bEB93174C18AD373207a40F2A3",
   icon: cantoIcon,
@@ -75,7 +78,7 @@ export const ETHMainnet: ETHNetwork = {
   tokens: TOKENS.ETHMainnet,
   rpcUrl: import.meta.env.VITE_MAINNET_RPC,
   isTestChain: false,
-  blockExplorerUrl: emptyBlockExplorerLink,
+  blockExplorerUrl: "https://etherscan.io",
   icon: ethIcon,
 };
 
@@ -89,16 +92,6 @@ export const GravityTestnet: ETHNetwork = {
   isTestChain: true,
   blockExplorerUrl: emptyBlockExplorerLink,
   icon: bridgeIcon,
-};
-
-export const NodeAddresses = {
-  CantoMainnet: {
-    ChandraRPC: "https://canto.evm.chandrastation.com",
-    Plex: {
-      rpcUrl: "https://mainnode.plexnode.org:8545",
-      cosmosApi: "https://mainnode.plexnode.org:1317",
-    },
-  },
 };
 
 //Will include all canto + testnets
