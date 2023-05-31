@@ -29,7 +29,8 @@ import ConfirmTxModal, {
 } from "global/components/modals/confirmTxModal";
 import { getBridgeExtraDetails } from "./bridgeDetails";
 import { BigNumber } from "ethers";
-
+import DropDown from "./dropDown";
+import layerZeroIcon from "assets/icons/layer_zero.png";
 interface Step1TxBoxProps {
   fromAddress?: string;
   toAddress?: string;
@@ -157,6 +158,58 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         </div>
         <div className="loading">
           <LoadingBlip active />
+          <div style={{ height: 26 }}></div>
+          <DropDown
+            title="select bridge"
+            Items={[
+              {
+                primaryText: "GBridge",
+                icon: "icon",
+                id: "1",
+              },
+              {
+                primaryText: "LayerZero",
+                icon: layerZeroIcon,
+                id: "2",
+              },
+              {
+                primaryText: "Phantom",
+                icon: "icon",
+                id: "3",
+              },
+              {
+                primaryText: "Ethereum",
+                icon: "icon",
+                id: "4",
+              },
+            ]}
+            onSelect={(id) => {
+              //   console.log(
+              //     [
+              //       {
+              //         primaryText: "GBridge",
+              //         icon: "icon",
+              //         id: "1",
+              //       },
+              //       {
+              //         primaryText: "LayerZero",
+              //         icon: "icon",
+              //         id: "2",
+              //       },
+              //       {
+              //         primaryText: "Phantom",
+              //         icon: "icon",
+              //         id: "3",
+              //       },
+              //       {
+              //         primaryText: "Ethereum",
+              //         icon: "icon",
+              //         id: "4",
+              //       },
+              //     ].filter((item) => item.id === id)[0]
+              //   );
+            }}
+          />
         </div>
         <div className="center-element">
           <img
@@ -165,7 +218,32 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             height={42}
             style={{ marginBottom: "10px" }}
           />
-          <Text type="title">{props.bridgeIn ? "Canto" : "Bridge"}</Text>
+          <DropDown
+            title="select network"
+            Items={[
+              {
+                primaryText: "Ethereum",
+                icon: "icon",
+                id: "1",
+              },
+              {
+                primaryText: "Phantom",
+                icon: layerZeroIcon,
+                id: "2",
+              },
+              {
+                primaryText: "Cosmos",
+                icon: "icon",
+                id: "3",
+              },
+              {
+                primaryText: "Ethereum",
+                icon: "icon",
+                id: "4",
+              },
+            ]}
+            onSelect={(id) => {}}
+          />
           <CopyToClipboard text={props.toAddress ?? ""} onCopy={copyAddress}>
             <Text
               type="text"

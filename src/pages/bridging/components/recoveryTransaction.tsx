@@ -292,7 +292,7 @@ const Styled = styled.div`
     max-width: 6rem;
   }
 `;
-const ChooseNetwork = styled.div`
+export const ChooseNetwork = styled.div`
   width: 30rem;
   height: 34rem;
   overflow-y: auto;
