@@ -111,7 +111,6 @@ const Styled = styled.div`
   flex-direction: column;
   width: 30rem;
   max-height: 42rem;
-  overscroll-y: scroll;
 
   .search {
     margin: 6px;
@@ -152,9 +151,9 @@ const Styled = styled.div`
     text-align: right;
   }
   .token-list {
-    scrollbar-color: var(--primary-color);
+    /* scrollbar-color: var(--primary-color); */
     scroll-behavior: smooth;
-    overflow-y: scroll;
+    overflow-y: auto;
     padding: 16px;
 
     /* background: red; */

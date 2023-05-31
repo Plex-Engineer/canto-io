@@ -379,7 +379,7 @@ const Selected = styled.div`
     backdrop-filter: blur(35px);
     background: #d9d9d933;
     border-radius: 4px;
-    overflow: visible;
+    /* overflow: visible; */
     color: var(--primary-color) !important;
   }
   .react-select__indicator-separator {

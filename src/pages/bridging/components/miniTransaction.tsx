@@ -228,12 +228,12 @@ const Styled = styled.div`
 `;
 const ChooseNetwork = styled.div`
   .network-list {
-    scrollbar-color: var(--primary-color);
+    /* scrollbar-color: var(--primary-color); */
     scroll-behavior: smooth;
     /* width */
     padding: 8px;
     max-height: 100px;
-    overflow-y: scroll;
+    overflow-y: auto;
     .network-item {
       display: flex;
       align-items: center;

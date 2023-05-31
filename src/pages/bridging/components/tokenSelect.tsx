@@ -111,7 +111,7 @@ const StyledPopup = styled(Popup)`
 
     .scrollview {
       max-height: 43rem;
-      overflow-y: scroll;
+      overflow-y: auto;
       margin-bottom: 1rem;
       height: 100%;
     }

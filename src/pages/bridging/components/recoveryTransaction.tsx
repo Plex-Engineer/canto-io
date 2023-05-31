@@ -298,7 +298,7 @@ const ChooseNetwork = styled.div`
   overflow-y: auto;
   padding: 0 2rem;
   .network-list {
-    scrollbar-color: var(--primary-color);
+    /* scrollbar-color: var(--primary-color); */
     scroll-behavior: smooth;
     padding: 8px;
     display: flex;
