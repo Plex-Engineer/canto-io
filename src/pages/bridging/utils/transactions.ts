@@ -1,5 +1,5 @@
-import { BigNumber, Contract } from "ethers";
-import { ERC20Abi, gravityBridgeAbi, wethAbi } from "global/config/abi";
+import { BigNumber, Contract, ethers } from "ethers";
+import { ERC20Abi, OFTAbi, gravityBridgeAbi, wethAbi } from "global/config/abi";
 import {
   CantoTransactionType,
   CosmosTx,
@@ -22,6 +22,7 @@ import {
   getCurrentProvider,
 } from "global/utils/getAddressUtils";
 import { formatUnits } from "ethers/lib/utils";
+import { LayerZeroNetwork } from "../config/oft";
 
 //will take care of wrapping ETH for WETH before bridging
 export async function sendToComsosTx(
@@ -186,6 +187,47 @@ export async function ibcOutTx(
   );
 }
 
+//OFT transactions
+async function oftTransferTx(
+  chainId: number | undefined,
+  txStore: TransactionStore,
+  from: LayerZeroNetwork,
+  to: LayerZeroNetwork,
+  amount: BigNumber,
+  account: string
+): Promise<boolean> {
+  if (!account) {
+    return false;
+  }
+  const tokenInfo = {
+    symbol: "CANTO",
+    amount: formatUnits(amount),
+  };
+  const allTxs = [];
+  const bridgeOut = from.nativeCurrency?.symbol === "CANTO";
+  if (bridgeOut) {
+    allTxs.push(
+      _oftDepositOrWithdrawTx(chainId, true, from.oftAddress, amount, tokenInfo)
+    );
+  }
+  allTxs.push(
+    _oftTransferTx(
+      chainId,
+      !bridgeOut,
+      from.oftAddress,
+      account,
+      to.lzChainId,
+      amount,
+      tokenInfo
+    )
+  );
+  return await txStore.addTransactionList(
+    allTxs,
+    TxMethod.EVM,
+    "Canto OFT Transfer"
+  );
+}
+
 /**
  * TRANSACTION CREATORS
  * WILL NOT CHECK FOR VALIDITY OF PARAMS, MUST DO THIS BEFORE USING THESE CONSTRUCTORS
@@ -284,5 +326,51 @@ const _wrapTx = (
   method: "deposit",
   params: [],
   value: amount,
+  extraDetails,
+});
+
+const _oftTransferTx = (
+  chainId: number | undefined,
+  bridgeIn: boolean,
+  oftAddress: string,
+  account: string,
+  toChainId: number,
+  amount: BigNumber,
+  extraDetails?: ExtraProps
+): EVMTx => ({
+  chainId: chainId,
+  txType: bridgeIn ? CantoTransactionType.OFT_IN : CantoTransactionType.OFT_OUT,
+  address: oftAddress,
+  abi: OFTAbi,
+  method: "sendFrom",
+  params: [
+    account,
+    toChainId,
+    account,
+    amount,
+    account,
+    ethers.constants.AddressZero,
+    [],
+  ],
+  value: "0",
+  extraDetails,
+});
+
+const _oftDepositOrWithdrawTx = (
+  chainId: number | undefined,
+  deposit: boolean,
+  oftAddress: string,
+  amount: BigNumber,
+  extraDetails?: ExtraProps
+): EVMTx => ({
+  chainId: chainId,
+  txType: deposit
+    ? CantoTransactionType.OFT_DEPOSIT
+    : CantoTransactionType.OFT_WITHDRAW,
+  address: oftAddress,
+  abi: OFTAbi,
+  method: deposit ? "deposit" : "withdraw",
+  params: deposit ? [] : [amount],
+  value: deposit ? amount : "0",
   extraDetails,
 });

@@ -36,6 +36,12 @@ export enum CantoTransactionType {
   CONVERT_TO_NATIVE = "Convert to Native",
   IBC_OUT = "IBC Out",
   IBC_IN = "IBC in",
+
+  //OFT
+  OFT_OUT = "OFT out",
+  OFT_IN = "OFT in",
+  OFT_DEPOSIT = "OFT deposit",
+  OFT_WITHDRAW = "OFT withdraw",
 }
 
 //Do not change, same as useTransaction, but need for compatability with cosmos transactions

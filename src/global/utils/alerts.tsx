@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 import { GenPubKey } from "global/components/genPubKey";
 import { PageObject } from "global/config/pageList";
 import { ReactNode } from "react";
-import { addNetwork } from "./walletConnect/addCantoToWallet";
+import { switchNetwork } from "./walletConnect/addCantoToWallet";
 
 export function ShowAlerts(
   openAlert: (
@@ -43,7 +43,7 @@ export function ShowAlerts(
         <span
           role="button"
           tabIndex={0}
-          onClick={() => addNetwork()}
+          onClick={() => switchNetwork(currentPageObj.networks[0])}
           style={{
             cursor: "pointer",
             border: "1px solid",

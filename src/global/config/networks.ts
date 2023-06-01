@@ -22,10 +22,10 @@ const getTransactionLink = (explorerUrl: string) => (txnId: string) =>
   `${explorerUrl}/tx/${txnId}`;
 
 //INTERFACES
-interface Network extends Chain {
+export interface Network extends Chain {
   name: string;
   icon: string;
-  tokens: { [key: string]: Token };
+  tokens?: { [key: string]: Token };
 }
 
 export interface CantoNetwork extends Network {
@@ -123,17 +123,15 @@ export const GravityTestnet: ETHBridgeNetwork = {
   blockExplorerUrl: emptyBlockExplorerLink,
   icon: bridgeIcon,
 };
-const MumbaiTestnet: Network = {
+export const MumbaiTestnet: Network = {
   ...Mumbai,
   name: "Mumbai Testnet",
   icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polygon/images/matic-purple.svg",
-  tokens: {},
 };
-const FantomTestnet: Network = {
+export const FantomTestnet: Network = {
   ...FantomTest,
   name: "Fantom Testnet",
   icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/fantom/images/ftm.svg",
-  tokens: {},
 };
 
 /**

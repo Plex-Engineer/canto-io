@@ -180,6 +180,7 @@ export const createTransactionMessges = (
         error: `unable to convert ${token}`,
       };
     case CantoTransactionType.IBC_OUT:
+    case CantoTransactionType.OFT_OUT:
       return {
         short: "bridge out",
         long: `bridge out ${amount + " " + token}`,
@@ -188,6 +189,7 @@ export const createTransactionMessges = (
         error: `unable to bridge out ${token}`,
       };
     case CantoTransactionType.IBC_IN:
+    case CantoTransactionType.OFT_IN:
       return {
         short: "bridge in",
         long: `bridge in ${amount + " " + token}`,
