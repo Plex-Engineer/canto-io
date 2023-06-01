@@ -24,8 +24,9 @@ const DropDown = ({ onSelect, Items, title }: Props) => {
   return (
     <Styled
       onClick={() => {
-        setSelectModalOpen(true);
+        Items.length === 1 ? null : setSelectModalOpen(true);
       }}
+      disabled={Items.length === 1}
     >
       <img
         src={activeItem.icon}
@@ -75,6 +76,7 @@ const DropDown = ({ onSelect, Items, title }: Props) => {
     </Styled>
   );
 };
+
 const Styled = styled.button`
   display: flex;
   align-items: center;
@@ -84,6 +86,16 @@ const Styled = styled.button`
   padding: 8px 16px;
   padding-right: 24px;
   height: 42px;
+
+  &:disabled {
+    opacity: 0.8;
+    cursor: default !important;
+    filter: grayscale(1);
+
+    .separator {
+      display: none;
+    }
+  }
   p {
     width: 100%;
   }

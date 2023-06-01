@@ -226,21 +226,21 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
                 icon: "icon",
                 id: "1",
               },
-              {
-                primaryText: "Phantom",
-                icon: layerZeroIcon,
-                id: "2",
-              },
-              {
-                primaryText: "Cosmos",
-                icon: "icon",
-                id: "3",
-              },
-              {
-                primaryText: "Ethereum",
-                icon: "icon",
-                id: "4",
-              },
+              //   {
+              //     primaryText: "Phantom",
+              //     icon: layerZeroIcon,
+              //     id: "2",
+              //   },
+              //   {
+              //     primaryText: "Cosmos",
+              //     icon: "icon",
+              //     id: "3",
+              //   },
+              //   {
+              //     primaryText: "Ethereum",
+              //     icon: "icon",
+              //     id: "4",
+              //   },
             ]}
             onSelect={(id) => {
               //query bridgeStore using id to get network
