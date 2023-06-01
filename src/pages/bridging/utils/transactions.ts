@@ -194,7 +194,9 @@ async function oftTransferTx(
   from: LayerZeroNetwork,
   to: LayerZeroNetwork,
   amount: BigNumber,
-  account: string
+  account: string,
+  adapterParams: [number, number] | [],
+  gas: BigNumber
 ): Promise<boolean> {
   if (!account) {
     return false;
@@ -218,6 +220,8 @@ async function oftTransferTx(
       account,
       to.lzChainId,
       amount,
+      adapterParams,
+      gas,
       tokenInfo
     )
   );
@@ -336,6 +340,8 @@ const _oftTransferTx = (
   account: string,
   toChainId: number,
   amount: BigNumber,
+  adapterParams: [number, number] | [],
+  gas: BigNumber,
   extraDetails?: ExtraProps
 ): EVMTx => ({
   chainId: chainId,
@@ -350,9 +356,9 @@ const _oftTransferTx = (
     amount,
     account,
     ethers.constants.AddressZero,
-    [],
+    adapterParams,
   ],
-  value: "0",
+  value: gas,
   extraDetails,
 });
 
