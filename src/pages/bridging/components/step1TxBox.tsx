@@ -242,7 +242,10 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
                 id: "4",
               },
             ]}
-            onSelect={(id) => {}}
+            onSelect={(id) => {
+              //query bridgeStore using id to get network
+              console.log(id);
+            }}
           />
           <CopyToClipboard text={props.toAddress ?? ""} onCopy={copyAddress}>
             <Text
