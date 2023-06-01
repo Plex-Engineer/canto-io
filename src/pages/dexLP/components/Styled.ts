@@ -58,7 +58,6 @@ export const DexModalContainer = styled.div`
       align-items: center;
       justify-content: space-between;
       height: 2rem;
-
       .header {
         color: #9b9b9b;
       }
@@ -137,8 +136,6 @@ export const DexModalContainer = styled.div`
 
   .row {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
     width: 100%;
   }
   /* .tableName {

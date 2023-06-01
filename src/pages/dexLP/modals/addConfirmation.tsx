@@ -12,12 +12,13 @@ import {
 } from "../utils/utils";
 import { LPTransaction, UserLPPairInfo } from "../config/interfaces";
 import { DexModalContainer } from "../components/Styled";
-import { PrimaryButton } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
 import CheckBox from "global/components/checkBox";
 import { getExpectedLP } from "../utils/pairCheck";
 import { dexLPTx } from "../utils/transactions";
 import { getCurrentBlockTimestamp } from "global/utils/blockInfo";
 import { TransactionStore } from "global/stores/transactionStore";
+import styled from "@emotion/styled";
 
 interface Props {
   activePair: UserLPPairInfo;
@@ -59,34 +60,30 @@ export const AddLiquidityConfirmation = ({
     activePair.basePairInfo.token2.decimals
   );
   return (
-    <DexModalContainer>
-      <div className="title">
-        {activePair.basePairInfo.token1.symbol +
-          " / " +
-          activePair.basePairInfo.token2.symbol}
-      </div>
-      <p id="position">you will receive</p>
-      <div className="row">
+    <ConfirmationStyled>
+      <Text type="title" size="title3">
+        you will receive
+      </Text>
+      <div className="center-item">
         <IconPair
           iconLeft={activePair.basePairInfo.token1.icon}
           iconRight={activePair.basePairInfo.token2.icon}
         />
       </div>
-      <h1>
+      <Text type="title" size="title2">
         {expectedLP.isZero()
           ? "calculating..."
           : truncateNumber(
               formatUnits(expectedLP, activePair.basePairInfo.decimals)
             )}
-      </h1>
+      </Text>
 
-      <h4>
-        {" "}
+      <Text color="white">
         {activePair.basePairInfo.token1.symbol +
           "/" +
           activePair.basePairInfo.token2.symbol}{" "}
         liquidity pool tokens
-      </h4>
+      </Text>
       <div
         className="box"
         style={{
@@ -192,19 +189,43 @@ export const AddLiquidityConfirmation = ({
       >
         confirm
       </PrimaryButton>
-      <div className="row">
-        <div style={{ display: "flex", gap: "1rem" }}>
-          <CheckBox
-            checked={confirmSupply}
-            onChange={() => setConfirmSupply(!confirmSupply)}
-          />
-          <p>get rewards</p>
-        </div>
+      <div className="getRewards">
+        <CheckBox
+          checked={confirmSupply}
+          onChange={() => setConfirmSupply(!confirmSupply)}
+        />
+        <p>get rewards</p>
       </div>
-      <a style={{ textAlign: "center" }}>
+      <Text size="text4">
         ** by checking this box, LP tokens will be supplied in the lending
         market **
-      </a>
-    </DexModalContainer>
+      </Text>
+    </ConfirmationStyled>
   );
 };
+
+const ConfirmationStyled = styled(DexModalContainer)`
+  .row {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .center-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: min-content;
+  }
+  .box {
+    display: flex;
+    border: 1px solid #222;
+    padding: 1rem;
+  }
+
+  .getRewards {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+  }
+`;
