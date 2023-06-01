@@ -36,11 +36,7 @@ export async function addNetwork(chainId?: number) {
               {
                 chainId: "0x" + network.chainId.toString(16),
                 chainName: network.name,
-                nativeCurrency: {
-                  name: network.symbol,
-                  symbol: network.symbol,
-                  decimals: 18,
-                },
+                nativeCurrency: network.nativeCurrency,
                 rpcUrls: [network.rpcUrl],
                 blockExplorerUrls: [network.blockExplorerUrl],
               },

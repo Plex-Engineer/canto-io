@@ -15,13 +15,14 @@ interface Props {
   balance: string;
   isConnected: boolean;
   currency: string;
-  logo: string;
+  siteLogo: string;
+  currencyIcon: string;
   pageList: PageObject[];
   currentPage?: string;
 }
 
 export const NavBar = (props: Props) => {
-  const { chainId, logo, currentPage, pageList } = props;
+  const { chainId, siteLogo: logo, currentPage, pageList } = props;
 
   const [onScroll, setOnScroll] = useState(false);
 

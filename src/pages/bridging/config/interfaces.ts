@@ -4,7 +4,7 @@ import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import { ReactNode } from "react";
 import { IBCPathInfo } from "../utils/nativeBalances";
 import { Token } from "global/config/interfaces/tokens";
-import { CantoNetwork, ETHNetwork } from "global/config/networks";
+import { CantoNetwork, ETHBridgeNetwork } from "global/config/networks";
 import { IBCTOKENS } from "./bridgingTokens";
 import { BridgeOutNetworkData } from "./bridgeOutNetworks";
 
@@ -21,7 +21,7 @@ import { BridgeOutNetworkData } from "./bridgeOutNetworks";
 export interface BridgeNetworkPair {
   pairId: string;
   sending: {
-    network: ETHNetwork;
+    network: ETHBridgeNetwork;
     tokens: Token[];
   };
   receiving: {

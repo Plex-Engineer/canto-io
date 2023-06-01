@@ -1,57 +1,21 @@
-import { DAppProvider, Config, Mainnet as ETHMain } from "@usedapp/core";
+import { DAppProvider, Config } from "@usedapp/core";
 import React from "react";
-import { Chain } from "@usedapp/core";
 import { HelmetProvider } from "react-helmet-async";
 import { MetamaskConnector } from "@usedapp/core";
-
-import {
-  CantoMainnet as CantoMain,
-  CantoTestnet as CantoTest,
-  ETHMainnet,
-} from "global/config/networks";
+import { ALL_SUPPORTED_NETWORKS } from "global/config/networks";
 
 interface IProviderProps {
   children: React.ReactNode;
 }
 
-const getAddressLink = (explorerUrl: string) => (address: string) =>
-  `${explorerUrl}/address/${address}`;
-
-const getTransactionLink = (explorerUrl: string) => (txnId: string) =>
-  `${explorerUrl}/tx/${txnId}`;
-
-export const CantoMainnet: Chain = {
-  chainId: CantoMain.chainId,
-  chainName: CantoMain.name,
-  rpcUrl: CantoMain.rpcUrl,
-  isTestChain: CantoMain.isTestChain,
-  isLocalChain: false,
-  multicallAddress: CantoMain.multicall1Address,
-  multicall2Address: CantoMain.multicall2Address,
-  blockExplorerUrl: CantoMain.blockExplorerUrl,
-  getExplorerAddressLink: getAddressLink("kovanEtherscanUrl"),
-  getExplorerTransactionLink: getTransactionLink("kovanEtherscanUrl"),
-};
-export const CantoTestnet: Chain = {
-  chainId: CantoTest.chainId,
-  chainName: CantoTest.name,
-  rpcUrl: CantoTest.rpcUrl,
-  isTestChain: CantoTest.isTestChain,
-  isLocalChain: false,
-  multicallAddress: CantoTest.multicall1Address,
-  multicall2Address: CantoTest.multicall2Address,
-  blockExplorerUrl: CantoTest.blockExplorerUrl,
-  getExplorerAddressLink: getAddressLink("kovanEtherscanUrl"),
-  getExplorerTransactionLink: getTransactionLink("kovanEtherscanUrl"),
-};
-
 const config: Config = {
-  networks: [ETHMain, CantoMainnet, CantoTestnet],
-  readOnlyUrls: {
-    [ETHMain.chainId]: ETHMainnet.rpcUrl,
-    [CantoMainnet.chainId]: CantoMain.rpcUrl,
-    [CantoTestnet.chainId]: CantoTest.rpcUrl,
-  },
+  networks: ALL_SUPPORTED_NETWORKS,
+  readOnlyUrls: Object.fromEntries(
+    Object.entries(ALL_SUPPORTED_NETWORKS).map(([, val]) => [
+      val.chainId,
+      val.rpcUrl ?? "",
+    ])
+  ),
   connectors: {
     metamask: new MetamaskConnector(),
     // coinbase: new CoinbaseWalletConnector(),

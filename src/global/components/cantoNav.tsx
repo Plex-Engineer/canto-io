@@ -1,16 +1,18 @@
 import { useEtherBalance, useEthers, useSigner } from "@usedapp/core";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import logo from "assets/logo.svg";
 import { useLocation } from "react-router-dom";
-import { getBaseTokenName } from "global/utils/walletConnect/getTokenSymbol";
 import { useAlert, NavBar } from "../packages/src";
 import { BigNumber } from "ethers";
 import { formatEther, parseUnits } from "ethers/lib/utils";
 import { ShowAlerts } from "global/utils/alerts";
 import { pageList, PageObject } from "global/config/pageList";
 import { Mixpanel } from "mixpanel";
-import { getCantoNetwork } from "global/utils/getAddressUtils";
+import {
+  getCantoNetwork,
+  getSupportedNetwork,
+} from "global/utils/getAddressUtils";
 
 export const CantoNav = () => {
   const networkInfo = useNetworkInfo();
@@ -29,13 +31,7 @@ export const CantoNav = () => {
     false;
 
   const location = useLocation();
-  const [tokenName, setTokenName] = useState("");
-  async function grabTokenName() {
-    setTokenName(await getBaseTokenName(chainId?.toString() ?? ""));
-  }
-  useEffect(() => {
-    grabTokenName();
-  }, [chainId]);
+  const currentNetwork = getSupportedNetwork(Number(networkInfo.chainId));
 
   function recursiveGetTitle(
     location: string,
@@ -120,10 +116,11 @@ export const CantoNav = () => {
       account={networkInfo.account ?? ""}
       isConnected={networkInfo.account != ""}
       balance={formatEther(networkInfo.balance)}
-      currency={tokenName}
-      logo={logo}
+      currency={currentNetwork.nativeCurrency?.symbol ?? ""}
+      siteLogo={logo}
       pageList={pageList}
       currentPage={recursiveGetTitle(location.pathname, 1, pageList)}
+      currencyIcon={currentNetwork.icon}
     />
   );
 };

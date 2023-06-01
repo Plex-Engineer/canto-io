@@ -15,9 +15,9 @@ import NoFunds from "./components/pages/noFunds";
 import IntroPage from "./components/pages/intro";
 import { BridgeInManager } from "./managers/BridgeInManager";
 import { BridgeOutManager } from "./managers/BridgeOutManager";
-import { CantoMainnet } from "global/providers";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import { CANTO_MAIN_CONVERT_COIN_TOKENS } from "../config/bridgingTokens";
+import { CantoMainnet } from "global/config/networks";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
