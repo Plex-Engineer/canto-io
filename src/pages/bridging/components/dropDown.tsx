@@ -88,9 +88,9 @@ const Styled = styled.button`
   height: 42px;
 
   &:disabled {
-    opacity: 0.8;
+    /* opacity: 0.8; */
     cursor: default !important;
-    filter: grayscale(1);
+    /* filter: grayscale(1); */
 
     .separator {
       display: none;
