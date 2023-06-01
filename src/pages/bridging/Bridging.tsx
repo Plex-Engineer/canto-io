@@ -30,14 +30,15 @@ import { useTransactionStore } from "global/stores/transactionStore";
 const Bridging = () => {
   const txStore = useTransactionStore();
   const networkInfo = useNetworkInfo();
-  const bridgingTokens = useBridgeTokenInfo();
+  const { allTokens, selectedTokens, setTokens, networkPair } =
+    useBridgeTokenInfo();
   const bridgingHistory = useTransactionHistory();
   const { activateBrowserWallet } = useEthers();
   const navigate = useNavigate();
   const [pubKeySuccess, setPubKeySuccess] = useState("None");
-  const hasRecoveryToken = bridgingTokens.unkownIBCTokens.length > 0;
+  const hasRecoveryToken = allTokens.unkownIBCTokens.length > 0;
   const ethBalance = useEtherBalance(networkInfo.account, {
-    chainId: bridgingTokens.networkPair.sending.network.chainId,
+    chainId: networkPair.sending.network.chainId,
   });
   const canPubKey =
     (ethBalance?.gte(parseUnits("0.01")) ||
@@ -67,12 +68,10 @@ const Bridging = () => {
     <Styled>
       <div className="floating-buttons">
         <BalanceTableModal
-          ethTokens={bridgingTokens.userBridgeInTokens}
-          cantoTokens={bridgingTokens.userBridgeOutTokens}
-          nativeTokens={bridgingTokens.userNativeTokens}
-          allConvertCoinTokens={
-            bridgingTokens.networkPair.receiving.convertCoinTokens
-          }
+          ethTokens={allTokens.userBridgeInTokens}
+          cantoTokens={allTokens.userBridgeOutTokens}
+          nativeTokens={allTokens.userNativeTokens}
+          allConvertCoinTokens={networkPair.receiving.convertCoinTokens}
         />
         <Tooltip
           position="bottom right"
@@ -104,30 +103,29 @@ const Bridging = () => {
             ? NotConnectedTabs()
             : [
                 networkInfo.hasPubKey ? (
-                  <BridgeIn
-                    key={"in"}
-                    ethAddress={networkInfo.account}
-                    cantoAddress={networkInfo.cantoAddress}
-                    ethGBridgeTokens={bridgingTokens.userBridgeInTokens}
-                    selectedEthToken={
-                      bridgingTokens.selectedTokens.bridgeInToken
-                    }
-                    selectEthToken={(tokenAddress) =>
-                      bridgingTokens.setSelectedToken(
-                        tokenAddress,
-                        SelectedTokens.ETHTOKEN
-                      )
-                    }
-                    step2Transactions={createConvertTransactions(
-                      bridgingHistory.pendingBridgeInTransactions,
-                      bridgingTokens.userNativeTokens,
-                      true,
-                      Number(networkInfo.chainId)
-                    )}
-                    chainId={Number(networkInfo.chainId)}
-                    txStore={txStore}
-                    networkPair={bridgingTokens.networkPair}
-                  />
+                  null
+                  // <BridgeIn
+                  //   key={"in"}
+                  //   ethAddress={networkInfo.account}
+                  //   cantoAddress={networkInfo.cantoAddress}
+                  //   ethGBridgeTokens={allTokens.userBridgeInTokens}
+                  //   selectedEthToken={selectedTokens.bridgeInToken}
+                  //   selectEthToken={(tokenAddress) =>
+                  //     setTokens.setBridgeInToken(
+                  //       tokenAddress,
+                  //       SelectedTokens.ETHTOKEN
+                  //     )
+                  //   }
+                  //   step2Transactions={createConvertTransactions(
+                  //     bridgingHistory.pendingBridgeInTransactions,
+                  //     allTokens.userNativeTokens,
+                  //     true,
+                  //     Number(networkInfo.chainId)
+                  //   )}
+                  //   chainId={Number(networkInfo.chainId)}
+                  //   txStore={txStore}
+                  //   networkPair={networkPair}
+                  // />
                 ) : !canPubKey ? (
                   <PubKeyStyled>
                     <NotConnected
@@ -160,25 +158,20 @@ const Bridging = () => {
                   key={"out"}
                   ethAddress={networkInfo.account}
                   cantoAddress={networkInfo.cantoAddress}
-                  bridgeOutTokens={bridgingTokens.userBridgeOutTokens}
-                  selectedBridgeOutToken={
-                    bridgingTokens.selectedTokens.bridgeOutToken
-                  }
+                  bridgeOutTokens={allTokens.userBridgeOutTokens}
+                  selectedBridgeOutToken={selectedTokens.bridgeOutToken}
                   selectToken={(tokenAddress) =>
-                    bridgingTokens.setSelectedToken(
-                      tokenAddress,
-                      SelectedTokens.CONVERTOUT
-                    )
+                    setTokens.setBridgeOutToken(tokenAddress)
                   }
                   step2Transactions={createConvertTransactions(
                     [],
-                    bridgingTokens.userNativeTokens,
+                    allTokens.userNativeTokens,
                     false,
                     Number(networkInfo.chainId)
                   )}
                   chainId={Number(networkInfo.chainId)}
                   txStore={txStore}
-                  networkPair={bridgingTokens.networkPair}
+                  networkPair={networkPair}
                 />,
                 <Transactions
                   key={"transaction"}
@@ -188,7 +181,7 @@ const Bridging = () => {
                   ? [
                       <RecoveryPage
                         key={"recovery"}
-                        tokens={bridgingTokens.unkownIBCTokens}
+                        tokens={allTokens.unkownIBCTokens}
                         cantoAddress={networkInfo.cantoAddress}
                         txStore={txStore}
                       />,

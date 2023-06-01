@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import acronIcon from "assets/acron.svg";
 import { ChooseNetwork } from "./recoveryTransaction";
 
@@ -14,12 +14,13 @@ interface Item {
 
 interface Props {
   Items: Item[];
+  activeItemId: string | undefined;
   title: string;
   onSelect: (id: string) => void;
 }
-const DropDown = ({ onSelect, Items, title }: Props) => {
+const DropDown = ({ onSelect, Items, title, activeItemId }: Props) => {
   const [isSelectModalOpen, setSelectModalOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState(Items[0]);
+  const activeItem = Items.find((item) => item.id === activeItemId);
 
   return (
     <Styled
@@ -28,7 +29,7 @@ const DropDown = ({ onSelect, Items, title }: Props) => {
       }}
     >
       <img
-        src={activeItem.icon}
+        src={activeItem?.icon ?? ""}
         height={20}
         style={{
           marginRight: 8,
@@ -36,7 +37,7 @@ const DropDown = ({ onSelect, Items, title }: Props) => {
       />
 
       <Text type="title" size="text4" align="left">
-        {activeItem.primaryText}
+        {activeItem?.primaryText ?? title}
         <Modal
           title={title}
           open={isSelectModalOpen}
@@ -53,12 +54,11 @@ const DropDown = ({ onSelect, Items, title }: Props) => {
                   key={item.id}
                   className="network-item"
                   onClick={() => {
-                    setActiveItem(Items.filter((i) => i.id === item.id)[0]);
                     onSelect(item.id);
                     setSelectModalOpen(false);
                   }}
                   style={{
-                    background: activeItem.id === item.id ? "#1d1d1d" : "",
+                    background: activeItem?.id === item.id ? "#1d1d1d" : "",
                   }}
                 >
                   <span>

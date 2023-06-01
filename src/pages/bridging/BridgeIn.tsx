@@ -135,6 +135,16 @@ const BridgeIn = (props: BridgeInProps) => {
           ]}
           selectedToken={props.selectedEthToken}
           selectToken={props.selectEthToken}
+          allBridgeMethods={[{
+            id: "IBC",
+            name: "IBC",
+            icon: "https://canto.io/images/ibc.svg",
+          }]}
+          selectedBridgeMethod={{
+            id: "IBC",
+            name: "IBC",
+            icon: "https://canto.io/images/ibc.svg",
+          }}
           tx={async (amount: BigNumber) =>
             await sendToComsosTx(
               props.networkPair.sending.network.chainId,

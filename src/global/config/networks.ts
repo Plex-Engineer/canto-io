@@ -105,3 +105,6 @@ export const ALL_SUPPORTED_NETWORKS = [
   ETHMainnet,
   GravityTestnet,
 ];
+export const onTestnet = (chainId: number) =>
+  ALL_SUPPORTED_NETWORKS.find((network) => network.chainId === chainId)
+    ?.isTestChain ?? false;

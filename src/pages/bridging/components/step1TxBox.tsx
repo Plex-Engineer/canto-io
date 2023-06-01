@@ -7,6 +7,7 @@ import {
   BridgeNetworkPair,
   EMPTY_NATIVE_TOKEN,
   NativeToken,
+  SelectorProps,
   Step1TokenGroups,
   UserERC20BridgeToken,
 } from "../config/interfaces";
@@ -30,7 +31,6 @@ import ConfirmTxModal, {
 import { getBridgeExtraDetails } from "./bridgeDetails";
 import { BigNumber } from "ethers";
 import DropDown from "./dropDown";
-import layerZeroIcon from "assets/icons/layer_zero.png";
 interface Step1TxBoxProps {
   fromAddress?: string;
   toAddress?: string;
@@ -38,6 +38,9 @@ interface Step1TxBoxProps {
   tokenGroups: Step1TokenGroups[];
   selectedToken: UserERC20BridgeToken;
   selectToken: (tokenAddress: string) => void;
+  bridgeMethods: SelectorProps;
+  bridgeNetworks: SelectorProps;
+
   tx: (amount: BigNumber) => Promise<boolean>;
   networkPair: BridgeNetworkPair;
 }
@@ -161,53 +164,14 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           <div style={{ height: 26 }}></div>
           <DropDown
             title="select bridge"
-            Items={[
-              {
-                primaryText: "GBridge",
-                icon: "icon",
-                id: "1",
-              },
-              {
-                primaryText: "LayerZero",
-                icon: layerZeroIcon,
-                id: "2",
-              },
-              {
-                primaryText: "Phantom",
-                icon: "icon",
-                id: "3",
-              },
-              {
-                primaryText: "Ethereum",
-                icon: "icon",
-                id: "4",
-              },
-            ]}
+            Items={props.bridgeMethods.allOptions.map((method) => ({
+              primaryText: method.name,
+              icon: method.icon,
+              id: method.id,
+            }))}
+            activeItemId={props.bridgeMethods.selectedId}
             onSelect={(id) => {
-              //   console.log(
-              //     [
-              //       {
-              //         primaryText: "GBridge",
-              //         icon: "icon",
-              //         id: "1",
-              //       },
-              //       {
-              //         primaryText: "LayerZero",
-              //         icon: "icon",
-              //         id: "2",
-              //       },
-              //       {
-              //         primaryText: "Phantom",
-              //         icon: "icon",
-              //         id: "3",
-              //       },
-              //       {
-              //         primaryText: "Ethereum",
-              //         icon: "icon",
-              //         id: "4",
-              //       },
-              //     ].filter((item) => item.id === id)[0]
-              //   );
+              props.bridgeMethods.setSelectedId(id);
             }}
           />
         </div>
@@ -220,29 +184,15 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           />
           <DropDown
             title="select network"
-            Items={[
-              {
-                primaryText: "Ethereum",
-                icon: "icon",
-                id: "1",
-              },
-              {
-                primaryText: "Phantom",
-                icon: layerZeroIcon,
-                id: "2",
-              },
-              {
-                primaryText: "Cosmos",
-                icon: "icon",
-                id: "3",
-              },
-              {
-                primaryText: "Ethereum",
-                icon: "icon",
-                id: "4",
-              },
-            ]}
-            onSelect={(id) => {}}
+            Items={props.bridgeNetworks.allOptions.map((network) => ({
+              primaryText: network.name,
+              icon: network.icon,
+              id: network.id,
+            }))}
+            activeItemId={props.bridgeNetworks.selectedId}
+            onSelect={(id) => {
+              props.bridgeNetworks.setSelectedId(id);
+            }}
           />
           <CopyToClipboard text={props.toAddress ?? ""} onCopy={copyAddress}>
             <Text
@@ -289,15 +239,6 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           />
         </div>
         <div className="amount">
-          {/* <Text
-            style={{
-              color: "#848484",
-              width: "180px",
-              marginLeft: "6px",
-            }}
-          >
-            amount :
-          </Text> */}
           <CInput
             style={{
               backgroundColor: "transparent",

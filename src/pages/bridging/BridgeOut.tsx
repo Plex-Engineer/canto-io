@@ -11,6 +11,11 @@ import {
 } from "./config/interfaces";
 import { convertTx } from "./utils/transactions";
 import { TransactionStore } from "global/stores/transactionStore";
+import {
+  ALL_BRIDGE_OUT_METHODS,
+  BridgeOutMethods,
+  useBridgeOutStore,
+} from "./stores/bridgeOutStore";
 
 interface BridgeOutProps {
   ethAddress?: string;
@@ -24,6 +29,8 @@ interface BridgeOutProps {
   networkPair: BridgeNetworkPair;
 }
 const BridgeOut = (props: BridgeOutProps) => {
+  const bridgeOutStore = useBridgeOutStore();
+
   return (
     <BridgeStyled>
       <div className="left">
@@ -85,7 +92,11 @@ const BridgeOut = (props: BridgeOutProps) => {
       <div className="center">
         <Step1TxBox
           fromAddress={props.ethAddress}
-          toAddress={props.cantoAddress}
+          toAddress={
+            bridgeOutStore.selectedBridgeMethod === BridgeOutMethods.LAYER_ZERO
+              ? props.ethAddress
+              : props.cantoAddress
+          }
           bridgeIn={false}
           tokenGroups={[
             {
@@ -97,6 +108,16 @@ const BridgeOut = (props: BridgeOutProps) => {
           ]}
           selectedToken={props.selectedBridgeOutToken}
           selectToken={props.selectToken}
+          bridgeMethods={{
+            allOptions: ALL_BRIDGE_OUT_METHODS,
+            selectedId: bridgeOutStore.selectedBridgeMethod,
+            setSelectedId: (id) => bridgeOutStore.setBridgeMethod(id),
+          }}
+          bridgeNetworks={{
+            allOptions: bridgeOutStore.bridgeOutNetworks,
+            selectedId: bridgeOutStore.selectedBridgeOutNetwork,
+            setSelectedId: (id) => bridgeOutStore.setBridgeOutNetwork(id),
+          }}
           tx={async (amount: BigNumber) =>
             await convertTx(
               props.chainId,

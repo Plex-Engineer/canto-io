@@ -9,6 +9,20 @@ import { IBCTOKENS } from "./bridgingTokens";
 import { BridgeOutNetworkData } from "./bridgeOutNetworks";
 
 /**
+ * FOR SELECTORS
+ */
+export interface BaseSelector {
+  id: string;
+  name: string;
+  icon: string;
+}
+export interface SelectorProps {
+  allOptions: BaseSelector[];
+  selectedId: string | undefined;
+  setSelectedId: (id: string) => void;
+}
+
+/**
  * NETWORK INTERFACES
  */
 
