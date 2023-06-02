@@ -12,12 +12,11 @@ import useGlobalModals, { ModalType } from "../../stores/useModals";
 import { Text } from "../atoms/Text";
 import { PageObject } from "global/config/pageList";
 interface BurgerMenuProps {
-  chainId: number;
   pageList?: PageObject[];
   currentPage?: string;
 }
 
-const MenuBar = ({ chainId, currentPage, pageList }: BurgerMenuProps) => {
+const MenuBar = ({ currentPage, pageList }: BurgerMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const setModalType = useGlobalModals((state) => state.setModalType);
   const [isHovering, setIsHovering] = useState(false);

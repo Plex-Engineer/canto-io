@@ -42,11 +42,7 @@ export const NavBar = (props: Props) => {
       <Alert />
       <nav className={onScroll ? "scroll" : ""}>
         <div className="menu">
-          <MenuBar
-            chainId={chainId}
-            currentPage={currentPage}
-            pageList={pageList}
-          />
+          <MenuBar currentPage={currentPage} pageList={pageList} />
           <a id="logo" href="/">
             <img src={logo} />
             <div
