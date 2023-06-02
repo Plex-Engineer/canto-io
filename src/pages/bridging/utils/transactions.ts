@@ -157,7 +157,7 @@ export async function ibcOutTx(
   txStore: TransactionStore,
   bridgeOutNetwork: BridgeOutNetworkInfo,
   toChainAddress: string,
-  tokenDenom: string,
+  ibcDenom: string,
   amount: string,
   extra?: ExtraProps
 ) {
@@ -172,7 +172,7 @@ export async function ibcOutTx(
         toChainAddress,
         bridgeOutNetwork.cantoChannel,
         amount,
-        tokenDenom,
+        ibcDenom,
         getCosmosAPIEndpoint(chainId),
         bridgeOutNetwork.restEndpoint,
         bridgeOutNetwork.latestBlockEndpoint,
@@ -184,6 +184,54 @@ export async function ibcOutTx(
     ],
     TxMethod.COSMOS,
     "Bridge Out Of Canto"
+  );
+}
+export async function convertAndIbcOutTx(
+  chainId: number | undefined,
+  txStore: TransactionStore,
+  cantoAddress: string,
+  tokenEVMAddress: string,
+  amount: string,
+  bridgeOutNetwork: BridgeOutNetworkInfo,
+  toChainAddress: string,
+  ibcDenom: string,
+  extraProps?: ExtraProps
+): Promise<boolean> {
+  //check receiver address
+  if (!bridgeOutNetwork.checkAddress(toChainAddress)) {
+    return false;
+  }
+  return await txStore.addTransactionList(
+    [
+      _convertCoinTx(
+        chainId,
+        false,
+        cantoAddress,
+        tokenEVMAddress,
+        amount,
+        getCosmosAPIEndpoint(chainId),
+        convertFee,
+        getCosmosChainObj(chainId),
+        "",
+        extraProps
+      ),
+      _ibcTransferOutTx(
+        chainId,
+        toChainAddress,
+        bridgeOutNetwork.cantoChannel,
+        amount,
+        ibcDenom,
+        getCosmosAPIEndpoint(chainId),
+        bridgeOutNetwork.restEndpoint,
+        bridgeOutNetwork.latestBlockEndpoint,
+        ibcFee,
+        getCosmosChainObj(chainId),
+        "",
+        extraProps
+      ),
+    ],
+    TxMethod.COSMOS,
+    "Bridge Out"
   );
 }
 
