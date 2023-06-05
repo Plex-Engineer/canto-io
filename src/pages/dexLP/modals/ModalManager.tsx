@@ -54,7 +54,7 @@ const ModalManager = (props: Props) => {
   return (
     <Modal
       open={modalType != ModalType.NONE}
-      title={getTitle(modalType)}
+      title={props.txStore.modalOpen ? "" : getTitle(modalType)}
       onClose={() => {
         Mixpanel.events.lpInterfaceActions.modalInteraction(
           modalType,
