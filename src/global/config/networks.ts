@@ -5,8 +5,6 @@ import {
   Mumbai,
 } from "@usedapp/core";
 import { CORE_ADDRESSES } from "./addresses";
-import { Token } from "./interfaces/tokens";
-import { TOKENS } from "./tokenInfo";
 import ethIcon from "assets/icons/ETH.svg";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
 import cantoIcon from "assets/icons/canto-evm.svg";
@@ -25,7 +23,6 @@ const getTransactionLink = (explorerUrl: string) => (txnId: string) =>
 export interface Network extends Chain {
   name: string;
   icon: string;
-  tokens?: { [key: string]: Token };
 }
 
 export interface CantoNetwork extends Network {
@@ -61,7 +58,7 @@ export const CantoMainnet: CantoNetwork = {
     decimals: 18,
   },
   icon: cantoIcon,
-  tokens: TOKENS.cantoMainnet,
+
   chainId: 7700,
   rpcUrl: "https://mainnode.plexnode.org:8545",
   isTestChain: false,
@@ -81,7 +78,7 @@ export const ETHMainnet: ETHBridgeNetwork = {
   ...Mainnet,
   name: "Ethereum",
   icon: ethIcon,
-  tokens: TOKENS.ETHMainnet,
+
   coreContracts: CORE_ADDRESSES.ETHMainnet,
   rpcUrl: import.meta.env.VITE_MAINNET_RPC,
 };
@@ -96,7 +93,7 @@ export const CantoTestnet: CantoNetwork = {
     decimals: 18,
   },
   icon: cantoIcon,
-  tokens: TOKENS.cantoTestnet,
+
   chainId: 7701,
   rpcUrl: "https://canto-testnet.plexnode.wtf",
   isTestChain: true,
@@ -117,7 +114,7 @@ export const GravityTestnet: ETHBridgeNetwork = {
   name: "Gravity Bridge Testnet",
   chainId: 15,
   coreContracts: CORE_ADDRESSES.gravityBridgeTest,
-  tokens: TOKENS.GravityBridge,
+
   rpcUrl: "https://testnet.gravitychain.io",
   isTestChain: true,
   blockExplorerUrl: emptyBlockExplorerLink,
@@ -150,3 +147,13 @@ export const ALL_SUPPORTED_NETWORKS = [
   MumbaiTestnet,
   FantomTestnet,
 ];
+
+/**
+ * HELPER TO FIND OUT IF USER IS ON TESTNET
+ */
+export function onTestnet(chainId?: number): boolean {
+  return (
+    ALL_SUPPORTED_NETWORKS.find((network) => network.chainId === chainId)
+      ?.isTestChain ?? false
+  );
+}

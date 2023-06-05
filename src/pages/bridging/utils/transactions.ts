@@ -22,7 +22,6 @@ import {
   getCurrentProvider,
 } from "global/utils/getAddressUtils";
 import { formatUnits } from "ethers/lib/utils";
-import { LayerZeroNetwork } from "../config/oft";
 
 //will take care of wrapping ETH for WETH before bridging
 export async function sendToComsosTx(
@@ -236,47 +235,45 @@ export async function convertAndIbcOutTx(
 }
 
 //OFT transactions
-async function oftTransferTx(
+export async function oftTransferTx(
   chainId: number | undefined,
   txStore: TransactionStore,
-  from: LayerZeroNetwork,
-  to: LayerZeroNetwork,
+  bridgeIn: boolean,
+  isNative: boolean,
+  tokenAddress: string,
+  toLZChainId: number,
   amount: BigNumber,
   account: string,
   adapterParams: [number, number] | [],
-  gas: BigNumber
+  gas: BigNumber,
+  extraProps?: ExtraProps
 ): Promise<boolean> {
   if (!account) {
     return false;
   }
-  const tokenInfo = {
-    symbol: "CANTO",
-    amount: formatUnits(amount),
-  };
   const allTxs = [];
-  const bridgeOut = from.nativeCurrency?.symbol === "CANTO";
-  if (bridgeOut) {
+  if (isNative) {
     allTxs.push(
-      _oftDepositOrWithdrawTx(chainId, true, from.oftAddress, amount, tokenInfo)
+      _oftDepositOrWithdrawTx(chainId, true, tokenAddress, amount, extraProps)
     );
   }
   allTxs.push(
     _oftTransferTx(
       chainId,
-      !bridgeOut,
-      from.oftAddress,
+      bridgeIn,
+      tokenAddress,
       account,
-      to.lzChainId,
+      toLZChainId,
       amount,
       adapterParams,
       gas,
-      tokenInfo
+      extraProps
     )
   );
   return await txStore.addTransactionList(
     allTxs,
     TxMethod.EVM,
-    "Canto OFT Transfer"
+    `${extraProps?.symbol ?? ""} OFT Transfer`
   );
 }
 

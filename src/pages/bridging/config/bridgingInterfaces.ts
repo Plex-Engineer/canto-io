@@ -1,30 +1,43 @@
-import { Chain } from "@usedapp/core";
 import { Token } from "global/config/interfaces/tokens";
+import { Network } from "global/config/networks";
 
-interface BridgingNetwork {
+export enum BridgingMethods {
+  GBRIDGE = "Gravity Bridge",
+  LAYER_ZERO = "Layer Zero",
+  IBC = "IBC",
+}
+export interface BridgingNetwork {
   name: string;
   icon: string;
   isCanto: boolean; //will be used to determine token lists, and bridge in or out
-  isGravityBridge: boolean;
-  gravityBridge?: GravityBridgeNetwork; //will only be here if isGravityBridge is true
-  isLayerZero: boolean;
-  layerZero?: LayerZeroNetwork; //will only be here if isLayerZero is true
-  isIBC: boolean;
-  ibc?: IBCNetwork; //will only be here if isIBC is true
+  isEVM: boolean; //determines how to perform transactions
+  supportedBridgeInMethods: BridgingMethods[]; //from canto
+  supportedBridgeOutMethods: BridgingMethods[]; //to canto
+  //networks will only be here if supported by either bridge in or bridge out
+  [BridgingMethods.GBRIDGE]?: GravityBridgeNetwork;
+  [BridgingMethods.LAYER_ZERO]?: LayerZeroNetwork;
+  [BridgingMethods.IBC]?: IBCNetwork;
 }
 
-interface GravityBridgeNetwork extends BridgingNetwork, Chain {
+export interface GravityBridgeNetwork extends Network {
   gravityBridgeAddress: string;
   wethAddress: string;
   tokens: Token[];
 }
 
-interface LayerZeroNetwork extends BridgingNetwork, Chain {
+export interface LayerZeroNetwork extends Network {
   lzChainId: number;
-  oftTokens: Token[];
+  tokens: LayerZeroToken[];
 }
 
-interface IBCNetwork extends BridgingNetwork {
+export interface LayerZeroToken extends Token {
+  isNative: boolean;
+}
+
+export interface IBCNetwork {
+  evmChainId?: number;
+  name: string;
+  icon: string;
   chainId: string;
   nativeCurrency: {
     denom: string;
@@ -41,7 +54,16 @@ interface IBCNetwork extends BridgingNetwork {
   tokens: NativeToken[];
 }
 
-interface NativeToken extends Token {
+export interface NativeToken extends Token {
   ibcDenom: string;
   nativeName: string;
 }
+
+export const EMPTYNETWORK: BridgingNetwork = {
+  name: "",
+  icon: "",
+  isCanto: false,
+  isEVM: false,
+  supportedBridgeInMethods: [],
+  supportedBridgeOutMethods: [],
+};
