@@ -228,8 +228,6 @@ const Styled = styled.div`
 `;
 const ChooseNetwork = styled.div`
   .network-list {
-    /* scrollbar-color: var(--primary-color); */
-    scroll-behavior: smooth;
     /* width */
     padding: 8px;
     max-height: 100px;

@@ -151,8 +151,6 @@ const Styled = styled.div`
     text-align: right;
   }
   .token-list {
-    /* scrollbar-color: var(--primary-color); */
-    scroll-behavior: smooth;
     overflow-y: auto;
     padding: 16px;
 

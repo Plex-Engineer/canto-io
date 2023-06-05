@@ -88,7 +88,6 @@ const StyledPopup = styled(Popup)`
   &-content {
     position: relative;
     background-color: black;
-    scroll-behavior: smooth;
     border-radius: 4px;
     animation: fadein 0.5s 1;
     min-height: 42rem;

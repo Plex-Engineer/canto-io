@@ -36,6 +36,7 @@ const RecoveryTransactionBox = ({
     transaction.defaultNetwork
   );
   const [userInputAddress, setUserInputAddress] = useState("");
+
   const bridgeOutNetworks = getNetworkPair(CantoMainnet.chainId).receiving
     .bridgeOutNetworks;
 
@@ -298,8 +299,6 @@ export const ChooseNetwork = styled.div`
   overflow-y: auto;
   padding: 0 2rem;
   .network-list {
-    /* scrollbar-color: var(--primary-color); */
-    scroll-behavior: smooth;
     padding: 8px;
     display: flex;
     flex-direction: column;
