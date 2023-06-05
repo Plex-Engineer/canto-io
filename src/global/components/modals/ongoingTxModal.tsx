@@ -57,59 +57,65 @@ const OngoingTxModal = (props: LoadingProps) => {
           src={close}
           style={{
             position: "absolute",
-            top: "0.5rem",
-            right: "0.5rem",
-            width: "40px",
+            top: "1.4rem",
+            right: "1.4rem",
+            width: "30px",
             cursor: "pointer",
           }}
         />
       </div>
-      <h1>{transactionStore.txListTitle}</h1>
-      {transactionStore.transactions.map((tx) => {
-        return (
-          <div key={tx.details.txId}>
-            <img
-              src={
-                tx.details.status == "Success"
-                  ? completeIcon
-                  : tx.details.status == "Fail" ||
-                    tx.details.status == "Exception"
-                  ? warningIcon
-                  : loadingGif
-              }
-              style={{
-                marginBottom: "1rem",
-              }}
-              height={80}
-              width={80}
-            />
-            <Text size="text1" type="text">
-              {tx.details.currentMessage}
-            </Text>
-            <br />
-            {tx.details.blockExplorerLink ? (
-              <OutlinedButton
-                className="btn"
-                onClick={() => {
-                  Mixpanel.events.loadingModal.blockExplorerOpened(
-                    tx.details.hash
-                  );
-                  window.open(tx.details.blockExplorerLink, "_blank");
+      <Text type="title" size="title3" className="title">
+        {transactionStore.txListTitle}
+      </Text>
+      <div className="scroll-view">
+        {transactionStore.transactions.map((tx) => {
+          return (
+            <div key={tx.details.txId} className="tx">
+              <img
+                className="tx-icon"
+                src={
+                  tx.details.status == "Success"
+                    ? completeIcon
+                    : tx.details.status == "Fail" ||
+                      tx.details.status == "Exception"
+                    ? warningIcon
+                    : loadingGif
+                }
+              />
+              <Text
+                size="text3"
+                style={{
+                  flexGrow: 2,
                 }}
               >
-                open in block explorer
-              </OutlinedButton>
-            ) : null}
-            {tx.details.status === "Fail" && (
-              <PrimaryButton
-                onClick={() => transactionStore.performTxList(tx.details.txId)}
-              >
-                RETRY
-              </PrimaryButton>
-            )}
-          </div>
-        );
-      })}
+                {tx.details.currentMessage}
+              </Text>
+              {tx.details.blockExplorerLink ? (
+                <OutlinedButton
+                  height="small"
+                  onClick={() => {
+                    Mixpanel.events.loadingModal.blockExplorerOpened(
+                      tx.details.hash
+                    );
+                    window.open(tx.details.blockExplorerLink, "_blank");
+                  }}
+                >
+                  <Text size="text3">view</Text>
+                </OutlinedButton>
+              ) : null}
+              {tx.details.status === "Fail" && (
+                <PrimaryButton
+                  onClick={() =>
+                    transactionStore.performTxList(tx.details.txId)
+                  }
+                >
+                  RETRY
+                </PrimaryButton>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </Styled>
   ) : null;
 };
@@ -122,11 +128,38 @@ const Styled = styled.div`
   width: 100%;
   z-index: 10;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   padding: 0 2rem;
-  .btn {
-    margin-top: 2rem;
+
+  .tx-icon {
+    height: 50px;
+    width: 50px;
+    border: 1px solid #333;
+    border-radius: 4px;
+  }
+
+  .title {
+    margin: 1.3rem;
+  }
+
+  .scroll-view {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 4rem;
+    gap: 2rem;
+  }
+
+  .tx {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #333;
+    background-color: #111;
+    border-radius: 4px;
+    padding: 1rem;
+    gap: 1rem;
   }
 `;
 export default OngoingTxModal;
