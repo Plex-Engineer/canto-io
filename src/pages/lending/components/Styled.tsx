@@ -348,22 +348,3 @@ export const RewardsContainer = styled.div`
     width: 100%;
   }
 `;
-
-export const ModalWallet = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin: 2rem 0 1.3rem 0;
-  border-top: 1px solid #222;
-  padding-top: 1rem;
-  width: 30rem;
-  p:first-of-type {
-    font-weight: 300;
-    font-size: 16px;
-    color: #dfdfdf;
-  }
-  p:last-child {
-    font-weight: 300;
-    font-size: 16px;
-    color: var(--primary-color);
-  }
-`;
