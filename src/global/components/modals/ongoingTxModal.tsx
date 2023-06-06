@@ -98,6 +98,7 @@ const OngoingTxModal = (props: LoadingProps) => {
               </div>
               <Text
                 size="text3"
+                bold
                 style={{
                   flexGrow: 2,
                 }}
@@ -119,11 +120,12 @@ const OngoingTxModal = (props: LoadingProps) => {
               ) : null}
               {tx.details.status === "Fail" && (
                 <PrimaryButton
+                  weight="bold"
                   onClick={() =>
                     transactionStore.performTxList(tx.details.txId)
                   }
                 >
-                  RETRY
+                  retry
                 </PrimaryButton>
               )}
             </div>
