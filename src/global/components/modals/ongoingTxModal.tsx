@@ -68,20 +68,34 @@ const OngoingTxModal = (props: LoadingProps) => {
         {transactionStore.txListTitle}
       </Text>
       <div className="scroll-view">
-        {transactionStore.transactions.map((tx) => {
+        {transactionStore.transactions.map((tx, idx) => {
           return (
-            <div key={tx.details.txId} className="tx">
-              <img
-                className="tx-icon"
-                src={
-                  tx.details.status == "Success"
-                    ? completeIcon
-                    : tx.details.status == "Fail" ||
-                      tx.details.status == "Exception"
-                    ? warningIcon
-                    : loadingGif
-                }
-              />
+            <div
+              key={tx.details.txId}
+              className={
+                tx.details.status == "Success"
+                  ? "tx-item tx-item-complete"
+                  : "tx-item "
+              }
+            >
+              <div className="tx-icon">
+                {tx.details.status == "None" ? (
+                  <Text size="text1" type="title">
+                    {idx + 1}
+                  </Text>
+                ) : (
+                  <img
+                    src={
+                      tx.details.status == "Success"
+                        ? completeIcon
+                        : tx.details.status == "Fail" ||
+                          tx.details.status == "Exception"
+                        ? warningIcon
+                        : loadingGif
+                    }
+                  />
+                )}
+              </div>
               <Text
                 size="text3"
                 style={{
@@ -136,6 +150,16 @@ const Styled = styled.div`
     width: 50px;
     border: 1px solid #333;
     border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      height: 50px;
+      width: 50px;
+      border: 1px solid #333;
+      border-radius: 4px;
+    }
   }
 
   .title {
@@ -149,9 +173,10 @@ const Styled = styled.div`
     justify-content: center;
     margin-bottom: 4rem;
     gap: 2rem;
+    width: 100%;
   }
 
-  .tx {
+  .tx-item {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -160,6 +185,11 @@ const Styled = styled.div`
     border-radius: 4px;
     padding: 1rem;
     gap: 1rem;
+  }
+
+  .tx-item-complete {
+    opacity: 0.7;
+    background-color: black;
   }
 `;
 export default OngoingTxModal;
