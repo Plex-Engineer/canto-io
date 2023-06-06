@@ -37,7 +37,7 @@ const GlobalLoadingModal = (props: GlobalLoadingProps) => {
   const currentStatus = () => {
     switch (props.status) {
       case "PendingSignature":
-        return "awaiting signature to " + txDetails.messages.long;
+        return txDetails.messages.long;
       case "Mining":
         return txDetails.messages.pending;
       case "Success":

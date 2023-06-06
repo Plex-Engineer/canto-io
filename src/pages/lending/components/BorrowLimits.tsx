@@ -28,6 +28,8 @@ interface Props {
   isBorrowing: boolean;
   transactionType: CantoTransactionType;
   borrowBalance: BigNumber;
+  userBalanceType: string;
+  userBalance: string;
 }
 
 const Limits = styled.div`
@@ -48,6 +50,8 @@ const Details = ({
   isBorrowing,
   transactionType,
   borrowBalance,
+  userBalance,
+  userBalanceType,
 }: Props) => {
   const amount =
     isNaN(Number(stringAmount)) || !stringAmount || Number(stringAmount) <= 0
@@ -123,13 +127,17 @@ const Details = ({
         </div>
       </Limits>
       <Limits>
-        <p>collateral factor:</p>
+        <Text color="white">collateral factor:</Text>
         <Text type="title">
           {truncateNumber(formatUnits(token.collateralFactor.mul(100)))}%
         </Text>
       </Limits>
       <Limits>
-        <p>borrow {isBorrowing ? "balance" : "limit"}:</p>
+        <Text color="white">{userBalanceType}</Text>
+        <Text type="title">{userBalance}</Text>
+      </Limits>
+      <Limits>
+        <Text color="white">borrow {isBorrowing ? "balance" : "limit"}:</Text>
         <Text type="title">
           {noteSymbol + truncateNumber(cBorrowLimit) + " "}
           {amount.gt(0) &&
@@ -142,7 +150,7 @@ const Details = ({
         </Text>
       </Limits>
       <Limits>
-        <p>borrow limit used:</p>
+        <Text color="white">borrow limit used:</Text>
         <Text type="title">
           {truncateNumber(cBorrowLimitUsed.toString()) + "% "}
           {amount.gt(0) &&

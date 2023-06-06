@@ -16,7 +16,6 @@ import {
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { Details } from "../components/BorrowLimits";
 import { lendingMarketTx } from "../utils/transactions";
-import { ModalWallet } from "../components/Styled";
 import { TransactionStore } from "global/stores/transactionStore";
 
 interface IProps {
@@ -71,6 +70,20 @@ const LendingModal = ({
           isBorrowing={modalType === "repay_borrow"}
           borrowLimit={position.totalBorrowLimit}
           borrowBalance={position.totalBorrow}
+          userBalanceType={
+            modalType === "repay_borrow"
+              ? "currently borrowing"
+              : txType === CantoTransactionType.SUPPLY
+              ? "balance"
+              : "supply balance"
+          }
+          userBalance={
+            truncateNumber(
+              formatUnits(balance, activeToken.data.underlying.decimals)
+            ) +
+            " " +
+            activeToken.data.underlying.symbol
+          }
         />
         <AmountField
           token={activeToken}
@@ -97,6 +110,7 @@ const LendingModal = ({
             formatUnits(balance, activeToken.data.underlying.decimals)
           )}
         />
+
         <div
           style={{
             marginTop: "16px",
@@ -130,21 +144,6 @@ const LendingModal = ({
             {buttonText}
           </PrimaryButton>
         </div>
-        <ModalWallet>
-          <p>
-            {modalType === "repay_borrow"
-              ? "currently borrowing"
-              : txType === CantoTransactionType.SUPPLY
-              ? "balance"
-              : "supply balance"}
-          </p>
-          <p>
-            {truncateNumber(
-              formatUnits(balance, activeToken.data.underlying.decimals)
-            )}{" "}
-            {activeToken.data.underlying.symbol}
-          </p>
-        </ModalWallet>
       </TabPanel>
     );
   };

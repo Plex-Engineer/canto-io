@@ -24,7 +24,6 @@ export const StyledPopup = styled(Popup)`
 
     background-color: black;
     border-radius: 4px;
-    scroll-behavior: smooth;
     transition: all 0.2s;
     animation: fadein 0.5s 1;
     @keyframes fadein {
