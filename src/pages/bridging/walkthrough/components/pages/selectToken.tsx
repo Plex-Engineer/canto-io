@@ -37,7 +37,7 @@ const SelectTokenPage = (props: SelectTokenProps) => {
       <section>
         <div className="wallet">
           <TokenWallet
-            tokenGroups={[
+            allTokens={[
               {
                 groupName: "Tokens",
                 tokens: props.tokenList,

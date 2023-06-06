@@ -1,27 +1,28 @@
-import { BigNumber, BigNumberish } from "ethers";
-import { formatUnits } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
 import { BridgeStyled } from "./BridgeIn";
 import QBoxList from "./components/QBoxList";
 import Step1TxBox from "./components/step1TxBox";
 import Step2TxBox from "./components/step2TxBox";
-import {
-  BridgeNetworkPair,
-  NativeTransaction,
-  UserERC20BridgeToken,
-} from "./config/interfaces";
-import { convertTx } from "./utils/transactions";
 import { TransactionStore } from "global/stores/transactionStore";
-
+import { Token } from "global/config/interfaces/tokens";
+import { BridgingNetwork } from "./config/bridgingInterfaces";
 interface BridgeOutProps {
+  //tokens
+  bridgeTokens: Token[];
+  selectedToken?: Token;
+  selectToken: (token?: Token) => void;
+  //networks
+  chainId: number;
+  allNetworks: BridgingNetwork[];
+  fromNetwork: BridgingNetwork;
+  toNetwork: BridgingNetwork;
+  selectNetwork: (network: BridgingNetwork, isFrom: boolean) => void;
+  //addresses
   ethAddress?: string;
   cantoAddress?: string;
-  bridgeOutTokens: UserERC20BridgeToken[];
-  selectedBridgeOutToken: UserERC20BridgeToken;
-  selectToken: (tokenAddress: string) => void;
-  step2Transactions: NativeTransaction[];
-  chainId: number;
+  //tx
+  tx: (amount: BigNumber, toChainAddress?: string) => Promise<boolean>;
   txStore: TransactionStore;
-  networkPair: BridgeNetworkPair;
 }
 const BridgeOut = (props: BridgeOutProps) => {
   return (
@@ -84,40 +85,21 @@ const BridgeOut = (props: BridgeOutProps) => {
       </div>
       <div className="center">
         <Step1TxBox
+          bridgeIn={false}
+          allNetworks={props.allNetworks}
+          fromNetwork={props.fromNetwork}
+          toNetwork={props.toNetwork}
+          selectNetwork={(network) => props.selectNetwork(network, false)}
           fromAddress={props.ethAddress}
           toAddress={props.cantoAddress}
-          bridgeIn={false}
-          tokenGroups={[
-            {
-              groupName: "bridge out tokens",
-              tokens: props.bridgeOutTokens,
-              getBalance: (token) =>
-                formatUnits(token.erc20Balance as BigNumberish, token.decimals),
-            },
-          ]}
-          selectedToken={props.selectedBridgeOutToken}
+          allTokens={props.bridgeTokens}
+          selectedToken={props.selectedToken}
           selectToken={props.selectToken}
-          tx={async (amount: BigNumber) =>
-            await convertTx(
-              props.chainId,
-              props.txStore,
-              false,
-              props.cantoAddress ?? "",
-              props.selectedBridgeOutToken.address,
-              amount.toString(),
-              {
-                icon: props.selectedBridgeOutToken.icon,
-                symbol: props.selectedBridgeOutToken.symbol,
-                amount: formatUnits(
-                  amount,
-                  props.selectedBridgeOutToken.decimals
-                ),
-              }
-            )
+          tx={async (amount: BigNumber, toAddress?: string) =>
+            await props.tx(amount, toAddress)
           }
-          networkPair={props.networkPair}
         />
-        <Step2TxBox
+        {/* <Step2TxBox
           bridgeIn={false}
           transactions={props.step2Transactions}
           cantoAddress={props.cantoAddress ?? ""}
@@ -125,7 +107,7 @@ const BridgeOut = (props: BridgeOutProps) => {
           txStore={props.txStore}
           networkPair={props.networkPair}
           chainId={props.chainId}
-        />
+        /> */}
       </div>
       <div className="right"></div>
     </BridgeStyled>

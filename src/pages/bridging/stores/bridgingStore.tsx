@@ -7,6 +7,10 @@ import {
 } from "../config/networks.ts";
 import { getUserTokenBalances } from "global/utils/api/tokenBalances";
 import { useNetworkInfo } from "global/stores/networkInfo";
+import { BigNumber } from "ethers";
+import { bridgeTxRouter } from "../utils/transactions";
+import { useTransactionStore } from "global/stores/transactionStore";
+import { onTestnet } from "global/config/networks";
 
 interface BridgingStore {
   allNetworks: BridgingNetwork[];
@@ -15,9 +19,11 @@ interface BridgingStore {
   setNetwork: (network: BridgingNetwork, isFrom: boolean) => Promise<void>;
   allTokens: Token[]; //include balances on the tokens
   selectedToken: Token | undefined;
-  setToken: (token: Token) => void;
+  setToken: (token?: Token) => void;
   //to know if we are on testnet
+  onTestnet: boolean;
   chainIdChanged: (chainId: number) => Promise<void>;
+  bridgeTx: (amount: BigNumber, toChainAddress?: string) => Promise<boolean>;
 }
 
 const useBridgingStore = create<BridgingStore>((set, get) => ({
@@ -49,23 +55,40 @@ const useBridgingStore = create<BridgingStore>((set, get) => ({
   allTokens: [],
   selectedToken: undefined,
   setToken: (token) => set({ selectedToken: token }),
+  onTestnet: false,
   chainIdChanged: async (chainId) => {
-    const allNetworks = getBridgingNetworksFromChainId(chainId);
-    const from = allNetworks[1] ?? EMPTYNETWORK;
-    const to = allNetworks[0] ?? EMPTYNETWORK;
-    const accountInfo = useNetworkInfo.getState();
-    set({
-      allNetworks: allNetworks,
-      fromNetwork: from,
-      toNetwork: to,
-      allTokens: await getUserTokenBalances(
-        getTokensFromBridgingNetworks(from, to),
-        accountInfo.account,
-        Number(from.evmChainId)
-      ),
-      selectedToken: undefined,
-    });
+    const isOnTestnet = onTestnet(chainId);
+    if (isOnTestnet !== get().onTestnet) {
+      //we have a new set of networks, so we need to update the store
+      const allNetworks = getBridgingNetworksFromChainId(chainId);
+      const from = allNetworks[1] ?? EMPTYNETWORK;
+      const to = allNetworks[0] ?? EMPTYNETWORK;
+      const accountInfo = useNetworkInfo.getState();
+      set({
+        onTestnet: isOnTestnet,
+        allNetworks: allNetworks,
+        fromNetwork: from,
+        toNetwork: to,
+        allTokens: await getUserTokenBalances(
+          getTokensFromBridgingNetworks(from, to),
+          accountInfo.account,
+          Number(from.evmChainId)
+        ),
+        selectedToken: undefined,
+      });
+    }
   },
+  bridgeTx: async (amount, toChainAddress?: string) =>
+    await bridgeTxRouter(
+      useTransactionStore.getState(),
+      useNetworkInfo.getState().account,
+      useNetworkInfo.getState().cantoAddress,
+      get().fromNetwork,
+      get().toNetwork,
+      get().selectedToken,
+      amount,
+      toChainAddress
+    ),
 }));
 
 function getTokensFromBridgingNetworks(

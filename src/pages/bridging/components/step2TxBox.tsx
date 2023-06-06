@@ -1,23 +1,18 @@
 import styled from "@emotion/styled";
 import { PrimaryButton, Text } from "global/packages/src";
-import { BridgeNetworkPair, NativeTransaction } from "../config/interfaces";
-import MiniTransaction from "./miniTransaction";
+import { NativeTransaction } from "../config/interfaces";
 import { TransactionStore } from "global/stores/transactionStore";
-import {
-  completeAllConvertIn,
-  convertTx,
-  ibcOutTx,
-} from "../utils/transactions";
+import { completeAllConvertIn, convertTx } from "../utils/transactions";
+import MiniConvert from "./miniConvert";
 import { formatUnits } from "ethers/lib/utils";
 
 interface Step2TxBoxProps {
+  bridgeIn: boolean;
   transactions: NativeTransaction[];
   cantoAddress: string;
   ethAddress: string;
-  bridgeIn: boolean;
   txStore: TransactionStore;
   chainId: number;
-  networkPair: BridgeNetworkPair;
 }
 const Step2TxBox = (props: Step2TxBoxProps) => {
   return (
@@ -52,52 +47,35 @@ const Step2TxBox = (props: Step2TxBoxProps) => {
               <Text>No transactions available right now</Text>
             </div>
           )}
-          {props.transactions
-            .sort((a, b) => (a.origin > b.origin ? 1 : -1))
-            .map((tx) => {
-              return (
-                <MiniTransaction
-                  key={tx.token.address}
-                  correctChainId={props.networkPair.receiving.network.chainId}
-                  transaction={tx}
-                  cantoAddress={props.cantoAddress}
-                  ethAddress={props.ethAddress}
-                  recover={false}
-                  isIBCTransfer={!props.bridgeIn}
-                  networkPair={props.networkPair}
-                  tx={
-                    props.bridgeIn
-                      ? () =>
-                          convertTx(
-                            props.chainId,
-                            props.txStore,
-                            props.bridgeIn,
-                            props.cantoAddress,
-                            tx.token.ibcDenom,
-                            tx.amount.toString(),
-                            {
-                              icon: tx.token.icon,
-                              symbol: tx.token.symbol,
-                              amount: formatUnits(tx.amount, tx.token.decimals),
-                            }
-                          )
-                      : (bridgeOutNetwork, address) =>
-                          ibcOutTx(
-                            props.chainId,
-                            props.txStore,
-                            bridgeOutNetwork,
-                            address,
-                            tx.token.ibcDenom,
-                            tx.amount.toString(),
-                            {
-                              symbol: `${tx.token.symbol} to ${bridgeOutNetwork.name}`,
-                              amount: formatUnits(tx.amount, tx.token.decimals),
-                            }
-                          )
-                  }
-                />
-              );
-            })}
+          {props.bridgeIn &&
+            props.transactions
+              .sort((a, b) => (a.origin > b.origin ? 1 : -1))
+              .map((tx) => {
+                return (
+                  <MiniConvert
+                    key={tx.token.address}
+                    transaction={tx}
+                    correctChainId={props.chainId}
+                    cantoAddress={props.cantoAddress}
+                    ethAddress={props.ethAddress}
+                    tx={() =>
+                      convertTx(
+                        props.chainId,
+                        props.txStore,
+                        props.bridgeIn,
+                        props.cantoAddress,
+                        tx.token.ibcDenom,
+                        tx.amount.toString(),
+                        {
+                          icon: tx.token.icon,
+                          symbol: tx.token.symbol,
+                          amount: formatUnits(tx.amount, tx.token.decimals),
+                        }
+                      )
+                    }
+                  />
+                );
+              })}
         </div>
       </div>
     </Styled>

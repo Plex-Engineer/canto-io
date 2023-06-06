@@ -71,13 +71,10 @@ export function formatAddress(address: string | undefined, show: number) {
 export function getStep1ButtonText(
   amount: BigNumber,
   max: BigNumber,
-  currentAllowance: BigNumber,
   bridgeIn: boolean
 ): [string, boolean] {
   const bText = bridgeIn ? "bridge in" : "bridge out";
-  if (currentAllowance.lt(max) || currentAllowance.isZero()) {
-    return ["approve", false];
-  } else if (amount.isZero()) {
+  if (amount.isZero()) {
     return [bText, true];
   } else if (amount.gt(max)) {
     return [bText, true];

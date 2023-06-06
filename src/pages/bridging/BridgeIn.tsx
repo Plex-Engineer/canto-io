@@ -1,31 +1,34 @@
 import styled from "@emotion/styled";
 import Step2TxBox from "./components/step2TxBox";
-import {
-  BridgeNetworkPair,
-  NativeTransaction,
-  UserERC20BridgeToken,
-} from "./config/interfaces";
+import { NativeTransaction } from "./config/interfaces";
 import Step1TxBox from "./components/step1TxBox";
 import QBoxList from "./components/QBoxList";
-import { TokenGroups } from "global/config/interfaces/tokens";
-import { BigNumber, BigNumberish } from "ethers";
-import { formatUnits } from "ethers/lib/utils";
-import { sendToComsosTx } from "./utils/transactions";
+import { Token } from "global/config/interfaces/tokens";
+import { BigNumber } from "ethers";
 import { TransactionStore } from "global/stores/transactionStore";
+import { BridgingNetwork } from "./config/bridgingInterfaces";
 
 interface BridgeInProps {
+  //tokens
+  bridgeTokens: Token[];
+  selectedToken?: Token;
+  selectToken: (token?: Token) => void;
+  //networks
+  chainId: number;
+  allNetworks: BridgingNetwork[];
+  fromNetwork: BridgingNetwork;
+  toNetwork: BridgingNetwork;
+  selectNetwork: (network: BridgingNetwork, isFrom: boolean) => void;
+  //addresses
   ethAddress?: string;
   cantoAddress?: string;
-  ethGBridgeTokens: UserERC20BridgeToken[];
-  selectedEthToken: UserERC20BridgeToken;
-  selectEthToken: (tokenAddress: string) => void;
-  step2Transactions: NativeTransaction[];
-  chainId: number;
+  //tx
+  tx: (amount: BigNumber, toChainAddress?: string) => Promise<boolean>;
   txStore: TransactionStore;
-  networkPair: BridgeNetworkPair;
+  //step2
+  step2Transactions: NativeTransaction[];
 }
 const BridgeIn = (props: BridgeInProps) => {
-  const selectedToken = props.selectedEthToken;
   return (
     <BridgeStyled>
       <div className="left">
@@ -90,70 +93,17 @@ const BridgeIn = (props: BridgeInProps) => {
       </div>
       <div className="center">
         <Step1TxBox
+          bridgeIn={true}
+          allNetworks={props.allNetworks}
+          fromNetwork={props.fromNetwork}
+          toNetwork={props.toNetwork}
+          selectNetwork={(network) => props.selectNetwork(network, true)}
           fromAddress={props.ethAddress}
           toAddress={props.cantoAddress}
-          bridgeIn={true}
-          tokenGroups={[
-            {
-              groupName: "canto dex tokens",
-              tokens: [
-                ...props.ethGBridgeTokens,
-                ...props.networkPair.receiving.nativeCosmosTokens,
-              ].filter((token) =>
-                token.tokenGroups.includes(TokenGroups.DEX_TOKENS)
-              ),
-              getBalance: (token) => {
-                if (token.tokenGroups.includes(TokenGroups.IBC_TOKENS))
-                  return "ibc";
-                else {
-                  return formatUnits(
-                    token.erc20Balance as BigNumberish,
-                    token.decimals
-                  );
-                }
-              },
-            },
-            {
-              groupName: "other tokens",
-              tokens: [
-                ...props.ethGBridgeTokens,
-                ...props.networkPair.receiving.nativeCosmosTokens,
-              ].filter(
-                (token) => !token.tokenGroups.includes(TokenGroups.DEX_TOKENS)
-              ),
-              getBalance: (token) => {
-                if (token.tokenGroups.includes(TokenGroups.IBC_TOKENS))
-                  return "ibc";
-                else {
-                  return formatUnits(
-                    token.erc20Balance as BigNumberish,
-                    token.decimals
-                  );
-                }
-              },
-            },
-          ]}
-          selectedToken={props.selectedEthToken}
-          selectToken={props.selectEthToken}
-          tx={async (amount: BigNumber) =>
-            await sendToComsosTx(
-              props.networkPair.sending.network.chainId,
-              props.txStore,
-              props.networkPair.sending.network.coreContracts.GravityBridge,
-              props.networkPair.sending.network.coreContracts.WETH,
-              selectedToken.address,
-              props.cantoAddress ?? "",
-              props.ethAddress ?? "",
-              amount,
-              selectedToken.allowance,
-              {
-                symbol: selectedToken.symbol,
-                amount: formatUnits(amount, selectedToken.decimals),
-                icon: selectedToken.icon,
-              }
-            )
-          }
-          networkPair={props.networkPair}
+          allTokens={props.bridgeTokens}
+          selectedToken={props.selectedToken}
+          selectToken={props.selectToken}
+          tx={async (amount: BigNumber) => await props.tx(amount)}
         />
         <Step2TxBox
           bridgeIn
@@ -161,7 +111,6 @@ const BridgeIn = (props: BridgeInProps) => {
           cantoAddress={props.cantoAddress ?? ""}
           ethAddress={props.ethAddress ?? ""}
           txStore={props.txStore}
-          networkPair={props.networkPair}
           chainId={props.chainId}
         />
       </div>

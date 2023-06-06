@@ -15,6 +15,7 @@ function getBridgingNetworksFromChainId(chainId?: number) {
   return onTestnet(chainId) ? TESTNET_BRIDGE_NETWORKS : MAINNET_BRIDGE_NETWORKS;
 }
 const CANTO_MAIN_BRIDGE_NETWORK: BridgingNetwork = {
+  id: "canto-main",
   name: CantoMainnet.name,
   icon: CantoMainnet.icon,
   isCanto: true,
@@ -24,6 +25,7 @@ const CANTO_MAIN_BRIDGE_NETWORK: BridgingNetwork = {
   supportedBridgeOutMethods: [],
 };
 const CANTO_TEST_BRIDGE_NETWORK: BridgingNetwork = {
+  id: "canto-test",
   name: CantoTestnet.name,
   icon: CantoTestnet.icon,
   isCanto: true,
@@ -36,6 +38,7 @@ const CANTO_TEST_BRIDGE_NETWORK: BridgingNetwork = {
 
 const ibcMainNetworks = () =>
   Object.entries(MAINNET_IBC_NETWORKS).map(([, val]) => ({
+    id: val.name,
     name: val.name,
     icon: val.icon,
     isCanto: false,
@@ -50,6 +53,7 @@ const MAINNET_BRIDGE_NETWORKS: BridgingNetwork[] = [
   CANTO_MAIN_BRIDGE_NETWORK,
   //gbridge
   {
+    id: ETHMainnet.name,
     name: ETHMainnet.name,
     icon: ETHMainnet.icon,
     isCanto: false,
@@ -72,6 +76,7 @@ const TESTNET_BRIDGE_NETWORKS: BridgingNetwork[] = [
   CANTO_TEST_BRIDGE_NETWORK,
   //LZ
   {
+    id: MumbaiTestnet.name,
     name: MumbaiTestnet.name,
     icon: MumbaiTestnet.icon,
     isCanto: false,
@@ -82,6 +87,7 @@ const TESTNET_BRIDGE_NETWORKS: BridgingNetwork[] = [
     [BridgingMethods.LAYER_ZERO]: LAYER_ZERO_TEST_NETWORKS.MUMBAI_TEST,
   },
   {
+    id: FantomTestnet.name,
     name: FantomTestnet.name,
     icon: FantomTestnet.icon,
     isCanto: false,

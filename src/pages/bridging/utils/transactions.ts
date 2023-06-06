@@ -50,12 +50,15 @@ export async function bridgeTxRouter(
   cantoAddress: string | undefined,
   fromNetwork: BridgingNetwork,
   toNetwork: BridgingNetwork,
-  token: Token,
+  token: Token | undefined,
   amount: BigNumber,
   toChainAddress?: string
 ): Promise<boolean> {
   if (!fromNetwork.isEVM) {
     //this is only for EVM, ibc will be handeled separately through keplr
+    return false;
+  }
+  if (!ethAddress || !cantoAddress || !token) {
     return false;
   }
   const tokenDetails = {
@@ -143,7 +146,7 @@ export async function bridgeTxRouter(
 }
 
 //will take care of wrapping ETH for WETH before bridging
-export async function sendToComsosTx(
+async function sendToComsosTx(
   chainId: number | undefined,
   txStore: TransactionStore,
   gravityAddresss: string,
@@ -323,7 +326,7 @@ export async function ibcOutTx(
     }
   );
 }
-export async function convertAndIbcOutTx(
+async function convertAndIbcOutTx(
   chainId: number | undefined,
   txStore: TransactionStore,
   cantoAddress: string | undefined,
@@ -381,7 +384,7 @@ export async function convertAndIbcOutTx(
 }
 
 //OFT transactions
-export async function oftTransferTx(
+async function oftTransferTx(
   chainId: number | undefined,
   txStore: TransactionStore,
   bridgeIn: boolean,

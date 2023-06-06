@@ -5,6 +5,7 @@ import "react-tabs/style/react-tabs.css";
 
 interface Props {
   names: string[];
+  onClicks: (() => void)[];
   panels: ReactNode[];
 }
 const CantoTabs = (props: Props) => {
@@ -13,7 +14,7 @@ const CantoTabs = (props: Props) => {
       <Tabs className="tabs">
         <TabList className="tablist">
           {props.names.map((label, idx) => (
-            <Tab className="tab" key={idx}>
+            <Tab className="tab" key={idx} onClick={props.onClicks[idx]}>
               {label}
             </Tab>
           ))}

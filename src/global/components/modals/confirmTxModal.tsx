@@ -16,7 +16,7 @@ const ConfirmTxModal = (props: ConfirmTxModalProps) => {
           <Text type="title">Oops, you seem to be on a wrong network.</Text>
           <PrimaryButton
             onClick={() => {
-              switchNetwork(props.networkId);
+              switchNetwork(props.networkId ?? 0);
             }}
           >
             Switch Network

@@ -7,6 +7,7 @@ export enum BridgingMethods {
   IBC = "IBC",
 }
 export interface BridgingNetwork {
+  id: string;
   name: string;
   icon: string;
   isCanto: boolean; //will be used to determine token lists, and bridge in or out
@@ -70,6 +71,7 @@ export interface NativeToken extends Token {
 }
 
 export const EMPTYNETWORK: BridgingNetwork = {
+  id: "empty",
   name: "",
   icon: "",
   isCanto: false,

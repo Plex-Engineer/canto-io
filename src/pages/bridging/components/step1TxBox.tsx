@@ -1,16 +1,7 @@
 import styled from "@emotion/styled";
 import { PrimaryButton, Text } from "global/packages/src";
-import bridgeIcon from "assets/icons/canto-bridge.svg";
-import cantoIcon from "assets/icons/canto-evm.svg";
 import CopyIcon from "assets/copy.svg";
-
-import {
-  BridgeNetworkPair,
-  EMPTY_NATIVE_TOKEN,
-  NativeToken,
-  Step1TokenGroups,
-  UserERC20BridgeToken,
-} from "../config/interfaces";
+import { EMPTY_NATIVE_TOKEN, NativeToken } from "../config/interfaces";
 import LoadingBlip from "./LoadingBlip";
 import {
   convertStringToBigNumber,
@@ -22,25 +13,32 @@ import CopyToClipboard from "react-copy-to-clipboard";
 import { useState } from "react";
 import { copyAddress, formatAddress, getStep1ButtonText } from "../utils/utils";
 import Modal from "global/packages/src/components/molecules/Modal";
-import { TokenWallet } from "./tokenSelect";
 import IBCGuideModal from "./modals/ibcGuideModal";
-import { TokenGroups } from "global/config/interfaces/tokens";
+import { Token, TokenGroups } from "global/config/interfaces/tokens";
+import { BigNumber } from "ethers";
+import DropDown from "./dropDown";
+import { BridgingNetwork } from "../config/bridgingInterfaces";
+import { TokenWallet } from "./tokenSelect";
 import ConfirmTxModal, {
   TokenWithIcon,
 } from "global/components/modals/confirmTxModal";
 import { getBridgeExtraDetails } from "./bridgeDetails";
-import { BigNumber } from "ethers";
-import DropDown from "./dropDown";
-import layerZeroIcon from "assets/icons/layer_zero.png";
 interface Step1TxBoxProps {
+  bridgeIn: boolean;
+  //network indo
+  allNetworks: BridgingNetwork[];
+  fromNetwork: BridgingNetwork;
+  toNetwork: BridgingNetwork;
+  selectNetwork: (network: BridgingNetwork) => void;
+  //addresses
   fromAddress?: string;
   toAddress?: string;
-  bridgeIn: boolean;
-  tokenGroups: Step1TokenGroups[];
-  selectedToken: UserERC20BridgeToken;
-  selectToken: (tokenAddress: string) => void;
-  tx: (amount: BigNumber) => Promise<boolean>;
-  networkPair: BridgeNetworkPair;
+  //tokens
+  allTokens: Token[];
+  selectedToken?: Token;
+  selectToken: (token?: Token) => void;
+  //tx
+  tx: (amount: BigNumber, toAddress?: string) => Promise<boolean>;
 }
 const Step1TxBox = (props: Step1TxBoxProps) => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -49,13 +47,15 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
     useState<NativeToken>(EMPTY_NATIVE_TOKEN);
   const [amount, setAmount] = useState("");
 
-  const currentTokenBalance = props.selectedToken.erc20Balance;
-  const [buttonText, buttonDisabled] = getStep1ButtonText(
-    convertStringToBigNumber(amount, props.selectedToken.decimals),
-    currentTokenBalance,
-    props.selectedToken.allowance,
-    props.bridgeIn
-  );
+  const currentTokenBalance = props.selectedToken?.balance ?? BigNumber.from(0);
+
+  const [buttonText, buttonDisabled] = props.selectedToken
+    ? getStep1ButtonText(
+        convertStringToBigNumber(amount, props.selectedToken.decimals),
+        currentTokenBalance,
+        props.bridgeIn
+      )
+    : ["select token", true];
 
   return (
     <Styled>
@@ -76,31 +76,28 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         onClose={() => setModalOpen(false)}
       >
         <ConfirmTxModal
-          networkId={
-            props.bridgeIn
-              ? props.networkPair.sending.network.chainId
-              : props.networkPair.receiving.network.chainId
-          }
+          networkId={props.fromNetwork.evmChainId}
           title={"CONFIRM"}
           titleIcon={TokenWithIcon({
-            icon: props.selectedToken.icon,
-            name: props.selectedToken.name,
+            icon: props.selectedToken?.icon ?? "",
+            name: props.selectedToken?.name ?? "",
           })}
           confirmationValues={[
             { title: "from", value: formatAddress(props.fromAddress, 6) },
             { title: "to", value: formatAddress(props.toAddress, 6) },
             {
               title: "amount",
-              value: truncateNumber(amount) + " " + props.selectedToken.symbol,
+              value: truncateNumber(amount) + " " + props.selectedToken?.symbol,
             },
           ]}
           extraInputs={[]}
           disableConfirm={false}
-          onConfirm={() =>
-            props.tx(
-              convertStringToBigNumber(amount, props.selectedToken.decimals)
-            )
-          }
+          onConfirm={() => {
+            if (props.selectedToken)
+              props.tx(
+                convertStringToBigNumber(amount, props.selectedToken.decimals)
+              );
+          }}
           extraDetails={getBridgeExtraDetails(
             props.bridgeIn,
             false,
@@ -121,54 +118,20 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             <DropDown
               title="select bridge"
               label="Network"
-              Items={[
-                {
-                  primaryText: "GBridge",
-                  icon: "icon",
-                  id: "1",
-                },
-                {
-                  primaryText: "LayerZero",
-                  icon: layerZeroIcon,
-                  id: "2",
-                },
-                {
-                  primaryText: "Phantom",
-                  icon: "icon",
-                  id: "3",
-                },
-                {
-                  primaryText: "Ethereum",
-                  icon: "icon",
-                  id: "4",
-                },
-              ]}
+              items={props.allNetworks.map((network) => ({
+                primaryText: network.name,
+                icon: network.icon,
+                id: network.id,
+              }))}
               onSelect={(id) => {
-                //   console.log(
-                //     [
-                //       {
-                //         primaryText: "GBridge",
-                //         icon: "icon",
-                //         id: "1",
-                //       },
-                //       {
-                //         primaryText: "LayerZero",
-                //         icon: "icon",
-                //         id: "2",
-                //       },
-                //       {
-                //         primaryText: "Phantom",
-                //         icon: "icon",
-                //         id: "3",
-                //       },
-                //       {
-                //         primaryText: "Ethereum",
-                //         icon: "icon",
-                //         id: "4",
-                //       },
-                //     ].filter((item) => item.id === id)[0]
-                //   );
+                const network = props.allNetworks.find(
+                  (network) => network.id === id
+                );
+                if (network) {
+                  props.selectNetwork(network);
+                }
               }}
+              selectedId={props.fromNetwork.id}
             />
           </div>
           <CopyToClipboard text={props.fromAddress ?? ""} onCopy={copyAddress}>
@@ -205,32 +168,20 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           <DropDown
             title="select network"
             label="Network"
-            Items={[
-              {
-                primaryText: "canto",
-                icon: cantoIcon,
-                id: "1",
-              },
-              {
-                primaryText: "Phantom",
-                icon: layerZeroIcon,
-                id: "2",
-              },
-              {
-                primaryText: "Cosmos",
-                icon: "icon",
-                id: "3",
-              },
-              {
-                primaryText: "Ethereum",
-                icon: "icon",
-                id: "4",
-              },
-            ]}
+            items={props.allNetworks.map((network) => ({
+              primaryText: network.name,
+              icon: network.icon,
+              id: network.id,
+            }))}
             onSelect={(id) => {
-              //query bridgeStore using id to get network
-              console.log(id);
+              const network = props.allNetworks.find(
+                (network) => network.id === id
+              );
+              if (network) {
+                props.selectNetwork(network);
+              }
             }}
+            selectedId={props.toNetwork.id}
           />
           <CopyToClipboard text={props.toAddress ?? ""} onCopy={copyAddress}>
             <Text
@@ -262,30 +213,22 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
       <div className="amount-box">
         <div className="token-box">
           <TokenWallet
-            tokenGroups={props.tokenGroups}
+            allTokens={props.allTokens}
             activeToken={props.selectedToken}
-            onSelect={(value) => {
+            onSelect={(token) => {
               if (
-                value?.tokenGroups.includes(TokenGroups.IBC_TOKENS) &&
+                token?.tokenGroups.includes(TokenGroups.IBC_TOKENS) &&
                 props.bridgeIn
               ) {
-                setSelectedIBCToken(value as NativeToken);
                 setisIBCModalOpen(true);
+                setSelectedIBCToken(token as NativeToken);
+                return;
               }
-              props.selectToken(value?.address ?? props.selectedToken.address);
+              props.selectToken(token);
             }}
           />
         </div>
         <div className="amount">
-          {/* <Text
-            style={{
-              color: "#848484",
-              width: "180px",
-              marginLeft: "6px",
-            }}
-          >
-            amount :
-          </Text> */}
           <CInput
             style={{
               backgroundColor: "transparent",
@@ -293,7 +236,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
               height: "54px",
             }}
             placeholder={`amount :  ${truncateNumber(
-              formatUnits(currentTokenBalance, props.selectedToken.decimals),
+              formatUnits(currentTokenBalance, props.selectedToken?.decimals),
               6
             )} `}
             value={amount}
@@ -308,7 +251,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
                 truncateNumber(
                   formatUnits(
                     currentTokenBalance,
-                    props.selectedToken.decimals
+                    props.selectedToken?.decimals
                   ),
                   6
                 )
@@ -327,11 +270,12 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         style={{ color: "#ff4141" }}
       >
         {buttonDisabled &&
-          convertStringToBigNumber(amount, props.selectedToken.decimals).gt(
-            currentTokenBalance
-          ) &&
+          convertStringToBigNumber(
+            amount,
+            props.selectedToken?.decimals ?? 0
+          ).gt(currentTokenBalance) &&
           `you have exceeded the maximum amount! (current balance: ${truncateNumber(
-            formatUnits(currentTokenBalance, props.selectedToken.decimals)
+            formatUnits(currentTokenBalance, props.selectedToken?.decimals)
           )})`}
       </Text>
 

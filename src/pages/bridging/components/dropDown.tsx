@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import acronIcon from "assets/acron.svg";
 import { ChooseNetwork } from "./recoveryTransaction";
 
@@ -13,24 +13,25 @@ interface Item {
 }
 
 interface Props {
-  Items: Item[];
+  items: Item[];
   title: string;
   label?: string;
+  selectedId?: string;
   onSelect: (id: string) => void;
 }
-const DropDown = ({ onSelect, Items, title, label }: Props) => {
+const DropDown = ({ onSelect, items, title, label, selectedId }: Props) => {
   const [isSelectModalOpen, setSelectModalOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState(Items[0]);
+  const activeItem = items.find((i) => i.id === selectedId);
 
   return (
     <Styled
       onClick={() => {
-        Items.length === 1 ? null : setSelectModalOpen(true);
+        items.length === 1 ? null : setSelectModalOpen(true);
       }}
-      disabled={Items.length === 1}
+      disabled={items.length === 1}
     >
       <img
-        src={activeItem.icon}
+        src={activeItem?.icon}
         height={40}
         style={{
           marginRight: 8,
@@ -43,7 +44,7 @@ const DropDown = ({ onSelect, Items, title, label }: Props) => {
           </Text>
         )}
         <Text type="title" size="text3" align="left">
-          {activeItem.primaryText}
+          {activeItem?.primaryText}
           <Modal
             title={title}
             open={isSelectModalOpen}
@@ -53,19 +54,18 @@ const DropDown = ({ onSelect, Items, title, label }: Props) => {
           >
             <ChooseNetwork>
               <div className="network-list">
-                {Items.map((item) => (
+                {items.map((item) => (
                   <div
                     role="button"
                     tabIndex={0}
                     key={item.id}
                     className="network-item"
                     onClick={() => {
-                      setActiveItem(Items.filter((i) => i.id === item.id)[0]);
                       onSelect(item.id);
                       setSelectModalOpen(false);
                     }}
                     style={{
-                      background: activeItem.id === item.id ? "#1d1d1d" : "",
+                      background: activeItem?.id === item.id ? "#1d1d1d" : "",
                     }}
                   >
                     <span>
