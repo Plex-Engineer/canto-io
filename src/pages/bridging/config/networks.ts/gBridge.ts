@@ -15,12 +15,15 @@ const GBRIDGE_MAIN_NETWORKS: GBridgeNetworkData = {
     ...ETHMainnet,
     gravityBridgeAddress: ADDRESSES.ETHMainnet.GravityBridge,
     wethAddress: ADDRESSES.ETHMainnet.WETH,
-    tokens: [
-      TOKENS.ETHMainnet.USDC,
-      TOKENS.ETHMainnet.USDT,
-      TOKENS.ETHMainnet.WETH,
-      TOKENS.ETHMainnet.WSTETH,
-    ],
+    tokens: {
+      toCanto: [
+        TOKENS.ETHMainnet.USDC,
+        TOKENS.ETHMainnet.USDT,
+        TOKENS.ETHMainnet.WETH,
+        TOKENS.ETHMainnet.WSTETH,
+      ],
+      fromCanto: [],
+    },
   },
 };
 const GBRIDGE_TEST_NETWORKS = {};

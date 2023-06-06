@@ -20,15 +20,8 @@ const CANTO_MAIN_BRIDGE_NETWORK: BridgingNetwork = {
   isCanto: true,
   isEVM: true,
   evmChainId: CantoMainnet.chainId,
-  supportedBridgeInMethods: [
-    //   BridgingMethods.LAYER_ZERO,
-    BridgingMethods.GBRIDGE,
-    BridgingMethods.IBC,
-  ],
-  supportedBridgeOutMethods: [
-    //   BridgingMethods.LAYER_ZERO,
-    BridgingMethods.IBC,
-  ],
+  supportedBridgeInMethods: [],
+  supportedBridgeOutMethods: [],
 };
 const CANTO_TEST_BRIDGE_NETWORK: BridgingNetwork = {
   name: CantoTestnet.name,
@@ -36,8 +29,8 @@ const CANTO_TEST_BRIDGE_NETWORK: BridgingNetwork = {
   isCanto: true,
   isEVM: true,
   evmChainId: CantoTestnet.chainId,
-  supportedBridgeInMethods: [BridgingMethods.LAYER_ZERO],
-  supportedBridgeOutMethods: [BridgingMethods.LAYER_ZERO],
+  supportedBridgeInMethods: [],
+  supportedBridgeOutMethods: [],
   [BridgingMethods.LAYER_ZERO]: LAYER_ZERO_TEST_NETWORKS.CANTO_TEST,
 };
 

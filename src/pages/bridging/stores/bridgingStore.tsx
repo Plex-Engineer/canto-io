@@ -76,12 +76,12 @@ function getTokensFromBridgingNetworks(
   if (to.isCanto) {
     //BRIDGE IN: look to see how to bridge from the other network
     for (const method of from.supportedBridgeOutMethods) {
-      allTokens.push(...(from[method]?.tokens ?? []));
+      allTokens.push(...(from[method]?.tokens?.toCanto ?? []));
     }
   } else if (from.isCanto) {
     //BRIDGE OUT: look to see how to bridge into other network
     for (const method of to.supportedBridgeInMethods) {
-      allTokens.push(...(to[method]?.tokens ?? []));
+      allTokens.push(...(to[method]?.tokens.fromCanto ?? []));
     }
   }
   return allTokens;

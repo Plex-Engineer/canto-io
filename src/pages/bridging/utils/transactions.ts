@@ -36,9 +36,10 @@ import { getAllowance, getTokenBalance } from "global/utils/api/tokenBalances";
 const doesMethodSupportToken = (
   network: BridgingNetwork,
   method: BridgingMethods,
-  token: Token
+  token: Token,
+  bridgeIn: boolean
 ) =>
-  network[method]?.tokens.some(
+  network[method]?.tokens[bridgeIn ? "toCanto" : "fromCanto"].some(
     (t) => t.address.toLowerCase() === token.address.toLowerCase()
   ) ?? false;
 
@@ -64,7 +65,9 @@ export async function bridgeTxRouter(
   if (toNetwork.isCanto) {
     //BRIDGE IN
     //the method to bridge must include the token that is selected
-    if (doesMethodSupportToken(fromNetwork, BridgingMethods.GBRIDGE, token)) {
+    if (
+      doesMethodSupportToken(fromNetwork, BridgingMethods.GBRIDGE, token, true)
+    ) {
       const gBridgeNetwork = fromNetwork[
         BridgingMethods.GBRIDGE
       ] as GravityBridgeNetwork;
@@ -80,7 +83,12 @@ export async function bridgeTxRouter(
         tokenDetails
       );
     } else if (
-      doesMethodSupportToken(fromNetwork, BridgingMethods.LAYER_ZERO, token)
+      doesMethodSupportToken(
+        fromNetwork,
+        BridgingMethods.LAYER_ZERO,
+        token,
+        true
+      )
     ) {
       return await oftTransferTx(
         fromNetwork[BridgingMethods.LAYER_ZERO]?.chainId,
@@ -95,7 +103,14 @@ export async function bridgeTxRouter(
       );
     }
   } else if (fromNetwork.isCanto) {
-    if (doesMethodSupportToken(toNetwork, BridgingMethods.LAYER_ZERO, token)) {
+    if (
+      doesMethodSupportToken(
+        toNetwork,
+        BridgingMethods.LAYER_ZERO,
+        token,
+        false
+      )
+    ) {
       return await oftTransferTx(
         fromNetwork[BridgingMethods.LAYER_ZERO]?.chainId,
         txStore,
@@ -107,7 +122,9 @@ export async function bridgeTxRouter(
         ethAddress,
         tokenDetails
       );
-    } else if (doesMethodSupportToken(toNetwork, BridgingMethods.IBC, token)) {
+    } else if (
+      doesMethodSupportToken(toNetwork, BridgingMethods.IBC, token, false)
+    ) {
       return await convertAndIbcOutTx(
         fromNetwork.IBC?.evmChainId,
         txStore,

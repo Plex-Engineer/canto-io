@@ -23,12 +23,18 @@ export interface BridgingNetwork {
 export interface GravityBridgeNetwork extends Network {
   gravityBridgeAddress: string;
   wethAddress: string;
-  tokens: Token[];
+  tokens: {
+    toCanto: Token[]; //tokens on network to bridge into canto
+    fromCanto: Token[]; //tokens on canto to bridge into network
+  };
 }
 
 export interface LayerZeroNetwork extends Network {
   lzChainId: number;
-  tokens: LayerZeroToken[];
+  tokens: {
+    toCanto: LayerZeroToken[]; //tokens on network to bridge into canto
+    fromCanto: LayerZeroToken[]; //tokens on canto to bridge into network
+  };
 }
 
 export interface LayerZeroToken extends Token {
@@ -52,7 +58,10 @@ export interface IBCNetwork {
   latestBlockEndpoint?: string;
   addressBeginning: string;
   checkAddress: (address?: string) => boolean;
-  tokens: NativeToken[];
+  tokens: {
+    toCanto: NativeToken[]; //tokens on network to bridge into canto
+    fromCanto: NativeToken[]; //tokens on canto to bridge into network
+  };
 }
 
 export interface NativeToken extends Token {

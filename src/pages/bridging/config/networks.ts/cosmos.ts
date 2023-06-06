@@ -53,13 +53,22 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },
-    tokens: [
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.GRAV,
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.ETH,
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.USDC,
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.USDT,
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.WSTETH,
-    ],
+    tokens: {
+      toCanto: [
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.GRAV,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.ETH,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.USDC,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.USDT,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.WSTETH,
+      ],
+      fromCanto: [
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.GRAV,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.ETH,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.USDC,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.USDT,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.WSTETH,
+      ],
+    },
   },
   [MainnetIBCNetworks.COSMOS_HUB]: {
     name: "cosmos hub",
@@ -77,7 +86,10 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },
-    tokens: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.ATOM],
+    tokens: {
+      toCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.ATOM],
+      fromCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.ATOM],
+    },
   },
   [MainnetIBCNetworks.OSMOSIS]: {
     name: "osmosis",
@@ -95,7 +107,10 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },
-    tokens: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.OSMOSIS],
+    tokens: {
+      toCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.OSMOSIS],
+      fromCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.OSMOSIS],
+    },
   },
   [MainnetIBCNetworks.COMDEX]: {
     name: "comdex",
@@ -113,7 +128,10 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },
-    tokens: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.COMDEX],
+    tokens: {
+      toCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.COMDEX],
+      fromCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.COMDEX],
+    },
   },
   [MainnetIBCNetworks.INJECTIVE]: {
     name: "injective",
@@ -132,7 +150,10 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },
-    tokens: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.INJECTIVE],
+    tokens: {
+      toCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.INJECTIVE],
+      fromCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.INJECTIVE],
+    },
   },
   [MainnetIBCNetworks.CRESCENT]: {
     name: "crescent",
@@ -150,7 +171,10 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },
-    tokens: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.CRESCENT],
+    tokens: {
+      toCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.CRESCENT],
+      fromCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.CRESCENT],
+    },
   },
   [MainnetIBCNetworks.SOMMELIER]: {
     name: "sommelier",
@@ -168,7 +192,10 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },
-    tokens: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.SOMM],
+    tokens: {
+      toCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.SOMM],
+      fromCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.SOMM],
+    },
   },
   [MainnetIBCNetworks.AKASH]: {
     name: "akash",
@@ -186,7 +213,10 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },
-    tokens: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.AKASH],
+    tokens: {
+      toCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.AKASH],
+      fromCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.AKASH],
+    },
   },
   [MainnetIBCNetworks.KAVA]: {
     name: "kava",
@@ -204,7 +234,10 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },
-    tokens: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.KAVA],
+    tokens: {
+      toCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.KAVA],
+      fromCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.KAVA],
+    },
   },
   [MainnetIBCNetworks.SENTINEL]: {
     name: "sentinel",
@@ -222,7 +255,10 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },
-    tokens: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.SENTINAL],
+    tokens: {
+      toCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.SENTINAL],
+      fromCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.SENTINAL],
+    },
   },
   [MainnetIBCNetworks.EVMOS]: {
     name: "evmos",
@@ -240,7 +276,10 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },
-    tokens: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.EVMOS],
+    tokens: {
+      toCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.EVMOS],
+      fromCanto: [CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.EVMOS],
+    },
   },
   [MainnetIBCNetworks.PERSISTENCE]: {
     name: "persistence",
@@ -258,10 +297,16 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },
-    tokens: [
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.PERSISTENCE,
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.PSTAKEDATOM,
-    ],
+    tokens: {
+      toCanto: [
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.PERSISTENCE,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.PSTAKEDATOM,
+      ],
+      fromCanto: [
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.PERSISTENCE,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.PSTAKEDATOM,
+      ],
+    },
   },
   [MainnetIBCNetworks.STRIDE]: {
     name: "stride",
@@ -280,14 +325,24 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },
-    tokens: [
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STRIDE,
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STEVMOS,
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STATOM,
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STJUNO,
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STOSMO,
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STSTARS,
-    ],
+    tokens: {
+      toCanto: [
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STRIDE,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STEVMOS,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STATOM,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STJUNO,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STOSMO,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STSTARS,
+      ],
+      fromCanto: [
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STRIDE,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STEVMOS,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STATOM,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STJUNO,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STOSMO,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.STSTARS,
+      ],
+    },
   },
   [MainnetIBCNetworks.QUICKSILVER]: {
     name: "quicksilver",
@@ -306,12 +361,20 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
     },
-    tokens: [
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.QUICKSILVER,
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.QATOM,
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.QREGEN,
-      CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.QSTARS,
-    ],
+    tokens: {
+      toCanto: [
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.QUICKSILVER,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.QATOM,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.QREGEN,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.QSTARS,
+      ],
+      fromCanto: [
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.QUICKSILVER,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.QATOM,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.QREGEN,
+        CANTO_MAIN_IBC_TOKENS_WITH_DENOMS.QSTARS,
+      ],
+    },
   },
 };
 const TESTNET_IBC_NETWORKS = {};
