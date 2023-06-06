@@ -11,6 +11,7 @@ export interface BridgingNetwork {
   icon: string;
   isCanto: boolean; //will be used to determine token lists, and bridge in or out
   isEVM: boolean; //determines how to perform transactions
+  evmChainId?: number; //if isEVM, this is the chain id
   supportedBridgeInMethods: BridgingMethods[]; //from canto
   supportedBridgeOutMethods: BridgingMethods[]; //to canto
   //networks will only be here if supported by either bridge in or bridge out

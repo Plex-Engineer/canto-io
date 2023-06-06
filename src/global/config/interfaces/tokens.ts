@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 export enum TokenGroups {
   DEX_TOKENS = "DEX_TOKENS",
   IBC_TOKENS = "IBC_TOKENS",
@@ -13,6 +15,7 @@ export interface Token {
   isLP: boolean;
   icon: string;
   tokenGroups: TokenGroups[];
+  balance?: BigNumber;
 }
 
 export interface CTOKEN {

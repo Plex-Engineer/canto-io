@@ -26,6 +26,7 @@ import guideImg from "assets/guide.svg";
 import RecoveryPage from "./Recovery";
 import { onCantoNetwork } from "global/utils/getAddressUtils";
 import { useTransactionStore } from "global/stores/transactionStore";
+import { TestingComponent } from "./testing";
 
 const Bridging = () => {
   const txStore = useTransactionStore();
@@ -65,7 +66,8 @@ const Bridging = () => {
   };
   return (
     <Styled>
-      <div className="floating-buttons">
+      <TestingComponent />
+      {/* <div className="floating-buttons">
         <BalanceTableModal
           ethTokens={bridgingTokens.userBridgeInTokens}
           cantoTokens={bridgingTokens.userBridgeOutTokens}
@@ -196,7 +198,7 @@ const Bridging = () => {
                   : []),
               ]
         }
-      />
+      /> */}
     </Styled>
   );
 };

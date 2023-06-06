@@ -1,5 +1,5 @@
 import { BigNumber, Contract, ethers } from "ethers";
-import { ERC20Abi, OFTAbi, gravityBridgeAbi, wethAbi } from "global/config/abi";
+import { OFTAbi, gravityBridgeAbi, wethAbi } from "global/config/abi";
 import {
   CantoTransactionType,
   CosmosTx,
@@ -15,13 +15,115 @@ import {
   txConvertERC20,
 } from "./convertCoin/convertTransactions";
 import { txIBCTransfer } from "./IBC/IBCTransfer";
-import { BridgeOutNetworkInfo, NativeTransaction } from "../config/interfaces";
+import { NativeTransaction } from "../config/interfaces";
 import {
   getCosmosAPIEndpoint,
   getCosmosChainObj,
   getCurrentProvider,
 } from "global/utils/getAddressUtils";
 import { formatUnits } from "ethers/lib/utils";
+import {
+  BridgingMethods,
+  BridgingNetwork,
+  GravityBridgeNetwork,
+  IBCNetwork,
+  LayerZeroToken,
+  NativeToken,
+} from "../config/bridgingInterfaces";
+import { Token } from "global/config/interfaces/tokens";
+import { getAllowance, getTokenBalance } from "global/utils/api/tokenBalances";
+
+const doesMethodSupportToken = (
+  network: BridgingNetwork,
+  method: BridgingMethods,
+  token: Token
+) =>
+  network[method]?.tokens.some(
+    (t) => t.address.toLowerCase() === token.address.toLowerCase()
+  ) ?? false;
+
+//Router function will take care of selecting the correct bridging function
+export async function bridgeTxRouter(
+  txStore: TransactionStore,
+  ethAddress: string | undefined,
+  cantoAddress: string | undefined,
+  fromNetwork: BridgingNetwork,
+  toNetwork: BridgingNetwork,
+  token: Token,
+  amount: BigNumber,
+  toChainAddress?: string
+): Promise<boolean> {
+  if (!fromNetwork.isEVM) {
+    //this is only for EVM, ibc will be handeled separately through keplr
+    return false;
+  }
+  const tokenDetails = {
+    symbol: token.symbol,
+    amount: formatUnits(amount, token.decimals),
+  };
+  if (toNetwork.isCanto) {
+    //BRIDGE IN
+    //the method to bridge must include the token that is selected
+    if (doesMethodSupportToken(fromNetwork, BridgingMethods.GBRIDGE, token)) {
+      const gBridgeNetwork = fromNetwork[
+        BridgingMethods.GBRIDGE
+      ] as GravityBridgeNetwork;
+      return await sendToComsosTx(
+        gBridgeNetwork?.chainId,
+        txStore,
+        gBridgeNetwork?.gravityBridgeAddress,
+        gBridgeNetwork?.wethAddress,
+        token.address,
+        cantoAddress,
+        ethAddress,
+        amount,
+        tokenDetails
+      );
+    } else if (
+      doesMethodSupportToken(fromNetwork, BridgingMethods.LAYER_ZERO, token)
+    ) {
+      return await oftTransferTx(
+        fromNetwork[BridgingMethods.LAYER_ZERO]?.chainId,
+        txStore,
+        true,
+        (token as LayerZeroToken).isNative,
+        token.address,
+        toNetwork[BridgingMethods.LAYER_ZERO]?.lzChainId,
+        amount,
+        ethAddress,
+        tokenDetails
+      );
+    }
+  } else if (fromNetwork.isCanto) {
+    if (doesMethodSupportToken(toNetwork, BridgingMethods.LAYER_ZERO, token)) {
+      return await oftTransferTx(
+        fromNetwork[BridgingMethods.LAYER_ZERO]?.chainId,
+        txStore,
+        false,
+        (token as LayerZeroToken).isNative,
+        token.address,
+        toNetwork[BridgingMethods.LAYER_ZERO]?.lzChainId,
+        amount,
+        ethAddress,
+        tokenDetails
+      );
+    } else if (doesMethodSupportToken(toNetwork, BridgingMethods.IBC, token)) {
+      return await convertAndIbcOutTx(
+        fromNetwork.IBC?.evmChainId,
+        txStore,
+        cantoAddress,
+        token.address,
+        amount.toString(),
+        toNetwork.IBC,
+        toChainAddress,
+        (token as NativeToken).ibcDenom,
+        tokenDetails
+      );
+    }
+  }
+  //neither to and from are CANTO network
+  return false;
+}
 
 //will take care of wrapping ETH for WETH before bridging
 export async function sendToComsosTx(
@@ -30,14 +132,18 @@ export async function sendToComsosTx(
   gravityAddresss: string,
   WETHAddress: string,
   tokenAddress: string,
-  cantoAddress: string,
-  ethAddress: string,
+  cantoAddress: string | undefined,
+  ethAddress: string | undefined,
   amount: BigNumber,
-  currentAllowance: BigNumber,
   extraDetails?: ExtraProps
 ): Promise<boolean> {
   //check canto address
-  if (!CANTO_IBC_NETWORK.checkAddress(cantoAddress)) {
+  if (
+    !CANTO_IBC_NETWORK.checkAddress(cantoAddress) ||
+    !ethAddress ||
+    !cantoAddress ||
+    !chainId
+  ) {
     return false;
   }
   //must check if we need to wrap any ETH before sending to cosmos
@@ -45,12 +151,11 @@ export async function sendToComsosTx(
   const allTxs = [];
   if (tokenAddress === WETHAddress) {
     //dealing with WETH, so we must check the balance of WETH and wrap if needed
-    const wethContract = new Contract(
-      WETHAddress,
-      ERC20Abi,
-      getCurrentProvider(chainId)
+    const wethBalance = await getTokenBalance(
+      ethAddress,
+      tokenAddress,
+      chainId
     );
-    const wethBalance = await wethContract.balanceOf(ethAddress);
     if (wethBalance.lt(amount)) {
       amountToWrap = amount.sub(wethBalance);
       allTxs.push(
@@ -61,6 +166,13 @@ export async function sendToComsosTx(
       );
     }
   }
+  //get currentAllowance
+  const currentAllowance = await getAllowance(
+    tokenAddress,
+    ethAddress,
+    gravityAddresss,
+    chainId
+  );
   //need to enable and send to cosmos no matter what
   allTxs.push(
     _enableTx(
@@ -154,7 +266,7 @@ export async function completeAllConvertIn(
 export async function ibcOutTx(
   chainId: number | undefined,
   txStore: TransactionStore,
-  bridgeOutNetwork: BridgeOutNetworkInfo,
+  bridgeOutNetwork: IBCNetwork,
   toChainAddress: string,
   ibcDenom: string,
   amount: string,
@@ -169,7 +281,7 @@ export async function ibcOutTx(
       _ibcTransferOutTx(
         chainId,
         toChainAddress,
-        bridgeOutNetwork.cantoChannel,
+        bridgeOutNetwork.channelFromCanto,
         amount,
         ibcDenom,
         getCosmosAPIEndpoint(chainId),
@@ -188,16 +300,21 @@ export async function ibcOutTx(
 export async function convertAndIbcOutTx(
   chainId: number | undefined,
   txStore: TransactionStore,
-  cantoAddress: string,
+  cantoAddress: string | undefined,
   tokenEVMAddress: string,
   amount: string,
-  bridgeOutNetwork: BridgeOutNetworkInfo,
-  toChainAddress: string,
+  bridgeOutNetwork: IBCNetwork | undefined,
+  toChainAddress: string | undefined,
   ibcDenom: string,
   extraProps?: ExtraProps
 ): Promise<boolean> {
   //check receiver address
-  if (!bridgeOutNetwork.checkAddress(toChainAddress)) {
+  if (
+    !bridgeOutNetwork ||
+    !cantoAddress ||
+    !toChainAddress ||
+    !bridgeOutNetwork.checkAddress(toChainAddress)
+  ) {
     return false;
   }
   return await txStore.addTransactionList(
@@ -217,7 +334,7 @@ export async function convertAndIbcOutTx(
       _ibcTransferOutTx(
         chainId,
         toChainAddress,
-        bridgeOutNetwork.cantoChannel,
+        bridgeOutNetwork.channelFromCanto,
         amount,
         ibcDenom,
         getCosmosAPIEndpoint(chainId),
@@ -241,14 +358,12 @@ export async function oftTransferTx(
   bridgeIn: boolean,
   isNative: boolean,
   tokenAddress: string,
-  toLZChainId: number,
+  toLZChainId: number | undefined,
   amount: BigNumber,
-  account: string,
-  adapterParams: [number, number] | [],
-  gas: BigNumber,
+  account: string | undefined,
   extraProps?: ExtraProps
 ): Promise<boolean> {
-  if (!account) {
+  if (!account || !toLZChainId || !chainId) {
     return false;
   }
   const allTxs = [];
@@ -257,6 +372,26 @@ export async function oftTransferTx(
       _oftDepositOrWithdrawTx(chainId, true, tokenAddress, amount, extraProps)
     );
   }
+
+  //need to get gas here
+  const adapterParams = ethers.utils.solidityPack(
+    ["uint16", "uint256"],
+    [1, 200000]
+  );
+  const oftContract = new Contract(
+    tokenAddress,
+    OFTAbi,
+    getCurrentProvider(chainId)
+  );
+
+  const gas = await oftContract.estimateSendFee(
+    toLZChainId,
+    account,
+    amount,
+    false,
+    adapterParams
+  );
+
   allTxs.push(
     _oftTransferTx(
       chainId,
@@ -266,7 +401,7 @@ export async function oftTransferTx(
       toLZChainId,
       amount,
       adapterParams,
-      gas,
+      gas[0],
       extraProps
     )
   );
@@ -385,7 +520,7 @@ const _oftTransferTx = (
   account: string,
   toChainId: number,
   amount: BigNumber,
-  adapterParams: [number, number] | [],
+  adapterParams: string | [],
   gas: BigNumber,
   extraDetails?: ExtraProps
 ): EVMTx => ({
@@ -401,7 +536,7 @@ const _oftTransferTx = (
     amount,
     account,
     ethers.constants.AddressZero,
-    adapterParams,
+    [],
   ],
   value: gas,
   extraDetails,

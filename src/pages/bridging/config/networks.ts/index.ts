@@ -14,6 +14,32 @@ import { MAINNET_IBC_NETWORKS } from "./cosmos";
 function getBridgingNetworksFromChainId(chainId?: number) {
   return onTestnet(chainId) ? TESTNET_BRIDGE_NETWORKS : MAINNET_BRIDGE_NETWORKS;
 }
+const CANTO_MAIN_BRIDGE_NETWORK: BridgingNetwork = {
+  name: CantoMainnet.name,
+  icon: CantoMainnet.icon,
+  isCanto: true,
+  isEVM: true,
+  evmChainId: CantoMainnet.chainId,
+  supportedBridgeInMethods: [
+    //   BridgingMethods.LAYER_ZERO,
+    BridgingMethods.GBRIDGE,
+    BridgingMethods.IBC,
+  ],
+  supportedBridgeOutMethods: [
+    //   BridgingMethods.LAYER_ZERO,
+    BridgingMethods.IBC,
+  ],
+};
+const CANTO_TEST_BRIDGE_NETWORK: BridgingNetwork = {
+  name: CantoTestnet.name,
+  icon: CantoTestnet.icon,
+  isCanto: true,
+  isEVM: true,
+  evmChainId: CantoTestnet.chainId,
+  supportedBridgeInMethods: [BridgingMethods.LAYER_ZERO],
+  supportedBridgeOutMethods: [BridgingMethods.LAYER_ZERO],
+  [BridgingMethods.LAYER_ZERO]: LAYER_ZERO_TEST_NETWORKS.CANTO_TEST,
+};
 
 const ibcMainNetworks = () =>
   Object.entries(MAINNET_IBC_NETWORKS).map(([, val]) => ({
@@ -28,27 +54,14 @@ const ibcMainNetworks = () =>
 
 const MAINNET_BRIDGE_NETWORKS: BridgingNetwork[] = [
   //CANTO
-  {
-    name: CantoMainnet.name,
-    icon: CantoMainnet.icon,
-    isCanto: true,
-    isEVM: true,
-    supportedBridgeInMethods: [
-      //   BridgingMethods.LAYER_ZERO,
-      BridgingMethods.GBRIDGE,
-      BridgingMethods.IBC,
-    ],
-    supportedBridgeOutMethods: [
-      //   BridgingMethods.LAYER_ZERO,
-      BridgingMethods.IBC,
-    ],
-  },
+  CANTO_MAIN_BRIDGE_NETWORK,
   //gbridge
   {
     name: ETHMainnet.name,
     icon: ETHMainnet.icon,
     isCanto: false,
     isEVM: true,
+    evmChainId: ETHMainnet.chainId,
     supportedBridgeInMethods: [
       // BridgingMethods.LAYER_ZERO
     ],
@@ -63,21 +76,14 @@ const MAINNET_BRIDGE_NETWORKS: BridgingNetwork[] = [
 ];
 const TESTNET_BRIDGE_NETWORKS: BridgingNetwork[] = [
   //CANTO
-  {
-    name: CantoTestnet.name,
-    icon: CantoTestnet.icon,
-    isCanto: true,
-    isEVM: true,
-    supportedBridgeInMethods: [BridgingMethods.LAYER_ZERO],
-    supportedBridgeOutMethods: [BridgingMethods.LAYER_ZERO],
-    [BridgingMethods.LAYER_ZERO]: LAYER_ZERO_TEST_NETWORKS.CANTO_TEST,
-  },
+  CANTO_TEST_BRIDGE_NETWORK,
   //LZ
   {
     name: MumbaiTestnet.name,
     icon: MumbaiTestnet.icon,
     isCanto: false,
     isEVM: true,
+    evmChainId: MumbaiTestnet.chainId,
     supportedBridgeInMethods: [BridgingMethods.LAYER_ZERO],
     supportedBridgeOutMethods: [BridgingMethods.LAYER_ZERO],
     [BridgingMethods.LAYER_ZERO]: LAYER_ZERO_TEST_NETWORKS.MUMBAI_TEST,
@@ -87,10 +93,15 @@ const TESTNET_BRIDGE_NETWORKS: BridgingNetwork[] = [
     icon: FantomTestnet.icon,
     isCanto: false,
     isEVM: true,
+    evmChainId: FantomTestnet.chainId,
     supportedBridgeInMethods: [BridgingMethods.LAYER_ZERO],
     supportedBridgeOutMethods: [BridgingMethods.LAYER_ZERO],
     [BridgingMethods.LAYER_ZERO]: LAYER_ZERO_TEST_NETWORKS.FANTOM_TEST,
   },
 ];
 
-export { getBridgingNetworksFromChainId };
+export {
+  getBridgingNetworksFromChainId,
+  CANTO_MAIN_BRIDGE_NETWORK,
+  CANTO_TEST_BRIDGE_NETWORK,
+};
