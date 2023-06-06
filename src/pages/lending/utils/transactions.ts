@@ -54,11 +54,11 @@ export async function claimLendingRewardsTx(
       amount: formatUnits(amountToClaim, 18),
     },
   });
-  return await txStore.addTransactionList(
-    transactions,
-    TxMethod.EVM,
-    "Claim Lending Rewards"
-  );
+  return await txStore.addTransactionList(transactions, {
+    title: "Claim Lending Rewards",
+    txListMethod: TxMethod.EVM,
+    chainId,
+  });
 }
 //for all lending page txs
 export async function lendingMarketTx(
@@ -124,7 +124,11 @@ export async function lendingMarketTx(
       //if none of these are true, then not valid for lending market
       return false;
   }
-  return await txStore.addTransactionList(transactions, TxMethod.EVM, txType);
+  return await txStore.addTransactionList(transactions, {
+    title: txType,
+    txListMethod: TxMethod.EVM,
+    chainId,
+  });
 }
 
 /**

@@ -4,11 +4,10 @@ import CheckBox from "global/components/checkBox";
 import { PrimaryButton } from "../atoms/Button";
 import { Text } from "../atoms/Text";
 import { CInput } from "../atoms/Input";
-import {
-  getSupportedNetwork,
-  onCantoNetwork,
-} from "global/utils/getAddressUtils";
+import { onCantoNetwork } from "global/utils/getAddressUtils";
 import { getCTokensForChainId } from "pages/lending/config/lendingMarketTokens";
+import { CantoTestnet } from "global/config/networks";
+import { TOKENS } from "global/config/tokenInfo";
 
 const Styled = styled.div`
   background-color: #040404;
@@ -73,7 +72,11 @@ const fullTokenList = (chainId: number): TokenListCategory[] => {
   const tokens: AddTokenItemProps[] = [];
   const cTokens: AddTokenItemProps[] = [];
   const lpTokens: AddTokenItemProps[] = [];
-  const allTokens = getSupportedNetwork(chainId).tokens;
+  // const allTokens = getSupportedNetwork(chainId).tokens;
+  const allTokens =
+    chainId === CantoTestnet.chainId
+      ? TOKENS.cantoTestnet
+      : TOKENS.cantoMainnet;
   if (allTokens)
     Object.entries(allTokens).forEach(([, token]) => {
       if (token.name == "Canto") return;

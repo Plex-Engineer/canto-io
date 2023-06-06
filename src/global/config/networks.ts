@@ -58,7 +58,6 @@ export const CantoMainnet: CantoNetwork = {
     decimals: 18,
   },
   icon: cantoIcon,
-
   chainId: 7700,
   rpcUrl: "https://mainnode.plexnode.org:8545",
   isTestChain: false,
@@ -78,7 +77,6 @@ export const ETHMainnet: ETHBridgeNetwork = {
   ...Mainnet,
   name: "Ethereum",
   icon: ethIcon,
-
   coreContracts: CORE_ADDRESSES.ETHMainnet,
   rpcUrl: import.meta.env.VITE_MAINNET_RPC,
 };
@@ -93,7 +91,6 @@ export const CantoTestnet: CantoNetwork = {
     decimals: 18,
   },
   icon: cantoIcon,
-
   chainId: 7701,
   rpcUrl: "https://canto-testnet.plexnode.wtf",
   isTestChain: true,
@@ -114,7 +111,6 @@ export const GravityTestnet: ETHBridgeNetwork = {
   name: "Gravity Bridge Testnet",
   chainId: 15,
   coreContracts: CORE_ADDRESSES.gravityBridgeTest,
-
   rpcUrl: "https://testnet.gravitychain.io",
   isTestChain: true,
   blockExplorerUrl: emptyBlockExplorerLink,

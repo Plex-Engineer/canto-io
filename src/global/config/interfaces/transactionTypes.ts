@@ -1,5 +1,6 @@
 import { BigNumber, ContractInterface } from "ethers";
 import { CosmosTxResponse } from "../cosmosConstants";
+import { TxMethod } from "global/stores/transactionStore";
 
 export enum CantoTransactionType {
   //GENERAL
@@ -102,4 +103,10 @@ export interface CosmosTx extends BaseTx {
 export interface TransactionWithStatus {
   tx: EVMTx | CosmosTx;
   details: TransactionDetails;
+}
+
+export interface TransactionListProps {
+  title: string;
+  txListMethod: TxMethod;
+  chainId?: number;
 }

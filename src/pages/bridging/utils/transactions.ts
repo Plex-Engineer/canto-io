@@ -211,11 +211,11 @@ export async function sendToComsosTx(
       extraDetails
     )
   );
-  return await txStore.addTransactionList(
-    allTxs,
-    TxMethod.EVM,
-    "Bridge Into Canto"
-  );
+  return await txStore.addTransactionList(allTxs, {
+    title: "Bridge Into Canto",
+    txListMethod: TxMethod.EVM,
+    chainId,
+  });
 }
 /**
  * @notice If convertIn, tokenAddress must be its IBC denom
@@ -246,8 +246,11 @@ export async function convertTx(
         extraProps
       ),
     ],
-    TxMethod.COSMOS,
-    "Convert Coin"
+    {
+      title: "Convert Coin",
+      txListMethod: TxMethod.COSMOS,
+      chainId,
+    }
   );
 }
 export async function completeAllConvertIn(
@@ -275,8 +278,11 @@ export async function completeAllConvertIn(
         }
       )
     ),
-    TxMethod.COSMOS,
-    "Convert Coin"
+    {
+      title: "Convert Coin",
+      txListMethod: TxMethod.COSMOS,
+      chainId,
+    }
   );
 }
 //will check on the address on the receiving network
@@ -310,8 +316,11 @@ export async function ibcOutTx(
         extra
       ),
     ],
-    TxMethod.COSMOS,
-    "Bridge Out Of Canto"
+    {
+      title: "Bridge Out Of Canto",
+      txListMethod: TxMethod.COSMOS,
+      chainId,
+    }
   );
 }
 export async function convertAndIbcOutTx(
@@ -363,8 +372,11 @@ export async function convertAndIbcOutTx(
         extraProps
       ),
     ],
-    TxMethod.COSMOS,
-    "Bridge Out"
+    {
+      title: "Bridge Out",
+      txListMethod: TxMethod.COSMOS,
+      chainId,
+    }
   );
 }
 
@@ -422,11 +434,11 @@ export async function oftTransferTx(
       extraProps
     )
   );
-  return await txStore.addTransactionList(
-    allTxs,
-    TxMethod.EVM,
-    `${extraProps?.symbol ?? ""} OFT Transfer`
-  );
+  return await txStore.addTransactionList(allTxs, {
+    title: `${extraProps?.symbol ?? ""} OFT Transfer`,
+    txListMethod: TxMethod.EVM,
+    chainId,
+  });
 }
 
 /**

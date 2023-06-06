@@ -42,8 +42,11 @@ export async function voteTx(
         }
       ),
     ],
-    TxMethod.COSMOS,
-    "Vote on Proposal"
+    {
+      title: "Vote on Proposal",
+      txListMethod: TxMethod.COSMOS,
+      chainId,
+    }
   );
 }
 const _voteTx = (

@@ -79,8 +79,11 @@ export async function stakingTx(
             }
           ),
     ],
-    TxMethod.COSMOS,
-    txType
+    {
+      title: txType,
+      txListMethod: TxMethod.COSMOS,
+      chainId: params.chainId,
+    }
   );
 }
 export async function claimStakingRewards(
@@ -108,8 +111,11 @@ export async function claimStakingRewards(
         ],
       },
     ],
-    TxMethod.COSMOS,
-    "Claim Staking Rewards"
+    {
+      title: "Claim Staking Rewards",
+      txListMethod: TxMethod.COSMOS,
+      chainId,
+    }
   );
 }
 /**

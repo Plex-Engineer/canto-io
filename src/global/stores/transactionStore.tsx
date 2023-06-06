@@ -2,6 +2,7 @@ import {
   CosmosTx,
   EVMTx,
   TransactionDetails,
+  TransactionListProps,
   TransactionWithStatus,
 } from "global/config/interfaces/transactionTypes";
 import create from "zustand";
@@ -20,13 +21,11 @@ export enum TxMethod {
 }
 export interface TransactionStore {
   transactions: TransactionWithStatus[];
-  txListType: TxMethod;
-  txListTitle: string;
+  txListProps: TransactionListProps | null;
   modalOpen: boolean;
   addTransactionList: (
     txList: EVMTx[] | CosmosTx[],
-    listType: TxMethod,
-    title?: string
+    txListProps: TransactionListProps
   ) => Promise<boolean>;
   setModalOpen: (modalOpen: boolean) => void;
   generateTxId: () => string;
@@ -43,10 +42,9 @@ export interface TransactionStore {
 
 export const useTransactionStore = create<TransactionStore>((set, get) => ({
   transactions: [],
-  txListType: TxMethod.NONE,
+  txListProps: null,
   modalOpen: false,
-  txListTitle: "",
-  addTransactionList: (txList, type, title) => {
+  addTransactionList: (txList, txListProps) => {
     set({
       transactions: txList.map((tx) => ({
         tx,
@@ -56,11 +54,13 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
           tx.extraDetails
         ),
       })),
-      txListType: type,
-      txListTitle: title ?? "",
+      txListProps: txListProps,
     });
-    //on adding txs, we will go ahead and start performing them as well
-    return get().performTxList();
+    //on adding txs, we will go ahead and start performing them as well if on the correct network
+    if (Number(useNetworkInfo.getState().chainId) === txListProps.chainId) {
+      return get().performTxList();
+    }
+    return Promise.resolve(true);
   },
   setModalOpen: (modalOpen) => set({ modalOpen: modalOpen }),
   generateTxId: () =>
@@ -206,7 +206,7 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
     });
     for (const tx of txsToPerform) {
       const txSuccess =
-        get().txListType === TxMethod.EVM
+        get().txListProps?.txListMethod === TxMethod.EVM
           ? await get().performEVMTx(tx.tx as EVMTx, tx.details)
           : await get().performCosmosTx(tx.tx as CosmosTx, tx.details);
       if (!txSuccess) {
