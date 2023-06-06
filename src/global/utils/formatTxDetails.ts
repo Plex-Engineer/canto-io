@@ -197,6 +197,22 @@ export const createTransactionMessges = (
         success: `successfully bridged in ${amount + " " + token}`,
         error: `unable to bridge in ${token}`,
       };
+    case CantoTransactionType.OFT_DEPOSIT:
+      return {
+        short: "deposit",
+        long: `deposit ${amount + " " + token} into OFT`,
+        pending: `depositing ${amount + " " + token} into OFT...`,
+        success: `successfully deposited ${amount + " " + token}`,
+        error: `unable to deposit ${token}`,
+      };
+    case CantoTransactionType.OFT_WITHDRAW:
+      return {
+        short: "withdraw",
+        long: `withdraw ${amount + " " + token} from OFT`,
+        pending: `withdrawing ${amount + " " + token} from OFT...`,
+        success: `successfully withdrew ${amount + " " + token}`,
+        error: `unable to withdraw ${token}`,
+      };
     default:
       return {
         short: "confirm",
