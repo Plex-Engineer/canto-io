@@ -15,9 +15,10 @@ interface Item {
 interface Props {
   Items: Item[];
   title: string;
+  label?: string;
   onSelect: (id: string) => void;
 }
-const DropDown = ({ onSelect, Items, title }: Props) => {
+const DropDown = ({ onSelect, Items, title, label }: Props) => {
   const [isSelectModalOpen, setSelectModalOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(Items[0]);
 
@@ -30,48 +31,54 @@ const DropDown = ({ onSelect, Items, title }: Props) => {
     >
       <img
         src={activeItem.icon}
-        height={20}
+        height={40}
         style={{
           marginRight: 8,
         }}
       />
-
-      <Text type="title" size="text4" align="left">
-        {activeItem.primaryText}
-        <Modal
-          title={title}
-          open={isSelectModalOpen}
-          onClose={() => {
-            setSelectModalOpen(false);
-          }}
-        >
-          <ChooseNetwork>
-            <div className="network-list">
-              {Items.map((item) => (
-                <div
-                  role="button"
-                  tabIndex={0}
-                  key={item.id}
-                  className="network-item"
-                  onClick={() => {
-                    setActiveItem(Items.filter((i) => i.id === item.id)[0]);
-                    onSelect(item.id);
-                    setSelectModalOpen(false);
-                  }}
-                  style={{
-                    background: activeItem.id === item.id ? "#1d1d1d" : "",
-                  }}
-                >
-                  <span>
-                    <img src={item.icon} />
-                    <Text>{item.primaryText}</Text>
-                  </span>
-                </div>
-              ))}
-            </div>
-          </ChooseNetwork>
-        </Modal>
-      </Text>
+      <div className="token-label">
+        {label && (
+          <Text color="white" size="text3" className="label" bold align="left">
+            {label}
+          </Text>
+        )}
+        <Text type="title" size="text3" align="left">
+          {activeItem.primaryText}
+          <Modal
+            title={title}
+            open={isSelectModalOpen}
+            onClose={() => {
+              setSelectModalOpen(false);
+            }}
+          >
+            <ChooseNetwork>
+              <div className="network-list">
+                {Items.map((item) => (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    key={item.id}
+                    className="network-item"
+                    onClick={() => {
+                      setActiveItem(Items.filter((i) => i.id === item.id)[0]);
+                      onSelect(item.id);
+                      setSelectModalOpen(false);
+                    }}
+                    style={{
+                      background: activeItem.id === item.id ? "#1d1d1d" : "",
+                    }}
+                  >
+                    <span>
+                      <img src={item.icon} />
+                      <Text>{item.primaryText}</Text>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </ChooseNetwork>
+          </Modal>
+        </Text>
+      </div>
       <img src={acronIcon} className="separator" alt="separator" />
     </Styled>
   );
@@ -85,7 +92,7 @@ const Styled = styled.button`
   border-radius: 4px;
   padding: 8px 16px;
   padding-right: 24px;
-  height: 42px;
+  height: 62px;
 
   &:disabled {
     /* opacity: 0.8; */
@@ -96,6 +103,13 @@ const Styled = styled.button`
       display: none;
     }
   }
+
+  .token-label {
+    display: flex;
+    flex-direction: column;
+    padding: 0 6px;
+    padding-right: 1rem;
+  }
   p {
     width: 100%;
   }
@@ -103,9 +117,10 @@ const Styled = styled.button`
     transform: rotateZ(90deg);
     padding-bottom: 20px;
   }
-
+  transition: background-color 0.2s, border-color 0.3s;
   &:hover {
-    background: #181818;
+    background: #333;
+    border-color: #525252;
     cursor: pointer;
   }
 `;

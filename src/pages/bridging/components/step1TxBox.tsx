@@ -3,6 +3,7 @@ import { PrimaryButton, Text } from "global/packages/src";
 import bridgeIcon from "assets/icons/canto-bridge.svg";
 import cantoIcon from "assets/icons/canto-evm.svg";
 import CopyIcon from "assets/copy.svg";
+
 import {
   BridgeNetworkPair,
   EMPTY_NATIVE_TOKEN,
@@ -116,21 +117,60 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
       </Text>
       <div className="icons-indicator">
         <div className="center-element">
-          <img
-            src={
-              props.bridgeIn
-                ? props.networkPair.sending.network.icon
-                : props.networkPair.receiving.network.icon
-            }
-            alt={props.bridgeIn ? "ethereum" : "canto"}
-            height={42}
-            style={{ marginBottom: "10px" }}
-          />
-          <Text type="title">
-            {props.bridgeIn
-              ? props.networkPair.sending.network.name
-              : props.networkPair.receiving.network.name}
-          </Text>
+          <div className="network-selector">
+            <DropDown
+              title="select bridge"
+              label="Network"
+              Items={[
+                {
+                  primaryText: "GBridge",
+                  icon: "icon",
+                  id: "1",
+                },
+                {
+                  primaryText: "LayerZero",
+                  icon: layerZeroIcon,
+                  id: "2",
+                },
+                {
+                  primaryText: "Phantom",
+                  icon: "icon",
+                  id: "3",
+                },
+                {
+                  primaryText: "Ethereum",
+                  icon: "icon",
+                  id: "4",
+                },
+              ]}
+              onSelect={(id) => {
+                //   console.log(
+                //     [
+                //       {
+                //         primaryText: "GBridge",
+                //         icon: "icon",
+                //         id: "1",
+                //       },
+                //       {
+                //         primaryText: "LayerZero",
+                //         icon: "icon",
+                //         id: "2",
+                //       },
+                //       {
+                //         primaryText: "Phantom",
+                //         icon: "icon",
+                //         id: "3",
+                //       },
+                //       {
+                //         primaryText: "Ethereum",
+                //         icon: "icon",
+                //         id: "4",
+                //       },
+                //     ].filter((item) => item.id === id)[0]
+                //   );
+              }}
+            />
+          </div>
           <CopyToClipboard text={props.fromAddress ?? ""} onCopy={copyAddress}>
             <Text
               type="text"
@@ -156,24 +196,28 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             </Text>
           </CopyToClipboard>
         </div>
+
         <div className="loading">
           <LoadingBlip active />
           <div style={{ height: 26 }}></div>
+        </div>
+        <div className="center-element">
           <DropDown
-            title="select bridge"
+            title="select network"
+            label="Network"
             Items={[
               {
-                primaryText: "GBridge",
-                icon: "icon",
+                primaryText: "canto",
+                icon: cantoIcon,
                 id: "1",
               },
               {
-                primaryText: "LayerZero",
+                primaryText: "Phantom",
                 icon: layerZeroIcon,
                 id: "2",
               },
               {
-                primaryText: "Phantom",
+                primaryText: "Cosmos",
                 icon: "icon",
                 id: "3",
               },
@@ -182,65 +226,6 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
                 icon: "icon",
                 id: "4",
               },
-            ]}
-            onSelect={(id) => {
-              //   console.log(
-              //     [
-              //       {
-              //         primaryText: "GBridge",
-              //         icon: "icon",
-              //         id: "1",
-              //       },
-              //       {
-              //         primaryText: "LayerZero",
-              //         icon: "icon",
-              //         id: "2",
-              //       },
-              //       {
-              //         primaryText: "Phantom",
-              //         icon: "icon",
-              //         id: "3",
-              //       },
-              //       {
-              //         primaryText: "Ethereum",
-              //         icon: "icon",
-              //         id: "4",
-              //       },
-              //     ].filter((item) => item.id === id)[0]
-              //   );
-            }}
-          />
-        </div>
-        <div className="center-element">
-          <img
-            src={props.bridgeIn ? cantoIcon : bridgeIcon}
-            alt={props.bridgeIn ? "canto" : "bridge"}
-            height={42}
-            style={{ marginBottom: "10px" }}
-          />
-          <DropDown
-            title="select network"
-            Items={[
-              {
-                primaryText: "Ethereum",
-                icon: "icon",
-                id: "1",
-              },
-              //   {
-              //     primaryText: "Phantom",
-              //     icon: layerZeroIcon,
-              //     id: "2",
-              //   },
-              //   {
-              //     primaryText: "Cosmos",
-              //     icon: "icon",
-              //     id: "3",
-              //   },
-              //   {
-              //     primaryText: "Ethereum",
-              //     icon: "icon",
-              //     id: "4",
-              //   },
             ]}
             onSelect={(id) => {
               //query bridgeStore using id to get network
@@ -367,7 +352,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
 };
 
 const Styled = styled.div`
-  background: #090909;
+  background: #181818;
   border: 1px solid #3a3a3a;
   border-radius: 4px;
   width: 600px;
@@ -402,8 +387,7 @@ const Styled = styled.div`
   .icons-indicator {
     height: 140px;
     width: 100%;
-    border: 1px solid #252525;
-    border-radius: 4px;
+
     margin: 1rem 0;
     display: flex;
     justify-content: space-around;
