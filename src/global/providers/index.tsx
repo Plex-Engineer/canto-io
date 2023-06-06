@@ -12,16 +12,16 @@ const config: Config = {
   networks: ALL_SUPPORTED_NETWORKS,
   readOnlyUrls: Object.fromEntries(
     Object.entries(ALL_SUPPORTED_NETWORKS).map(([, val]) => [
-      val.chainId,
+      Number(val.chainId),
       val.rpcUrl ?? "",
     ])
   ),
   connectors: {
     metamask: new MetamaskConnector(),
-    // coinbase: new CoinbaseWalletConnector(),
   },
   autoConnect: true,
   fastMulticallEncoding: true,
+  noMetamaskDeactivate: true,
 };
 
 //All the providers are wrapped in this provider function

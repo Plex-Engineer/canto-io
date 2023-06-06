@@ -18,12 +18,14 @@ export const CantoNav = () => {
   const networkInfo = useNetworkInfo();
   const alert = useAlert();
   const { activateBrowserWallet, account, chainId, active } = useEthers();
+  console.log("chainId", chainId);
   const balance = useEtherBalance(account);
   const cantoBalance = useEtherBalance(account, {
     chainId: getCantoNetwork(Number(networkInfo.chainId)).chainId,
   });
   const ethBalance = useEtherBalance(networkInfo.account, { chainId: 1 });
   const signer = useSigner();
+  console.log(signer)
 
   const canPubKey =
     (ethBalance?.gte(parseUnits("0.01")) ||
@@ -73,13 +75,6 @@ export const CantoNav = () => {
     }
   }, [account, chainId, balance, active, signer]);
 
-  //@ts-ignore
-  if (window.ethereum) {
-    //@ts-ignore
-    window.ethereum.on("accountsChanged", () => {
-      window.location.reload();
-    });
-  }
   useEffect(() => {
     Mixpanel.events.pageOpened(
       recursiveGetTitle(location.pathname, 1, pageList) != ""
@@ -107,6 +102,14 @@ export const CantoNav = () => {
     location,
     cantoBalance,
   ]);
+  useEffect(() => {
+    if (window.ethereum) {
+      //@ts-ignore
+      window.ethereum.on("accountsChanged", () => {
+        window.location.reload();
+      });
+    }
+  }, []);
   return (
     <NavBar
       onClick={() => {
