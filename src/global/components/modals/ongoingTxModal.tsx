@@ -6,12 +6,16 @@ import close from "assets/icons/close.svg";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { Mixpanel } from "mixpanel";
 import { useTransactionStore } from "global/stores/transactionStore";
+import { useNetworkInfo } from "global/stores/networkInfo";
+import { useEthers } from "@usedapp/core";
 
 interface LoadingProps {
   onClose: () => void;
 }
 const OngoingTxModal = (props: LoadingProps) => {
   const transactionStore = useTransactionStore();
+  const { switchNetwork } = useEthers();
+  const chainId = useNetworkInfo((state) => state.chainId);
 
   //   useEffect(() => {
   //     if (props.status == "PendingSignature" && !txLogged) {
@@ -64,74 +68,90 @@ const OngoingTxModal = (props: LoadingProps) => {
           }}
         />
       </div>
-      <Text type="title" size="title3" className="title">
-        {transactionStore.txListTitle}
-      </Text>
-      <div className="scroll-view">
-        {transactionStore.transactions.map((tx, idx) => {
-          return (
-            <div
-              key={tx.details.txId}
-              className={
-                tx.details.status == "Success"
-                  ? "tx-item tx-item-complete"
-                  : "tx-item "
-              }
-            >
-              <div className="tx-icon">
-                {tx.details.status == "None" ? (
-                  <Text size="text1" type="title">
-                    {idx + 1}
-                  </Text>
-                ) : (
-                  <img
-                    src={
-                      tx.details.status == "Success"
-                        ? completeIcon
-                        : tx.details.status == "Fail" ||
-                          tx.details.status == "Exception"
-                        ? warningIcon
-                        : loadingGif
-                    }
-                  />
-                )}
-              </div>
-              <Text
-                size="text3"
-                bold
-                style={{
-                  flexGrow: 2,
-                }}
-              >
-                {tx.details.currentMessage}
-              </Text>
-              {tx.details.blockExplorerLink ? (
-                <OutlinedButton
-                  height="small"
-                  onClick={() => {
-                    Mixpanel.events.loadingModal.blockExplorerOpened(
-                      tx.details.hash
-                    );
-                    window.open(tx.details.blockExplorerLink, "_blank");
-                  }}
-                >
-                  <Text size="text3">view</Text>
-                </OutlinedButton>
-              ) : null}
-              {tx.details.status === "Fail" && (
-                <PrimaryButton
-                  weight="bold"
-                  onClick={() =>
-                    transactionStore.performTxList(tx.details.txId)
+      {chainId != transactionStore.txListProps?.chainId && (
+        <div className="network-change">
+          <Text type="title">Oops, you seem to be on a wrong network.</Text>
+          <PrimaryButton
+            onClick={() => {
+              switchNetwork(transactionStore.txListProps?.chainId ?? 1);
+            }}
+          >
+            Switch Network
+          </PrimaryButton>
+        </div>
+      )}
+      {chainId == transactionStore.txListProps?.chainId && (
+        <>
+          <Text type="title" size="title3" className="title">
+            {transactionStore.txListProps?.title}
+          </Text>
+          <div className="scroll-view">
+            {transactionStore.transactions.map((tx, idx) => {
+              return (
+                <div
+                  key={tx.details.txId}
+                  className={
+                    tx.details.status == "Success"
+                      ? "tx-item tx-item-complete"
+                      : "tx-item "
                   }
                 >
-                  retry
-                </PrimaryButton>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                  <div className="tx-icon">
+                    {tx.details.status == "None" ? (
+                      <Text size="text1" type="title">
+                        {idx + 1}
+                      </Text>
+                    ) : (
+                      <img
+                        src={
+                          tx.details.status == "Success"
+                            ? completeIcon
+                            : tx.details.status == "Fail" ||
+                              tx.details.status == "Exception"
+                            ? warningIcon
+                            : loadingGif
+                        }
+                      />
+                    )}
+                  </div>
+                  <Text
+                    size="text3"
+                    bold
+                    style={{
+                      flexGrow: 2,
+                    }}
+                  >
+                    {tx.details.currentMessage}
+                  </Text>
+                  {tx.details.blockExplorerLink ? (
+                    <OutlinedButton
+                      height="small"
+                      onClick={() => {
+                        Mixpanel.events.loadingModal.blockExplorerOpened(
+                          tx.details.hash
+                        );
+                        window.open(tx.details.blockExplorerLink, "_blank");
+                      }}
+                    >
+                      <Text size="text3">view</Text>
+                    </OutlinedButton>
+                  ) : null}
+                  {tx.details.status === "Fail" && (
+                    <PrimaryButton
+                      weight="bold"
+                      onClick={() =>
+                        transactionStore.performTxList(tx.details.txId)
+                      }
+                    >
+                      retry
+                    </PrimaryButton>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </Styled>
   ) : null;
 };
@@ -192,6 +212,16 @@ const Styled = styled.div`
   .tx-item-complete {
     opacity: 0.7;
     background-color: black;
+  }
+
+  .network-change {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    height: 100%;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
   }
 `;
 export default OngoingTxModal;

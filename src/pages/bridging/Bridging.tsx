@@ -27,6 +27,7 @@ import RecoveryPage from "./Recovery";
 import { onCantoNetwork } from "global/utils/getAddressUtils";
 import { useTransactionStore } from "global/stores/transactionStore";
 import { TestingComponent } from "./testing";
+import OngoingTxModal from "global/components/modals/ongoingTxModal";
 
 const Bridging = () => {
   const txStore = useTransactionStore();
@@ -66,6 +67,7 @@ const Bridging = () => {
   };
   return (
     <Styled>
+      <OngoingTxModal onClose={() => {}}/>
       <TestingComponent />
       {/* <div className="floating-buttons">
         <BalanceTableModal

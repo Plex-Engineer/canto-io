@@ -44,7 +44,7 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
   transactions: [],
   txListProps: null,
   modalOpen: false,
-  addTransactionList: (txList, txListProps) => {
+  addTransactionList: async (txList, txListProps) => {
     set({
       transactions: txList.map((tx) => ({
         tx,
@@ -57,10 +57,7 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
       txListProps: txListProps,
     });
     //on adding txs, we will go ahead and start performing them as well if on the correct network
-    if (Number(useNetworkInfo.getState().chainId) === txListProps.chainId) {
-      return get().performTxList();
-    }
-    return Promise.resolve(true);
+    return await get().performTxList();
   },
   setModalOpen: (modalOpen) => set({ modalOpen: modalOpen }),
   generateTxId: () =>
@@ -193,6 +190,12 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
     }
   },
   performTxList: async (txId) => {
+    //check to make sure user is on the right network
+    if (
+      Number(useNetworkInfo.getState().chainId) !== get().txListProps?.chainId
+    ) {
+      return false;
+    }
     //if no txId is passed in, index will be -1, so we will start from the beginning
     const index = get().transactions.findIndex((t) => t.details.txId === txId);
     let txsToPerform;
