@@ -11,7 +11,7 @@ const ConfirmTxModal = (props: ConfirmTxModalProps) => {
   return (
     <Styled>
       <OngoingTxModal onClose={props.onClose} />{" "}
-      {currentNetworkId != props.networkId && (
+      {/* {currentNetworkId != props.networkId && (
         <div className="network-change">
           <Text type="title">Oops, you seem to be on a wrong network.</Text>
           <PrimaryButton
@@ -22,8 +22,8 @@ const ConfirmTxModal = (props: ConfirmTxModalProps) => {
             Switch Network
           </PrimaryButton>
         </div>
-      )}
-      {props.networkId == currentNetworkId && (
+      )} */}
+      {props.networkId != currentNetworkId && (
         <>
           <Text type="title" size="title2">
             {props.title}

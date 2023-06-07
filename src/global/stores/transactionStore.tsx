@@ -13,6 +13,7 @@ import {
   getCantoNetwork,
   getSupportedNetwork,
 } from "global/utils/getAddressUtils";
+import { switchNetwork } from "global/utils/walletConnect/addCantoToWallet";
 
 export enum TxMethod {
   NONE,
@@ -190,11 +191,19 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
     }
   },
   performTxList: async (txId) => {
+    set({
+      modalOpen: true,
+    });
     //check to make sure user is on the right network
     if (
       Number(useNetworkInfo.getState().chainId) !== get().txListProps?.chainId
     ) {
-      return false;
+      const didSwitch = await switchNetwork(
+        get().txListProps?.chainId as number
+      );
+      if (!didSwitch) {
+        return false;
+      }
     }
     //if no txId is passed in, index will be -1, so we will start from the beginning
     const index = get().transactions.findIndex((t) => t.details.txId === txId);
@@ -204,9 +213,6 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
     } else {
       txsToPerform = get().transactions.slice(index);
     }
-    set({
-      modalOpen: true,
-    });
     for (const tx of txsToPerform) {
       const txSuccess =
         get().txListProps?.txListMethod === TxMethod.EVM

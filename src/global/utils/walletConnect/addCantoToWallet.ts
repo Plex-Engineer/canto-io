@@ -1,6 +1,6 @@
 import { getCosmosAPIEndpoint, getETHNetwork } from "../getAddressUtils";
 
-export async function switchNetwork(chainId: number) {
+export async function switchNetwork(chainId: number): Promise<boolean> {
   //@ts-ignore
   if (window.ethereum) {
     try {
@@ -9,10 +9,13 @@ export async function switchNetwork(chainId: number) {
         method: "wallet_switchEthereumChain",
         params: [{ chainId: "0x" + chainId.toString(16) }],
       });
+      return true;
     } catch (error: unknown) {
       console.error(error);
+      return false;
     }
   }
+  return false;
 }
 
 export async function addNetwork(chainId?: number) {
