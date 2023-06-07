@@ -129,7 +129,7 @@ export async function bridgeTxRouter(
       doesMethodSupportToken(toNetwork, BridgingMethods.IBC, token, false)
     ) {
       return await convertAndIbcOutTx(
-        fromNetwork.IBC?.evmChainId,
+        fromNetwork.evmChainId,
         txStore,
         cantoAddress,
         token.address,

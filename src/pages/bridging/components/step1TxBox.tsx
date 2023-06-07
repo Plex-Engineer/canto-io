@@ -38,17 +38,21 @@ interface Step1TxBoxProps {
   selectedToken?: Token;
   selectToken: (token?: Token) => void;
   //tx
-  tx: (amount: BigNumber, toAddress?: string) => Promise<boolean>;
+  tx: (amount: BigNumber, toAddress: string) => Promise<boolean>;
 }
 const Step1TxBox = (props: Step1TxBoxProps) => {
+  //regular confirmation modal
   const [isModalOpen, setModalOpen] = useState(false);
+  //ibc in modal
   const [isIBCModalOpen, setisIBCModalOpen] = useState(false);
   const [selectedIBCToken, setSelectedIBCToken] =
     useState<NativeToken>(EMPTY_NATIVE_TOKEN);
+  //ibc out modal
+  const [userInputAddress, setUserInputAddress] = useState("");
+
+  //general
   const [amount, setAmount] = useState("");
-
   const currentTokenBalance = props.selectedToken?.balance ?? BigNumber.from(0);
-
   const [buttonText, buttonDisabled] = props.selectedToken
     ? getStep1ButtonText(
         convertStringToBigNumber(amount, props.selectedToken.decimals),
@@ -84,25 +88,49 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           })}
           confirmationValues={[
             { title: "from", value: formatAddress(props.fromAddress, 6) },
-            { title: "to", value: formatAddress(props.toAddress, 6) },
+            {
+              title: "to",
+              value: props.bridgeIn
+                ? formatAddress(props.toAddress, 6)
+                : formatAddress(userInputAddress, 6),
+            },
             {
               title: "amount",
               value: truncateNumber(amount) + " " + props.selectedToken?.symbol,
             },
           ]}
-          extraInputs={[]}
-          disableConfirm={false}
+          extraInputs={
+            props.bridgeIn
+              ? []
+              : [
+                  {
+                    header: "address",
+                    placeholder: "",
+                    value: userInputAddress,
+                    setValue: setUserInputAddress,
+                  },
+                ]
+          }
+          disableConfirm={
+            !(
+              props.bridgeIn ||
+              props.toNetwork.IBC?.checkAddress(userInputAddress)
+            )
+          }
           onConfirm={() => {
             if (props.selectedToken)
               props.tx(
-                convertStringToBigNumber(amount, props.selectedToken.decimals)
+                convertStringToBigNumber(amount, props.selectedToken.decimals),
+                userInputAddress
               );
           }}
           extraDetails={getBridgeExtraDetails(
             props.bridgeIn,
             false,
             formatAddress(props.fromAddress, 6),
-            formatAddress(props.toAddress, 6)
+            props.bridgeIn
+              ? formatAddress(props.toAddress, 6)
+              : props.toNetwork.name
           )}
           onClose={() => {
             setModalOpen(false);
