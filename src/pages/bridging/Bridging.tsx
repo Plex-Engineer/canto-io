@@ -84,7 +84,7 @@ const Bridging = () => {
           nativeTokens={bridgingTokens.userNativeTokens}
           allConvertCoinTokens={CANTO_MAIN_CONVERT_COIN_TOKENS}
         />
-        <Tooltip
+        {/* <Tooltip
           position="bottom right"
           trigger={
             <div
@@ -99,7 +99,7 @@ const Bridging = () => {
             </div>
           }
           content={<Text size="text4">Click here for a walkthrough.</Text>}
-        />
+        /> */}
       </div>
 
       <CantoTabs

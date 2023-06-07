@@ -201,8 +201,8 @@ test("step 1 buttonText", () => {
       currentAllowance: parseUnits("1", 18),
       bridgeIn: true,
       expectedResult: {
-        disabled: false,
-        text: "approve",
+        disabled: true,
+        text: bridgeText(true),
       },
     },
     {
@@ -212,7 +212,7 @@ test("step 1 buttonText", () => {
       bridgeIn: true,
       expectedResult: {
         disabled: false,
-        text: "approve",
+        text: bridgeText(true),
       },
     },
     {

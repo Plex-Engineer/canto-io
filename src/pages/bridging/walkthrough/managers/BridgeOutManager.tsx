@@ -7,14 +7,14 @@ import { CompletePage } from "../components/pages/complete";
 import { ConfirmTransactionPage } from "../components/pages/confirmTxPage";
 import SelectTokenPage from "../components/pages/selectToken";
 import SwitchNetworkPage from "../components/pages/switchNetwork";
-import { BridgeTransaction } from "pages/bridging/hooks/useBridgingTransactions";
-import { BridgeOutStep } from "../config/interfaces";
+import { BridgeTransaction } from "pages/bridging/walkthrough/hooks/useBridgingTransactions";
+import { BridgeOutStep } from "../config/interfacesSteps";
 import {
   BridgeOutNetworkInfo,
   CantoMainBridgeOutNetworks,
   UserERC20BridgeToken,
   UserNativeToken,
-} from "pages/bridging/config/interfaces";
+} from "pages/bridging/walkthrough/config/interfaces";
 import { convertStringToBigNumber } from "global/utils/formattingNumbers";
 import SelectBridgeOutNetwork from "../components/pages/selectBridgeOutNetwork";
 import { WalkthroughSelectedTokens } from "../store/customUseWalkthrough";

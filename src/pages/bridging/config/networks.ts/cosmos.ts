@@ -35,6 +35,25 @@ function addressCheck(address: string | undefined, addressBeginning: string) {
 }
 const blockEndpoint = "/cosmos/base/tendermint/v1beta1";
 
+export const CANTO_IBC_NETWORK: IBCNetwork = {
+  name: "canto",
+  chainId: "canto_7700-1",
+  icon: TOKENS.cantoMainnet.CANTO.icon,
+  nativeCurrency: { denom: "acanto", decimals: 18 },
+  channelFromCanto: "",
+  channelToCanto: "",
+  restEndpoint: "",
+  rpcEndpoint: "",
+  addressBeginning: "canto",
+  checkAddress: function (address) {
+    return addressCheck(address, this.addressBeginning);
+  },
+  tokens: {
+    toCanto: [],
+    fromCanto: [],
+  },
+};
+
 const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
   [MainnetIBCNetworks.GRAVITY_BRIDGE]: {
     name: "gravity bridge",

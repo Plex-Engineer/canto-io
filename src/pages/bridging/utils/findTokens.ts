@@ -1,4 +1,4 @@
-import { NativeToken } from "../config/interfaces";
+import { NativeToken } from "../config/bridgingInterfaces";
 import { TOKENS } from "global/config/tokenInfo";
 import { Token } from "global/config/interfaces/tokens";
 import { MAINNET_IBC_NETWORKS } from "../config/networks.ts/cosmos";

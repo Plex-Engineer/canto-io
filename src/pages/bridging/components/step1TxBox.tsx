@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { PrimaryButton, Text } from "global/packages/src";
 import CopyIcon from "assets/copy.svg";
-import { EMPTY_NATIVE_TOKEN, NativeToken } from "../config/interfaces";
+import { EMPTY_NATIVE_TOKEN, NativeToken } from "../config/bridgingInterfaces";
 import LoadingBlip from "./LoadingBlip";
 import {
   convertStringToBigNumber,

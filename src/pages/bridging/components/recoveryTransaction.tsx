@@ -4,7 +4,6 @@ import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { truncateNumber } from "global/utils/formattingNumbers";
 import { useState } from "react";
-import { RecoveryTransaction } from "../config/interfaces";
 import { formatAddress } from "../utils/utils";
 import acronIcon from "assets/acron.svg";
 import ConfirmTxModal, {
@@ -16,7 +15,7 @@ import { ibcOutTx } from "../utils/transactions";
 import { TransactionStore } from "global/stores/transactionStore";
 import { CantoMainnet } from "global/config/networks";
 import { MAINNET_IBC_NETWORKS } from "../config/networks.ts/cosmos";
-import { IBCNetwork } from "../config/bridgingInterfaces";
+import { IBCNetwork, RecoveryTransaction } from "../config/bridgingInterfaces";
 
 interface Props {
   transaction: RecoveryTransaction;

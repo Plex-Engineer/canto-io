@@ -8,9 +8,9 @@ import { formatTokensAmountsbyChain } from "../../utils/utils";
 import Modal from "global/packages/src/components/molecules/Modal";
 import {
   NativeToken,
-  UserERC20BridgeToken,
   UserNativeToken,
-} from "pages/bridging/config/interfaces";
+  UserERC20BridgeToken,
+} from "pages/bridging/config/bridgingInterfaces";
 
 interface Props {
   ethTokens: UserERC20BridgeToken[];

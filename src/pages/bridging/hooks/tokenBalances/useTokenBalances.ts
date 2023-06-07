@@ -3,7 +3,7 @@ import { BigNumber, Contract, ethers } from "ethers";
 import { ERC20Abi } from "global/config/abi";
 import { Token } from "global/config/interfaces/tokens";
 import { checkMultiCallForUndefined } from "global/utils/cantoTransactions/transactionChecks";
-import { UserERC20BridgeToken } from "pages/bridging/config/interfaces";
+import { UserERC20BridgeToken } from "pages/bridging/config/bridgingInterfaces";
 
 export function useTokenBalances(
   account: string | undefined,

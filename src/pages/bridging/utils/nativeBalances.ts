@@ -1,11 +1,11 @@
 import { generateEndpointBalances } from "@tharsis/provider";
 import { BigNumber } from "ethers";
 import {
-  BasicNativeBalance,
-  IBCTokenTrace,
   NativeToken,
   UserNativeToken,
-} from "../config/interfaces";
+  BasicNativeBalance,
+  IBCTokenTrace,
+} from "../config/bridgingInterfaces";
 
 const options = {
   method: "GET",

@@ -1,12 +1,14 @@
 import styled from "@emotion/styled";
 import Step2TxBox from "./components/step2TxBox";
-import { NativeTransaction } from "./config/interfaces";
 import Step1TxBox from "./components/step1TxBox";
 import QBoxList from "./components/QBoxList";
 import { Token } from "global/config/interfaces/tokens";
 import { BigNumber } from "ethers";
 import { TransactionStore } from "global/stores/transactionStore";
-import { BridgingNetwork } from "./config/bridgingInterfaces";
+import {
+  BridgingNetwork,
+  NativeTransaction,
+} from "./config/bridgingInterfaces";
 
 interface BridgeInProps {
   //tokens

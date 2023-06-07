@@ -4,14 +4,14 @@ import {
   CantoMainBridgeOutNetworks,
   UserERC20BridgeToken,
   UserNativeToken,
-} from "pages/bridging/config/interfaces";
+} from "pages/bridging/walkthrough/config/interfaces";
 import { TransactionHistoryEvent } from "pages/bridging/utils/bridgeTxHistory";
 import {
   BridgeInStep,
   BridgeInWalkthroughSteps,
   BridgeOutStep,
   BridgeOutWalkthroughSteps,
-} from "../config/interfaces";
+} from "../config/interfacesSteps";
 
 export function didPassBridgeOutWalkthroughCheck(
   currentStep: BridgeOutStep,

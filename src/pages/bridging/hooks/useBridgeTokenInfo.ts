@@ -4,7 +4,7 @@ import {
   IBCTokenTrace,
   UserERC20BridgeToken,
   UserNativeToken,
-} from "../config/interfaces";
+} from "../config/bridgingInterfaces";
 import {
   getNativeCantoBalances,
   getUnknownIBCTokens,

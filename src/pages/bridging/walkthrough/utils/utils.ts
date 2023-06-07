@@ -1,9 +1,9 @@
 import { formatUnits } from "ethers/lib/utils";
 import {
   NativeToken,
-  UserERC20BridgeToken,
   UserNativeToken,
-} from "pages/bridging/config/interfaces";
+  UserERC20BridgeToken,
+} from "pages/bridging/config/bridgingInterfaces";
 
 interface TokenTableProps {
   name: string;

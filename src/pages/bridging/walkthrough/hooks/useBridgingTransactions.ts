@@ -7,9 +7,9 @@ import { useEffect, useState } from "react";
 import {
   txConvertCoin,
   txConvertERC20,
-} from "../utils/convertCoin/convertTransactions";
+} from "../../utils/convertCoin/convertTransactions";
 import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/transactionChecks";
-import { txIBCTransfer } from "../utils/IBC/IBCTransfer";
+import { txIBCTransfer } from "../../utils/IBC/IBCTransfer";
 import { ADDRESSES } from "global/config/addresses";
 import { BridgeOutNetworkInfo } from "../config/interfaces";
 import { CANTO_IBC_NETWORK } from "../config/bridgeOutNetworks";

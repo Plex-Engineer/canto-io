@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
 import { PrimaryButton, Text } from "global/packages/src";
-import { NativeTransaction } from "../config/interfaces";
 import { TransactionStore } from "global/stores/transactionStore";
 import { completeAllConvertIn, convertTx } from "../utils/transactions";
 import MiniConvert from "./miniConvert";
 import { formatUnits } from "ethers/lib/utils";
+import { NativeTransaction } from "../config/bridgingInterfaces";
 
 interface Step2TxBoxProps {
   bridgeIn: boolean;

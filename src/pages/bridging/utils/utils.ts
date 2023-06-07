@@ -1,7 +1,10 @@
 import { TransactionState } from "@usedapp/core";
 import { BigNumber } from "ethers";
 import { toastHandler } from "global/utils/toastHandler";
-import { NativeTransaction, UserNativeToken } from "../config/interfaces";
+import {
+  NativeTransaction,
+  UserNativeToken,
+} from "../config/bridgingInterfaces";
 import { TransactionHistoryEvent } from "./bridgeTxHistory";
 import { getNetworkFromTokenName } from "./findTokens";
 

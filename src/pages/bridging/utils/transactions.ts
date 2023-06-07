@@ -8,14 +8,12 @@ import {
 } from "global/config/interfaces/transactionTypes";
 import { TransactionStore, TxMethod } from "global/stores/transactionStore";
 import { _enableTx } from "global/stores/transactionUtils";
-import { CANTO_IBC_NETWORK } from "../config/bridgeOutNetworks";
 import { Chain, Fee, convertFee, ibcFee } from "global/config/cosmosConstants";
 import {
   txConvertCoin,
   txConvertERC20,
 } from "./convertCoin/convertTransactions";
 import { txIBCTransfer } from "./IBC/IBCTransfer";
-import { NativeTransaction } from "../config/interfaces";
 import {
   getCosmosAPIEndpoint,
   getCosmosChainObj,
@@ -29,9 +27,11 @@ import {
   IBCNetwork,
   LayerZeroToken,
   NativeToken,
+  NativeTransaction,
 } from "../config/bridgingInterfaces";
 import { Token } from "global/config/interfaces/tokens";
 import { getAllowance, getTokenBalance } from "global/utils/api/tokenBalances";
+import { CANTO_IBC_NETWORK } from "../config/networks.ts/cosmos";
 
 const doesMethodSupportToken = (
   network: BridgingNetwork,

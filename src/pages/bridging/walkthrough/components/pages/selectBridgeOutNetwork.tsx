@@ -6,8 +6,8 @@ import BaseStyled from "../layout";
 import {
   BridgeOutNetworkInfo,
   CantoMainBridgeOutNetworks,
-} from "pages/bridging/config/interfaces";
-import { CANTO_MAIN_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
+} from "pages/bridging/walkthrough/config/interfaces";
+import { CANTO_MAIN_BRIDGE_OUT_NETWORKS } from "pages/bridging/walkthrough/config/bridgeOutNetworks";
 
 interface SelectBridgeProps {
   activeNetwork: BridgeOutNetworkInfo;

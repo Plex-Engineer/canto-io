@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { PrimaryButton, Text } from "global/packages/src";
-import { NativeToken } from "pages/bridging/config/interfaces";
+import { NativeToken } from "pages/bridging/config/bridgingInterfaces";
 import { copyAddress, formatAddress } from "pages/bridging/utils/utils";
 import CopyToClipboard from "react-copy-to-clipboard";
 import CopyIcon from "assets/copy.svg";

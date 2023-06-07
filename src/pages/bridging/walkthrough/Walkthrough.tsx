@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useBridgeWalkthroughStore } from "./store/bridgeWalkthroughStore";
 import { useCustomWalkthrough } from "./store/customUseWalkthrough";
 import { useEthers } from "@usedapp/core";
-import { BridgeInStep, BridgeOutStep } from "./config/interfaces";
+import { BridgeInStep, BridgeOutStep } from "./config/interfacesSteps";
 import { GenPubKeyWalkthrough } from "./components/pages/genPubKey";
 import BalanceTableModal from "./components/modals/BalanceTableModal";
 import LoadingWalkthrough from "./components/pages/LoadingWalkthrough";

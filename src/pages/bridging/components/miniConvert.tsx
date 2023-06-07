@@ -3,7 +3,6 @@ import { formatUnits } from "ethers/lib/utils";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { truncateNumber } from "global/utils/formattingNumbers";
 import { useState } from "react";
-import { NativeTransaction } from "../config/interfaces";
 import { convertSecondsToString, formatAddress } from "../utils/utils";
 import ConfirmTxModal, {
   TokenWithIcon,
@@ -11,6 +10,7 @@ import ConfirmTxModal, {
 import { getBridgeExtraDetails } from "./bridgeDetails";
 import OngoingTxModal from "global/components/modals/ongoingTxModal";
 import { PrimaryButton, Text } from "global/packages/src";
+import { NativeTransaction } from "../config/bridgingInterfaces";
 
 interface Props {
   transaction: NativeTransaction;

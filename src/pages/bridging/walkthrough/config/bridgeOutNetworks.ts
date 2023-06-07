@@ -1,10 +1,10 @@
 import cosmosIcon from "assets/icons/ATOM.svg";
 import GravitonGrey from "assets/icons/Graviton-Grey.svg";
 import { TOKENS } from "global/config/tokenInfo";
-import { CANTO_MAIN_IBC_TOKENS_WITH_DENOMS } from "./tokens.ts/bridgingTokens";
+import { CANTO_MAIN_IBC_TOKENS_WITH_DENOMS } from "../../config/tokens.ts/bridgingTokens";
 import { BridgeOutNetworkInfo, CantoMainBridgeOutNetworks } from "./interfaces";
 
-export type BridgeOutNetworkData = {
+type BridgeOutNetworkData = {
   [key: string]: BridgeOutNetworkInfo;
 };
 

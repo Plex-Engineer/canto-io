@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
-import { EMPTY_NATIVE_TOKEN, IBCTokenTrace } from "./config/interfaces";
 import {
   findNativeToken,
   getNetworkFromCantoChannel,
@@ -9,6 +8,7 @@ import RecoveryTransactionBox from "./components/recoveryTransaction";
 import { BigNumber } from "ethers";
 import unknwonToken from "assets/icons/info.svg";
 import { TransactionStore } from "global/stores/transactionStore";
+import { IBCTokenTrace, EMPTY_NATIVE_TOKEN } from "./config/bridgingInterfaces";
 
 interface RecoveryModalProps {
   tokens: IBCTokenTrace[];

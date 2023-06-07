@@ -3,7 +3,7 @@ import { BigNumberish } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { TokenWallet } from "pages/bridging/components/tokenSelect";
-import { BaseToken } from "pages/bridging/config/interfaces";
+import { BaseToken } from "pages/bridging/walkthrough/config/interfaces";
 import BaseStyled from "../layout";
 
 interface SelectTokenProps {
@@ -36,7 +36,7 @@ const SelectTokenPage = (props: SelectTokenProps) => {
       </header>
       <section>
         <div className="wallet">
-          <TokenWallet
+          {/* <TokenWallet
             allTokens={[
               {
                 groupName: "Tokens",
@@ -50,7 +50,7 @@ const SelectTokenPage = (props: SelectTokenProps) => {
             ]}
             activeToken={props.activeToken}
             onSelect={(token) => props.onSelect(token ?? props.activeToken)}
-          />
+          /> */}
         </div>
       </section>
       <footer>
