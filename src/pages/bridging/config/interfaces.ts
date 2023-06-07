@@ -4,34 +4,11 @@ import { BridgeTransaction } from "../hooks/useBridgingTransactions";
 import { ReactNode } from "react";
 import { IBCPathInfo } from "../utils/nativeBalances";
 import { Token } from "global/config/interfaces/tokens";
-import { CantoNetwork, ETHBridgeNetwork } from "global/config/networks";
-import { IBCTOKENS } from "./bridgingTokens";
-import { BridgeOutNetworkData } from "./bridgeOutNetworks";
+import { IBCNetwork } from "./bridgingInterfaces";
 
 /**
  * NETWORK INTERFACES
  */
-
-/**
- * When bridging in, there must be a sending network and a receiving network
- * Ex. ETH -> Canto
- * Ex. GravityTest -> CantoTest
- * Each will be in a pair, for correct contract calls to be made and correct tokens to display when on either network
- */
-export interface BridgeNetworkPair {
-  pairId: string;
-  sending: {
-    network: ETHBridgeNetwork;
-    tokens: Token[];
-  };
-  receiving: {
-    network: CantoNetwork;
-    convertCoinTokens: NativeToken[];
-    nativeCosmosTokens: NativeToken[];
-    ibcTokens: IBCTOKENS;
-    bridgeOutNetworks: BridgeOutNetworkData;
-  };
-}
 
 /**
  * cantoChannel is the channel that you must use to ibc FROM canto
@@ -143,7 +120,7 @@ export interface RecoveryTransaction {
   amount: BigNumber;
   onRecovery?: () => void;
   channelPath: string[];
-  defaultNetwork: BridgeOutNetworkInfo;
+  defaultNetwork?: IBCNetwork;
   token: UserNativeToken;
 }
 

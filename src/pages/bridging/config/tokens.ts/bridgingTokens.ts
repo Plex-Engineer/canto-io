@@ -1,5 +1,5 @@
 import { TOKENS } from "global/config/tokenInfo";
-import { CantoMainBridgeOutNetworks, NativeToken } from "./interfaces";
+import { CantoMainBridgeOutNetworks, NativeToken } from "../interfaces";
 import { Token } from "global/config/interfaces/tokens";
 
 const ETH_GRAVITY_BRIDGE_IN_TOKENS: Token[] = [

@@ -26,25 +26,6 @@ const RecoveryPage = ({
         IBC Transfers - Recovery
       </Text>
 
-      {/* <div className="qa">
-        <QBox
-          question="Instructions:"
-          answer={
-            <p>
-              1. Each token below represents all unidentified ibc tokens on the
-              canto network
-              <br />
-              2. For each token, select the network you would like to ibc
-              transfer the tokens back to (default network is selected for you)
-              <br />
-              3. Click recover on the token once you have selected the network
-              you wish <br /> 4. Confirmation will pop up where you specify the
-              address to send the tokens to`
-            </p>
-          }
-        />
-      </div> */}
-
       <div className="instruct">
         <Text align="left" type="title">
           Instructions:
@@ -86,7 +67,7 @@ const RecoveryPage = ({
                 txStore={txStore}
                 cantoAddress={cantoAddress}
                 transaction={{
-                  origin: transferFrom.name,
+                  origin: transferFrom?.name ?? "unkown",
                   amount: BigNumber.from(token.amount),
                   defaultNetwork: transferFrom,
                   channelPath: token.ibcInfo.denom_trace.path

@@ -7,14 +7,14 @@ import { useTransactionHistory } from "./hooks/useTransactionHistory";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { createConvertTransactions } from "./utils/utils";
 import walletIcon from "assets/wallet.svg";
-import { useEtherBalance, useEthers } from "@usedapp/core";
+import { useEthers } from "@usedapp/core";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
 import BalanceTableModal from "./walkthrough/components/modals/BalanceTableModal";
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
 import { GenPubKeyWalkthrough } from "./walkthrough/components/pages/genPubKey";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
 import { PubKeyStyled } from "./walkthrough/Walkthrough";
 import warningRedIcon from "assets/warning_red.svg";
@@ -31,12 +31,12 @@ import {
   CANTO_MAIN_BRIDGE_NETWORK,
   CANTO_TEST_BRIDGE_NETWORK,
 } from "./config/networks.ts";
+import { CANTO_MAIN_CONVERT_COIN_TOKENS } from "./config/tokens.ts/bridgingTokens";
 
 const Bridging = () => {
   const txStore = useTransactionStore();
   const networkInfo = useNetworkInfo();
   const bridgingHistory = useTransactionHistory();
-
   const bridgeStore = useBridgingStore();
 
   const bridgingTokens = useBridgeTokenInfo();
@@ -44,13 +44,17 @@ const Bridging = () => {
   const navigate = useNavigate();
   const [pubKeySuccess, setPubKeySuccess] = useState("None");
   const hasRecoveryToken = bridgingTokens.unkownIBCTokens.length > 0;
-  const ethBalance = useEtherBalance(networkInfo.account, {
-    chainId: bridgingTokens.networkPair.sending.network.chainId,
-  });
+
+  //checks balance on ethMainnet before dusting
   const canPubKey =
-    (ethBalance?.gte(parseUnits("0.01")) ||
+    (bridgingTokens.ethMainBalance?.gte(parseUnits("0.01")) ||
       networkInfo.balance?.gte(parseUnits("0.5"))) ??
     false;
+
+  //chainId change to show testnet networks
+  useEffect(() => {
+    bridgeStore.chainIdChanged(Number(networkInfo.chainId));
+  }, [networkInfo.chainId]);
 
   const NotConnectedTabs = () => {
     const tabs = [];
@@ -78,9 +82,7 @@ const Bridging = () => {
           ethTokens={bridgingTokens.userBridgeInTokens}
           cantoTokens={bridgingTokens.userBridgeOutTokens}
           nativeTokens={bridgingTokens.userNativeTokens}
-          allConvertCoinTokens={
-            bridgingTokens.networkPair.receiving.convertCoinTokens
-          }
+          allConvertCoinTokens={CANTO_MAIN_CONVERT_COIN_TOKENS}
         />
         <Tooltip
           position="bottom right"

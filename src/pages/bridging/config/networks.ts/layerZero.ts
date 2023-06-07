@@ -4,7 +4,7 @@ import {
   FantomTestnet,
   MumbaiTestnet,
 } from "global/config/networks";
-import { CANTO_OFT } from "../tokens.ts/layerZero";
+import { CANTO_OFT } from "../tokens.ts/layerZeroTokens";
 enum TestnetLZNetworks {
   CANTO_TEST = "CANTO_TEST",
   MUMBAI_TEST = "MUMBAI_TEST",

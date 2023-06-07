@@ -1,121 +1,116 @@
-import { CantoMainBridgeOutNetworks } from "pages/bridging/config/interfaces";
 import { BigNumber } from "ethers";
 import { truncateNumber } from "global/utils/formattingNumbers";
 import { getStep1ButtonText } from "pages/bridging/utils/utils";
 import { convertStringToBigNumber } from "global/utils/formattingNumbers";
 
-import { CANTO_MAIN_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
 import { parseUnits } from "ethers/lib/utils";
-import { CANTO_MAIN_CONVERT_COIN_TOKENS } from "pages/bridging/config/bridgingTokens";
+import { CANTO_MAIN_CONVERT_COIN_TOKENS } from "pages/bridging/config/tokens.ts/bridgingTokens";
+import {
+  MAINNET_IBC_NETWORKS,
+  MainnetIBCNetworks,
+} from "pages/bridging/config/networks.ts/cosmos";
 
 test("check cosmos address is valid", () => {
-  const testCases: { case?: string; validFor: CantoMainBridgeOutNetworks[] }[] =
-    [
-      {
-        case: "cosmos1qqzky5czd8jtxp7k96w0d9th2vjxcxaeqk6292",
-        validFor: [CantoMainBridgeOutNetworks.COSMOS_HUB],
-      },
-      {
-        case: "osmo1qqzky5czd8jtxp7k96w0d9th2vjxcxaegdf6nc",
-        validFor: [CantoMainBridgeOutNetworks.OSMOSIS],
-      },
-      {
-        case: "gravity1qqzky5czd8jtxp7k96w0d9th2vjxcxaeyxgjqz",
-        validFor: [CantoMainBridgeOutNetworks.GRAVITY_BRIDGE],
-      },
-      {
-        case: "comdex1qqzky5czd8jtxp7k96w0d9th2vjxcxae8ecgua",
-        validFor: [CantoMainBridgeOutNetworks.COMDEX],
-      },
-      {
-        case: "inj1vzpglc8he97xeathu0wl99seh96mgl8aqchvjs",
-        validFor: [CantoMainBridgeOutNetworks.INJECTIVE],
-      },
-      {
-        case: "cre1qqzky5czd8jtxp7k96w0d9th2vjxcxaey7f0s8",
-        validFor: [CantoMainBridgeOutNetworks.CRESCENT],
-      },
-      {
-        case: "somm1qqzky5czd8jtxp7k96w0d9th2vjxcxaev24x5q",
-        validFor: [CantoMainBridgeOutNetworks.SOMMELIER],
-      },
-      {
-        case: "akash1qqzky5czd8jtxp7k96w0d9th2vjxcxaeddhdus",
-        validFor: [CantoMainBridgeOutNetworks.AKASH],
-      },
-      {
-        case: "kava1rjhae3scpgckk2scffe8v7c93rugenjy8atg34",
-        validFor: [CantoMainBridgeOutNetworks.KAVA],
-      },
-      {
-        case: "",
-        validFor: [],
-      },
-      {
-        case: "0xkdlsfjalsdajkglkasdfjs",
-        validFor: [],
-      },
-      {
-        case: "0xaE9b2c8d2112C7B9907f68aEc6bFc0eB5d95818e",
-        validFor: [],
-      },
-      {
-        case: "gravity",
-        validFor: [],
-      },
-      {
-        case: undefined,
-        validFor: [],
-      },
-    ];
+  const testCases: { case?: string; validFor: MainnetIBCNetworks[] }[] = [
+    {
+      case: "cosmos1qqzky5czd8jtxp7k96w0d9th2vjxcxaeqk6292",
+      validFor: [MainnetIBCNetworks.COSMOS_HUB],
+    },
+    {
+      case: "osmo1qqzky5czd8jtxp7k96w0d9th2vjxcxaegdf6nc",
+      validFor: [MainnetIBCNetworks.OSMOSIS],
+    },
+    {
+      case: "gravity1qqzky5czd8jtxp7k96w0d9th2vjxcxaeyxgjqz",
+      validFor: [MainnetIBCNetworks.GRAVITY_BRIDGE],
+    },
+    {
+      case: "comdex1qqzky5czd8jtxp7k96w0d9th2vjxcxae8ecgua",
+      validFor: [MainnetIBCNetworks.COMDEX],
+    },
+    {
+      case: "inj1vzpglc8he97xeathu0wl99seh96mgl8aqchvjs",
+      validFor: [MainnetIBCNetworks.INJECTIVE],
+    },
+    {
+      case: "cre1qqzky5czd8jtxp7k96w0d9th2vjxcxaey7f0s8",
+      validFor: [MainnetIBCNetworks.CRESCENT],
+    },
+    {
+      case: "somm1qqzky5czd8jtxp7k96w0d9th2vjxcxaev24x5q",
+      validFor: [MainnetIBCNetworks.SOMMELIER],
+    },
+    {
+      case: "akash1qqzky5czd8jtxp7k96w0d9th2vjxcxaeddhdus",
+      validFor: [MainnetIBCNetworks.AKASH],
+    },
+    {
+      case: "kava1rjhae3scpgckk2scffe8v7c93rugenjy8atg34",
+      validFor: [MainnetIBCNetworks.KAVA],
+    },
+    {
+      case: "",
+      validFor: [],
+    },
+    {
+      case: "0xkdlsfjalsdajkglkasdfjs",
+      validFor: [],
+    },
+    {
+      case: "0xaE9b2c8d2112C7B9907f68aEc6bFc0eB5d95818e",
+      validFor: [],
+    },
+    {
+      case: "gravity",
+      validFor: [],
+    },
+    {
+      case: undefined,
+      validFor: [],
+    },
+  ];
   for (const testCase of testCases) {
     expect(
-      CANTO_MAIN_BRIDGE_OUT_NETWORKS[
-        CantoMainBridgeOutNetworks.COSMOS_HUB
-      ].checkAddress(testCase.case)
-    ).toBe(testCase.validFor.includes(CantoMainBridgeOutNetworks.COSMOS_HUB));
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.COSMOS_HUB].checkAddress(
+        testCase.case
+      )
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.COSMOS_HUB));
     expect(
-      CANTO_MAIN_BRIDGE_OUT_NETWORKS[
-        CantoMainBridgeOutNetworks.GRAVITY_BRIDGE
-      ].checkAddress(testCase.case)
-    ).toBe(
-      testCase.validFor.includes(CantoMainBridgeOutNetworks.GRAVITY_BRIDGE)
-    );
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.GRAVITY_BRIDGE].checkAddress(
+        testCase.case
+      )
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.GRAVITY_BRIDGE));
     expect(
-      CANTO_MAIN_BRIDGE_OUT_NETWORKS[
-        CantoMainBridgeOutNetworks.OSMOSIS
-      ].checkAddress(testCase.case)
-    ).toBe(testCase.validFor.includes(CantoMainBridgeOutNetworks.OSMOSIS));
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.OSMOSIS].checkAddress(
+        testCase.case
+      )
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.OSMOSIS));
     expect(
-      CANTO_MAIN_BRIDGE_OUT_NETWORKS[
-        CantoMainBridgeOutNetworks.COMDEX
-      ].checkAddress(testCase.case)
-    ).toBe(testCase.validFor.includes(CantoMainBridgeOutNetworks.COMDEX));
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.COMDEX].checkAddress(
+        testCase.case
+      )
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.COMDEX));
     expect(
-      CANTO_MAIN_BRIDGE_OUT_NETWORKS[
-        CantoMainBridgeOutNetworks.INJECTIVE
-      ].checkAddress(testCase.case)
-    ).toBe(testCase.validFor.includes(CantoMainBridgeOutNetworks.INJECTIVE));
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.INJECTIVE].checkAddress(
+        testCase.case
+      )
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.INJECTIVE));
     expect(
-      CANTO_MAIN_BRIDGE_OUT_NETWORKS[
-        CantoMainBridgeOutNetworks.CRESCENT
-      ].checkAddress(testCase.case)
-    ).toBe(testCase.validFor.includes(CantoMainBridgeOutNetworks.CRESCENT));
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.CRESCENT].checkAddress(
+        testCase.case
+      )
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.CRESCENT));
     expect(
-      CANTO_MAIN_BRIDGE_OUT_NETWORKS[
-        CantoMainBridgeOutNetworks.SOMMELIER
-      ].checkAddress(testCase.case)
-    ).toBe(testCase.validFor.includes(CantoMainBridgeOutNetworks.SOMMELIER));
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.SOMMELIER].checkAddress(
+        testCase.case
+      )
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.SOMMELIER));
     expect(
-      CANTO_MAIN_BRIDGE_OUT_NETWORKS[
-        CantoMainBridgeOutNetworks.AKASH
-      ].checkAddress(testCase.case)
-    ).toBe(testCase.validFor.includes(CantoMainBridgeOutNetworks.AKASH));
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.AKASH].checkAddress(testCase.case)
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.AKASH));
     expect(
-      CANTO_MAIN_BRIDGE_OUT_NETWORKS[
-        CantoMainBridgeOutNetworks.KAVA
-      ].checkAddress(testCase.case)
-    ).toBe(testCase.validFor.includes(CantoMainBridgeOutNetworks.KAVA));
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.KAVA].checkAddress(testCase.case)
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.KAVA));
   }
 });
 
@@ -245,7 +240,6 @@ test("step 1 buttonText", () => {
     const [testText, testDisabled] = getStep1ButtonText(
       testCase.amount,
       testCase.max,
-      testCase.currentAllowance,
       testCase.bridgeIn
     );
     expect(testText).toBe(testCase.expectedResult.text);

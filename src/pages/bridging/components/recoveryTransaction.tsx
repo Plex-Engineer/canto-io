@@ -4,10 +4,7 @@ import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
 import { truncateNumber } from "global/utils/formattingNumbers";
 import { useState } from "react";
-import {
-  BridgeOutNetworkInfo,
-  RecoveryTransaction,
-} from "../config/interfaces";
+import { RecoveryTransaction } from "../config/interfaces";
 import { formatAddress } from "../utils/utils";
 import acronIcon from "assets/acron.svg";
 import ConfirmTxModal, {
@@ -18,7 +15,8 @@ import { getBridgeExtraDetails } from "./bridgeDetails";
 import { ibcOutTx } from "../utils/transactions";
 import { TransactionStore } from "global/stores/transactionStore";
 import { CantoMainnet } from "global/config/networks";
-import { getNetworkPair } from "../config/networkPairs";
+import { MAINNET_IBC_NETWORKS } from "../config/networks.ts/cosmos";
+import { IBCNetwork } from "../config/bridgingInterfaces";
 
 interface Props {
   transaction: RecoveryTransaction;
@@ -32,13 +30,11 @@ const RecoveryTransactionBox = ({
 }: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isNetworkSelectModalOpen, setNetworkSelectModalOpen] = useState(false);
-  const [selectedNetwork, setSelectedNetwork] = useState<BridgeOutNetworkInfo>(
-    transaction.defaultNetwork
+  const [selectedNetwork, setSelectedNetwork] = useState<IBCNetwork>(
+    transaction.defaultNetwork ?? MAINNET_IBC_NETWORKS.Cosmos_Hub
   );
   const [userInputAddress, setUserInputAddress] = useState("");
-
-  const bridgeOutNetworks = getNetworkPair(CantoMainnet.chainId).receiving
-    .bridgeOutNetworks;
+  const bridgeOutNetworks = MAINNET_IBC_NETWORKS;
 
   return (
     <Styled>
@@ -175,7 +171,8 @@ const RecoveryTransactionBox = ({
           channel id
         </Text>
         <Text type="title" align="left">
-          {selectedNetwork.cantoChannel.replace("channel-", "")}
+          {selectedNetwork.channelFromCanto.replace("channel-", "")}
+          {/* 5 */}
         </Text>
       </div>
       <div

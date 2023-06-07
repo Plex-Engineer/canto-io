@@ -1,37 +1,35 @@
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { useEffect, useState } from "react";
 import {
-  BridgeNetworkPair,
-  EMPTY_ERC20_BRIDGE_TOKEN,
   IBCTokenTrace,
   UserERC20BridgeToken,
   UserNativeToken,
 } from "../config/interfaces";
-import {
-  SelectedTokens,
-  useBridgeTokenStore,
-} from "../stores/bridgeTokenStore";
 import {
   getNativeCantoBalances,
   getUnknownIBCTokens,
 } from "../utils/nativeBalances";
 import { useTokenBalances } from "./tokenBalances/useTokenBalances";
 import { useEtherBalance } from "@usedapp/core";
-import { getNetworkPair } from "../config/networkPairs";
 import { getCosmosAPIEndpoint } from "global/utils/getAddressUtils";
 import { BigNumber } from "ethers";
+import {
+  CANTO_MAIN_CONVERT_COIN_TOKENS,
+  ETH_GRAVITY_BRIDGE_IN_TOKENS,
+} from "../config/tokens.ts/bridgingTokens";
+import {
+  CantoMainnet,
+  CantoTestnet,
+  ETHMainnet,
+  onTestnet,
+} from "global/config/networks";
 
 interface BridgeTokenInfo {
   userBridgeInTokens: UserERC20BridgeToken[];
   userBridgeOutTokens: UserERC20BridgeToken[];
   userNativeTokens: UserNativeToken[];
   unkownIBCTokens: IBCTokenTrace[];
-  selectedTokens: {
-    bridgeInToken: UserERC20BridgeToken;
-    bridgeOutToken: UserERC20BridgeToken;
-  };
-  setSelectedToken: (selectedToken: string, type: SelectedTokens) => void;
-  networkPair: BridgeNetworkPair;
+  ethMainBalance: BigNumber;
 }
 
 export function useBridgeTokenInfo(): BridgeTokenInfo {
@@ -40,30 +38,25 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
     Number(state.chainId),
     state.cantoAddress,
   ]);
-  const tokenStore = useBridgeTokenStore();
-
-  //will use these to determine what tokens to show
-  const networkPair = getNetworkPair(chainId);
-  const [sendingNetwork, receivingNetwork] = [
-    networkPair.sending,
-    networkPair.receiving,
-  ];
+  //will use cantoNetwork to get ntive tokens
+  const isOnTestnet = onTestnet(chainId);
+  const cantoNetwork = isOnTestnet ? CantoTestnet : CantoMainnet;
 
   const ethBalance = useEtherBalance(account, {
-    chainId: sendingNetwork.network.chainId,
+    chainId: ETHMainnet.chainId,
   });
 
   //bridge in erc20 tokens on ETH mainnet
   const userEthBridgeInTokens = useTokenBalances(
     account,
-    sendingNetwork.tokens,
-    sendingNetwork.network.chainId,
-    sendingNetwork.network.coreContracts.GravityBridge
+    ETH_GRAVITY_BRIDGE_IN_TOKENS,
+    ETHMainnet.chainId,
+    ETHMainnet.coreContracts.GravityBridge
   ).tokens.map((token) => {
     return {
       ...token,
       erc20Balance:
-        sendingNetwork.network.coreContracts.WETH === token.address
+        ETHMainnet.coreContracts.WETH === token.address
           ? token.erc20Balance.add(ethBalance ?? BigNumber.from(0))
           : token.erc20Balance,
     };
@@ -71,8 +64,8 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
   //bridge out erc20 tokens on Canto Mainnet
   const { tokens: userCantoBridgeOutTokens } = useTokenBalances(
     account,
-    receivingNetwork.convertCoinTokens,
-    receivingNetwork.network.chainId
+    CANTO_MAIN_CONVERT_COIN_TOKENS,
+    CantoMainnet.chainId
   );
   const [userNativeTokens, setUserNativeTokens] = useState<UserNativeToken[]>(
     []
@@ -82,15 +75,15 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
   const [allUnknownIBC, setAllUnknownIBC] = useState<IBCTokenTrace[]>([]);
   async function getAllNativeTokens() {
     const { foundTokens, notFoundTokens } = await getNativeCantoBalances(
-      getCosmosAPIEndpoint(receivingNetwork.network.chainId),
+      getCosmosAPIEndpoint(cantoNetwork.chainId),
       cantoAddress,
-      receivingNetwork.convertCoinTokens
+      isOnTestnet ? [] : CANTO_MAIN_CONVERT_COIN_TOKENS
     );
     setUserNativeTokens(foundTokens);
     setAllUnknownIBC(
       await getUnknownIBCTokens(
         notFoundTokens,
-        getCosmosAPIEndpoint(receivingNetwork.network.chainId)
+        getCosmosAPIEndpoint(cantoNetwork.chainId)
       )
     );
   }
@@ -113,21 +106,6 @@ export function useBridgeTokenInfo(): BridgeTokenInfo {
     userBridgeOutTokens: userCantoBridgeOutTokens,
     userNativeTokens: userNativeTokens,
     unkownIBCTokens: allUnknownIBC,
-    selectedTokens: {
-      bridgeInToken:
-        userEthBridgeInTokens.find(
-          (token) =>
-            token.address.toLowerCase() ==
-            tokenStore.selectedTokens[SelectedTokens.ETHTOKEN].toLowerCase()
-        ) ?? EMPTY_ERC20_BRIDGE_TOKEN,
-      bridgeOutToken:
-        userCantoBridgeOutTokens.find(
-          (token) =>
-            token.address.toLowerCase() ==
-            tokenStore.selectedTokens[SelectedTokens.CONVERTOUT].toLowerCase()
-        ) ?? EMPTY_ERC20_BRIDGE_TOKEN,
-    },
-    setSelectedToken: tokenStore.setSelectedToken,
-    networkPair,
+    ethMainBalance: ethBalance ?? BigNumber.from(0),
   };
 }

@@ -2,7 +2,6 @@ import { BigNumber } from "ethers";
 import { BridgeStyled } from "./BridgeIn";
 import QBoxList from "./components/QBoxList";
 import Step1TxBox from "./components/step1TxBox";
-import Step2TxBox from "./components/step2TxBox";
 import { TransactionStore } from "global/stores/transactionStore";
 import { Token } from "global/config/interfaces/tokens";
 import { BridgingNetwork } from "./config/bridgingInterfaces";
@@ -99,15 +98,6 @@ const BridgeOut = (props: BridgeOutProps) => {
             await props.tx(amount, toAddress)
           }
         />
-        {/* <Step2TxBox
-          bridgeIn={false}
-          transactions={props.step2Transactions}
-          cantoAddress={props.cantoAddress ?? ""}
-          ethAddress={props.ethAddress ?? ""}
-          txStore={props.txStore}
-          networkPair={props.networkPair}
-          chainId={props.chainId}
-        /> */}
       </div>
       <div className="right"></div>
     </BridgeStyled>

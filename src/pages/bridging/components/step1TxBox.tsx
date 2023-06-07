@@ -17,7 +17,7 @@ import IBCGuideModal from "./modals/ibcGuideModal";
 import { Token, TokenGroups } from "global/config/interfaces/tokens";
 import { BigNumber } from "ethers";
 import DropDown from "./dropDown";
-import { BridgingNetwork } from "../config/bridgingInterfaces";
+import { BridgingNetwork, IBCNetwork } from "../config/bridgingInterfaces";
 import { TokenWallet } from "./tokenSelect";
 import ConfirmTxModal, {
   TokenWithIcon,
@@ -69,6 +69,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         onClose={() => setisIBCModalOpen(false)}
       >
         <IBCGuideModal
+          network={props.fromNetwork.IBC as IBCNetwork}
           token={selectedIBCToken}
           cantoAddress={props.toAddress ?? ""}
           onClose={() => setisIBCModalOpen(false)}

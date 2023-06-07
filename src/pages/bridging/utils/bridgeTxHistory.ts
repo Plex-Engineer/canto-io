@@ -3,12 +3,12 @@ import { gravityBridgeAbi } from "global/config/abi";
 import { ADDRESSES } from "global/config/addresses";
 import { CantoMainnet, ETHMainnet } from "global/config/networks";
 import { Token } from "global/config/interfaces/tokens";
-import { CANTO_MAIN_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
 import {
   findBridgeInToken,
   findNativeToken,
   getNetworkFromAddress,
 } from "./findTokens";
+import { MAINNET_IBC_NETWORKS } from "../config/networks.ts/cosmos";
 
 const globalFetchOptions = {
   method: "GET",
@@ -234,11 +234,10 @@ async function getIBCInTransactions(
 export async function getIBCOutTransactions(
   cantoAccount?: string
 ): Promise<TransactionHistoryEvent[]> {
-  const bridgeOutNetworks = Object.keys(CANTO_MAIN_BRIDGE_OUT_NETWORKS).map(
+  const bridgeOutNetworks = Object.keys(MAINNET_IBC_NETWORKS).map(
     (key, network) => {
-      return CANTO_MAIN_BRIDGE_OUT_NETWORKS[
-        key as keyof typeof CANTO_MAIN_BRIDGE_OUT_NETWORKS
-      ].cantoChannel;
+      return MAINNET_IBC_NETWORKS[key as keyof typeof MAINNET_IBC_NETWORKS]
+        .channelFromCanto;
     }
   );
   const bridgeOutData: TransactionHistoryEvent[] = [];

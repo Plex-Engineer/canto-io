@@ -1,10 +1,10 @@
 import { IBCNetwork } from "../bridgingInterfaces";
-import { CANTO_MAIN_IBC_TOKENS_WITH_DENOMS } from "../bridgingTokens";
+import { CANTO_MAIN_IBC_TOKENS_WITH_DENOMS } from "../tokens.ts/bridgingTokens";
 import GravitonGrey from "assets/icons/Graviton-Grey.svg";
 import cosmosIcon from "assets/icons/ATOM.svg";
 import { TOKENS } from "global/config/tokenInfo";
 
-enum MainnetIBCNetworks {
+export enum MainnetIBCNetworks {
   GRAVITY_BRIDGE = "Gravity_Bridge",
   COSMOS_HUB = "Cosmos_Hub",
   COMDEX = "Comdex",

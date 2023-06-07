@@ -1,7 +1,7 @@
 import cosmosIcon from "assets/icons/ATOM.svg";
 import GravitonGrey from "assets/icons/Graviton-Grey.svg";
 import { TOKENS } from "global/config/tokenInfo";
-import { CANTO_MAIN_IBC_TOKENS_WITH_DENOMS } from "./bridgingTokens";
+import { CANTO_MAIN_IBC_TOKENS_WITH_DENOMS } from "./tokens.ts/bridgingTokens";
 import { BridgeOutNetworkInfo, CantoMainBridgeOutNetworks } from "./interfaces";
 
 export type BridgeOutNetworkData = {
@@ -19,21 +19,6 @@ function addressCheck(address: string | undefined, addressBeginning: string) {
 }
 const blockEndpoint = "/cosmos/base/tendermint/v1beta1";
 
-export const EMPTY_IBC_NETWORK: BridgeOutNetworkInfo = {
-  name: "unknown",
-  chainId: "",
-  icon: "",
-  tokens: [],
-  nativeDenom: "unkown",
-  cantoChannel: "",
-  networkChannel: "",
-  restEndpoint: "",
-  rpcEndpoint: "",
-  addressBeginning: "unknown",
-  checkAddress: function (address) {
-    return addressCheck(address, this.addressBeginning);
-  },
-};
 export const CANTO_IBC_NETWORK: BridgeOutNetworkInfo = {
   name: "canto",
   chainId: "",

@@ -1,14 +1,17 @@
-import { CantoMainBridgeOutNetworks, NativeToken } from "../config/interfaces";
+import { NativeToken } from "../config/interfaces";
 import { TOKENS } from "global/config/tokenInfo";
-import { EMPTY_IBC_NETWORK } from "../config/bridgeOutNetworks";
 import { Token } from "global/config/interfaces/tokens";
-import { getNetworkPair } from "../config/networkPairs";
+import { MAINNET_IBC_NETWORKS } from "../config/networks.ts/cosmos";
+import {
+  CANTO_MAIN_CONVERT_COIN_TOKENS,
+  ETH_GRAVITY_BRIDGE_IN_TOKENS,
+} from "../config/tokens.ts/bridgingTokens";
 
 export function findNativeToken(
   nativeName: string,
   chainId?: number
 ): NativeToken | undefined {
-  return getNetworkPair(chainId).receiving.convertCoinTokens.find(
+  return CANTO_MAIN_CONVERT_COIN_TOKENS.find(
     (token) => token.nativeName.toLowerCase() == nativeName.toLowerCase()
   );
 }
@@ -16,9 +19,7 @@ export function getNetworkFromAddress(
   address: string,
   chainId?: number
 ): string {
-  for (const [, value] of Object.entries(
-    getNetworkPair(chainId).receiving.bridgeOutNetworks
-  )) {
+  for (const [, value] of Object.entries(MAINNET_IBC_NETWORKS)) {
     if (
       value.addressBeginning == address.slice(0, value.addressBeginning.length)
     )
@@ -33,7 +34,7 @@ export function findBridgeInToken(
   if (tokenAddress === "uatom") {
     return TOKENS.cantoMainnet.ATOM;
   }
-  return getNetworkPair(chainId).sending.tokens.find(
+  return ETH_GRAVITY_BRIDGE_IN_TOKENS.find(
     (token) => token.address.toLowerCase() === tokenAddress.toLowerCase()
   );
 }
@@ -43,26 +44,18 @@ export function getNetworkFromTokenName(
   bridgeIn: boolean,
   chainId?: number
 ): string {
-  for (const [, value] of Object.entries(
-    getNetworkPair(chainId).receiving.bridgeOutNetworks
-  )) {
-    for (const token of value.tokens) {
+  for (const [key, value] of Object.entries(MAINNET_IBC_NETWORKS)) {
+    for (const token of value.tokens.toCanto) {
       if (token.ibcDenom == ibcDenom) {
-        return token.supportedOutChannels.includes(
-          CantoMainBridgeOutNetworks.GRAVITY_BRIDGE
-        ) && bridgeIn
-          ? "ETH"
-          : value.name;
+        return key === "Gravity_Bridge" && bridgeIn ? "ETH" : value.name;
       }
     }
   }
   return "cosmos";
 }
-export function getNetworkFromCantoChannel(channel: string, chainId?: number) {
-  for (const [, value] of Object.entries(
-    getNetworkPair(chainId).receiving.bridgeOutNetworks
-  )) {
-    if (value.cantoChannel === channel) return value;
+export function getNetworkFromCantoChannel(channel: string) {
+  for (const [, value] of Object.entries(MAINNET_IBC_NETWORKS)) {
+    if (value.channelFromCanto === channel) return value;
   }
-  return EMPTY_IBC_NETWORK;
+  return undefined;
 }
