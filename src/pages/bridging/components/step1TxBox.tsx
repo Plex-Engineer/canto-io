@@ -81,7 +81,6 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         onClose={() => setModalOpen(false)}
       >
         <ConfirmTxModal
-          networkId={props.fromNetwork.evmChainId}
           title={"CONFIRM"}
           titleIcon={TokenWithIcon({
             icon: props.selectedToken?.icon ?? "",

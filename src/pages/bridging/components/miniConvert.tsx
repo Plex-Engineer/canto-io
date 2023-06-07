@@ -14,7 +14,6 @@ import { NativeTransaction } from "../config/bridgingInterfaces";
 
 interface Props {
   transaction: NativeTransaction;
-  correctChainId: number;
   cantoAddress: string;
   ethAddress: string;
   tx?: (...args: any[]) => void;
@@ -32,7 +31,6 @@ const MiniConvert = (props: Props) => {
       >
         <OngoingTxModal onClose={() => setModalOpen(false)} />
         <ConfirmTxModal
-          networkId={props.correctChainId}
           title={"CONFIRMATION"}
           titleIcon={TokenWithIcon({
             icon: props.transaction.token.icon,

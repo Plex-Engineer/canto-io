@@ -45,7 +45,6 @@ const RecoveryTransactionBox = ({
         }}
       >
         <ConfirmTxModal
-          networkId={CantoMainnet.chainId}
           title={"CONFIRM"}
           titleIcon={
             <div style={{ display: "flex", flexDirection: "row", gap: "1rem" }}>

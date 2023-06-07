@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 
 export interface ConfirmTxModalProps {
-  networkId?: number;
   title: string;
   //if you want to include an image under the title (token icon, symbol, etc.)
   titleIcon?: ReactNode;

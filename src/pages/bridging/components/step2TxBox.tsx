@@ -55,7 +55,6 @@ const Step2TxBox = (props: Step2TxBoxProps) => {
                   <MiniConvert
                     key={tx.token.address}
                     transaction={tx}
-                    correctChainId={props.chainId}
                     cantoAddress={props.cantoAddress}
                     ethAddress={props.ethAddress}
                     tx={() =>
