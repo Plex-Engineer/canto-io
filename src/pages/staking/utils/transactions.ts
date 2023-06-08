@@ -41,6 +41,11 @@ export async function stakingTx(
   params: GeneralStakingParams
 ): Promise<boolean> {
   if (!params.account) {
+    txStore.setStatus({ error: "No account found" });
+    return false;
+  }
+  if (!params.chainId) {
+    txStore.setStatus({ error: "No chainId found" });
     return false;
   }
   const readableAmount = formatUnits(params.amount, 18);
@@ -93,6 +98,11 @@ export async function claimStakingRewards(
   userValidators: MasterValidatorProps[]
 ): Promise<boolean> {
   if (!account) {
+    txStore.setStatus({ error: "No account found" });
+    return false;
+  }
+  if (!chainId) {
+    txStore.setStatus({ error: "No chainId found" });
     return false;
   }
   return await txStore.addTransactionList(

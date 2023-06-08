@@ -36,6 +36,7 @@ export async function dexLPTx(
     icon2: pair.basePairInfo.token2.icon,
   };
   if (!account) {
+    txStore.setStatus({ error: "No account found" });
     return false;
   }
   switch (txType) {
@@ -143,8 +144,15 @@ async function addLiquidityTx(
           ERC20Abi,
           getCurrentProvider(chainId)
         );
-        //check the new balance for the LP token to supply
-        return (await LPToken.balanceOf(account)).sub(pair.userSupply.totalLP);
+        try {
+          //check the new balance for the LP token to supply
+          return (await LPToken.balanceOf(account)).sub(
+            pair.userSupply.totalLP
+          );
+        } catch {
+          txStore.setStatus({ error: "Error getting LP token balance" });
+          throw new Error("Error getting LP token balance");
+        }
       },
       extraDetails
     ),

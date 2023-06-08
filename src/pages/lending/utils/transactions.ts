@@ -25,6 +25,7 @@ export async function claimLendingRewardsTx(
   comptrollerBalance: BigNumber
 ): Promise<boolean> {
   if (!account) {
+    txStore.setStatus({ error: "No account found" });
     return false;
   }
   const needDrip = comptrollerBalance.lte(amountToClaim);
@@ -68,6 +69,10 @@ export async function lendingMarketTx(
   cToken: UserLMTokenDetails,
   amount: BigNumber
 ): Promise<boolean> {
+  if (!chainId) {
+    txStore.setStatus({ error: "No chainId found" });
+    return false;
+  }
   const isCanto = cToken.data.underlying.symbol === "CANTO";
   const tokenInfo = {
     symbol: cToken.data.underlying.symbol,

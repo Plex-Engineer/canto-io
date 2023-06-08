@@ -24,6 +24,7 @@ export async function voteTx(
   option: VotingOption
 ): Promise<boolean> {
   if (!account) {
+    txStore.setStatus({ error: "No account found" });
     return false;
   }
   return await txStore.addTransactionList(
