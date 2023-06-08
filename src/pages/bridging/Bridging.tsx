@@ -26,11 +26,6 @@ import RecoveryPage from "./Recovery";
 import { onCantoNetwork } from "global/utils/getAddressUtils";
 import { useTransactionStore } from "global/stores/transactionStore";
 import useBridgingStore from "./stores/bridgingStore";
-import { onTestnet } from "global/config/networks";
-import {
-  CANTO_MAIN_BRIDGE_NETWORK,
-  CANTO_TEST_BRIDGE_NETWORK,
-} from "./config/networks.ts";
 import { CANTO_MAIN_CONVERT_COIN_TOKENS } from "./config/tokens.ts/bridgingTokens";
 
 const Bridging = () => {
@@ -44,6 +39,9 @@ const Bridging = () => {
   const navigate = useNavigate();
   const [pubKeySuccess, setPubKeySuccess] = useState("None");
   const hasRecoveryToken = bridgingTokens.unkownIBCTokens.length > 0;
+
+  //keep track if we need to swap networks on bridging
+  const [tabSelected, setTabSelected] = useState<"in" | "out">("in");
 
   //checks balance on ethMainnet before dusting
   const canPubKey =
@@ -121,20 +119,18 @@ const Bridging = () => {
           ...(hasRecoveryToken ? ["recovery"] : []),
         ]}
         onClicks={[
-          () =>
-            bridgeStore.setNetwork(
-              onTestnet(Number(networkInfo.chainId))
-                ? CANTO_TEST_BRIDGE_NETWORK
-                : CANTO_MAIN_BRIDGE_NETWORK,
-              false
-            ),
-          () =>
-            bridgeStore.setNetwork(
-              onTestnet(Number(networkInfo.chainId))
-                ? CANTO_TEST_BRIDGE_NETWORK
-                : CANTO_MAIN_BRIDGE_NETWORK,
-              true
-            ),
+          () => {
+            if (tabSelected !== "in") {
+              setTabSelected("in");
+              bridgeStore.swapNetworks();
+            }
+          },
+          () => {
+            if (tabSelected !== "out") {
+              setTabSelected("out");
+              bridgeStore.swapNetworks();
+            }
+          },
         ]}
         panels={
           !networkInfo.account

@@ -18,6 +18,7 @@ interface BridgingStore {
   fromNetwork: BridgingNetwork;
   toNetwork: BridgingNetwork;
   setNetwork: (network: BridgingNetwork, isFrom: boolean) => Promise<void>;
+  swapNetworks: () => void; //easy swap function
   //tokens
   allTokens: Token[]; //include balances on the tokens
   selectedToken: Token | undefined;
@@ -39,6 +40,33 @@ const useBridgingStore = create<BridgingStore>((set, get) => ({
     set({ selectedToken: undefined, allTokens: [] });
 
     set(isFrom ? { fromNetwork: network } : { toNetwork: network });
+    const fromIsEVM = get().fromNetwork.isEVM;
+    if (fromIsEVM) {
+      const accountInfo = useNetworkInfo.getState();
+      set({
+        allTokens: await getUserTokenBalances(
+          getTokensFromBridgingNetworks(get().fromNetwork, get().toNetwork),
+          accountInfo.account,
+          Number(get().fromNetwork.evmChainId)
+        ),
+      });
+    } else {
+      //ibc chain so we don't want to get balances here
+      set({
+        allTokens: getTokensFromBridgingNetworks(
+          get().fromNetwork,
+          get().toNetwork
+        ),
+      });
+    }
+  },
+  swapNetworks: async () => {
+    set({
+      selectedToken: undefined,
+      allTokens: [],
+      fromNetwork: get().toNetwork,
+      toNetwork: get().fromNetwork,
+    });
     const fromIsEVM = get().fromNetwork.isEVM;
     if (fromIsEVM) {
       const accountInfo = useNetworkInfo.getState();
