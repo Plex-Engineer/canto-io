@@ -27,9 +27,9 @@ const LAYER_ZERO_TEST_NETWORKS: LZNetworkData = {
     ...MumbaiTestnet,
     lzChainId: 10109,
     tokens: {
-      toCanto: [CANTO_OFT("0x84fCD41C761a86C3A50E8c74Ee251f0Ce0c75dD5", false)],
+      toCanto: [CANTO_OFT("0x56c3bcaDD2e4f80025Ab9a018e5be26F6fC33e76", false)],
       fromCanto: [
-        CANTO_OFT("0x84fCD41C761a86C3A50E8c74Ee251f0Ce0c75dD5", true),
+        CANTO_OFT("0x56c3bcaDD2e4f80025Ab9a018e5be26F6fC33e76", true),
       ],
     },
   },
@@ -37,9 +37,9 @@ const LAYER_ZERO_TEST_NETWORKS: LZNetworkData = {
     ...FantomTestnet,
     lzChainId: 10112,
     tokens: {
-      toCanto: [CANTO_OFT("0x84fCD41C761a86C3A50E8c74Ee251f0Ce0c75dD5", false)],
+      toCanto: [CANTO_OFT("0x56c3bcaDD2e4f80025Ab9a018e5be26F6fC33e76", false)],
       fromCanto: [
-        CANTO_OFT("0x84fCD41C761a86C3A50E8c74Ee251f0Ce0c75dD5", true),
+        CANTO_OFT("0x56c3bcaDD2e4f80025Ab9a018e5be26F6fC33e76", true),
       ],
     },
   },

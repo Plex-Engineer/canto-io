@@ -1,5 +1,25 @@
 import { Text } from "global/packages/src";
 import { ReactNode } from "react";
+import { BridgingNetwork } from "../config/bridgingInterfaces";
+
+export function getBridgeExtraDetails1(
+  bridgeIn: boolean,
+  from: string,
+  to: string,
+  nonCantoNetwork: BridgingNetwork
+) {
+  return (
+    <Text size="text4" align="left" style={{ color: "#474747" }}>
+      {`by completing bridge ${
+        bridgeIn ? "in" : "out"
+      }, you are transferring your assets from ${
+        bridgeIn ? `${nonCantoNetwork.name}` : "canto"
+      } (${from}) to ${
+        bridgeIn ? "canto" : `${nonCantoNetwork.name}`
+      } (${to}).`}
+    </Text>
+  );
+}
 
 export function getBridgeExtraDetails(
   bridgeIn: boolean,

@@ -16,6 +16,10 @@ export interface Token {
   icon: string;
   tokenGroups: TokenGroups[];
   balance?: BigNumber;
+  //this will check if we should just grab native balance for this token instead of balanceOf
+  isNative?: boolean;
+  //bridging props
+  isOFT?: boolean;
 }
 
 export interface CTOKEN {

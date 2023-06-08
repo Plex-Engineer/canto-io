@@ -11,7 +11,12 @@ export async function getUserTokenBalances(
   return Promise.all(
     tokens.map(async (token) => ({
       ...token,
-      balance: await getTokenBalance(account, token.address, chainId),
+      balance: await getTokenBalance(
+        account,
+        token.address,
+        chainId,
+        token.isNative
+      ),
     }))
   );
 }
@@ -19,14 +24,19 @@ export async function getUserTokenBalances(
 export async function getTokenBalance(
   account: string | undefined,
   tokenAddress: string,
-  chainId?: number
+  chainId?: number,
+  useNative = false
 ) {
-  const tokenContract = new ethers.Contract(
-    tokenAddress,
-    ERC20Abi,
-    getCurrentProvider(chainId)
-  );
-  return account ? await tokenContract.balanceOf(account) : BigNumber.from(0);
+  const provider = getCurrentProvider(chainId);
+  const nativeBalance =
+    useNative && account
+      ? await provider.getBalance(account)
+      : BigNumber.from(0);
+
+  const tokenContract = new ethers.Contract(tokenAddress, ERC20Abi, provider);
+  return account
+    ? (await tokenContract.balanceOf(account)).add(nativeBalance)
+    : BigNumber.from(0);
 }
 
 export async function getAllowance(

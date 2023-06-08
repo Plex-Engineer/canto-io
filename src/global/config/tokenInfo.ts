@@ -569,6 +569,7 @@ export const TOKENS: FullTokenList = {
       isLP: false,
       icon: icons.ETH,
       tokenGroups: [TokenGroups.DEX_TOKENS],
+      isNative: true,
     },
     WSTETH: {
       symbol: "wstETH",

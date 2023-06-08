@@ -90,7 +90,9 @@ const BridgeOut = (props: BridgeOutProps) => {
           toNetwork={props.toNetwork}
           selectNetwork={(network) => props.selectNetwork(network, false)}
           fromAddress={props.ethAddress}
-          toAddress={props.cantoAddress}
+          toAddress={
+            props.toNetwork.isEVM ? props.ethAddress : props.cantoAddress
+          }
           allTokens={props.bridgeTokens}
           selectedToken={props.selectedToken}
           selectToken={props.selectToken}

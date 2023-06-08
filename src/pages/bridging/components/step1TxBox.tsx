@@ -22,7 +22,7 @@ import { TokenWallet } from "./tokenSelect";
 import ConfirmTxModal, {
   TokenWithIcon,
 } from "global/components/modals/confirmTxModal";
-import { getBridgeExtraDetails } from "./bridgeDetails";
+import { getBridgeExtraDetails, getBridgeExtraDetails1 } from "./bridgeDetails";
 interface Step1TxBoxProps {
   bridgeIn: boolean;
   //network indo
@@ -90,9 +90,10 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             { title: "from", value: formatAddress(props.fromAddress, 6) },
             {
               title: "to",
-              value: props.bridgeIn
-                ? formatAddress(props.toAddress, 6)
-                : formatAddress(userInputAddress, 6),
+              value:
+                props.bridgeIn || props.toNetwork.isEVM
+                  ? formatAddress(props.toAddress, 6)
+                  : formatAddress(userInputAddress, 6),
             },
             {
               title: "amount",
@@ -100,7 +101,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             },
           ]}
           extraInputs={
-            props.bridgeIn
+            props.bridgeIn || props.toNetwork.isEVM
               ? []
               : [
                   {
@@ -114,7 +115,8 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           disableConfirm={
             !(
               props.bridgeIn ||
-              props.toNetwork.IBC?.checkAddress(userInputAddress)
+              props.toNetwork.IBC?.checkAddress(userInputAddress) ||
+              props.toNetwork.isEVM
             )
           }
           onConfirm={() => {
@@ -124,13 +126,13 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
                 userInputAddress
               );
           }}
-          extraDetails={getBridgeExtraDetails(
+          extraDetails={getBridgeExtraDetails1(
             props.bridgeIn,
-            false,
             formatAddress(props.fromAddress, 6),
-            props.bridgeIn
+            props.bridgeIn || props.toNetwork.isEVM
               ? formatAddress(props.toAddress, 6)
-              : props.toNetwork.name
+              : formatAddress(userInputAddress, 6),
+            props.bridgeIn ? props.fromNetwork : props.toNetwork
           )}
           onClose={() => {
             setModalOpen(false);

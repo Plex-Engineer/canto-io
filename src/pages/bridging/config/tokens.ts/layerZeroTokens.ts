@@ -8,4 +8,5 @@ export const CANTO_OFT = (
   ...TOKENS.cantoMainnet.CANTO,
   address,
   isNative: native,
+  isOFT: true,
 });

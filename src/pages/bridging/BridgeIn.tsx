@@ -101,7 +101,9 @@ const BridgeIn = (props: BridgeInProps) => {
           toNetwork={props.toNetwork}
           selectNetwork={(network) => props.selectNetwork(network, true)}
           fromAddress={props.ethAddress}
-          toAddress={props.cantoAddress}
+          toAddress={
+            props.selectedToken?.isOFT ? props.ethAddress : props.cantoAddress
+          }
           allTokens={props.bridgeTokens}
           selectedToken={props.selectedToken}
           selectToken={props.selectToken}
