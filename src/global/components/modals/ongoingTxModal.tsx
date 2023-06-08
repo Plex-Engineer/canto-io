@@ -8,6 +8,7 @@ import { Mixpanel } from "mixpanel";
 import { useTransactionStore } from "global/stores/transactionStore";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { useEthers } from "@usedapp/core";
+import OutsideAlerter from "./modalUtils";
 
 interface LoadingProps {
   onClose: () => void;
@@ -48,124 +49,131 @@ const OngoingTxModal = (props: LoadingProps) => {
   //   }, [props.status]);
 
   return transactionStore.modalOpen ? (
-    <Styled>
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={() => {
-          transactionStore.setModalOpen(false);
-          props.onClose();
-        }}
-      >
-        <img
-          src={close}
-          style={{
-            position: "absolute",
-            top: "1.4rem",
-            right: "1.4rem",
-            width: "30px",
-            cursor: "pointer",
+    <OutsideAlerter
+      onClickOutside={() => {
+        transactionStore.setModalOpen(false);
+        props.onClose();
+      }}
+    >
+      <Styled>
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            transactionStore.setModalOpen(false);
+            props.onClose();
           }}
-        />
-      </div>
-      {chainId != transactionStore.txListProps?.chainId &&
-        transactionStore.txListProps?.chainId && (
+        >
+          <img
+            src={close}
+            style={{
+              position: "absolute",
+              top: "1.4rem",
+              right: "1.4rem",
+              width: "30px",
+              cursor: "pointer",
+            }}
+          />
+        </div>
+        {chainId != transactionStore.txListProps?.chainId &&
+          transactionStore.txListProps?.chainId && (
+            <div className="network-change">
+              <Text type="title">Oops, you seem to be on a wrong network.</Text>
+              <PrimaryButton
+                onClick={() => {
+                  switchNetwork(transactionStore.txListProps?.chainId ?? 1);
+                }}
+              >
+                Switch Network
+              </PrimaryButton>
+            </div>
+          )}
+        {transactionStore.status?.error && (
           <div className="network-change">
-            <Text type="title">Oops, you seem to be on a wrong network.</Text>
-            <PrimaryButton
-              onClick={() => {
-                switchNetwork(transactionStore.txListProps?.chainId ?? 1);
-              }}
-            >
-              Switch Network
-            </PrimaryButton>
+            <Text type="title">{transactionStore.status?.error}</Text>
           </div>
         )}
-      {transactionStore.status?.error && (
-        <div className="network-change">
-          <Text type="title">{transactionStore.status?.error}</Text>
-        </div>
-      )}
-      {transactionStore.status.loading && (
-        <div className="network-change">
-          <Text type="title">loading</Text>
-        </div>
-      )}
-      {chainId == transactionStore.txListProps?.chainId &&
-        !transactionStore.status?.error &&
-        !transactionStore.status.loading && (
-          <>
-            <Text type="title" size="title3" className="title">
-              {transactionStore.txListProps?.title}
-            </Text>
-            <div className="scroll-view">
-              {transactionStore.transactions.map((tx, idx) => {
-                return (
-                  <div
-                    key={tx.details.txId}
-                    className={
-                      tx.details.status == "Success"
-                        ? "tx-item tx-item-complete"
-                        : "tx-item "
-                    }
-                  >
-                    <div className="tx-icon">
-                      {tx.details.status == "None" ? (
-                        <Text size="text1" type="title">
-                          {idx + 1}
-                        </Text>
-                      ) : (
-                        <img
-                          src={
-                            tx.details.status == "Success"
-                              ? completeIcon
-                              : tx.details.status == "Fail" ||
-                                tx.details.status == "Exception"
-                              ? warningIcon
-                              : loadingGif
-                          }
-                        />
-                      )}
-                    </div>
-                    <Text
-                      size="text3"
-                      bold
-                      style={{
-                        flexGrow: 2,
-                      }}
+        {transactionStore.status.loading && (
+          <div className="network-change">
+            <Text type="title">loading</Text>
+          </div>
+        )}
+        {chainId == transactionStore.txListProps?.chainId &&
+          !transactionStore.status?.error &&
+          !transactionStore.status.loading && (
+            <>
+              <Text type="title" size="title3" className="title">
+                {transactionStore.txListProps?.title}
+              </Text>
+              <div className="scroll-view">
+                {transactionStore.transactions.map((tx, idx) => {
+                  return (
+                    <div
+                      key={tx.details.txId}
+                      className={
+                        tx.details.status == "Success"
+                          ? "tx-item tx-item-complete"
+                          : "tx-item "
+                      }
                     >
-                      {tx.details.currentMessage}
-                    </Text>
-                    {tx.details.blockExplorerLink ? (
-                      <OutlinedButton
-                        height="small"
-                        onClick={() => {
-                          Mixpanel.events.loadingModal.blockExplorerOpened(
-                            tx.details.hash
-                          );
-                          window.open(tx.details.blockExplorerLink, "_blank");
+                      <div className="tx-icon">
+                        {tx.details.status == "None" ? (
+                          <Text size="text1" type="title">
+                            {idx + 1}
+                          </Text>
+                        ) : (
+                          <img
+                            src={
+                              tx.details.status == "Success"
+                                ? completeIcon
+                                : tx.details.status == "Fail" ||
+                                  tx.details.status == "Exception"
+                                ? warningIcon
+                                : loadingGif
+                            }
+                          />
+                        )}
+                      </div>
+                      <Text
+                        size="text3"
+                        bold
+                        style={{
+                          flexGrow: 2,
                         }}
                       >
-                        <Text size="text3">view</Text>
-                      </OutlinedButton>
-                    ) : null}
-                    {tx.details.status === "Fail" && (
-                      <PrimaryButton
-                        weight="bold"
-                        onClick={() =>
-                          transactionStore.performTxList(tx.details.txId)
-                        }
-                      >
-                        retry
-                      </PrimaryButton>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </>
-        )}
-    </Styled>
+                        {tx.details.currentMessage}
+                      </Text>
+                      {tx.details.blockExplorerLink ? (
+                        <OutlinedButton
+                          height="small"
+                          onClick={() => {
+                            Mixpanel.events.loadingModal.blockExplorerOpened(
+                              tx.details.hash
+                            );
+                            window.open(tx.details.blockExplorerLink, "_blank");
+                          }}
+                        >
+                          <Text size="text3">view</Text>
+                        </OutlinedButton>
+                      ) : null}
+                      {tx.details.status === "Fail" && (
+                        <PrimaryButton
+                          weight="bold"
+                          onClick={() =>
+                            transactionStore.performTxList(tx.details.txId)
+                          }
+                        >
+                          retry
+                        </PrimaryButton>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+      </Styled>
+    </OutsideAlerter>
   ) : null;
 };
 
