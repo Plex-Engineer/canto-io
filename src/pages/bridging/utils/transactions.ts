@@ -56,9 +56,11 @@ export async function bridgeTxRouter(
 ): Promise<boolean> {
   if (!fromNetwork.isEVM) {
     //this is only for EVM, ibc will be handeled separately through keplr
+    txStore.setStatus({ error: "Invalid network" });
     return false;
   }
   if (!ethAddress || !cantoAddress || !token) {
+    txStore.setStatus({ error: "Invalid address" });
     return false;
   }
   const tokenDetails = {
@@ -164,26 +166,35 @@ async function sendToComsosTx(
     !cantoAddress ||
     !chainId
   ) {
+    txStore.setStatus({ error: "Invalid Address" });
     return false;
+  } else {
+    //add loading since allowance and balance checks will be done
+    txStore.setStatus({ loading: true });
   }
   //must check if we need to wrap any ETH before sending to cosmos
   let amountToWrap = BigNumber.from(0);
   const allTxs = [];
   if (tokenAddress === WETHAddress) {
-    //dealing with WETH, so we must check the balance of WETH and wrap if needed
-    const wethBalance = await getTokenBalance(
-      ethAddress,
-      tokenAddress,
-      chainId
-    );
-    if (wethBalance.lt(amount)) {
-      amountToWrap = amount.sub(wethBalance);
-      allTxs.push(
-        _wrapTx(chainId, WETHAddress, amountToWrap, {
-          symbol: "ETH",
-          amount: formatUnits(amountToWrap),
-        })
+    try {
+      //dealing with WETH, so we must check the balance of WETH and wrap if needed
+      const wethBalance = await getTokenBalance(
+        ethAddress,
+        tokenAddress,
+        chainId
       );
+      if (wethBalance.lt(amount)) {
+        amountToWrap = amount.sub(wethBalance);
+        allTxs.push(
+          _wrapTx(chainId, WETHAddress, amountToWrap, {
+            symbol: "ETH",
+            amount: formatUnits(amountToWrap),
+          })
+        );
+      }
+    } catch {
+      txStore.setStatus({ error: "error grabbing WETH balance" });
+      return false;
     }
   }
   //get currentAllowance
@@ -234,6 +245,9 @@ export async function convertTx(
   amount: string,
   extraProps?: ExtraProps
 ): Promise<boolean> {
+  if (!chainId) {
+    txStore.setStatus({ error: "Invalid Chain Id" });
+  }
   return await txStore.addTransactionList(
     [
       _convertCoinTx(
@@ -262,6 +276,9 @@ export async function completeAllConvertIn(
   cantoAddress: string,
   transactions: NativeTransaction[]
 ): Promise<boolean> {
+  if (!chainId) {
+    txStore.setStatus({ error: "Invalid Chain Id" });
+  }
   return await txStore.addTransactionList(
     transactions.map((tx) =>
       _convertCoinTx(
@@ -300,6 +317,7 @@ export async function ibcOutTx(
 ) {
   //check receiver address
   if (!bridgeOutNetwork.checkAddress(toChainAddress)) {
+    txStore.setStatus({ error: "Invalid Cosmos Receiver Address" });
     return false;
   }
   return await txStore.addTransactionList(
@@ -344,6 +362,7 @@ async function convertAndIbcOutTx(
     !toChainAddress ||
     !bridgeOutNetwork.checkAddress(toChainAddress)
   ) {
+    txStore.setStatus({ error: "Invalid Cosmos Receiver Address" });
     return false;
   }
   return await txStore.addTransactionList(
@@ -396,7 +415,11 @@ async function oftTransferTx(
   extraProps?: ExtraProps
 ): Promise<boolean> {
   if (!account || !toLZChainId || !chainId) {
+    txStore.setStatus({ error: "Invalid OFT parameters" });
     return false;
+  } else {
+    //add loading fees must be grabbed
+    txStore.setStatus({ loading: true });
   }
   const allTxs = [];
   if (isNative) {
@@ -410,19 +433,30 @@ async function oftTransferTx(
     ["uint16", "uint256"],
     [1, 200000]
   );
+  const toAddressBytes = ethers.utils.defaultAbiCoder.encode(
+    ["address"],
+    [account]
+  );
+
   const oftContract = new Contract(
     tokenAddress,
     OFTAbi,
     getCurrentProvider(chainId)
   );
 
-  const gas = await oftContract.estimateSendFee(
-    toLZChainId,
-    account,
-    amount,
-    false,
-    adapterParams
-  );
+  let gas;
+  try {
+    gas = await oftContract.estimateSendFee(
+      toLZChainId,
+      toAddressBytes,
+      amount,
+      false,
+      adapterParams
+    );
+  } catch (e) {
+    txStore.setStatus({ error: "error fetching gas price" });
+    return false;
+  }
 
   allTxs.push(
     _oftTransferTx(
@@ -430,9 +464,10 @@ async function oftTransferTx(
       bridgeIn,
       tokenAddress,
       account,
+      toAddressBytes,
       toLZChainId,
       amount,
-      adapterParams,
+      "0x",
       gas[0],
       extraProps
     )
@@ -550,9 +585,10 @@ const _oftTransferTx = (
   bridgeIn: boolean,
   oftAddress: string,
   account: string,
+  toAddressBytes: string,
   toChainId: number,
   amount: BigNumber,
-  adapterParams: string | [],
+  adapterParams: string,
   gas: BigNumber,
   extraDetails?: ExtraProps
 ): EVMTx => ({
@@ -564,11 +600,9 @@ const _oftTransferTx = (
   params: [
     account,
     toChainId,
-    account,
+    toAddressBytes,
     amount,
-    account,
-    ethers.constants.AddressZero,
-    [],
+    [account, ethers.constants.AddressZero, adapterParams],
   ],
   value: gas,
   extraDetails,

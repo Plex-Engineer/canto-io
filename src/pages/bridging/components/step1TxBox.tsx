@@ -22,7 +22,7 @@ import { TokenWallet } from "./tokenSelect";
 import ConfirmTxModal, {
   TokenWithIcon,
 } from "global/components/modals/confirmTxModal";
-import { getBridgeExtraDetails, getBridgeExtraDetails1 } from "./bridgeDetails";
+import { getBridgeExtraDetails1 } from "./bridgeDetails";
 interface Step1TxBoxProps {
   bridgeIn: boolean;
   //network indo

@@ -39,6 +39,12 @@ export interface TransactionStore {
   //if txId is passed in, it will begin from this transaction
   //used in retrying after failure
   performTxList: (txId?: string) => Promise<boolean>;
+  //will keep track of txList parameters and waiting for txs to load
+  status: {
+    loading: boolean;
+    error?: string;
+  };
+  setStatus: (status: { error?: string; loading?: boolean }) => void;
 }
 
 export const useTransactionStore = create<TransactionStore>((set, get) => ({
@@ -191,9 +197,7 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
     }
   },
   performTxList: async (txId) => {
-    set({
-      modalOpen: true,
-    });
+    get().setStatus({ loading: false });
     //check to make sure user is on the right network
     if (
       Number(useNetworkInfo.getState().chainId) !== get().txListProps?.chainId
@@ -223,5 +227,17 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
       }
     }
     return true;
+  },
+  status: {
+    loading: false,
+  },
+  setStatus: (status) => {
+    set({
+      status: {
+        loading: status.loading ?? false,
+        error: status.error ?? undefined,
+      },
+      modalOpen: true,
+    });
   },
 }));
