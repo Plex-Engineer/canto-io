@@ -109,4 +109,6 @@ export interface TransactionListProps {
   title: string;
   txListMethod: TxMethod;
   chainId?: number;
+  //if transaction props are wrong, or has wrong inputs, error will show here
+  error?: string;
 }

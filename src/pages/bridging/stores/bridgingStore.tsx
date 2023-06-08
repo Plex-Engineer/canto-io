@@ -13,16 +13,20 @@ import { useTransactionStore } from "global/stores/transactionStore";
 import { onTestnet } from "global/config/networks";
 
 interface BridgingStore {
+  //networks
   allNetworks: BridgingNetwork[];
   fromNetwork: BridgingNetwork;
   toNetwork: BridgingNetwork;
   setNetwork: (network: BridgingNetwork, isFrom: boolean) => Promise<void>;
+  //tokens
   allTokens: Token[]; //include balances on the tokens
   selectedToken: Token | undefined;
   setToken: (token?: Token) => void;
+  syncTokens: () => Promise<void>;
   //to know if we are on testnet
   onTestnet: boolean;
   chainIdChanged: (chainId: number) => Promise<void>;
+  //tx
   bridgeTx: (amount: BigNumber, toChainAddress?: string) => Promise<boolean>;
 }
 
@@ -31,6 +35,9 @@ const useBridgingStore = create<BridgingStore>((set, get) => ({
   fromNetwork: getBridgingNetworksFromChainId()[1], //defualt will be ETH
   toNetwork: CANTO_MAIN_BRIDGE_NETWORK, //default will be CANTO
   setNetwork: async (network, isFrom) => {
+    //reset tokens first
+    set({ selectedToken: undefined, allTokens: [] });
+
     set(isFrom ? { fromNetwork: network } : { toNetwork: network });
     const fromIsEVM = get().fromNetwork.isEVM;
     if (fromIsEVM) {
@@ -55,6 +62,20 @@ const useBridgingStore = create<BridgingStore>((set, get) => ({
   allTokens: [],
   selectedToken: undefined,
   setToken: (token) => set({ selectedToken: token }),
+  syncTokens: async () => {
+    const fromIsEVM = get().fromNetwork.isEVM;
+    if (fromIsEVM) {
+      const newTokenList = await getUserTokenBalances(
+        getTokensFromBridgingNetworks(get().fromNetwork, get().toNetwork),
+        useNetworkInfo.getState().account,
+        Number(get().fromNetwork.evmChainId)
+      );
+      const selectedToken = newTokenList.find(
+        (token) => token.address === get().selectedToken?.address
+      );
+      set({ allTokens: newTokenList, selectedToken: selectedToken });
+    }
+  },
   onTestnet: false,
   chainIdChanged: async (chainId) => {
     const isOnTestnet = onTestnet(chainId);

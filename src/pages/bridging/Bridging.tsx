@@ -56,6 +56,17 @@ const Bridging = () => {
     bridgeStore.chainIdChanged(Number(networkInfo.chainId));
   }, [networkInfo.chainId]);
 
+  //get new data every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await bridgeStore.syncTokens();
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [networkInfo.account]);
+  useEffect(() => {
+    bridgeStore.syncTokens();
+  }, [networkInfo.account]);
+
   const NotConnectedTabs = () => {
     const tabs = [];
     for (let i = 0; i < 3; i++) {
