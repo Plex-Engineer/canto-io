@@ -3,6 +3,7 @@ import {
   CantoTestnet,
   ETHMainnet,
   FantomTestnet,
+  GoerliTestnet,
   MumbaiTestnet,
   onTestnet,
 } from "global/config/networks";
@@ -96,6 +97,17 @@ const TESTNET_BRIDGE_NETWORKS: BridgingNetwork[] = [
     supportedBridgeInMethods: [BridgingMethods.LAYER_ZERO],
     supportedBridgeOutMethods: [BridgingMethods.LAYER_ZERO],
     [BridgingMethods.LAYER_ZERO]: LAYER_ZERO_TEST_NETWORKS.FANTOM_TEST,
+  },
+  {
+    id: GoerliTestnet.name,
+    name: GoerliTestnet.name,
+    icon: GoerliTestnet.icon,
+    isCanto: false,
+    isEVM: true,
+    evmChainId: GoerliTestnet.chainId,
+    supportedBridgeInMethods: [BridgingMethods.LAYER_ZERO],
+    supportedBridgeOutMethods: [BridgingMethods.LAYER_ZERO],
+    [BridgingMethods.LAYER_ZERO]: LAYER_ZERO_TEST_NETWORKS.GOERLI_TEST,
   },
 ];
 

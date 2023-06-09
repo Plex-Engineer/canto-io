@@ -32,7 +32,8 @@ export function ShowAlerts(
     return;
   } else if (
     (chainId == undefined || !currentPageObj.networks.includes(chainId)) &&
-    !currentPageObj.walletNotRequired
+    !currentPageObj.walletNotRequired &&
+    currentPageObj.networks.length > 0
   ) {
     openAlert(
       "Failure",

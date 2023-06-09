@@ -15,7 +15,7 @@ export const PAGES = {
     name: "bridge",
     link: "/bridge",
     pageTitle: "bridge",
-    networks: [CantoMainnet.chainId, CantoTestnet.chainId, 1],
+    networks: [],
     showInMenu: true,
     balanceLimits: [
       {

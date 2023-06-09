@@ -3,6 +3,7 @@ import {
   FantomTestnet as FantomTest,
   Mainnet,
   Mumbai,
+  Goerli,
 } from "@usedapp/core";
 import { CORE_ADDRESSES } from "./addresses";
 import ethIcon from "assets/icons/ETH.svg";
@@ -127,6 +128,13 @@ export const FantomTestnet: Network = {
   icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/fantom/images/ftm.svg",
 };
 
+export const GoerliTestnet: Network = {
+  ...Goerli,
+  name: "Goerli Testnet",
+  icon: ethIcon,
+  rpcUrl: "https://rpc.ankr.com/eth_goerli",
+};
+
 /**
  * EXPORT LISTS
  */
@@ -142,6 +150,7 @@ export const ALL_SUPPORTED_NETWORKS = [
   ETHMainnet,
   MumbaiTestnet,
   FantomTestnet,
+  GoerliTestnet,
 ];
 
 /**
