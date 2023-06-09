@@ -179,6 +179,8 @@ const OngoingTxModal = (props: LoadingProps) => {
 
 const Styled = styled.div`
   position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   background-color: black;
   height: 100%;

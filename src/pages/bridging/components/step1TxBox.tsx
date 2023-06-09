@@ -81,7 +81,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         onClose={() => setModalOpen(false)}
       >
         <ConfirmTxModal
-          title={"CONFIRM"}
+          title={props.bridgeIn ? "bridge in" : "bridge out"}
           titleIcon={TokenWithIcon({
             icon: props.selectedToken?.icon ?? "",
             name: props.selectedToken?.name ?? "",
@@ -153,6 +153,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
                 icon: network.icon,
                 id: network.id,
               }))}
+              disabled={!props.bridgeIn}
               onSelect={(id) => {
                 const network = props.allNetworks.find(
                   (network) => network.id === id
@@ -203,6 +204,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
               icon: network.icon,
               id: network.id,
             }))}
+            disabled={props.bridgeIn}
             onSelect={(id) => {
               const network = props.allNetworks.find(
                 (network) => network.id === id

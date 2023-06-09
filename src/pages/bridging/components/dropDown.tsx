@@ -18,8 +18,16 @@ interface Props {
   label?: string;
   selectedId?: string;
   onSelect: (id: string) => void;
+  disabled?: boolean;
 }
-const DropDown = ({ onSelect, items, title, label, selectedId }: Props) => {
+const DropDown = ({
+  onSelect,
+  items,
+  title,
+  label,
+  selectedId,
+  disabled,
+}: Props) => {
   const [isSelectModalOpen, setSelectModalOpen] = useState(false);
   const activeItem = items.find((i) => i.id === selectedId);
 
@@ -28,7 +36,7 @@ const DropDown = ({ onSelect, items, title, label, selectedId }: Props) => {
       onClick={() => {
         items.length === 1 ? null : setSelectModalOpen(true);
       }}
-      disabled={items.length === 1}
+      disabled={disabled}
     >
       <img
         src={activeItem?.icon}
@@ -118,7 +126,7 @@ const Styled = styled.button`
     padding-bottom: 20px;
   }
   transition: background-color 0.2s, border-color 0.3s;
-  &:hover {
+  &:not(:disabled):hover {
     background: #333;
     border-color: #525252;
     cursor: pointer;
