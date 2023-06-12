@@ -47,11 +47,19 @@ const DropDown = ({
       />
       <div className="token-label">
         {label && (
-          <Text color="white" size="text3" className="label" bold align="left">
+          <Text
+            style={{
+              color: "#999",
+            }}
+            size="text4"
+            className="label"
+            bold
+            align="left"
+          >
             {label}
           </Text>
         )}
-        <Text type="title" size="text3" align="left">
+        <Text type="title" size="text4" align="left">
           {activeItem?.primaryText}
           <Modal
             title={title}
@@ -116,7 +124,7 @@ const Styled = styled.button`
     display: flex;
     flex-direction: column;
     padding: 0 6px;
-    padding-right: 1rem;
+    padding-right: 5px;
   }
   p {
     width: 100%;
@@ -129,7 +137,11 @@ const Styled = styled.button`
   &:not(:disabled):hover {
     background: #333;
     border-color: #525252;
+
     cursor: pointer;
+    .label {
+      color: white !important;
+    }
   }
 `;
 export default DropDown;

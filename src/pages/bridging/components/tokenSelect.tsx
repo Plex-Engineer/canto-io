@@ -22,6 +22,8 @@ export const TokenWallet = ({
       ref={ref}
       modal
       lockScroll
+      closeOnEscape
+      disabled={allTokens.length === 0}
       trigger={
         <Styled>
           {activeToken && (

@@ -17,20 +17,6 @@ interface Step2TxBoxProps {
 const Step2TxBox = (props: Step2TxBoxProps) => {
   return (
     <Styled>
-      {props.transactions.length > 0 && props.bridgeIn && (
-        <PrimaryButton
-          onClick={() =>
-            completeAllConvertIn(
-              props.chainId,
-              props.txStore,
-              props.cantoAddress,
-              props.transactions
-            )
-          }
-        >
-          Complete All
-        </PrimaryButton>
-      )}
       <Text type="title" size="title2">
         Bridge Queue
       </Text>
@@ -77,6 +63,24 @@ const Step2TxBox = (props: Step2TxBoxProps) => {
               })}
         </div>
       </div>
+
+      {props.transactions.length > 1 && props.bridgeIn && (
+        <PrimaryButton
+          className="complete-all"
+          filled
+          weight="bold"
+          onClick={() =>
+            completeAllConvertIn(
+              props.chainId,
+              props.txStore,
+              props.cantoAddress,
+              props.transactions
+            )
+          }
+        >
+          Complete All
+        </PrimaryButton>
+      )}
     </Styled>
   );
 };
@@ -89,6 +93,9 @@ const Styled = styled.div`
   padding: 1rem 2rem;
   margin-top: 3rem;
 
+  .complete-all {
+    /* width: 100%; */
+  }
   .scroll-port {
     margin-top: 1rem;
     max-height: 300px;
