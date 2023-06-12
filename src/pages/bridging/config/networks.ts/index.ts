@@ -1,4 +1,5 @@
 import {
+  AvalancheTestnet,
   CantoMainnet,
   CantoTestnet,
   ETHMainnet,
@@ -108,6 +109,17 @@ const TESTNET_BRIDGE_NETWORKS: BridgingNetwork[] = [
     supportedBridgeInMethods: [BridgingMethods.LAYER_ZERO],
     supportedBridgeOutMethods: [BridgingMethods.LAYER_ZERO],
     [BridgingMethods.LAYER_ZERO]: LAYER_ZERO_TEST_NETWORKS.GOERLI_TEST,
+  },
+  {
+    id: AvalancheTestnet.name,
+    name: AvalancheTestnet.name,
+    icon: AvalancheTestnet.icon,
+    isCanto: false,
+    isEVM: true,
+    evmChainId: AvalancheTestnet.chainId,
+    supportedBridgeInMethods: [BridgingMethods.LAYER_ZERO],
+    supportedBridgeOutMethods: [BridgingMethods.LAYER_ZERO],
+    [BridgingMethods.LAYER_ZERO]: LAYER_ZERO_TEST_NETWORKS.AVALANCHE_TEST,
   },
 ];
 

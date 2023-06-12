@@ -4,6 +4,7 @@ import {
   Mainnet,
   Mumbai,
   Goerli,
+  AvalancheTestnet as AvaxTest,
 } from "@usedapp/core";
 import { CORE_ADDRESSES } from "./addresses";
 import ethIcon from "assets/icons/ETH.svg";
@@ -135,6 +136,12 @@ export const GoerliTestnet: Network = {
   rpcUrl: "https://rpc.ankr.com/eth_goerli",
 };
 
+export const AvalancheTestnet: Network = {
+  ...AvaxTest,
+  name: "Avalanche Testnet",
+  icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/avalanche/images/avax.svg",
+};
+
 /**
  * EXPORT LISTS
  */
@@ -151,6 +158,7 @@ export const ALL_SUPPORTED_NETWORKS = [
   MumbaiTestnet,
   FantomTestnet,
   GoerliTestnet,
+  AvalancheTestnet,
 ];
 
 /**
