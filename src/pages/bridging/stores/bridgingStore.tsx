@@ -26,7 +26,7 @@ interface BridgingStore {
   syncTokens: () => Promise<void>;
   //to know if we are on testnet
   onTestnet: boolean;
-  chainIdChanged: (chainId: number) => Promise<void>;
+  chainIdChanged: (chainId: number, bridgIn: boolean) => Promise<void>;
   //tx
   bridgeTx: (amount: BigNumber, toChainAddress?: string) => Promise<boolean>;
 }
@@ -105,13 +105,21 @@ const useBridgingStore = create<BridgingStore>((set, get) => ({
     }
   },
   onTestnet: false,
-  chainIdChanged: async (chainId) => {
+  //TODO: THIS MUST KNOW WHAT PAGE YOU ARE ON
+  chainIdChanged: async (chainId, bridgeIn) => {
     const isOnTestnet = onTestnet(chainId);
     if (isOnTestnet !== get().onTestnet) {
       //we have a new set of networks, so we need to update the store
       const allNetworks = getBridgingNetworksFromChainId(chainId);
-      const from = allNetworks[1] ?? EMPTYNETWORK;
-      const to = allNetworks[0] ?? EMPTYNETWORK;
+      let from;
+      let to;
+      if (bridgeIn) {
+        from = allNetworks[1] ?? EMPTYNETWORK;
+        to = allNetworks[0] ?? EMPTYNETWORK;
+      } else {
+        from = allNetworks[0] ?? EMPTYNETWORK;
+        to = allNetworks[1] ?? EMPTYNETWORK;
+      }
       const accountInfo = useNetworkInfo.getState();
       set({
         onTestnet: isOnTestnet,

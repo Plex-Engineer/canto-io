@@ -19,9 +19,6 @@ import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
 import { PubKeyStyled } from "./walkthrough/Walkthrough";
 import warningRedIcon from "assets/warning_red.svg";
 import { parseUnits } from "ethers/lib/utils";
-import Tooltip from "global/packages/src/components/molecules/Tooltip";
-import { Text } from "global/packages/src";
-import guideImg from "assets/guide.svg";
 import RecoveryPage from "./Recovery";
 import { onCantoNetwork } from "global/utils/getAddressUtils";
 import { useTransactionStore } from "global/stores/transactionStore";
@@ -51,8 +48,16 @@ const Bridging = () => {
 
   //chainId change to show testnet networks
   useEffect(() => {
-    bridgeStore.chainIdChanged(Number(networkInfo.chainId));
-  }, [networkInfo.chainId]);
+    const setNetworks = setTimeout(
+      () =>
+        bridgeStore.chainIdChanged(
+          Number(networkInfo.chainId),
+          tabSelected === "in"
+        ),
+      1000
+    );
+    return () => clearTimeout(setNetworks);
+  }, [networkInfo.chainId, tabSelected]);
 
   //get new data every 10 seconds
   useEffect(() => {
