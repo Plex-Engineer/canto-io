@@ -5,6 +5,9 @@ import { completeAllConvertIn, convertTx } from "../utils/transactions";
 import MiniConvert from "./miniConvert";
 import { formatUnits } from "ethers/lib/utils";
 import { NativeTransaction } from "../config/bridgingInterfaces";
+import OngoingTxModal from "global/components/modals/ongoingTxModal";
+import Modal from "global/packages/src/components/molecules/Modal";
+import { useState } from "react";
 
 interface Step2TxBoxProps {
   bridgeIn: boolean;
@@ -15,8 +18,14 @@ interface Step2TxBoxProps {
   chainId: number;
 }
 const Step2TxBox = (props: Step2TxBoxProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <Styled>
+      <Modal title="" open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <div style={{ width: "32rem" }}>
+          <OngoingTxModal onClose={() => setIsModalOpen(false)} />
+        </div>
+      </Modal>
       <Text type="title" size="title2">
         Bridge Queue
       </Text>
@@ -64,19 +73,20 @@ const Step2TxBox = (props: Step2TxBoxProps) => {
         </div>
       </div>
 
-      {props.transactions.length > 1 && props.bridgeIn && (
+      {props.transactions.length > 0 && props.bridgeIn && (
         <PrimaryButton
           className="complete-all"
           filled
           weight="bold"
-          onClick={() =>
+          onClick={() => {
             completeAllConvertIn(
               props.chainId,
               props.txStore,
               props.cantoAddress,
               props.transactions
-            )
-          }
+            );
+            setIsModalOpen(true);
+          }}
         >
           Complete All
         </PrimaryButton>

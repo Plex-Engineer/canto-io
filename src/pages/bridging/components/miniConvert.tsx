@@ -8,7 +8,6 @@ import ConfirmTxModal, {
   TokenWithIcon,
 } from "global/components/modals/confirmTxModal";
 import { getBridgeExtraDetails } from "./bridgeDetails";
-import OngoingTxModal from "global/components/modals/ongoingTxModal";
 import { PrimaryButton, Text } from "global/packages/src";
 import { NativeTransaction } from "../config/bridgingInterfaces";
 
@@ -29,9 +28,8 @@ const MiniConvert = (props: Props) => {
           setModalOpen(false);
         }}
       >
-        <OngoingTxModal onClose={() => setModalOpen(false)} />
         <ConfirmTxModal
-          title={"CONFIRMATION"}
+          title={"Convert Coin"}
           titleIcon={TokenWithIcon({
             icon: props.transaction.token.icon,
             name: props.transaction.token.symbol,
