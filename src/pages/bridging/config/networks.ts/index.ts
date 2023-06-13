@@ -6,6 +6,7 @@ import {
   FantomTestnet,
   GoerliTestnet,
   MumbaiTestnet,
+  OptimismTestnet,
   onTestnet,
 } from "global/config/networks";
 import { BridgingMethods, BridgingNetwork } from "../bridgingInterfaces";
@@ -120,6 +121,17 @@ const TESTNET_BRIDGE_NETWORKS: BridgingNetwork[] = [
     supportedBridgeInMethods: [BridgingMethods.LAYER_ZERO],
     supportedBridgeOutMethods: [BridgingMethods.LAYER_ZERO],
     [BridgingMethods.LAYER_ZERO]: LAYER_ZERO_TEST_NETWORKS.AVALANCHE_TEST,
+  },
+  {
+    id: OptimismTestnet.name,
+    name: OptimismTestnet.name,
+    icon: OptimismTestnet.icon,
+    isCanto: false,
+    isEVM: true,
+    evmChainId: OptimismTestnet.chainId,
+    supportedBridgeInMethods: [BridgingMethods.LAYER_ZERO],
+    supportedBridgeOutMethods: [BridgingMethods.LAYER_ZERO],
+    [BridgingMethods.LAYER_ZERO]: LAYER_ZERO_TEST_NETWORKS.OPTIMISM_TEST,
   },
 ];
 

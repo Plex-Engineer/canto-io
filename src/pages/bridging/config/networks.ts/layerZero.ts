@@ -5,6 +5,7 @@ import {
   MumbaiTestnet,
   GoerliTestnet,
   AvalancheTestnet,
+  OptimismTestnet,
 } from "global/config/networks";
 import { CANTO_OFT } from "../tokens.ts/layerZeroTokens";
 enum TestnetLZNetworks {
@@ -13,6 +14,7 @@ enum TestnetLZNetworks {
   FANTOM_TEST = "FANTOM_TEST",
   GOERLI_TEST = "GOERLI_TEST",
   AVALANCHE_TEST = "AVALANCHE_TEST",
+  OPTIMISM_TEST = "OPTIMISM_TEST",
 }
 type LZNetworkData = {
   [key in TestnetLZNetworks]: LayerZeroNetwork;
@@ -60,6 +62,16 @@ const LAYER_ZERO_TEST_NETWORKS: LZNetworkData = {
   [TestnetLZNetworks.AVALANCHE_TEST]: {
     ...AvalancheTestnet,
     lzChainId: 10106,
+    tokens: {
+      toCanto: [CANTO_OFT("0x6175a322E284E6a5ff5f8BcdBE82d30B047E22d4", false)],
+      fromCanto: [
+        CANTO_OFT("0x6175a322E284E6a5ff5f8BcdBE82d30B047E22d4", true),
+      ],
+    },
+  },
+  [TestnetLZNetworks.OPTIMISM_TEST]: {
+    ...OptimismTestnet,
+    lzChainId: 10132,
     tokens: {
       toCanto: [CANTO_OFT("0x6175a322E284E6a5ff5f8BcdBE82d30B047E22d4", false)],
       fromCanto: [

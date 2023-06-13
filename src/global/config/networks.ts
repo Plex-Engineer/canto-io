@@ -5,6 +5,7 @@ import {
   Mumbai,
   Goerli,
   AvalancheTestnet as AvaxTest,
+  OptimismGoerli,
 } from "@usedapp/core";
 import { CORE_ADDRESSES } from "./addresses";
 import ethIcon from "assets/icons/ETH.svg";
@@ -142,6 +143,12 @@ export const AvalancheTestnet: Network = {
   icon: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/avalanche/images/avax.svg",
 };
 
+export const OptimismTestnet: Network = {
+  ...OptimismGoerli,
+  name: "Optimism Testnet",
+  icon: "https://raw.githubusercontent.com/ethereum-optimism/brand-kit/main/assets/svg/Profile-Logo.svg",
+};
+
 /**
  * EXPORT LISTS
  */
@@ -159,6 +166,7 @@ export const ALL_SUPPORTED_NETWORKS = [
   FantomTestnet,
   GoerliTestnet,
   AvalancheTestnet,
+  OptimismTestnet,
 ];
 
 /**
