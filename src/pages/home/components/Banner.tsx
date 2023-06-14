@@ -7,8 +7,8 @@ export const Banner = () => {
       <Text type="title" size="title2" align="left">
         The canto online hackathon
       </Text>
-      <Text align="left">/chapter 1 : season 7</Text>
-      <Text align="left">/april 20 - may 7</Text>
+      <Text align="left">/chapter 1 : season 8</Text>
+      <Text align="left">/june 19 - july 21</Text>
       <Text align="left">
         Join the Canto Online Hackathon for apps, infrastructure, and original
         work.
