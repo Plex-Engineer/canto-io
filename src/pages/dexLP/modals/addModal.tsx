@@ -66,7 +66,9 @@ const AddAllowanceButton = (props: AddAllowanceProps) => {
   useEffect(() => {
     if (
       props.pair.allowance.token1.lt(props.pair.balances.token1) ||
-      props.pair.allowance.token2.lt(props.pair.balances.token2)
+      props.pair.allowance.token2.lt(props.pair.balances.token2) ||
+      props.pair.allowance.token1.isZero() ||
+      props.pair.allowance.token2.isZero()
     ) {
       setModalType(ModalType.ENABLE);
     }
