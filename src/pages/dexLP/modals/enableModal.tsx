@@ -25,7 +25,10 @@ const AddSingleAllowanceButton = (props: AddSingleAllowanceProps) => {
 
   return (
     <PrimaryButton
-      disabled={props.tokenAllowance.gte(props.tokenBalance)}
+      disabled={
+        props.tokenAllowance.gte(props.tokenBalance) &&
+        !props.tokenAllowance.isZero()
+      }
       onClick={() =>
         props.addAllowance(
           routerAddress,
@@ -81,22 +84,40 @@ const EnableModal = ({ activePair, chainId, setModal }: Props) => {
 
   const prevModalType = useModals((state) => state.prevModalType);
 
+  function doneAllowance(
+    allowance: BigNumber,
+    balance: BigNumber,
+    status: TransactionState
+  ) {
+    return (
+      (allowance.gte(balance) && !allowance.isZero()) || status == "Success"
+    );
+  }
+
   //bring us to the next modal if we are done enabling
   useEffect(() => {
     if (prevModalType == ModalType.ADD) {
-      const doneAllowance1 =
-        activePair.allowance.token1.gt(activePair.balances.token1) ||
-        addAllowanceA.status == "Success";
-      const doneAllowance2 =
-        activePair.allowance.token2.gt(activePair.balances.token2) ||
-        addAllowanceB.status == "Success";
-      if (doneAllowance1 && doneAllowance2) {
+      if (
+        doneAllowance(
+          activePair.allowance.token1,
+          activePair.balances.token1,
+          addAllowanceA.status
+        ) &&
+        doneAllowance(
+          activePair.allowance.token2,
+          activePair.balances.token2,
+          addAllowanceB.status
+        )
+      ) {
         setModal(ModalType.NONE);
       }
     } else if (
       prevModalType == ModalType.REMOVE &&
-      (activePair.allowance.LPtoken.gt(activePair.userSupply.totalLP) ||
-        addLPAllowance.status == "Success")
+      doneAllowance(
+        activePair.allowance.LPtoken,
+        activePair.userSupply.totalLP,
+        addLPAllowance.status
+      )
     ) {
       setModal(ModalType.NONE);
     }
