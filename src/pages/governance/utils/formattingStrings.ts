@@ -7,14 +7,6 @@ export function convertDateToString(dateString: string, relavite: boolean) {
   return relavite
     ? moment(date).format("MMM Do YY - h:mm:ss a")
     : moment(date).fromNow();
-  //   return moment(date).fromNow();
-
-  //   return moment(date).format("MMM Do YY / h:mm:ss a");
-  //   return (
-  //     date.toLocaleDateString().replace(/[/]/g, ".") +
-  //     " : " +
-  //     date.toLocaleTimeString()
-  //   );
 }
 
 export function convertToVoteNumber(option: VotingOption): number {

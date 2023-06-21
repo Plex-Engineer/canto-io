@@ -1,51 +1,52 @@
-import { BridgeOutNetworks } from "pages/bridging/config/interfaces";
-import { CONVERT_COIN_TOKENS } from "pages/bridging/config/bridgingTokens";
 import { BigNumber } from "ethers";
-import { truncateNumber } from "global/utils/utils";
-import {
-  convertStringToBigNumber,
-  getStep1ButtonText,
-} from "pages/bridging/utils/utils";
-import { ALL_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
+import { truncateNumber } from "global/utils/formattingNumbers";
+import { getStep1ButtonText } from "pages/bridging/utils/utils";
+import { convertStringToBigNumber } from "global/utils/formattingNumbers";
+
 import { parseUnits } from "ethers/lib/utils";
+import { CANTO_MAIN_CONVERT_COIN_TOKENS } from "pages/bridging/config/tokens.ts/bridgingTokens";
+import {
+  MAINNET_IBC_NETWORKS,
+  MainnetIBCNetworks,
+} from "pages/bridging/config/networks.ts/cosmos";
 
 test("check cosmos address is valid", () => {
-  const testCases: { case?: string; validFor: BridgeOutNetworks[] }[] = [
+  const testCases: { case?: string; validFor: MainnetIBCNetworks[] }[] = [
     {
       case: "cosmos1qqzky5czd8jtxp7k96w0d9th2vjxcxaeqk6292",
-      validFor: [BridgeOutNetworks.COSMOS_HUB],
+      validFor: [MainnetIBCNetworks.COSMOS_HUB],
     },
     {
       case: "osmo1qqzky5czd8jtxp7k96w0d9th2vjxcxaegdf6nc",
-      validFor: [BridgeOutNetworks.OSMOSIS],
+      validFor: [MainnetIBCNetworks.OSMOSIS],
     },
     {
       case: "gravity1qqzky5czd8jtxp7k96w0d9th2vjxcxaeyxgjqz",
-      validFor: [BridgeOutNetworks.GRAVITY_BRIDGE],
+      validFor: [MainnetIBCNetworks.GRAVITY_BRIDGE],
     },
     {
       case: "comdex1qqzky5czd8jtxp7k96w0d9th2vjxcxae8ecgua",
-      validFor: [BridgeOutNetworks.COMDEX],
+      validFor: [MainnetIBCNetworks.COMDEX],
     },
     {
       case: "inj1vzpglc8he97xeathu0wl99seh96mgl8aqchvjs",
-      validFor: [BridgeOutNetworks.INJECTIVE],
+      validFor: [MainnetIBCNetworks.INJECTIVE],
     },
     {
       case: "cre1qqzky5czd8jtxp7k96w0d9th2vjxcxaey7f0s8",
-      validFor: [BridgeOutNetworks.CRESCENT],
+      validFor: [MainnetIBCNetworks.CRESCENT],
     },
     {
       case: "somm1qqzky5czd8jtxp7k96w0d9th2vjxcxaev24x5q",
-      validFor: [BridgeOutNetworks.SOMMELIER],
+      validFor: [MainnetIBCNetworks.SOMMELIER],
     },
     {
       case: "akash1qqzky5czd8jtxp7k96w0d9th2vjxcxaeddhdus",
-      validFor: [BridgeOutNetworks.AKASH],
+      validFor: [MainnetIBCNetworks.AKASH],
     },
     {
       case: "kava1rjhae3scpgckk2scffe8v7c93rugenjy8atg34",
-      validFor: [BridgeOutNetworks.KAVA],
+      validFor: [MainnetIBCNetworks.KAVA],
     },
     {
       case: "",
@@ -70,50 +71,46 @@ test("check cosmos address is valid", () => {
   ];
   for (const testCase of testCases) {
     expect(
-      ALL_BRIDGE_OUT_NETWORKS[BridgeOutNetworks.COSMOS_HUB].checkAddress(
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.COSMOS_HUB].checkAddress(
         testCase.case
       )
-    ).toBe(testCase.validFor.includes(BridgeOutNetworks.COSMOS_HUB));
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.COSMOS_HUB));
     expect(
-      ALL_BRIDGE_OUT_NETWORKS[BridgeOutNetworks.GRAVITY_BRIDGE].checkAddress(
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.GRAVITY_BRIDGE].checkAddress(
         testCase.case
       )
-    ).toBe(testCase.validFor.includes(BridgeOutNetworks.GRAVITY_BRIDGE));
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.GRAVITY_BRIDGE));
     expect(
-      ALL_BRIDGE_OUT_NETWORKS[BridgeOutNetworks.OSMOSIS].checkAddress(
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.OSMOSIS].checkAddress(
         testCase.case
       )
-    ).toBe(testCase.validFor.includes(BridgeOutNetworks.OSMOSIS));
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.OSMOSIS));
     expect(
-      ALL_BRIDGE_OUT_NETWORKS[BridgeOutNetworks.COMDEX].checkAddress(
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.COMDEX].checkAddress(
         testCase.case
       )
-    ).toBe(testCase.validFor.includes(BridgeOutNetworks.COMDEX));
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.COMDEX));
     expect(
-      ALL_BRIDGE_OUT_NETWORKS[BridgeOutNetworks.INJECTIVE].checkAddress(
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.INJECTIVE].checkAddress(
         testCase.case
       )
-    ).toBe(testCase.validFor.includes(BridgeOutNetworks.INJECTIVE));
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.INJECTIVE));
     expect(
-      ALL_BRIDGE_OUT_NETWORKS[BridgeOutNetworks.CRESCENT].checkAddress(
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.CRESCENT].checkAddress(
         testCase.case
       )
-    ).toBe(testCase.validFor.includes(BridgeOutNetworks.CRESCENT));
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.CRESCENT));
     expect(
-      ALL_BRIDGE_OUT_NETWORKS[BridgeOutNetworks.SOMMELIER].checkAddress(
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.SOMMELIER].checkAddress(
         testCase.case
       )
-    ).toBe(testCase.validFor.includes(BridgeOutNetworks.SOMMELIER));
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.SOMMELIER));
     expect(
-      ALL_BRIDGE_OUT_NETWORKS[BridgeOutNetworks.AKASH].checkAddress(
-        testCase.case
-      )
-    ).toBe(testCase.validFor.includes(BridgeOutNetworks.AKASH));
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.AKASH].checkAddress(testCase.case)
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.AKASH));
     expect(
-      ALL_BRIDGE_OUT_NETWORKS[BridgeOutNetworks.KAVA].checkAddress(
-        testCase.case
-      )
-    ).toBe(testCase.validFor.includes(BridgeOutNetworks.KAVA));
+      MAINNET_IBC_NETWORKS[MainnetIBCNetworks.KAVA].checkAddress(testCase.case)
+    ).toBe(testCase.validFor.includes(MainnetIBCNetworks.KAVA));
   }
 });
 
@@ -169,7 +166,7 @@ test("converting string to big number for token decimals", () => {
     },
   ];
   for (const testCase of testCases) {
-    for (const token of CONVERT_COIN_TOKENS) {
+    for (const token of CANTO_MAIN_CONVERT_COIN_TOKENS) {
       const expectedResult = !testCase.valid
         ? BigNumber.from(0)
         : parseUnits(
@@ -204,8 +201,8 @@ test("step 1 buttonText", () => {
       currentAllowance: parseUnits("1", 18),
       bridgeIn: true,
       expectedResult: {
-        disabled: false,
-        text: "approve",
+        disabled: true,
+        text: bridgeText(true),
       },
     },
     {
@@ -215,7 +212,7 @@ test("step 1 buttonText", () => {
       bridgeIn: true,
       expectedResult: {
         disabled: false,
-        text: "approve",
+        text: bridgeText(true),
       },
     },
     {
@@ -243,7 +240,6 @@ test("step 1 buttonText", () => {
     const [testText, testDisabled] = getStep1ButtonText(
       testCase.amount,
       testCase.max,
-      testCase.currentAllowance,
       testCase.bridgeIn
     );
     expect(testText).toBe(testCase.expectedResult.text);

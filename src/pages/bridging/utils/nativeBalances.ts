@@ -1,12 +1,11 @@
 import { generateEndpointBalances } from "@tharsis/provider";
 import { BigNumber } from "ethers";
-import { CantoMainnet } from "global/config/networks";
 import {
-  BasicNativeBalance,
-  IBCTokenTrace,
   NativeToken,
   UserNativeToken,
-} from "../config/interfaces";
+  BasicNativeBalance,
+  IBCTokenTrace,
+} from "../config/bridgingInterfaces";
 
 const options = {
   method: "GET",
@@ -81,14 +80,17 @@ async function getIBCPathAndDenomFromHash(
     };
   }
 }
-export async function getUnknownIBCTokens(tokens: BasicNativeBalance[]) {
+export async function getUnknownIBCTokens(
+  tokens: BasicNativeBalance[],
+  nodeAddressIP: string
+) {
   const ibcPaths: IBCTokenTrace[] = [];
   for (const token of tokens) {
     if (token.denom.slice(0, 4) === "ibc/") {
       ibcPaths.push({
         ...token,
         ibcInfo: await getIBCPathAndDenomFromHash(
-          CantoMainnet.cosmosAPIEndpoint,
+          nodeAddressIP,
           token.denom.slice(4)
         ),
       });

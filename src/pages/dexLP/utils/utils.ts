@@ -1,6 +1,8 @@
 import { BigNumber } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
+import { convertFromScientificNotation } from "global/utils/formattingNumbers";
+import { PAIR } from "../config/interfaces";
 
 //ratio that returns is scaled to 1e18 for accuracy
 export function getLPPairRatio(
@@ -45,7 +47,7 @@ export function calculateExpectedShareIfSupplying(
 ) {
   return formatUnits(
     totalLP
-      .mul(parseUnits(currentShare.toString()))
+      .mul(parseUnits(convertFromScientificNotation(currentShare.toString())))
       .add(expectedLPOut.mul(BigNumber.from(10).pow(18)))
       .div(totalLP.add(expectedLPOut))
       .mul(100)
@@ -114,4 +116,10 @@ export function getTokenValueFromPercent(
     18
   );
   return tokenValue.mul(percentScaledTo18).div(parseUnits("1", 20));
+}
+
+export function getPairName(pair: PAIR) {
+  return `${pair.stable ? "s" : "v"}-${pair.token1.symbol}/${
+    pair.token2.symbol
+  }`;
 }

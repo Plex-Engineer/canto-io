@@ -1,7 +1,7 @@
 import { Notification } from "@usedapp/core";
 import { useEffect } from "react";
 import { toastHandler } from "./toastHandler";
-import { transactionStatusActions } from "./utils";
+import { createTransactionDetails } from "global/stores/transactionUtils";
 
 export const useOngoingTransactions = (
   notifications: Notification[],
@@ -30,7 +30,7 @@ export const useOngoingTransactions = (
       setNotifs(currentNotifs);
     }
 
-    notifications.map((noti) => {
+    notifications.map((noti, index) => {
       if (
         //@ts-ignore
         (noti?.transactionName?.includes("type") &&
@@ -40,7 +40,8 @@ export const useOngoingTransactions = (
         const isSuccesful = noti.type != "transactionFailed";
         //@ts-ignore
         const msg: Details = JSON.parse(noti?.transactionName);
-        const actionMsg = transactionStatusActions(msg.type).postAction;
+        const actionMsg = createTransactionDetails(index.toString(), msg.type)
+          .messages.long;
         const msged = `${isSuccesful ? "" : "un"}successfully ${actionMsg}`;
         toastHandler(msged, isSuccesful, noti.id);
       }

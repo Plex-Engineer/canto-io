@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
 import Tooltip from "global/packages/src/components/molecules/Tooltip";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 interface Props {
   yes: number;
   no: number;

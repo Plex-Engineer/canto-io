@@ -1,8 +1,8 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
 import { CInput } from "global/packages/src/components/atoms/Input";
-import { BaseToken } from "pages/bridging/config/interfaces";
 import BaseStyled from "../layout";
+import { Token } from "global/config/interfaces/tokens";
 
 interface AmountProps {
   amount: string;
@@ -11,7 +11,7 @@ interface AmountProps {
   onNext: () => void;
   onPrev: () => void;
   canContinue: boolean;
-  selectedToken: BaseToken;
+  selectedToken: Token;
   canGoBack: boolean;
 }
 const AmountPage = (props: AmountProps) => {

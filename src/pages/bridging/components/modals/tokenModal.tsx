@@ -1,13 +1,15 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
 import { CInput } from "global/packages/src/components/atoms/Input";
-import { BaseToken, Step1TokenGroups } from "pages/bridging/config/interfaces";
 import { useState } from "react";
-import { levenshteinDistance } from "pages/staking/utils/utils";
+import { levenshteinDistance } from "global/utils/search";
+import { Token } from "global/config/interfaces/tokens";
+import { truncateNumber } from "global/utils/formattingNumbers";
+import { formatUnits } from "ethers/lib/utils";
 
 interface Props {
-  tokenGroups: Step1TokenGroups[];
-  onClose: (value?: BaseToken) => void;
+  tokens: Token[];
+  onClose: (value?: Token) => void;
 }
 
 const TokenModal = (props: Props) => {
@@ -43,64 +45,36 @@ const TokenModal = (props: Props) => {
           onChange={(e) => setUserSearch(e.target.value)}
         />
       </div>
-      {!props.tokenGroups.length && (
+      {!props.tokens.length && (
         <div className="expanded">
           <Text size="text2">no tokens found</Text>
         </div>
       )}
       <div className="token-list">
-        {props.tokenGroups.map((group, idx) => (
-          <div key={group.groupName + idx}>
-            <div key={group.groupName} className="header">
-              <Text type="title" align="left">
-                {group.groupName}
-              </Text>
+        {props.tokens
+          .filter((token) => inSearch(userSearch, token.name, token.symbol))
+          .sort((a, b) => (a.balance?.gt(b?.balance ?? 0) ? -1 : 1))
+          .map((token) => (
+            <div
+              role="button"
+              tabIndex={0}
+              key={token.address}
+              className="token-item"
+              onClick={() => {
+                props.onClose(token);
+              }}
+            >
+              <span>
+                <img src={token.icon} alt={token.name} />
+                <Text color="white">{token.symbol}</Text>
+              </span>
+              {token.balance && (
+                <p className="balance">
+                  {truncateNumber(formatUnits(token.balance, token.decimals))}
+                </p>
+              )}
             </div>
-            {group.tokens
-              ?.filter((token) =>
-                inSearch(userSearch, token.name, token.symbol)
-              )
-              .sort((a, b) => {
-                if (
-                  !isNaN(Number(group.getBalance(a))) &&
-                  isNaN(Number(group.getBalance(b)))
-                )
-                  return -1;
-                else if (
-                  isNaN(Number(group.getBalance(a))) &&
-                  !isNaN(Number(group.getBalance(b)))
-                )
-                  return 1;
-                else if (
-                  isNaN(Number(group.getBalance(a))) &&
-                  isNaN(Number(group.getBalance(b)))
-                )
-                  return 0;
-                return Number(group.getBalance(a)) > Number(group.getBalance(b))
-                  ? -1
-                  : 1;
-              })
-              .map((token) => (
-                <div
-                  role="button"
-                  tabIndex={0}
-                  key={token.address}
-                  className="token-item"
-                  onClick={() => {
-                    props.onClose(token);
-                  }}
-                >
-                  <span>
-                    <img src={token.icon} alt={token.name} />
-                    <Text color="white">{token.symbol}</Text>
-                  </span>
-                  {group.getBalance(token) != "ibc" && (
-                    <p className="balance">{group.getBalance(token)}</p>
-                  )}
-                </div>
-              ))}
-          </div>
-        ))}
+          ))}
       </div>
     </Styled>
   );
@@ -111,7 +85,6 @@ const Styled = styled.div`
   flex-direction: column;
   width: 30rem;
   max-height: 42rem;
-  overscroll-y: scroll;
 
   .search {
     margin: 6px;
@@ -152,9 +125,7 @@ const Styled = styled.div`
     text-align: right;
   }
   .token-list {
-    scrollbar-color: var(--primary-color);
-    scroll-behavior: smooth;
-    overflow-y: scroll;
+    overflow-y: auto;
     padding: 16px;
 
     /* background: red; */

@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
 import { PrimaryButton, Text } from "global/packages/src";
-import { ALL_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
-import { NativeToken } from "pages/bridging/config/interfaces";
+import { NativeToken } from "pages/bridging/config/bridgingInterfaces";
 import { copyAddress, formatAddress } from "pages/bridging/utils/utils";
 import CopyToClipboard from "react-copy-to-clipboard";
 import CopyIcon from "assets/copy.svg";
@@ -14,11 +13,13 @@ import { TransactionState } from "@usedapp/core";
 import { CantoMainnet } from "global/config/networks";
 import GlobalLoadingModal from "global/components/modals/loadingModal";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { IBCNetwork } from "pages/bridging/config/bridgingInterfaces";
 
 interface IBCGuideModalProps {
   token: NativeToken;
+  network: IBCNetwork;
   cantoAddress: string;
   onClose: () => void;
 }
@@ -36,9 +37,10 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
   const [keplrClient, setKeplrClient] = useState<SigningStargateClient>();
   const [amount, setAmount] = useState("");
   const [txStatus, setTxStatus] = useState<TransactionState>("None");
-  const network = ALL_BRIDGE_OUT_NETWORKS[props.token.supportedOutChannels[0]];
+
   const canIBC = !(
-    network.chainId === "evmos_9001-2" || network.chainId === "injective-1"
+    props.network.chainId === "evmos_9001-2" ||
+    props.network.chainId === "injective-1"
   );
 
   async function setKeplrAddressAndBalance() {
@@ -46,15 +48,19 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
       //show user link to download keplr
       console.error("no keplr installed");
     } else {
-      await window.keplr.enable(network.chainId);
-      const offlineSinger = window.keplr.getOfflineSigner(network.chainId);
+      await window.keplr.enable(props.network.chainId);
+      const offlineSinger = window.keplr.getOfflineSigner(
+        props.network.chainId
+      );
       const accounts = await offlineSinger.getAccounts();
       setUserKeplrAddress(accounts[0].address);
       const client = await SigningStargateClient.connectWithSigner(
-        network.rpcEndpoint,
+        props.network.rpcEndpoint,
         offlineSinger,
         {
-          gasPrice: GasPrice.fromString("300000" + network.nativeDenom),
+          gasPrice: GasPrice.fromString(
+            "300000" + props.network.nativeCurrency.denom
+          ),
         }
       );
       setKeplrClient(client);
@@ -65,7 +71,7 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
       setBalance(balance.amount);
       const gasBalance = await client.getBalance(
         accounts[0].address,
-        network.nativeDenom
+        props.network.nativeCurrency.denom
       );
       setGasBalance(gasBalance.amount);
     }
@@ -86,7 +92,7 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
             props.token.nativeName
           ),
           "transfer",
-          network.networkChannel,
+          props.network.channelToCanto,
           undefined,
           Number(blockTimestamp),
           "auto",
@@ -118,6 +124,7 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
               props.onClose();
             }
           }}
+          tokenName={props.token.name}
           transactionType={CantoTransactionType.IBC_IN}
           status={txStatus}
           additionalMessage={
@@ -136,17 +143,17 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
         </Text>
       </div>
       <Text size="text3" align="center" color="primaryDark">
-        To bridge {props.token.name} from the {network.name} network into Canto,
-        you will need to do an IBC transfer to Canto Mainnet.
+        To bridge {props.token.name} from the {props.network.name} network into
+        Canto, you will need to do an IBC transfer to Canto Mainnet.
       </Text>
       <div className="values">
         <ConfirmationRow
           title="network"
-          value={<Text type="title">{network.name} </Text>}
+          value={<Text type="title">{props.network.name} </Text>}
         />
         <ConfirmationRow
           title="channel"
-          value={<Text type="title">{network.networkChannel} </Text>}
+          value={<Text type="title">{props.network.channelToCanto} </Text>}
         />
         <ConfirmationRow
           title="balance"
@@ -163,7 +170,7 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
             </Text>
           }
         />
-        {network.nativeDenom !== props.token.nativeName && (
+        {props.network.nativeCurrency.denom !== props.token.nativeName && (
           <ConfirmationRow
             title="gas balance"
             value={
@@ -174,7 +181,7 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
                       6
                     ) +
                     " " +
-                    network.nativeDenom
+                    props.network.nativeCurrency.denom
                   : "..."}
               </Text>
             }

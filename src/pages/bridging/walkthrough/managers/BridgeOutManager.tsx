@@ -7,15 +7,15 @@ import { CompletePage } from "../components/pages/complete";
 import { ConfirmTransactionPage } from "../components/pages/confirmTxPage";
 import SelectTokenPage from "../components/pages/selectToken";
 import SwitchNetworkPage from "../components/pages/switchNetwork";
-import { BridgeTransaction } from "pages/bridging/hooks/useBridgingTransactions";
-import { BridgeOutStep } from "../config/interfaces";
+import { BridgeTransaction } from "pages/bridging/walkthrough/hooks/useBridgingTransactions";
+import { BridgeOutStep } from "../config/interfacesSteps";
 import {
   BridgeOutNetworkInfo,
-  BridgeOutNetworks,
+  CantoMainBridgeOutNetworks,
   UserERC20BridgeToken,
   UserNativeToken,
-} from "pages/bridging/config/interfaces";
-import { convertStringToBigNumber } from "pages/bridging/utils/utils";
+} from "pages/bridging/walkthrough/config/interfaces";
+import { convertStringToBigNumber } from "global/utils/formattingNumbers";
 import SelectBridgeOutNetwork from "../components/pages/selectBridgeOutNetwork";
 import { WalkthroughSelectedTokens } from "../store/customUseWalkthrough";
 
@@ -38,7 +38,7 @@ interface BridgeOutManagerProps {
     address: string;
     setAddress: (s: string) => void;
     selectedNetwork: BridgeOutNetworkInfo;
-    setNetwork: (network: BridgeOutNetworks) => void;
+    setNetwork: (network: CantoMainBridgeOutNetworks) => void;
   };
   currentStep: BridgeOutStep;
   canContinue: boolean;

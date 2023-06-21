@@ -1,39 +1,17 @@
 import { generateEndpointProposals } from "@tharsis/provider";
-import { createTxMsgVote } from "@tharsis/transactions";
-import { Chain, Fee } from "global/config/cosmosConstants";
-import { TransactionState } from "global/config/interfaces/transactionTypes";
-import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/checkCosmosConfirmation";
 import {
   ethToCanto,
   getSenderObj,
   signAndBroadcastTxMsg,
 } from "global/utils/cantoTransactions/helpers";
 import { VotingOption } from "../config/interfaces";
-
-export async function voteAndSetStatus(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  txVote: () => Promise<any>,
-  setStatus: (status: TransactionState) => void
-) {
-  setStatus("PendingSignature");
-  let transaction;
-  try {
-    transaction = await txVote();
-  } catch {
-    setStatus("Exception");
-    return;
-  }
-  setStatus("Mining");
-  const txSuccess = await checkCosmosTxConfirmation(
-    transaction.tx_response.txhash
-  );
-  txSuccess ? setStatus("Success") : setStatus("Fail");
-}
+import { Chain, Fee } from "global/config/cosmosConstants";
+import { createTxMsgVote } from "@tharsis/transactions";
 
 export async function txVote(
   account: string,
   proposalID: number,
-  proposalOption: number,
+  option: number,
   nodeAddressIP: string,
   fee: Fee,
   chain: Chain,
@@ -42,7 +20,7 @@ export async function txVote(
   const senderObj = await getSenderObj(account, nodeAddressIP);
   const params = {
     proposalId: proposalID,
-    option: proposalOption,
+    option,
   };
   const msg = createTxMsgVote(chain, senderObj, fee, memo, params);
   return await signAndBroadcastTxMsg(
@@ -53,7 +31,6 @@ export async function txVote(
     account
   );
 }
-
 export async function getAccountVote(
   proposalID: string,
   nodeAddressIP: string

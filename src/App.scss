@@ -40,10 +40,7 @@
   --off-white-color: #efefef;
   //   --error-color: #fe4256;
 
-  //   scrollbar-color: var(--primary-color) #222;
   scroll-behavior: smooth;
-  //   overflow-y: auto;
-  //   scrollbar-gutter: stable;
 }
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
@@ -71,7 +68,6 @@ input[type="number"] {
     #141a18 8px
   );
   background-repeat: repeat-y;
-  //   text-shadow: 0 0 4px #2cffab, 0 0 20px var(--primary-color);
   display: flex;
   height: 100%;
   flex-direction: column;

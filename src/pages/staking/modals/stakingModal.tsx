@@ -5,160 +5,71 @@ import {
   Validator,
 } from "../config/interfaces";
 import { StakingModalContainer } from "../components/Styled";
-import { truncateNumber } from "global/utils/utils";
+import {
+  convertStringToBigNumber,
+  truncateNumber,
+} from "global/utils/formattingNumbers";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { useState } from "react";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
-import { CantoMainnet } from "global/config/networks";
 import Select from "react-select";
-import useTransactionStore from "../stores/transactionStore";
-import useValidatorModalStore from "../stores/validatorModalStore";
-import {
-  txRedelegate,
-  txStake,
-  txUnstake,
-} from "pages/staking/utils/transactions";
-import { delegateFee, unbondingFee } from "../config/fees";
-import { chain, memo } from "global/config/cosmosConstants";
-import { performTxAndSetStatus } from "../utils/utils";
+import { delegateFee } from "../config/fees";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import styled from "@emotion/styled";
 import CheckBox from "global/components/checkBox";
 import { ConfirmUndelegationModal } from "./confirmUndelegationModal";
-import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
+import { TransactionStore } from "global/stores/transactionStore";
+import { stakingTx } from "../utils/transactions";
 
 interface StakingModalProps {
   validator: MasterValidatorProps;
   allValidators: Validator[];
   balance: BigNumber;
   account?: string;
-  onClose: () => void;
   txFeeCheck: TxFeeBalanceCheck;
+  txStore: TransactionStore;
+  chainId: number;
 }
 export const StakingModal = ({
   validator,
   allValidators,
   balance,
   account,
-  onClose,
   txFeeCheck,
+  txStore,
+  chainId,
 }: StakingModalProps) => {
   const [amount, setAmount] = useState("");
   const [agreed, setAgreed] = useState(false);
-  const transactionStore = useTransactionStore();
-  const validatorModalStore = useValidatorModalStore();
   const [newValidator, setNewValidator] = useState<Validator | undefined>();
   const [showUndelegateConfimation, setShowUndelegateConfirmation] =
     useState(false);
 
-  function formatValue(value: string) {
-    if (value === "" || isNaN(Number(value))) {
-      return BigNumber.from(0);
-    }
-    return parseEther(value);
-  }
-
-  const handleDelegate = async () => {
-    const parsedAmount = formatValue(amount);
-    if (!parsedAmount.isZero() && parsedAmount.lte(balance)) {
-      await performTxAndSetStatus(
-        async () =>
-          await txStake(
-            account,
-            validator.validator.operator_address,
-            parsedAmount.toString(),
-            CantoMainnet.cosmosAPIEndpoint,
-            delegateFee,
-            chain,
-            memo
-          ),
-        StakingTransactionType.DELEGATE,
-        transactionStore.setTransactionStatus,
-        validatorModalStore.close,
-        validator.validator.description.moniker,
-        parsedAmount
-      );
-    }
+  const delegationDetails = {
+    account: account ?? "",
+    chainId,
+    amount: convertStringToBigNumber(amount, 18).toString(),
+    newOperator: {
+      address: newValidator?.operator_address ?? "",
+      name: newValidator?.description.moniker ?? "",
+    },
+    operator: {
+      address: validator.validator.operator_address,
+      name: validator.validator.description.moniker,
+    },
   };
-
-  const handleUndelegate = async () => {
-    const parsedAmount = formatValue(amount);
-    const delegatedTo = parseEther(
-      validator.userDelegations?.balance.amount ?? "0"
-    );
-    if (!parsedAmount.isZero() && parsedAmount.lte(delegatedTo)) {
-      await performTxAndSetStatus(
-        async () =>
-          await txUnstake(
-            account,
-            validator.validator.operator_address,
-            parsedAmount.toString(),
-            CantoMainnet.cosmosAPIEndpoint,
-            delegateFee,
-            chain,
-            memo
-          ),
-        StakingTransactionType.UNDELEGATE,
-        transactionStore.setTransactionStatus,
-        validatorModalStore.close,
-        validator.validator.description.moniker,
-        parsedAmount
-      );
-    }
-  };
-
-  const handleRedelegate = async () => {
-    const parsedAmount = formatValue(amount);
-    const delegatedTo = parseEther(
-      validator.userDelegations?.balance.amount ?? "0"
-    );
-    if (
-      !parsedAmount.isZero() &&
-      parsedAmount.lte(delegatedTo) &&
-      newValidator
-    ) {
-      await performTxAndSetStatus(
-        async () =>
-          await txRedelegate(
-            account,
-            parsedAmount.toString(),
-            CantoMainnet.cosmosAPIEndpoint,
-            unbondingFee,
-            chain,
-            memo,
-            validator.validator.operator_address,
-            newValidator.operator_address
-          ),
-        StakingTransactionType.REDELEGATE,
-        transactionStore.setTransactionStatus,
-        validatorModalStore.close,
-        validator.validator.description.moniker,
-        parsedAmount,
-        newValidator.description.moniker
-      );
-    }
-  };
+  const handleDelegate = () =>
+    stakingTx(txStore, StakingTransactionType.DELEGATE, delegationDetails);
+  const handleUndelegate = () =>
+    stakingTx(txStore, StakingTransactionType.UNDELEGATE, delegationDetails);
+  const handleRedelegate = () =>
+    stakingTx(txStore, StakingTransactionType.REDELEGATE, delegationDetails);
 
   return (
     <StakingModalContainer>
-      {transactionStore.transactionStatus && (
-        <GlobalLoadingModal
-          transactionType={CantoTransactionType.STAKE}
-          status={transactionStore.transactionStatus.status}
-          tokenName={"staking"}
-          customMessage={transactionStore.transactionStatus.message}
-          onClose={onClose}
-          mixPanelEventInfo={{
-            StakingTransactionType: transactionStore.transactionStatus.type,
-            validatorName: validator.validator.description.moniker,
-            amount: amount,
-          }}
-        />
-      )}
       <Text size="title2" type="title" className="title">
         {validator.validator.description.moniker}
       </Text>
@@ -278,7 +189,7 @@ export const StakingModal = ({
                   !txFeeCheck.delegate
                 }
                 className="btn"
-                onClick={() => handleDelegate()}
+                onClick={handleDelegate}
               >
                 delegate
               </PrimaryButton>
@@ -342,7 +253,7 @@ export const StakingModal = ({
               )}
               {showUndelegateConfimation && (
                 <ConfirmUndelegationModal
-                  onUndelegate={() => handleUndelegate()}
+                  onUndelegate={handleUndelegate}
                   onCancel={() => setShowUndelegateConfirmation(false)}
                 />
               )}
@@ -468,7 +379,7 @@ const Selected = styled.div`
     backdrop-filter: blur(35px);
     background: #d9d9d933;
     border-radius: 4px;
-    overflow: visible;
+    /* overflow: visible; */
     color: var(--primary-color) !important;
   }
   .react-select__indicator-separator {

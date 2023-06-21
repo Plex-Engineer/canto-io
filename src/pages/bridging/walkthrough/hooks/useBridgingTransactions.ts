@@ -1,20 +1,24 @@
 import { TransactionState, useContractFunction } from "@usedapp/core";
-import { Contract, ethers, utils } from "ethers";
-import { ERC20Abi, gravityBridgeAbi } from "global/config/abi";
-import { chain, convertFee, ibcFee, memo } from "global/config/cosmosConstants";
-import { CantoMainnet } from "global/config/networks";
-import { useState } from "react";
+import { BigNumber, Contract, ethers, utils } from "ethers";
+import { ERC20Abi, gravityBridgeAbi, wethAbi } from "global/config/abi";
+import { convertFee, ibcFee } from "global/config/cosmosConstants";
+import { CantoMainnet, ETHMainnet } from "global/config/networks";
+import { useEffect, useState } from "react";
 import {
   txConvertCoin,
   txConvertERC20,
-} from "../utils/convertCoin/convertTransactions";
-import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/checkCosmosConfirmation";
-import { txIBCTransfer } from "../utils/IBC/IBCTransfer";
+} from "../../utils/convertCoin/convertTransactions";
+import { checkCosmosTxConfirmation } from "global/utils/cantoTransactions/transactionChecks";
+import { txIBCTransfer } from "../../utils/IBC/IBCTransfer";
 import { ADDRESSES } from "global/config/addresses";
 import { BridgeOutNetworkInfo } from "../config/interfaces";
 import { CANTO_IBC_NETWORK } from "../config/bridgeOutNetworks";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 
+const chain = {
+  chainId: 7700,
+  cosmosChainId: "canto_7700-1",
+};
 export interface BridgeTransaction {
   state: TransactionState;
   send: (...args: any[]) => Promise<unknown>;
@@ -28,6 +32,12 @@ export interface BridgingTransactionsSelector {
     sendToCosmos: (
       gravityAddress: string,
       tokenAddress: string,
+      cantoAddress: string
+    ) => BridgeTransaction;
+    sendToCosmosWithWrap: (
+      account: string | undefined,
+      gravityAddress: string,
+      wethAddress: string,
       cantoAddress: string
     ) => BridgeTransaction;
   };
@@ -87,7 +97,69 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
       },
       resetState,
       txName: "bridge to canto",
-      txType: CantoTransactionType.BRIDGE_IN,
+      txType: CantoTransactionType.CONVERT_TO_EVM,
+    };
+  }
+  function useSendToCosmosWithWrap(
+    account: string | undefined,
+    gravityAddress: string,
+    wethAddress: string,
+    cantoAddress: string
+  ) {
+    const gBridgeInterface = new utils.Interface(gravityBridgeAbi);
+    const gBridgeContract = new Contract(gravityAddress, gBridgeInterface);
+    const wethInterface = new utils.Interface(wethAbi);
+    const wethContract = new Contract(
+      wethAddress,
+      wethInterface,
+      new ethers.providers.JsonRpcProvider(ETHMainnet.rpcUrl)
+    );
+    const [amount, setAmount] = useState<string>("0");
+    const {
+      state: cosmosState,
+      send: cosmosSend,
+      resetState: comsosResetState,
+    } = useContractFunction(gBridgeContract, "sendToCosmos", {
+      transactionName: "sending to cosmos",
+    });
+    const {
+      state: wrapState,
+      send: wrapSend,
+      resetState: wrapResetState,
+    } = useContractFunction(wethContract, "deposit", {
+      transactionName: "wrapping weth",
+    });
+    useEffect(() => {
+      if (
+        wrapState.status === "Success" &&
+        CANTO_IBC_NETWORK.checkAddress(cantoAddress)
+      ) {
+        cosmosSend(wethAddress, cantoAddress, amount);
+      }
+    }, [wrapState.status]);
+    return {
+      state:
+        cosmosState.status === "None" ? wrapState.status : cosmosState.status,
+      send: async (amount: string) => {
+        setAmount(amount);
+        const wethBalance = await wethContract.balanceOf(account);
+        if (wethBalance.lt(amount)) {
+          wrapSend({ value: BigNumber.from(amount).sub(wethBalance) });
+        } else {
+          if (CANTO_IBC_NETWORK.checkAddress(cantoAddress)) {
+            cosmosSend(wethAddress, cantoAddress, amount);
+          }
+        }
+      },
+      resetState: () => {
+        comsosResetState();
+        wrapResetState();
+      },
+      txName: "bridge weth to canto",
+      txType:
+        cosmosState.status === "None"
+          ? CantoTransactionType.WRAP
+          : CantoTransactionType.BORROW,
     };
   }
   /**
@@ -111,7 +183,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
               CantoMainnet.cosmosAPIEndpoint,
               convertFee,
               chain,
-              memo
+              ""
             )
           : await txConvertERC20(
               tokenName,
@@ -120,7 +192,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
               CantoMainnet.cosmosAPIEndpoint,
               convertFee,
               chain,
-              memo
+              ""
             );
         setConvertState("Mining");
         const confirmed = await checkCosmosTxConfirmation(
@@ -167,7 +239,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
           bridgeOutNetwork.latestBlockEndpoint,
           ibcFee,
           chain,
-          memo
+          ""
         );
         setIbcState("Mining");
         const confirmed = await checkCosmosTxConfirmation(
@@ -192,6 +264,7 @@ export function useBridgingTransactions(): BridgingTransactionsSelector {
     bridgeIn: {
       approveToken: useApprove,
       sendToCosmos: useSendToCosmos,
+      sendToCosmosWithWrap: useSendToCosmosWithWrap,
     },
     convertCoin: {
       convertTx: useConvertCoin,

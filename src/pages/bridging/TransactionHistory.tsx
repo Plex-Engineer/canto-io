@@ -6,8 +6,8 @@ import { useNavigate } from "react-router-dom";
 import TransactionHistoryBox from "./components/transactionHistoryBox";
 import { AllBridgeTxHistory } from "./hooks/useTransactionHistory";
 import Select from "react-select";
-import { Selected } from "pages/staking/modals/redelgationModal";
 import { useState } from "react";
+import { Selected } from "pages/staking/components/selected";
 interface TransactionHistoryProps {
   allTransactions: AllBridgeTxHistory;
 }

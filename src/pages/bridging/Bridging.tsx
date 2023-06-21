@@ -6,41 +6,69 @@ import Transactions from "./TransactionHistory";
 import { useTransactionHistory } from "./hooks/useTransactionHistory";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { createConvertTransactions } from "./utils/utils";
-import { SelectedTokens } from "./stores/bridgeTokenStore";
 import walletIcon from "assets/wallet.svg";
-import { useEtherBalance, useEthers } from "@usedapp/core";
+import { useEthers } from "@usedapp/core";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
 import BalanceTableModal from "./walkthrough/components/modals/BalanceTableModal";
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
 import { GenPubKeyWalkthrough } from "./walkthrough/components/pages/genPubKey";
-import { CantoMainnet } from "global/config/networks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
 import { PubKeyStyled } from "./walkthrough/Walkthrough";
 import warningRedIcon from "assets/warning_red.svg";
 import { parseUnits } from "ethers/lib/utils";
-import Tooltip from "global/packages/src/components/molecules/Tooltip";
-import { Text } from "global/packages/src";
-import guideImg from "assets/guide.svg";
-import { useBridgingTransactions } from "./hooks/useBridgingTransactions";
 import RecoveryPage from "./Recovery";
+import { onCantoNetwork } from "global/utils/getAddressUtils";
+import { useTransactionStore } from "global/stores/transactionStore";
+import useBridgingStore from "./stores/bridgingStore";
+import { CANTO_MAIN_CONVERT_COIN_TOKENS } from "./config/tokens.ts/bridgingTokens";
 
 const Bridging = () => {
+  const txStore = useTransactionStore();
   const networkInfo = useNetworkInfo();
-  const bridgingTokens = useBridgeTokenInfo();
   const bridgingHistory = useTransactionHistory();
-  const transactionHooks = useBridgingTransactions();
+  const bridgeStore = useBridgingStore();
+
+  const bridgingTokens = useBridgeTokenInfo();
   const { activateBrowserWallet } = useEthers();
   const navigate = useNavigate();
   const [pubKeySuccess, setPubKeySuccess] = useState("None");
   const hasRecoveryToken = bridgingTokens.unkownIBCTokens.length > 0;
-  const ethBalance = useEtherBalance(networkInfo.account, { chainId: 1 });
+
+  //keep track if we need to swap networks on bridging
+  const [tabSelected, setTabSelected] = useState<"in" | "out">("in");
+
+  //checks balance on ethMainnet before dusting
   const canPubKey =
-    (ethBalance?.gte(parseUnits("0.01")) ||
+    (bridgingTokens.ethMainBalance?.gte(parseUnits("0.01")) ||
       networkInfo.balance?.gte(parseUnits("0.5"))) ??
     false;
+
+  //chainId change to show testnet networks
+  useEffect(() => {
+    const setNetworks = setTimeout(
+      () =>
+        bridgeStore.chainIdChanged(
+          Number(networkInfo.chainId),
+          tabSelected === "in"
+        ),
+      1000
+    );
+    return () => clearTimeout(setNetworks);
+  }, [networkInfo.chainId, tabSelected]);
+
+  //get new data every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await bridgeStore.syncTokens();
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [networkInfo.account]);
+  useEffect(() => {
+    bridgeStore.syncTokens();
+  }, [networkInfo.account]);
 
   const NotConnectedTabs = () => {
     const tabs = [];
@@ -68,8 +96,9 @@ const Bridging = () => {
           ethTokens={bridgingTokens.userBridgeInTokens}
           cantoTokens={bridgingTokens.userBridgeOutTokens}
           nativeTokens={bridgingTokens.userNativeTokens}
+          allConvertCoinTokens={CANTO_MAIN_CONVERT_COIN_TOKENS}
         />
-        <Tooltip
+        {/* <Tooltip
           position="bottom right"
           trigger={
             <div
@@ -84,7 +113,7 @@ const Bridging = () => {
             </div>
           }
           content={<Text size="text4">Click here for a walkthrough.</Text>}
-        />
+        /> */}
       </div>
 
       <CantoTabs
@@ -94,6 +123,20 @@ const Bridging = () => {
           "tx history",
           ...(hasRecoveryToken ? ["recovery"] : []),
         ]}
+        onClicks={[
+          () => {
+            if (tabSelected !== "in") {
+              setTabSelected("in");
+              bridgeStore.swapNetworks();
+            }
+          },
+          () => {
+            if (tabSelected !== "out") {
+              setTabSelected("out");
+              bridgeStore.swapNetworks();
+            }
+          },
+        ]}
         panels={
           !networkInfo.account
             ? NotConnectedTabs()
@@ -101,23 +144,24 @@ const Bridging = () => {
                 networkInfo.hasPubKey ? (
                   <BridgeIn
                     key={"in"}
+                    bridgeTokens={bridgeStore.allTokens}
+                    selectedToken={bridgeStore.selectedToken}
+                    selectToken={bridgeStore.setToken}
+                    allNetworks={bridgeStore.allNetworks}
+                    fromNetwork={bridgeStore.fromNetwork}
+                    toNetwork={bridgeStore.toNetwork}
+                    selectNetwork={bridgeStore.setNetwork}
                     ethAddress={networkInfo.account}
                     cantoAddress={networkInfo.cantoAddress}
-                    ethGBridgeTokens={bridgingTokens.userBridgeInTokens}
-                    selectedEthToken={
-                      bridgingTokens.selectedTokens.bridgeInToken
-                    }
-                    selectEthToken={(tokenAddress) =>
-                      bridgingTokens.setSelectedToken(
-                        tokenAddress,
-                        SelectedTokens.ETHTOKEN
-                      )
-                    }
+                    tx={bridgeStore.bridgeTx}
                     step2Transactions={createConvertTransactions(
                       bridgingHistory.pendingBridgeInTransactions,
                       bridgingTokens.userNativeTokens,
-                      true
+                      true,
+                      Number(networkInfo.chainId)
                     )}
+                    chainId={Number(networkInfo.chainId)}
+                    txStore={txStore}
                   />
                 ) : !canPubKey ? (
                   <PubKeyStyled>
@@ -134,10 +178,14 @@ const Bridging = () => {
                 ) : (
                   <GenPubKeyWalkthrough
                     txGenPubKey={() => {
-                      if (Number(networkInfo.chainId) != CantoMainnet.chainId) {
-                        addNetwork();
+                      if (!onCantoNetwork(Number(networkInfo.chainId))) {
+                        addNetwork(Number(networkInfo.chainId));
                       } else {
-                        generatePubKey(networkInfo.account, setPubKeySuccess);
+                        generatePubKey(
+                          networkInfo.account,
+                          setPubKeySuccess,
+                          Number(networkInfo.chainId)
+                        );
                       }
                     }}
                     txStatus={pubKeySuccess}
@@ -145,36 +193,33 @@ const Bridging = () => {
                 ),
                 <BridgeOut
                   key={"out"}
+                  bridgeTokens={bridgeStore.allTokens}
+                  selectedToken={bridgeStore.selectedToken}
+                  selectToken={bridgeStore.setToken}
+                  allNetworks={bridgeStore.allNetworks}
+                  fromNetwork={bridgeStore.fromNetwork}
+                  toNetwork={bridgeStore.toNetwork}
+                  selectNetwork={bridgeStore.setNetwork}
                   ethAddress={networkInfo.account}
                   cantoAddress={networkInfo.cantoAddress}
-                  bridgeOutTokens={bridgingTokens.userBridgeOutTokens}
-                  selectedBridgeOutToken={
-                    bridgingTokens.selectedTokens.bridgeOutToken
-                  }
-                  selectToken={(tokenAddress) =>
-                    bridgingTokens.setSelectedToken(
-                      tokenAddress,
-                      SelectedTokens.CONVERTOUT
-                    )
-                  }
-                  step2Transactions={createConvertTransactions(
-                    [],
-                    bridgingTokens.userNativeTokens,
-                    false
-                  )}
-                  txSelector={transactionHooks}
+                  tx={bridgeStore.bridgeTx}
+                  chainId={Number(networkInfo.chainId)}
+                  txStore={txStore}
                 />,
                 <Transactions
                   key={"transaction"}
                   allTransactions={bridgingHistory}
                 />,
-                hasRecoveryToken && (
-                  <RecoveryPage
-                    tokens={bridgingTokens.unkownIBCTokens}
-                    cantoAddress={networkInfo.cantoAddress}
-                    txSelector={transactionHooks}
-                  />
-                ),
+                ...(hasRecoveryToken
+                  ? [
+                      <RecoveryPage
+                        key={"recovery"}
+                        tokens={bridgingTokens.unkownIBCTokens}
+                        cantoAddress={networkInfo.cantoAddress}
+                        txStore={txStore}
+                      />,
+                    ]
+                  : []),
               ]
         }
       />

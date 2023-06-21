@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 import { commify, formatEther } from "ethers/lib/utils";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import cantoIcon from "assets/logo.svg";
 import { MasterValidatorProps } from "../config/interfaces";
 import Table from "./table";

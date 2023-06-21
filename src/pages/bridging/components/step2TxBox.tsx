@@ -1,31 +1,31 @@
 import styled from "@emotion/styled";
-import { Text } from "global/packages/src";
-import { useEffect, useMemo, useState } from "react";
-import { NativeTransaction } from "../config/interfaces";
-import { BridgeTransaction } from "../hooks/useBridgingTransactions";
-import MiniTransaction from "./miniTransaction";
+import { PrimaryButton, Text } from "global/packages/src";
+import { TransactionStore } from "global/stores/transactionStore";
+import { completeAllConvertIn, convertTx } from "../utils/transactions";
+import MiniConvert from "./miniConvert";
+import { formatUnits } from "ethers/lib/utils";
+import { NativeTransaction } from "../config/bridgingInterfaces";
+import OngoingTxModal from "global/components/modals/ongoingTxModal";
+import Modal from "global/packages/src/components/molecules/Modal";
+import { useState } from "react";
 
 interface Step2TxBoxProps {
+  bridgeIn: boolean;
   transactions: NativeTransaction[];
-  txHook: (tokenName: string) => BridgeTransaction;
   cantoAddress: string;
   ethAddress: string;
-  bridgeIn: boolean;
+  txStore: TransactionStore;
+  chainId: number;
 }
 const Step2TxBox = (props: Step2TxBoxProps) => {
-  //used to keep completed transactions on the screen until the user refreshes
-  const [storedTxs, setStoredTxs] = useState(props.transactions);
-  useEffect(() => {
-    if (props.transactions.length >= storedTxs.length) {
-      setStoredTxs(props.transactions);
-    }
-  }, [props.transactions.length]);
-  const sortedTxs = useMemo(
-    () => storedTxs.sort((a, b) => (a.origin > b.origin ? 1 : -1)),
-    [storedTxs]
-  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <Styled>
+      <Modal title="" open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <div style={{ width: "32rem" }}>
+          <OngoingTxModal onClose={() => setIsModalOpen(false)} />
+        </div>
+      </Modal>
       <Text type="title" size="title2">
         Bridge Queue
       </Text>
@@ -37,25 +37,60 @@ const Step2TxBox = (props: Step2TxBoxProps) => {
       </Text>
       <div className="scroll-port">
         <div className="scrollable">
-          {storedTxs.length == 0 && (
+          {props.transactions.length == 0 && (
             <div className="empty-records">
               <Text>No transactions available right now</Text>
             </div>
           )}
-          {sortedTxs.map((tx, index) => {
-            return (
-              <MiniTransaction
-                key={tx.token.address}
-                transaction={tx}
-                txFactory={() => props.txHook(tx.token.ibcDenom)}
-                cantoAddress={props.cantoAddress}
-                ethAddress={props.ethAddress}
-                recover={false}
-              />
-            );
-          })}
+          {props.bridgeIn &&
+            props.transactions
+              .sort((a, b) => (a.origin > b.origin ? 1 : -1))
+              .map((tx) => {
+                return (
+                  <MiniConvert
+                    key={tx.token.address}
+                    transaction={tx}
+                    cantoAddress={props.cantoAddress}
+                    ethAddress={props.ethAddress}
+                    tx={() =>
+                      convertTx(
+                        props.chainId,
+                        props.txStore,
+                        props.bridgeIn,
+                        props.cantoAddress,
+                        tx.token.ibcDenom,
+                        tx.amount.toString(),
+                        {
+                          icon: tx.token.icon,
+                          symbol: tx.token.symbol,
+                          amount: formatUnits(tx.amount, tx.token.decimals),
+                        }
+                      )
+                    }
+                  />
+                );
+              })}
         </div>
       </div>
+
+      {props.transactions.length > 0 && props.bridgeIn && (
+        <PrimaryButton
+          className="complete-all"
+          filled
+          weight="bold"
+          onClick={() => {
+            completeAllConvertIn(
+              props.chainId,
+              props.txStore,
+              props.cantoAddress,
+              props.transactions
+            );
+            setIsModalOpen(true);
+          }}
+        >
+          Complete All
+        </PrimaryButton>
+      )}
     </Styled>
   );
 };
@@ -68,6 +103,9 @@ const Styled = styled.div`
   padding: 1rem 2rem;
   margin-top: 3rem;
 
+  .complete-all {
+    /* width: 100%; */
+  }
   .scroll-port {
     margin-top: 1rem;
     max-height: 300px;

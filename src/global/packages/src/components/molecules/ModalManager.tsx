@@ -1,5 +1,3 @@
-import styled from "@emotion/styled";
-import Popup from "reactjs-popup";
 import useGlobalModals, { ModalType } from "../../stores/useModals";
 import Modal from "./Modal";
 import TokensModal from "./TokensModal";

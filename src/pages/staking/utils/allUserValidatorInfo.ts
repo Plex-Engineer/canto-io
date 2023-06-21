@@ -1,4 +1,3 @@
-import { CantoMainnet } from "global/config/networks";
 import { BigNumber } from "ethers";
 import {
   DelegationResponse,
@@ -47,11 +46,10 @@ export const calculateTotalStaked = (delegations: DelegationResponse[]) => {
   return total;
 };
 
-export async function getStakingApr() {
+export async function getStakingApr(nodeAddressIP: string) {
   const urlInflation =
-    CantoMainnet.cosmosAPIEndpoint + "/canto/inflation/v1/epoch_mint_provision";
-  const urlStake =
-    CantoMainnet.cosmosAPIEndpoint + "/cosmos/staking/v1beta1/pool";
+    nodeAddressIP + "/canto/inflation/v1/epoch_mint_provision";
+  const urlStake = nodeAddressIP + "/cosmos/staking/v1beta1/pool";
 
   const options = {
     method: "GET",
@@ -65,7 +63,7 @@ export async function getStakingApr() {
     .then((result) => {
       return parseFloat(result.pool.bonded_tokens);
     })
-    .catch((err) => {
+    .catch(() => {
       return 0;
     });
 
@@ -74,7 +72,7 @@ export async function getStakingApr() {
     .then((result) => {
       return parseFloat(result.epoch_mint_provision.amount);
     })
-    .catch((err) => {
+    .catch(() => {
       return 0;
     });
 

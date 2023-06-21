@@ -1,147 +1,50 @@
 import Input from "../components/input";
-import { useEffect, useState } from "react";
-import { noteSymbol, truncateNumber } from "global/utils/utils";
+import { ReactNode, useEffect, useState } from "react";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import SettingsIcon from "assets/settings.svg";
 import IconPair from "../components/iconPair";
-import useModals, { ModalType } from "../hooks/useModals";
-import { getRouterAddress, useSetAllowance } from "../hooks/useTransactions";
+import { LPConfirmationValues, ModalType } from "../hooks/useModals";
 import { UserLPPairInfo } from "../config/interfaces";
 import { BigNumber } from "ethers";
+
 import {
   getReserveRatioAtoB,
   getTokenValueFromPercent,
   valueInNote,
 } from "../utils/utils";
 import { formatUnits } from "ethers/lib/utils";
-import { PrimaryButton } from "global/packages/src";
+import { PrimaryButton, Text } from "global/packages/src";
 import { getRemoveButtonTextAndOnClick } from "../utils/modalButtonParams";
-import {
-  DexModalContainer,
-  DexLoadingOverlay,
-  SettingsPopIn,
-} from "../components/Styled";
-import { TransactionState } from "@usedapp/core";
-import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
+import { DexModalContainer, SettingsPopIn } from "../components/Styled";
+import NoteSymbol from "global/packages/src/components/atoms/NoteSymbol";
 
 interface RowCellProps {
   type: string;
-  value?: string;
+  value?: ReactNode;
   color?: string;
 }
 export const RowCell = (props: RowCellProps) => {
   return (
-    <div
-      className="rowCell"
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        color: "white",
-        width: "100%",
-        padding: "0 1rem",
-      }}
-    >
-      <p>{props.type}</p>&nbsp;
-      <p>{props.value}</p>
+    <div className="row">
+      <Text className="header">{props.type} :</Text>
+      <Text type="title" className="value">
+        {props.value}
+      </Text>
     </div>
-  );
-};
-
-interface ConfirmButtonProps {
-  pair: UserLPPairInfo;
-  percentage: number;
-  amount1: BigNumber;
-  amount2: BigNumber;
-  slippage: number;
-  deadline: number;
-  chainId?: number;
-  status: (val: TransactionState) => void;
-}
-
-const ConfirmButton = (props: ConfirmButtonProps) => {
-  const [setModalType, setConfirmationValues] = useModals((state) => [
-    state.setModalType,
-    state.setConfirmationValues,
-  ]);
-
-  const { state: addAllowance, send: addAllowanceSend } = useSetAllowance({
-    type: CantoTransactionType.ENABLE,
-    address: props.pair.basePairInfo.address,
-    amount: "-1",
-    // TODO? : needs access of iconpair
-    icon: props.pair.basePairInfo.token1.icon,
-    name:
-      props.pair.basePairInfo.token1.symbol +
-      "/" +
-      props.pair.basePairInfo.token2.symbol,
-  });
-
-  const routerAddress = getRouterAddress(props.chainId);
-  const LPOut = getTokenValueFromPercent(
-    props.pair.userSupply.totalLP,
-    props.percentage
-  );
-
-  useEffect(() => {
-    if (props.pair.allowance.LPtoken.isZero()) {
-      setModalType(ModalType.ENABLE);
-    }
-  }, []);
-  useEffect(() => {
-    props.status(addAllowance.status);
-    if (addAllowance.status == "Success") {
-      setTimeout(() => {
-        setModalType(ModalType.NONE);
-      }, 500);
-    }
-  }, [addAllowance.status]);
-
-  const [buttonText, buttonOnClick, disabled] = getRemoveButtonTextAndOnClick(
-    props.pair.basePairInfo.token1.symbol +
-      " / " +
-      props.pair.basePairInfo.token2.symbol,
-    props.pair.allowance.LPtoken,
-    LPOut,
-    props.slippage,
-    props.deadline,
-    props.percentage,
-    () =>
-      addAllowanceSend(
-        routerAddress,
-        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-      ),
-    () => {
-      setConfirmationValues({
-        amount1: props.amount1,
-        amount2: props.amount2,
-        percentage: props.percentage,
-        slippage: props.slippage,
-        deadline: props.deadline,
-      });
-      setModalType(ModalType.REMOVE_CONFIRM);
-    }
-  );
-
-  return (
-    <PrimaryButton
-      height="big"
-      filled
-      weight="bold"
-      disabled={disabled}
-      onClick={buttonOnClick}
-    >
-      {buttonText}
-    </PrimaryButton>
   );
 };
 
 interface Props {
   activePair: UserLPPairInfo;
   onClose: () => void;
-  chainId?: number;
-  account?: string;
+  setModalType: (modalType: ModalType) => void;
+  setConfirmationValues: (values: LPConfirmationValues) => void;
 }
-const RemoveModal = ({ activePair, chainId, onClose }: Props) => {
+const RemoveModal = ({
+  activePair,
+  setModalType,
+  setConfirmationValues,
+}: Props) => {
   const [percentage, setPercentage] = useState("1");
   const [slippage, setSlippage] = useState("1");
   const [deadline, setDeadline] = useState("10");
@@ -149,8 +52,11 @@ const RemoveModal = ({ activePair, chainId, onClose }: Props) => {
   const [value2, setValue2] = useState(BigNumber.from(0));
   const [openSettings, setOpenSettings] = useState(false);
 
-  const [tokenAllowanceStatus, setTokenAllowanceStatus] =
-    useState<TransactionState>("None");
+  const [buttonText, disabled] = getRemoveButtonTextAndOnClick(
+    Number(slippage),
+    Number(deadline),
+    Number(percentage)
+  );
   const displayReserveRatio = getReserveRatioAtoB(
     activePair.totalSupply.ratio.ratio,
     activePair.totalSupply.ratio.aTob,
@@ -168,142 +74,133 @@ const RemoveModal = ({ activePair, chainId, onClose }: Props) => {
   }, [percentage]);
   return (
     <DexModalContainer>
-      <DexLoadingOverlay
-        show={["Mining", "PendingSignature", "Success"].includes(
-          tokenAllowanceStatus
-        )}
-      >
-        <GlobalLoadingModal
-          transactionType={CantoTransactionType.ENABLE}
-          tokenName={
-            activePair.basePairInfo.token1.symbol +
-            " / " +
-            activePair.basePairInfo.token2.symbol
-          }
-          status={tokenAllowanceStatus}
-          onClose={onClose}
-          mixPanelEventInfo={{
-            tokenName:
-              activePair.basePairInfo.token1.symbol +
-              " / " +
-              activePair.basePairInfo.token2.symbol,
-          }}
-        />
-      </DexLoadingOverlay>
-      {/* <div className="title">
-        {openSettings ? "Transaction Settings" : "Remove Liquidity"}
-      </div> */}
-      {/* <div className="logo">
-        <img src={logo} height={30} />
-      </div> */}
       <div
+        className="center"
         style={{
-          position: "absolute",
-          right: "60px",
-          top: "15px",
-          zIndex: "10",
+          justifyContent: "start",
+          gap: "1rem",
         }}
       >
         <div
-          role="button"
-          tabIndex={0}
-          onClick={() => {
-            setOpenSettings(!openSettings);
+          style={{
+            position: "absolute",
+            right: "60px",
+            top: "15px",
+            zIndex: "10",
           }}
         >
-          <img
-            src={SettingsIcon}
-            height="30px"
-            style={{
-              cursor: "pointer",
-              zIndex: "5",
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => {
+              setOpenSettings(!openSettings);
+            }}
+          >
+            <img
+              src={SettingsIcon}
+              height="30px"
+              style={{
+                cursor: "pointer",
+                zIndex: "5",
+              }}
+            />
+          </div>
+        </div>
+
+        <div
+          style={{
+            marginTop: "1rem",
+          }}
+        >
+          <div className="row">
+            <IconPair
+              iconLeft={activePair.basePairInfo.token1.icon}
+              iconRight={activePair.basePairInfo.token2.icon}
+            />
+          </div>
+        </div>
+        <div className="field" style={{ width: "100%", marginTop: "1rem" }}>
+          <Input
+            name="percent to remove"
+            value={percentage}
+            onChange={(percentage) => {
+              setPercentage(percentage);
             }}
           />
         </div>
-      </div>
-      <div
-        style={{
-          marginTop: "1rem",
-        }}
-      >
-        <div className="row">
-          <IconPair
-            iconLeft={activePair.basePairInfo.token1.icon}
-            iconRight={activePair.basePairInfo.token2.icon}
+        <Text type="title">
+          1 {activePair.basePairInfo.token1.symbol} ={" "}
+          {truncateNumber(displayReserveRatio.toString())}{" "}
+          {activePair.basePairInfo.token2.symbol}
+        </Text>
+
+        <div className="tokenBox">
+          <Text
+            // type="title"
+            color="white"
+            style={{
+              marginBottom: "1rem",
+            }}
+          >
+            You will receive
+          </Text>
+          <RowCell
+            type={
+              truncateNumber(
+                formatUnits(value1, activePair.basePairInfo.token1.decimals)
+              ) +
+              " " +
+              activePair.basePairInfo.token1.symbol
+            }
+            value={
+              <>
+                <NoteSymbol token="note" />
+                {truncateNumber(
+                  formatUnits(valueInNote(value1, activePair.prices.token1))
+                )}
+              </>
+            }
+          />
+          <RowCell
+            type={
+              truncateNumber(
+                formatUnits(value2, activePair.basePairInfo.token2.decimals)
+              ) +
+              " " +
+              activePair.basePairInfo.token2.symbol
+            }
+            value={
+              <>
+                <NoteSymbol token="note" />
+                {truncateNumber(
+                  formatUnits(valueInNote(value2, activePair.prices.token2))
+                )}
+              </>
+            }
           />
         </div>
-      </div>
-      <div className="field" style={{ width: "100%", marginTop: "1rem" }}>
-        <Input
-          name="percent to remove"
-          value={percentage}
-          onChange={(percentage) => {
-            setPercentage(percentage);
-          }}
-        />
-      </div>
-      <div style={{ color: "white" }}>
-        1 {activePair.basePairInfo.token1.symbol} ={" "}
-        {truncateNumber(displayReserveRatio.toString())}{" "}
-        {activePair.basePairInfo.token2.symbol}
-      </div>
-
-      <div className="tokenBox">
-        <p
-          style={{
-            color: "white",
-            textAlign: "center",
-            width: "18rem",
-            marginBottom: "1rem",
-          }}
-        >
-          you&apos;ll receive
-        </p>
-        <RowCell
-          type={
-            truncateNumber(
-              formatUnits(value1, activePair.basePairInfo.token1.decimals)
-            ) +
-            " " +
-            activePair.basePairInfo.token1.symbol
-          }
-          value={
-            noteSymbol +
-            truncateNumber(
-              formatUnits(valueInNote(value1, activePair.prices.token1))
-            )
-          }
-        />
-        <RowCell
-          type={
-            truncateNumber(
-              formatUnits(value2, activePair.basePairInfo.token2.decimals)
-            ) +
-            " " +
-            activePair.basePairInfo.token2.symbol
-          }
-          value={
-            noteSymbol +
-            truncateNumber(
-              formatUnits(valueInNote(value2, activePair.prices.token2))
-            )
-          }
-        />
-      </div>
-      <div className="style" style={{ height: "100%" }}>
+        {/* <div className="style" style={{ height: "100%" }}>
         {" "}
+      </div> */}
       </div>
-
-      <ConfirmButton
-        status={setTokenAllowanceStatus}
-        pair={activePair}
-        percentage={Number(percentage)}
-        amount1={value1}
-        amount2={value2}
-        slippage={Number(slippage)}
-        deadline={Number(deadline)}
-        chainId={chainId}
-      />
+      <PrimaryButton
+        height="big"
+        filled
+        weight="bold"
+        disabled={disabled}
+        onClick={() => {
+          setConfirmationValues({
+            amount1: value1,
+            amount2: value2,
+            percentage: Number(percentage),
+            slippage: Number(slippage),
+            deadline: Number(deadline),
+          });
+          setModalType(ModalType.REMOVE_CONFIRM);
+        }}
+      >
+        {buttonText}
+      </PrimaryButton>
       <div
         className="fields"
         style={{
@@ -314,7 +211,11 @@ const RemoveModal = ({ activePair, chainId, onClose }: Props) => {
       >
         <SettingsPopIn
           show={openSettings}
-          style={!openSettings ? { zIndex: "-1" } : { marginBottom: "-15px" }}
+          style={
+            !openSettings
+              ? { zIndex: "-1" }
+              : { marginBottom: "-15px", zIndex: 2 }
+          }
         >
           <div className="field">
             <Input
@@ -331,6 +232,9 @@ const RemoveModal = ({ activePair, chainId, onClose }: Props) => {
             />
           </div>
           <PrimaryButton
+            height="big"
+            weight="bold"
+            filled
             disabled={Number(slippage) <= 0 || Number(deadline) <= 0}
             onClick={() => setOpenSettings(false)}
           >

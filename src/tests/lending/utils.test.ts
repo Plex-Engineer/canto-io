@@ -1,5 +1,5 @@
 import { parseUnits } from "ethers/lib/utils";
-import { getSupplyBalanceFromCTokens } from "pages/lending/utils/utils";
+import { getSupplyBalanceFromCTokens } from "pages/lending/utils/supplyWithdrawLimits";
 
 test("Get Supply Balance From cToken Balance", () => {
   const testCases = [

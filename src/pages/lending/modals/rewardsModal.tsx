@@ -1,44 +1,23 @@
 import logo from "assets/logo.svg";
-import { truncateNumber } from "global/utils/utils";
-import { useClaim, useDrip } from "pages/lending/hooks/useTransaction";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import { UserLMRewards } from "pages/lending/config/interfaces";
 import { ethers } from "ethers";
 import { valueInNote } from "pages/dexLP/utils/utils";
 import { PrimaryButton, Text } from "global/packages/src";
 import { RewardsContainer } from "../components/Styled";
-import { reservoirAdddress } from "../config/lendingMarketTokens";
-import GlobalLoadingModal from "global/components/modals/loadingModal";
-import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import TokenSymbol from "global/packages/src/components/atoms/NoteSymbol";
+import { claimLendingRewardsTx } from "../utils/transactions";
+import { TransactionStore } from "global/stores/transactionStore";
 
 interface Props {
+  chainId: number;
   rewardsObj: UserLMRewards;
-  onClose: () => void;
+  txStore: TransactionStore;
 }
 const formatUnits = ethers.utils.formatUnits;
-const RewardsModal = ({ rewardsObj, onClose }: Props) => {
-  const { send, state } = useClaim(rewardsObj.cantroller);
-  const { send: sendDrip, state: stateDrip } = useDrip(reservoirAdddress);
-
-  //boolean for if the user needs to call drip in order to claim their rewards
-  const needDrip = rewardsObj.comptrollerBalance.lt(rewardsObj.accrued);
+const RewardsModal = ({ chainId, rewardsObj, txStore }: Props) => {
   return (
     <RewardsContainer>
-      {state.status != "None" && (
-        <GlobalLoadingModal
-          transactionType={CantoTransactionType.CLAIM_REWARDS}
-          status={state.status}
-          tokenName={"claim rewards"}
-          txHash={state.transaction?.hash}
-          onClose={onClose}
-          mixPanelEventInfo={{
-            amount: formatUnits(rewardsObj.accrued),
-            tokenName: "WCANTO",
-            tokenPrice: formatUnits(rewardsObj.price),
-          }}
-        />
-      )}
-
       <div className="container">
         <div className="logo">
           <img src={logo} height={30} />
@@ -56,12 +35,6 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
             : ""}
         </Text>
       </div>
-      {/* <p className="secondaryBalance">
-        {noteSymbol}
-        {truncateNumber(
-          formatUnits(valueInNote(rewardsObj.walletBalance, rewardsObj.price))
-        )}
-      </p> */}
       <div className="balances">
         <div className="bal line">
           <Text className="type">rewards in note value</Text>
@@ -92,15 +65,18 @@ const RewardsModal = ({ rewardsObj, onClose }: Props) => {
         height={"big"}
         filled
         disabled={rewardsObj.accrued.isZero()}
-        onClick={() => {
-          if (needDrip) {
-            sendDrip();
-          }
-          if (state.status != "Mining" && state.status != "Success")
-            send(rewardsObj.wallet);
-        }}
+        onClick={() =>
+          claimLendingRewardsTx(
+            chainId,
+            txStore,
+            rewardsObj.wallet,
+            rewardsObj.cantroller,
+            rewardsObj.accrued,
+            rewardsObj.comptrollerBalance
+          )
+        }
       >
-        {needDrip ? "drip and claim" : "claim"}
+        claim
       </PrimaryButton>
     </RewardsContainer>
   );

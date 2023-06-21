@@ -1,11 +1,13 @@
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
-import { CantoMainnet, CantoTestnet } from "global/config/networks";
 import CheckBox from "global/components/checkBox";
-import { CTOKENS, TOKENS } from "global/config/tokenInfo";
 import { PrimaryButton } from "../atoms/Button";
 import { Text } from "../atoms/Text";
 import { CInput } from "../atoms/Input";
+import { onCantoNetwork } from "global/utils/getAddressUtils";
+import { getCTokensForChainId } from "pages/lending/config/lendingMarketTokens";
+import { CantoTestnet } from "global/config/networks";
+import { TOKENS } from "global/config/tokenInfo";
 
 const Styled = styled.div`
   background-color: #040404;
@@ -70,8 +72,13 @@ const fullTokenList = (chainId: number): TokenListCategory[] => {
   const tokens: AddTokenItemProps[] = [];
   const cTokens: AddTokenItemProps[] = [];
   const lpTokens: AddTokenItemProps[] = [];
-  if (chainId == CantoMainnet.chainId) {
-    Object.entries(TOKENS.cantoMainnet).forEach(([key, token]) => {
+  // const allTokens = getSupportedNetwork(chainId).tokens;
+  const allTokens =
+    chainId === CantoTestnet.chainId
+      ? TOKENS.cantoTestnet
+      : TOKENS.cantoMainnet;
+  if (allTokens)
+    Object.entries(allTokens).forEach(([, token]) => {
       if (token.name == "Canto") return;
       if (token.isLP) {
         lpTokens.push({
@@ -89,42 +96,18 @@ const fullTokenList = (chainId: number): TokenListCategory[] => {
         });
       }
     });
-    Object.entries(CTOKENS.cantoMainnet).forEach(([key, token]) => {
-      cTokens.push({
-        symbol: token.name,
-        address: token.address,
-        decimals: token.decimals,
-        icon: token.underlying.icon,
-      });
-    });
-  } else if (chainId == CantoTestnet.chainId) {
-    Object.entries(TOKENS.cantoTestnet).forEach(([key, token]) => {
-      if (token.name == "Canto") return;
-      if (token.isLP) {
-        lpTokens.push({
-          symbol: token.name,
-          address: token.address,
-          decimals: token.decimals,
-          icon: token.icon,
-        });
-      } else {
-        tokens.push({
-          symbol: token.name,
-          address: token.address,
-          decimals: token.decimals,
-          icon: token.icon,
-        });
-      }
-    });
-    Object.entries(CTOKENS.cantoTestnet).forEach(([key, token]) => {
-      cTokens.push({
-        symbol: token.name,
-        address: token.address,
-        decimals: token.decimals,
-        icon: token.underlying.icon,
-      });
+  const allCTokens = onCantoNetwork(chainId)
+    ? getCTokensForChainId(chainId)
+    : [];
+  for (const token of allCTokens) {
+    cTokens.push({
+      symbol: token.name,
+      address: token.address,
+      decimals: token.decimals,
+      icon: token.underlying.icon,
     });
   }
+
   return [
     {
       name: "Tokens",
@@ -307,12 +290,7 @@ const TokenItem = ({ token, onSelect, isSelected }: TokenItemProps) => {
         <img src={token.icon} alt={token.symbol} height={30} />
         <div className="type">{token.symbol}</div>
       </div>
-      <CheckBox
-        checked={isSelected}
-        onChange={(val) => {
-          //   setChecked(val);
-        }}
-      />
+      <CheckBox checked={isSelected} onChange={() => false} />
     </ItemStyled>
   );
 };

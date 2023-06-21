@@ -1,37 +1,32 @@
 import styled from "@emotion/styled";
 import down from "assets/down.svg";
 import { useRef } from "react";
-import { BaseToken, Step1TokenGroups } from "../config/interfaces";
 import Popup from "reactjs-popup";
 import TokenModal from "./modals/tokenModal";
+import { Token } from "global/config/interfaces/tokens";
 
 interface ITokenSelect {
-  tokenGroups: Step1TokenGroups[];
-  activeToken: BaseToken;
-  onSelect: (value: BaseToken | undefined) => void;
+  allTokens: Token[];
+  activeToken?: Token;
+  onSelect: (value: Token | undefined) => void;
 }
 
 export const TokenWallet = ({
-  tokenGroups,
+  allTokens,
   onSelect,
   activeToken,
 }: ITokenSelect) => {
   const ref = useRef(null);
-  const fullTokenLength = tokenGroups.reduce((acc, group) => {
-    if (group.tokens) {
-      return acc + group.tokens?.length;
-    } else {
-      return acc;
-    }
-  }, 0);
   return (
     <StyledPopup
       ref={ref}
       modal
       lockScroll
+      closeOnEscape
+      disabled={allTokens.length === 0}
       trigger={
         <Styled>
-          {activeToken.symbol != "choose token" && (
+          {activeToken && (
             <img
               src={activeToken.icon}
               alt={activeToken.name}
@@ -44,14 +39,16 @@ export const TokenWallet = ({
               flex: "2",
             }}
           >
-            {fullTokenLength ? activeToken.symbol : "loading tokens"}
+            {allTokens.length > 0
+              ? activeToken?.symbol ?? "choose token"
+              : "loading tokens"}
           </span>
           <img src={down} alt="" />
         </Styled>
       }
     >
       <TokenModal
-        tokenGroups={tokenGroups}
+        tokens={allTokens}
         onClose={(value) => {
           if (ref != null) {
             //@ts-ignore
@@ -88,7 +85,6 @@ const StyledPopup = styled(Popup)`
   &-content {
     position: relative;
     background-color: black;
-    scroll-behavior: smooth;
     border-radius: 4px;
     animation: fadein 0.5s 1;
     min-height: 42rem;
@@ -111,7 +107,7 @@ const StyledPopup = styled(Popup)`
 
     .scrollview {
       max-height: 43rem;
-      overflow-y: scroll;
+      overflow-y: auto;
       margin-bottom: 1rem;
       height: 100%;
     }

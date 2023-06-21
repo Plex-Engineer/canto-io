@@ -2,9 +2,8 @@ import styled from "@emotion/styled";
 import CANTO from "assets/icons/canto.png";
 import {
   convertBigNumberRatioIntoPercentage,
-  noteSymbol,
   truncateNumber,
-} from "global/utils/utils";
+} from "global/utils/formattingNumbers";
 import { BigNumber } from "ethers";
 import { UserLMTokenDetails } from "../config/interfaces";
 import {
@@ -19,6 +18,7 @@ import {
 import React from "react";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
 import { Text } from "global/packages/src";
+import { noteSymbol } from "global/config/tokenInfo";
 
 interface Props {
   borrowLimit: BigNumber;
@@ -28,17 +28,18 @@ interface Props {
   isBorrowing: boolean;
   transactionType: CantoTransactionType;
   borrowBalance: BigNumber;
+  userBalanceType: string;
+  userBalance: string;
 }
 
 const Limits = styled.div`
   display: flex;
   justify-content: space-between;
-  border-top: 1px solid #222;
-  padding: 1rem 0;
+  /* border-top: 1px solid #222; */
+  padding: 12px 0;
   span {
     color: var(--primary-color);
   }
-  color: #efefef;
 `;
 
 const Details = ({
@@ -49,6 +50,8 @@ const Details = ({
   isBorrowing,
   transactionType,
   borrowBalance,
+  userBalance,
+  userBalanceType,
 }: Props) => {
   const amount =
     isNaN(Number(stringAmount)) || !stringAmount || Number(stringAmount) <= 0
@@ -100,27 +103,16 @@ const Details = ({
       ) * 100;
 
   return (
-    <div>
-      <Limits
-        style={{
-          marginTop: "0rem",
-        }}
-      >
+    <DetailStyled>
+      <Limits>
         <div>
-          <img
-            src={icon}
-            height={20}
-            width={20}
-            style={{
-              marginBottom: "0.5rem",
-            }}
-          />
-          <Text>
+          <img src={icon} height={30} />
+          <Text type="title">
             {!isBorrowing ? "supply apr:" : "borrow rate:"}
             {!isBorrowing ? (
-              <span>{token.supplyAPY.toFixed(2)}%</span>
+              <>{token.supplyAPY.toFixed(2)}%</>
             ) : (
-              <span>{token.borrowAPY.toFixed(2)}%</span>
+              <>{token.borrowAPY.toFixed(2)}%</>
             )}
           </Text>
         </div>
@@ -130,26 +122,23 @@ const Details = ({
             visibility: isBorrowing ? "hidden" : "visible",
           }}
         >
-          <img
-            src={CANTO}
-            height={20}
-            width={20}
-            style={{
-              marginBottom: "0.5rem",
-            }}
-          />
-          <p>
-            dist apr <span>{token.distAPY.toFixed(2)}%</span>
-          </p>
+          <img src={CANTO} height={30} />
+          <Text type="title">dist apr : {token.distAPY.toFixed(2)}%</Text>
         </div>
       </Limits>
       <Limits>
-        <p>collateral factor:</p>
-        <p>{truncateNumber(formatUnits(token.collateralFactor.mul(100)))}%</p>
+        <Text color="white">collateral factor:</Text>
+        <Text type="title">
+          {truncateNumber(formatUnits(token.collateralFactor.mul(100)))}%
+        </Text>
       </Limits>
       <Limits>
-        <p>borrow {isBorrowing ? "balance" : "limit"}:</p>
-        <p>
+        <Text color="white">{userBalanceType}</Text>
+        <Text type="title">{userBalance}</Text>
+      </Limits>
+      <Limits>
+        <Text color="white">borrow {isBorrowing ? "balance" : "limit"}:</Text>
+        <Text type="title">
           {noteSymbol + truncateNumber(cBorrowLimit) + " "}
           {amount.gt(0) &&
           (token.collateral || isBorrowing) &&
@@ -158,11 +147,11 @@ const Details = ({
               <span>-&gt;</span> {noteSymbol + truncateNumber(cBorrowLimitHypo)}
             </React.Fragment>
           ) : null}{" "}
-        </p>
+        </Text>
       </Limits>
       <Limits>
-        <p>borrow limit used:</p>
-        <p>
+        <Text color="white">borrow limit used:</Text>
+        <Text type="title">
           {truncateNumber(cBorrowLimitUsed.toString()) + "% "}
           {amount.gt(0) &&
           (token.collateral || isBorrowing) &&
@@ -172,14 +161,32 @@ const Details = ({
               {truncateNumber(cBorrowLimitUsedHypo.toString()) + "%"}
             </React.Fragment>
           ) : null}{" "}
-        </p>
+        </Text>
       </Limits>
       <LimitBar
         progress={!token.collateral ? cBorrowLimitUsed : cBorrowLimitUsedHypo}
       />
-    </div>
+    </DetailStyled>
   );
 };
+
+const DetailStyled = styled.div`
+  background: #0b0b0b;
+  border: 1px solid #2f2f2f;
+  border-radius: 4px;
+  width: 100%;
+  padding: 1rem;
+  margin: 1rem 0;
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 2rem;
+    .header {
+      color: #9b9b9b;
+    }
+  }
+`;
 
 const ProgressBar = styled.div`
   width: 100%;

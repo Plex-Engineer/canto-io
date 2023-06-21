@@ -1,6 +1,5 @@
 import create from "zustand";
 import { devtools } from "zustand/middleware";
-import { nodeURL } from "global/utils/cantoTransactions/helpers";
 import {
   generateEndpointProposals,
   generateEndpointProposalTally,
@@ -11,6 +10,7 @@ import {
   ProposalData,
   Tally,
 } from "../config/interfaces";
+import { getCosmosAPIEndpoint } from "global/utils/getAddressUtils";
 
 interface ProposalProps {
   proposals: ProposalData[];
@@ -24,7 +24,7 @@ export const useProposals = create<ProposalProps>()(
     proposals: [],
     initProposals: async (chainId: number) => {
       const allProposalData = await fetch(
-        nodeURL(Number(chainId)) + generateEndpointProposals(),
+        getCosmosAPIEndpoint(Number(chainId)) + generateEndpointProposals(),
         fetchOptions
       ).then(function (response) {
         return response.json();
@@ -54,7 +54,8 @@ export async function queryTally(
   chainId: number
 ): Promise<Tally> {
   const tally = await fetch(
-    nodeURL(Number(chainId)) + generateEndpointProposalTally(proposalID),
+    getCosmosAPIEndpoint(Number(chainId)) +
+      generateEndpointProposalTally(proposalID),
     fetchOptions
   );
   const tallyVotes = await tally.json();

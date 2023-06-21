@@ -3,27 +3,27 @@ import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
 import { ADDRESSES } from "global/config/addresses";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
-import { ALL_BRIDGE_OUT_NETWORKS } from "pages/bridging/config/bridgeOutNetworks";
+import { CANTO_MAIN_BRIDGE_OUT_NETWORKS } from "pages/bridging/walkthrough/config/bridgeOutNetworks";
 import {
   BridgeOutNetworkInfo,
-  BridgeOutNetworks,
+  CantoMainBridgeOutNetworks,
   EMPTY_ERC20_BRIDGE_TOKEN,
   EMPTY_NATIVE_TOKEN,
   UserERC20BridgeToken,
   UserNativeToken,
-} from "pages/bridging/config/interfaces";
+} from "pages/bridging/walkthrough/config/interfaces";
 import { useBridgeTokenInfo } from "pages/bridging/hooks/useBridgeTokenInfo";
 import {
   BridgeTransaction,
   useBridgingTransactions,
-} from "pages/bridging/hooks/useBridgingTransactions";
+} from "pages/bridging/walkthrough/hooks/useBridgingTransactions";
 import { useTransactionHistory } from "pages/bridging/hooks/useTransactionHistory";
-import { convertStringToBigNumber } from "pages/bridging/utils/utils";
+import { convertStringToBigNumber } from "global/utils/formattingNumbers";
 import { useState } from "react";
 import {
   BridgeInWalkthroughSteps,
   BridgeOutWalkthroughSteps,
-} from "../config/interfaces";
+} from "../config/interfacesSteps";
 import {
   didPassBridgeInWalkthroughCheck,
   didPassBridgeOutWalkthroughCheck,
@@ -83,7 +83,7 @@ interface Props {
     address: string;
     setAddress: (s: string) => void;
     selectedNetwork: BridgeOutNetworkInfo;
-    setNetwork: (network: BridgeOutNetworks) => void;
+    setNetwork: (network: CantoMainBridgeOutNetworks) => void;
   };
 }
 export function useCustomWalkthrough(): Props {
@@ -97,7 +97,9 @@ export function useCustomWalkthrough(): Props {
   const [amount, setAmount] = useState("");
   const [userCosmosSendAddress, setUserCosmosSendAddress] = useState("");
   const [selectedCosmoNetwork, setSelectedCosmosNetwork] =
-    useState<BridgeOutNetworks>(0);
+    useState<CantoMainBridgeOutNetworks>(
+      CantoMainBridgeOutNetworks.GRAVITY_BRIDGE
+    );
 
   //token selector
   const [selectedTokens, setSelectedTokens] = useState({
@@ -156,22 +158,18 @@ export function useCustomWalkthrough(): Props {
     );
   }
   const allSelectedTokens = {
-    bridgeInToken: findERC20Token(
-      WalkthroughSelectedTokens.ETH_BRIDGE_IN,
-      bridgingTokens.userBridgeInTokens
-    ),
-    convertInToken: findNativeToken(
-      WalkthroughSelectedTokens.CONVERT_IN,
-      bridgingTokens.userNativeTokens
-    ),
-    convertOutToken: findERC20Token(
-      WalkthroughSelectedTokens.CONVERT_OUT,
-      bridgingTokens.userBridgeOutTokens
-    ),
-    bridgeOutToken: findNativeToken(
-      WalkthroughSelectedTokens.BRIDGE_OUT,
-      bridgingTokens.userNativeTokens
-    ),
+    bridgeInToken: findERC20Token(WalkthroughSelectedTokens.ETH_BRIDGE_IN, [
+      EMPTY_ERC20_BRIDGE_TOKEN,
+    ]),
+    convertInToken: findNativeToken(WalkthroughSelectedTokens.CONVERT_IN, [
+      EMPTY_NATIVE_TOKEN,
+    ]),
+    convertOutToken: findERC20Token(WalkthroughSelectedTokens.CONVERT_OUT, [
+      EMPTY_ERC20_BRIDGE_TOKEN,
+    ]),
+    bridgeOutToken: findNativeToken(WalkthroughSelectedTokens.BRIDGE_OUT, [
+      EMPTY_NATIVE_TOKEN,
+    ]),
   };
   //tx hooks for all transactions
   const transactionHooks = useBridgingTransactions();
@@ -301,9 +299,9 @@ export function useCustomWalkthrough(): Props {
     },
     tokens: {
       allUserTokens: {
-        userBridgeInTokens: bridgingTokens.userBridgeInTokens,
-        userBridgeOutTokens: bridgingTokens.userBridgeOutTokens,
-        userNativeTokens: bridgingTokens.userNativeTokens,
+        userBridgeInTokens: [EMPTY_ERC20_BRIDGE_TOKEN],
+        userBridgeOutTokens: [EMPTY_ERC20_BRIDGE_TOKEN],
+        userNativeTokens: [EMPTY_NATIVE_TOKEN],
       },
       selectedTokens: allSelectedTokens,
       setTokens: setSelectedToken,
@@ -311,7 +309,7 @@ export function useCustomWalkthrough(): Props {
     walkthroughInfo: {
       canContinue: checkIfCanContinue(),
       canGoBack: checkIfCanClickPrevious(),
-      canSkip: checkIfCanSkip(bridgingTokens.userNativeTokens),
+      canSkip: checkIfCanSkip([EMPTY_NATIVE_TOKEN]),
       canBridgeIn: canBridgeIn(),
       canBridgeOut: canBridgeOut(),
     },
@@ -321,7 +319,7 @@ export function useCustomWalkthrough(): Props {
       setAmount,
       address: userCosmosSendAddress,
       setAddress: setUserCosmosSendAddress,
-      selectedNetwork: ALL_BRIDGE_OUT_NETWORKS[selectedCosmoNetwork],
+      selectedNetwork: CANTO_MAIN_BRIDGE_OUT_NETWORKS[selectedCosmoNetwork],
       setNetwork: setSelectedCosmosNetwork,
     },
   };

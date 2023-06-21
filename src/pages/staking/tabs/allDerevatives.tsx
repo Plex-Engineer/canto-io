@@ -1,13 +1,12 @@
 import { Text } from "global/packages/src";
-import { CInput, CSearch } from "global/packages/src/components/atoms/Input";
+import { CSearch } from "global/packages/src/components/atoms/Input";
 
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { ValidatorTable } from "../components/stakingTable";
 import { MasterValidatorProps } from "../config/interfaces";
-import { Selected } from "../modals/redelgationModal";
-
-import { levenshteinDistance } from "../utils/utils";
+import { Selected } from "pages/staking/components/selected";
+import { levenshteinDistance } from "global/utils/search";
 import warningImg from "assets/warning.svg";
 import styled from "@emotion/styled";
 import useStakingStore from "../stores/stakingStore";
@@ -85,7 +84,7 @@ const AllDerevatives = (props: AllDerevativesProps) => {
           <Select
             className="react-select-container"
             styles={{
-              dropdownIndicator: (baseStyles, state) => ({
+              dropdownIndicator: (baseStyles) => ({
                 ...baseStyles,
                 color: "var(--primary-color)",
               }),

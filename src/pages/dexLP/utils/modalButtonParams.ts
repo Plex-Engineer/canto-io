@@ -37,27 +37,22 @@ export function getAddButtonTextAndOnClick(
     return ["add liquidity", false];
   }
 }
-//returns text for the button, function it will perform, and if it is disabled
+//returns text for the button and if it is disabled
 export function getRemoveButtonTextAndOnClick(
-  LPSymbol: string,
-  LPAllowance: BigNumber,
-  value1: BigNumber,
   slippage: number,
   deadline: number,
-  percentage: number,
-  addAllowance1: () => void,
-  removeLiquidity: () => void
-): [string, () => void, boolean] {
-  const emptyFunction = () => {
-    return;
-  };
-  if (value1.gt(LPAllowance)) {
-    return [`increase ${LPSymbol} allowance`, addAllowance1, false];
-  } else if (isNaN(percentage) || percentage > 100 || percentage < 0) {
-    return ["enter percentage", emptyFunction, true];
-  } else if (slippage < 0 || deadline <= 0) {
-    return ["invalid settings", emptyFunction, true];
+  percentage: number
+): [string, boolean] {
+  if (isNaN(percentage) || percentage > 100 || percentage < 0) {
+    return ["enter percentage", true];
+  } else if (
+    isNaN(slippage) ||
+    slippage < 0 ||
+    isNaN(deadline) ||
+    deadline <= 0
+  ) {
+    return ["invalid settings", true];
   } else {
-    return ["remove liquidity", removeLiquidity, false];
+    return ["remove liquidity", false];
   }
 }

@@ -1,16 +1,18 @@
-import { useEtherBalance, useEthers } from "@usedapp/core";
-import { useEffect, useState } from "react";
+import { useEtherBalance, useEthers, useSigner } from "@usedapp/core";
+import { useEffect } from "react";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import logo from "assets/logo.svg";
 import { useLocation } from "react-router-dom";
-import { getBaseTokenName } from "global/utils/walletConnect/getTokenSymbol";
 import { useAlert, NavBar } from "../packages/src";
 import { BigNumber } from "ethers";
 import { formatEther, parseUnits } from "ethers/lib/utils";
 import { ShowAlerts } from "global/utils/alerts";
 import { pageList, PageObject } from "global/config/pageList";
 import { Mixpanel } from "mixpanel";
-import { CantoMainnet } from "global/config/networks";
+import {
+  getCantoNetwork,
+  getSupportedNetwork,
+} from "global/utils/getAddressUtils";
 
 export const CantoNav = () => {
   const networkInfo = useNetworkInfo();
@@ -18,23 +20,17 @@ export const CantoNav = () => {
   const { activateBrowserWallet, account, chainId, active } = useEthers();
   const balance = useEtherBalance(account);
   const cantoBalance = useEtherBalance(account, {
-    chainId: CantoMainnet.chainId,
+    chainId: getCantoNetwork(Number(networkInfo.chainId)).chainId,
   });
   const ethBalance = useEtherBalance(networkInfo.account, { chainId: 1 });
-
+  const signer = useSigner();
   const canPubKey =
     (ethBalance?.gte(parseUnits("0.01")) ||
       networkInfo.balance?.gte(parseUnits("0.5"))) ??
     false;
 
   const location = useLocation();
-  const [tokenName, setTokenName] = useState("");
-  async function grabTokenName() {
-    setTokenName(await getBaseTokenName(chainId?.toString() ?? ""));
-  }
-  useEffect(() => {
-    grabTokenName();
-  }, [chainId]);
+  const currentNetwork = getSupportedNetwork(Number(networkInfo.chainId));
 
   function recursiveGetTitle(
     location: string,
@@ -62,9 +58,10 @@ export const CantoNav = () => {
 
   useEffect(() => {
     networkInfo.setChainId(chainId?.toString());
-    if (account) {
+    if (account && signer) {
       networkInfo.setAccount(account);
       networkInfo.setBalance(balance ?? BigNumber.from(0));
+      networkInfo.setSigner(signer);
       //mixpanel id
       Mixpanel.people.registerWallet(account);
       Mixpanel.identify(account);
@@ -73,15 +70,8 @@ export const CantoNav = () => {
     if (account == null) {
       networkInfo.setAccount("");
     }
-  }, [account, chainId, balance, active]);
+  }, [account, chainId, balance, active, signer]);
 
-  //@ts-ignore
-  if (window.ethereum) {
-    //@ts-ignore
-    window.ethereum.on("accountsChanged", () => {
-      window.location.reload();
-    });
-  }
   useEffect(() => {
     Mixpanel.events.pageOpened(
       recursiveGetTitle(location.pathname, 1, pageList) != ""
@@ -109,6 +99,14 @@ export const CantoNav = () => {
     location,
     cantoBalance,
   ]);
+  useEffect(() => {
+    if (window.ethereum) {
+      //@ts-ignore
+      window.ethereum.on("accountsChanged", () => {
+        window.location.reload();
+      });
+    }
+  }, []);
   return (
     <NavBar
       onClick={() => {
@@ -118,10 +116,11 @@ export const CantoNav = () => {
       account={networkInfo.account ?? ""}
       isConnected={networkInfo.account != ""}
       balance={formatEther(networkInfo.balance)}
-      currency={tokenName}
-      logo={logo}
+      currency={currentNetwork.nativeCurrency?.symbol ?? ""}
+      siteLogo={logo}
       pageList={pageList}
       currentPage={recursiveGetTitle(location.pathname, 1, pageList)}
+      currencyIcon={currentNetwork.icon}
     />
   );
 };

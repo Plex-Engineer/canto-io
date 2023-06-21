@@ -6,28 +6,26 @@ import useModals, { ModalType } from "./hooks/useModals";
 import { ModalManager } from "./modals/ModalManager";
 import { ethers } from "ethers";
 import { useNetworkInfo } from "global/stores/networkInfo";
-import {
-  noteSymbol,
-  transactionStatusActions,
-  truncateNumber,
-} from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import useLPTokenData from "./hooks/useLPTokenData";
 import useUserLPTokenInfo from "./hooks/useUserLPTokenData";
 import { LPPairInfo, UserLPPairInfo } from "./config/interfaces";
 import { formatUnits } from "ethers/lib/utils";
 import FadeIn from "react-fade-in";
 import { Text } from "global/packages/src";
-import { Details } from "pages/lending/hooks/useTransaction";
 import HelmetSEO from "global/components/seo";
 import { sortColumnsByType } from "pages/lending/components/LMTables";
 import { Mixpanel } from "mixpanel";
 import { useOngoingTransactions } from "global/utils/handleOnGoingTransactions";
 import Loading from "global/components/Loading";
 import styled from "@emotion/styled";
-import CTable from "global/components/cTable";
+import { noteSymbol } from "global/config/tokenInfo";
+import { useTransactionStore } from "global/stores/transactionStore";
+import { getShortTxStatusFromState } from "global/utils/formatTxDetails";
 
 const LP_Interface = () => {
   const networkInfo = useNetworkInfo();
+  const txStore = useTransactionStore();
   const { notifications } = useNotifications();
   const [notifs, setNotifs] = useState<Notification[]>([]);
   useOngoingTransactions(notifications, notifs, setNotifs);
@@ -48,10 +46,6 @@ const LP_Interface = () => {
   const [availablePoolsColumnClicked, setAvailablePoolsColumnCLicked] =
     useState(0);
 
-  const isOngoingToken =
-    notifs.filter((filterItem) => filterItem.type == "transactionStarted")
-      .length > 0;
-
   const isPositionedToken =
     userPairs?.filter(
       (pair: UserLPPairInfo) =>
@@ -64,6 +58,9 @@ const LP_Interface = () => {
         pair.userSupply.totalLP.isZero() && pair.userSupply.percentOwned == 0
     ).length > 0;
 
+  const ongoingTransactions = useTransactionStore().transactions.filter(
+    (filterItem) => filterItem.details.status === "Mining"
+  );
   return (
     <>
       <HelmetSEO
@@ -79,6 +76,7 @@ const LP_Interface = () => {
             onClose={() => {
               setModalType(ModalType.NONE);
             }}
+            txStore={txStore}
           />
         </div>
         <div
@@ -106,48 +104,25 @@ const LP_Interface = () => {
           </Text>
         </div>
 
-        {/* <CTable
-          headers={["Test 1", "Test 2", "Test 3", "Test 4", "Test 5"]}
-          items={[
-            ["dummy 1", "dummy 1", "dummy 1", "dummy 1", "dummy 1"],
-            ["dummy 2", "dummy 2", "dummy 2", "dummy 2", "dummy 2"],
-            ["dummy 3", "dummy 3", "dummy 3", "dummy 3", "dummy 3"],
-            ["dummy 4", "dummy 4", "dummy 4", "dummy 4", "dummy 4"],
-          ]}
-        /> */}
         {/* Transactions table will be shown here */}
-        {isOngoingToken && (
-          <>
-            <p className="tableName">ongoing transaction</p>
-            <FadeIn>
-              <Table columns={["name", "transaction", "time"]}>
-                {notifs.map((item) => {
-                  if (
-                    //@ts-ignore
-                    item?.transactionName?.includes("type") &&
-                    item.type == "transactionStarted"
-                  ) {
-                    //@ts-ignore
-                    const msg: Details = JSON.parse(item?.transactionName);
-                    const actionMsg = transactionStatusActions(
-                      msg.type
-                    ).inAction;
-                    return (
-                      <TransactionRow
-                        key={item.submittedAt}
-                        icons={msg.icon}
-                        name={msg.name.toLowerCase()}
-                        status={actionMsg}
-                        date={new Date(item.submittedAt)}
-                      />
-                    );
-                  }
-                  return null;
-                })}
+        {ongoingTransactions.length > 0 && (
+          <div className="tables">
+            <div className="left">
+              <Table columns={["ongoing transactions"]}>
+                {ongoingTransactions.map((tx) => (
+                  <TransactionRow
+                    key={tx.details.txId}
+                    icons={tx.details.extra?.icon ?? ""}
+                    name={tx.details.currentMessage ?? ""}
+                    status={getShortTxStatusFromState(tx.details.status)}
+                    date={new Date()}
+                  />
+                ))}
               </Table>
-            </FadeIn>
-          </>
+            </div>
+          </div>
         )}
+
         {isPositionedToken && (
           <div>
             <Text type="title" align="left" className="tableName">

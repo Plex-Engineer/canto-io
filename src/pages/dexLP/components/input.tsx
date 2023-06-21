@@ -1,7 +1,10 @@
 import styled from "@emotion/styled";
+import { Text } from "global/packages/src";
+import { CInput } from "global/packages/src/components/atoms/Input";
 interface props {
   value: number;
 }
+const primaryColor = "var(--primary-color)";
 const Container = styled.div<props>`
   display: flex;
   flex-direction: column;
@@ -13,19 +16,20 @@ const Container = styled.div<props>`
     border: 1px solid transparent;
 
     padding: 0.5rem;
-    color: ${(props) => (props.value <= 0 ? "#ff4646" : "white")};
+    color: ${(props) => (props.value <= 0 ? "#ff4646" : primaryColor)};
 
     &:hover {
-      border: 1px solid var(--primary-color);
+      border: 1px solid
+        ${(props) => (props.value <= 0 ? "#ff4646" : primaryColor)};
     }
     &:focus {
-      outline: 1px solid var(--primary-color);
-      color: ${(props) =>
-        props.value <= 0 ? "#ff4646" : "var(--primary-color)"};
+      outline: 1px solid
+        ${(props) => (props.value <= 0 ? "#ff4646" : primaryColor)};
+      color: ${(props) => (props.value <= 0 ? "#ff4646" : primaryColor)};
     }
   }
 
-  label {
+  p {
     font-style: normal;
     font-weight: 400;
     color: ${(props) => (props.value <= 0 ? "#ff4646" : "white")};
@@ -47,8 +51,11 @@ interface DexProps {
 const Input = ({ name, value, onChange }: DexProps) => {
   return (
     <Container value={Number(value)}>
-      <label htmlFor="item">{name}</label>
-      <input
+      {/* <label htmlFor="item">{name}</label> */}
+      <Text align="left" type="title">
+        {name}
+      </Text>
+      <CInput
         autoComplete="off"
         spellCheck={false}
         type="text"

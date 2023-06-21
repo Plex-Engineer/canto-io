@@ -1,11 +1,11 @@
 import styled from "@emotion/styled";
 import { OutlinedButton, PrimaryButton, Text } from "global/packages/src";
-import { BaseToken } from "pages/bridging/config/interfaces";
 import { ReactNode } from "react";
 import BaseStyled from "../layout";
+import { Token } from "global/config/interfaces/tokens";
 
 interface ConfirmationProps {
-  token: BaseToken;
+  token: Token;
   notEnoughCantoBalance: boolean;
   amount: string;
   txType: string;

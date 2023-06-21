@@ -1,7 +1,9 @@
 import styled from "@emotion/styled";
 export const DexModalContainer = styled.div`
   background-color: #040404;
-  height: 40rem;
+  max-height: 40rem;
+  height: calc(100vh - 6rem);
+  flex-grow: 1;
   width: 30rem;
   display: flex;
   flex-direction: column;
@@ -46,9 +48,20 @@ export const DexModalContainer = styled.div`
   }
 
   .tokenBox {
-    background-color: #131313;
-    border: 1px solid #606060;
+    background: #0b0b0b;
+    border: 1px solid #2f2f2f;
+    border-radius: 4px;
+    width: 100%;
     padding: 1rem;
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 2rem;
+      .header {
+        color: #9b9b9b;
+      }
+    }
   }
 
   h1 {
@@ -61,14 +74,14 @@ export const DexModalContainer = styled.div`
     color: white;
   }
 
-  h4 {
+  /* h4 {
     font-size: 16px;
     text-align: center;
     font-weight: 500;
     letter-spacing: -0.02em;
     text-transform: lowercase;
     color: #606060;
-  }
+  } */
 
   #position {
     font-size: 18px;
@@ -79,6 +92,13 @@ export const DexModalContainer = styled.div`
   }
   .line {
     border-bottom: 1px solid #222;
+  }
+  .center {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.7rem;
   }
   .logo {
     /* padding: 1rem; */
@@ -116,18 +136,17 @@ export const DexModalContainer = styled.div`
 
   .row {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
     width: 100%;
   }
-  .tableName {
+  /* .tableName {
     width: 80%;
     display: flex;
     flex-direction: column;
-  }
+  } */
 
   @media (max-width: 1000px) {
-    width: 100%;
+    width: 100vw;
+    padding: 0 1rem;
 
     .box {
       width: 100%;
@@ -144,7 +163,6 @@ export const DexModalContainer = styled.div`
   }
 `;
 export const AddRemoveContainer = styled(DexModalContainer)`
-  gap: 0.7rem;
   .token {
     display: flex;
     flex-direction: column;
@@ -160,12 +178,18 @@ export const AddRemoveContainer = styled(DexModalContainer)`
   }
   .fields {
     display: flex;
+    flex-direction: row;
+    justify-content: center;
     margin-top: 1rem;
     gap: 0.6rem;
   }
   .btns {
     display: flex;
+    margin-bottom: 1rem;
     flex-direction: row;
+    align-items: end;
+    flex-grow: 1;
+
     gap: 0.6rem;
   }
 `;

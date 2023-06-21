@@ -1,7 +1,5 @@
 import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
-import { EMPTY_NATIVE_TOKEN, IBCTokenTrace } from "./config/interfaces";
-import { BridgingTransactionsSelector } from "./hooks/useBridgingTransactions";
 import {
   findNativeToken,
   getNetworkFromCantoChannel,
@@ -9,41 +7,24 @@ import {
 import RecoveryTransactionBox from "./components/recoveryTransaction";
 import { BigNumber } from "ethers";
 import unknwonToken from "assets/icons/info.svg";
+import { TransactionStore } from "global/stores/transactionStore";
+import { IBCTokenTrace, EMPTY_NATIVE_TOKEN } from "./config/bridgingInterfaces";
 
 interface RecoveryModalProps {
   tokens: IBCTokenTrace[];
   cantoAddress: string;
-  txSelector: BridgingTransactionsSelector;
+  txStore: TransactionStore;
 }
 const RecoveryPage = ({
   tokens,
   cantoAddress,
-  txSelector,
+  txStore,
 }: RecoveryModalProps) => {
   return (
     <Styled>
       <Text type="title" size="title2">
         IBC Transfers - Recovery
       </Text>
-
-      {/* <div className="qa">
-        <QBox
-          question="Instructions:"
-          answer={
-            <p>
-              1. Each token below represents all unidentified ibc tokens on the
-              canto network
-              <br />
-              2. For each token, select the network you would like to ibc
-              transfer the tokens back to (default network is selected for you)
-              <br />
-              3. Click recover on the token once you have selected the network
-              you wish <br /> 4. Confirmation will pop up where you specify the
-              address to send the tokens to`
-            </p>
-          }
-        />
-      </div> */}
 
       <div className="instruct">
         <Text align="left" type="title">
@@ -83,9 +64,10 @@ const RecoveryPage = ({
             token.denom !== "acanto" && (
               <RecoveryTransactionBox
                 key={token.denom}
+                txStore={txStore}
                 cantoAddress={cantoAddress}
                 transaction={{
-                  origin: transferFrom.name,
+                  origin: transferFrom?.name ?? "unkown",
                   amount: BigNumber.from(token.amount),
                   defaultNetwork: transferFrom,
                   channelPath: token.ibcInfo.denom_trace.path
@@ -101,7 +83,6 @@ const RecoveryPage = ({
                     icon: tokenInfo?.icon ?? unknwonToken,
                   },
                 }}
-                txFactory={() => txSelector.bridgeOut.ibcOut(token.denom)}
               />
             )
           );

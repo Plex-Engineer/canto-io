@@ -4,7 +4,6 @@ import MyStaking from "./tabs/myStaking";
 import AllDerevatives from "./tabs/allDerevatives";
 import Styled from "./style";
 import { useState } from "react";
-import { CantoMainnet } from "global/config/networks";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import {
   calculateTotalStaked,
@@ -12,12 +11,13 @@ import {
 } from "./utils/allUserValidatorInfo";
 import { ModalManager } from "./modals/modalManager";
 import HelmetSEO from "global/components/seo";
-import { Selected } from "./modals/redelgationModal";
+import { Selected } from "pages/staking/components/selected";
 import Select from "react-select";
 
 import { CSearch } from "global/packages/src/components/atoms/Input";
 import useStakingStore from "./stores/stakingStore";
 import useStaking from "./hooks/useStaking";
+import { onCantoNetwork } from "global/utils/getAddressUtils";
 
 const Staking = () => {
   const networkInfo = useNetworkInfo();
@@ -94,7 +94,7 @@ const Staking = () => {
                 <Select
                   className="react-select-container"
                   styles={{
-                    dropdownIndicator: (baseStyles, state) => ({
+                    dropdownIndicator: (baseStyles) => ({
                       ...baseStyles,
                       color: "var(--primary-color)",
                     }),
@@ -140,7 +140,7 @@ const Staking = () => {
           <TabPanel>
             <MyStaking
               onRewards={handleClaimRewards}
-              connected={Number(networkInfo.chainId) == CantoMainnet.chainId}
+              connected={onCantoNetwork(Number(networkInfo.chainId))}
               account={networkInfo.account ?? ""}
               balance={networkInfo.balance}
               totalStaked={calculateTotalStaked(delegations)}

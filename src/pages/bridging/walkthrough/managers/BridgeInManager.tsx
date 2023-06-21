@@ -5,9 +5,9 @@ import { switchNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import {
   UserERC20BridgeToken,
   UserNativeToken,
-} from "pages/bridging/config/interfaces";
-import { BridgeTransaction } from "pages/bridging/hooks/useBridgingTransactions";
-import { convertStringToBigNumber } from "pages/bridging/utils/utils";
+} from "pages/bridging/walkthrough/config/interfaces";
+import { BridgeTransaction } from "pages/bridging/walkthrough/hooks/useBridgingTransactions";
+import { convertStringToBigNumber } from "global/utils/formattingNumbers";
 import { useState } from "react";
 import BarIndicator from "../components/barIndicator";
 import AmountPage from "../components/pages/amount";
@@ -16,7 +16,7 @@ import { ConfirmTransactionPage } from "../components/pages/confirmTxPage";
 import SelectTokenPage from "../components/pages/selectToken";
 import SwitchNetworkPage from "../components/pages/switchNetwork";
 import { WaitForGbridge } from "../components/pages/waitForGbridge";
-import { BridgeInStep } from "../config/interfaces";
+import { BridgeInStep } from "../config/interfacesSteps";
 import { WalkthroughSelectedTokens } from "../store/customUseWalkthrough";
 
 interface BridgeInManagerProps {

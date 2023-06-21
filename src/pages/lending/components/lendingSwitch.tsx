@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import { Text } from "global/packages/src";
 import Popup from "reactjs-popup";
 import { ToolTipL } from "./Styled";
-import { ToolTip } from "./Tooltip";
 const Wrapper = styled.label`
   /* The switch - the box around the slider */
   position: relative;
