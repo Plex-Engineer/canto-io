@@ -148,11 +148,13 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             <DropDown
               title="select bridge"
               label="Network"
-              items={props.allNetworks.map((network) => ({
-                primaryText: network.name,
-                icon: network.icon,
-                id: network.id,
-              }))}
+              items={props.allNetworks
+                .filter((network) => !(network.isCanto && props.bridgeIn))
+                .map((network) => ({
+                  primaryText: network.name,
+                  icon: network.icon,
+                  id: network.id,
+                }))}
               disabled={!props.bridgeIn}
               onSelect={(id) => {
                 const network = props.allNetworks.find(
@@ -199,11 +201,13 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           <DropDown
             title="select network"
             label="Network"
-            items={props.allNetworks.map((network) => ({
-              primaryText: network.name,
-              icon: network.icon,
-              id: network.id,
-            }))}
+            items={props.allNetworks
+              .filter((network) => !(network.isCanto && !props.bridgeIn))
+              .map((network) => ({
+                primaryText: network.name,
+                icon: network.icon,
+                id: network.id,
+              }))}
             disabled={props.bridgeIn}
             onSelect={(id) => {
               const network = props.allNetworks.find(
