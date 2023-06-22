@@ -6,6 +6,8 @@ import {
   GoerliTestnet,
   AvalancheTestnet,
   OptimismTestnet,
+  CantoMainnet,
+  ETHMainnet,
 } from "global/config/networks";
 import { CANTO_OFT } from "../tokens.ts/layerZeroTokens";
 enum TestnetLZNetworks {
@@ -16,11 +18,11 @@ enum TestnetLZNetworks {
   AVALANCHE_TEST = "AVALANCHE_TEST",
   OPTIMISM_TEST = "OPTIMISM_TEST",
 }
-type LZNetworkData = {
+type LZTestNetworkData = {
   [key in TestnetLZNetworks]: LayerZeroNetwork;
 };
 
-const LAYER_ZERO_TEST_NETWORKS: LZNetworkData = {
+const LAYER_ZERO_TEST_NETWORKS: LZTestNetworkData = {
   [TestnetLZNetworks.CANTO_TEST]: {
     ...CantoTestnet,
     lzChainId: 10159,
@@ -80,6 +82,32 @@ const LAYER_ZERO_TEST_NETWORKS: LZNetworkData = {
     },
   },
 };
-const LAYER_ZERO_MAIN_NETWORKS = {};
+enum MainnetLZNetworks {
+  CANTO_MAIN = "CANTO_MAIN",
+  ETH_MAIN = "ETH_MAIN",
+}
+type LZMainNetworkData = {
+  [key in MainnetLZNetworks]: LayerZeroNetwork;
+};
+const LAYER_ZERO_MAIN_NETWORKS: LZMainNetworkData = {
+  [MainnetLZNetworks.CANTO_MAIN]: {
+    ...CantoMainnet,
+    lzChainId: 159,
+    tokens: {
+      toCanto: [],
+      fromCanto: [],
+    },
+  },
+  [MainnetLZNetworks.ETH_MAIN]: {
+    ...ETHMainnet,
+    lzChainId: 101,
+    tokens: {
+      toCanto: [CANTO_OFT("0x56C03B8C4FA80Ba37F5A7b60CAAAEF749bB5b220", false)],
+      fromCanto: [
+        CANTO_OFT("0x56C03B8C4FA80Ba37F5A7b60CAAAEF749bB5b220", true),
+      ],
+    },
+  },
+};
 
 export { LAYER_ZERO_TEST_NETWORKS, LAYER_ZERO_MAIN_NETWORKS };
