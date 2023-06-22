@@ -61,8 +61,6 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
       )
     : ["select token", true];
 
-  console.log(amount);
-
   return (
     <Styled>
       <Modal

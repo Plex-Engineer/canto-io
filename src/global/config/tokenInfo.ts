@@ -570,6 +570,7 @@ export const TOKENS: FullTokenList = {
       icon: icons.ETH,
       tokenGroups: [TokenGroups.DEX_TOKENS],
       isNative: true,
+      nativeSymbol: "ETH",
     },
     WSTETH: {
       symbol: "wstETH",

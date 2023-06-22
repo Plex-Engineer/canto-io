@@ -18,6 +18,8 @@ export interface Token {
   balance?: BigNumber;
   //this will check if we should just grab native balance for this token instead of balanceOf
   isNative?: boolean;
+  nativeBalance?: BigNumber;
+  nativeSymbol?: string;
   //bridging props
   isOFT?: boolean;
 }
