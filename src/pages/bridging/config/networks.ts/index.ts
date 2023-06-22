@@ -11,7 +11,10 @@ import {
 } from "global/config/networks";
 import { BridgingMethods, BridgingNetwork } from "../bridgingInterfaces";
 import { GBRIDGE_MAIN_NETWORKS } from "./gBridge";
-import { LAYER_ZERO_TEST_NETWORKS } from "./layerZero";
+import {
+  LAYER_ZERO_MAIN_NETWORKS,
+  LAYER_ZERO_TEST_NETWORKS,
+} from "./layerZero";
 import { MAINNET_IBC_NETWORKS } from "./cosmos";
 
 function getBridgingNetworksFromChainId(chainId?: number) {
@@ -26,6 +29,7 @@ const CANTO_MAIN_BRIDGE_NETWORK: BridgingNetwork = {
   evmChainId: CantoMainnet.chainId,
   supportedBridgeInMethods: [],
   supportedBridgeOutMethods: [],
+  [BridgingMethods.LAYER_ZERO]: LAYER_ZERO_MAIN_NETWORKS.CANTO_MAIN,
 };
 const CANTO_TEST_BRIDGE_NETWORK: BridgingNetwork = {
   id: "canto-test",
@@ -62,15 +66,15 @@ const MAINNET_BRIDGE_NETWORKS: BridgingNetwork[] = [
     isCanto: false,
     isEVM: true,
     evmChainId: ETHMainnet.chainId,
-    supportedBridgeInMethods: [
-      // BridgingMethods.LAYER_ZERO
-    ],
+    supportedBridgeInMethods: [BridgingMethods.LAYER_ZERO],
     supportedBridgeOutMethods: [
-      //   BridgingMethods.LAYER_ZERO,
+      BridgingMethods.LAYER_ZERO,
       BridgingMethods.GBRIDGE,
     ],
     [BridgingMethods.GBRIDGE]: GBRIDGE_MAIN_NETWORKS.ETH,
+    [BridgingMethods.LAYER_ZERO]: LAYER_ZERO_MAIN_NETWORKS.ETH_MAIN,
   },
+
   //IBC
   ...ibcMainNetworks(),
 ];
