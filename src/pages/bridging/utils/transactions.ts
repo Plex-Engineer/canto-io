@@ -423,9 +423,24 @@ async function oftTransferTx(
   }
   const allTxs = [];
   if (isNative) {
-    allTxs.push(
-      _oftDepositOrWithdrawTx(chainId, true, tokenAddress, amount, extraProps)
-    );
+    //check if we need to wrap or use OFT balance directly
+    try {
+      const oftBalance = await getTokenBalance(account, tokenAddress, chainId);
+      if (oftBalance.lt(amount)) {
+        allTxs.push(
+          _oftDepositOrWithdrawTx(
+            chainId,
+            true,
+            tokenAddress,
+            amount.sub(oftBalance),
+            { ...extraProps, amount: formatUnits(amount.sub(oftBalance), 18) }
+          )
+        );
+      }
+    } catch {
+      txStore.setStatus({ error: "error fetching OFT balance" });
+      return false;
+    }
   }
 
   //need to get gas here

@@ -35,7 +35,7 @@ const TokenModal = (props: Props) => {
     <Styled>
       <div className="modal-title">
         <Text type="title" align="left" size="title3">
-          choose token
+          select token
         </Text>
       </div>
       <div className="search">
@@ -66,11 +66,28 @@ const TokenModal = (props: Props) => {
             >
               <span>
                 <img src={token.icon} alt={token.name} />
-                <Text color="white">{token.symbol}</Text>
+                <Text color="white">
+                  {token.isNative ? token.nativeSymbol + " / " : ""}
+                  {token.symbol}
+                </Text>
               </span>
               {token.balance && (
                 <p className="balance">
-                  {truncateNumber(formatUnits(token.balance, token.decimals))}
+                  {token.isNative
+                    ? truncateNumber(
+                        formatUnits(token.nativeBalance ?? "0", token.decimals)
+                      ) +
+                      " / " +
+                      truncateNumber(
+                        formatUnits(
+                          token.balance?.sub(token?.nativeBalance ?? "0") ??
+                            "0",
+                          token.decimals
+                        )
+                      )
+                    : truncateNumber(
+                        formatUnits(token.balance, token.decimals)
+                      )}
                 </p>
               )}
             </div>

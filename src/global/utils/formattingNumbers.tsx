@@ -60,7 +60,7 @@ export function truncateNumber(value: string, decimals?: number) {
   if (decimalLocation == -1) {
     return value;
   }
-  if (!decimals) {
+  if (!decimals && decimals != 0) {
     if (Number(value) > 1) {
       return value.slice(0, decimalLocation + 3);
     }

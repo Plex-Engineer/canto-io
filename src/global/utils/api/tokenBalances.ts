@@ -17,8 +17,17 @@ export async function getUserTokenBalances(
         chainId,
         token.isNative
       ),
+      nativeBalance: token.isNative
+        ? await getNativeBalance(account, chainId)
+        : BigNumber.from(0),
     }))
   );
+}
+
+async function getNativeBalance(account: string | undefined, chainId?: number) {
+  if (!account) return BigNumber.from(0);
+  const provider = getCurrentProvider(chainId);
+  return await provider.getBalance(account);
 }
 
 export async function getTokenBalance(
@@ -28,10 +37,9 @@ export async function getTokenBalance(
   useNative = false
 ) {
   const provider = getCurrentProvider(chainId);
-  const nativeBalance =
-    useNative && account
-      ? await provider.getBalance(account)
-      : BigNumber.from(0);
+  const nativeBalance = useNative
+    ? await getNativeBalance(account, chainId)
+    : BigNumber.from(0);
 
   const tokenContract = new ethers.Contract(tokenAddress, ERC20Abi, provider);
   return account

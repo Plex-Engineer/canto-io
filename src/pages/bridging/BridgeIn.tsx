@@ -41,19 +41,18 @@ const BridgeIn = (props: BridgeInProps) => {
               question: "Step 1: Send Funds to Canto",
               answer: (
                 <>
-                  If you want to bridge tokens that are currently on Ethereum
-                  mainnet, start at the top to initiate bridging. This first
-                  step takes roughly 20 minutes.
+                  To start bridging, select the network and token you want to
+                  bridge in on the top half of the page. If you are bridging in
+                  from Ethereum, this first step usually takes 20 minutes
                   <br />
                   <br />
-                  If you want to bridge from a Cosmos chain start at the top to
-                  initiate an IBC transfer (
+                  For more details,{" "}
                   <a
                     role="button"
                     tabIndex={0}
                     onClick={() =>
                       window.open(
-                        "https://docs.canto.io/user-guides/bridging-assets/to-canto#from-cosmos-hub-and-other-ibc-chains",
+                        "https://docs.canto.io/user-guides/bridging-assets/to-canto",
                         "_blank"
                       )
                     }
@@ -63,17 +62,15 @@ const BridgeIn = (props: BridgeInProps) => {
                       textDecoration: "underline",
                     }}
                   >
-                    see the docs for instructions
+                    click here
                   </a>
-                  ) and then proceed to the queued transaction list to complete
-                  the bridging process.
                 </>
               ),
             },
             {
               question: "Step 2: Complete Queued Transactions",
               answer:
-                "Once you send tokens to Canto you should see a transaction in the bridge queue on the bottom half of this page. The “Complete” button will appear once the tokens arrive at the Canto native chain. Click the “Complete” button to move the tokens from the Canto native chain to Canto’s EVM.",
+                "The 'Complete' button will appear in the bridge queue on the bottom half of this page once the tokens arrive at the Canto native chain. Click the 'Complete' button to move the tokens from the Canto native chain to Canto's EVM",
             },
           ]}
         />
