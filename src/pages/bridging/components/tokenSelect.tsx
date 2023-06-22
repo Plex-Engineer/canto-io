@@ -40,7 +40,7 @@ export const TokenWallet = ({
             }}
           >
             {allTokens.length > 0
-              ? activeToken?.symbol ?? "choose token"
+              ? activeToken?.symbol ?? "select token"
               : "loading tokens"}
           </span>
           <img src={down} alt="" />

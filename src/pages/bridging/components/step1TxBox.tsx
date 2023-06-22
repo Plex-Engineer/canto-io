@@ -7,7 +7,7 @@ import {
   convertStringToBigNumber,
   truncateNumber,
 } from "global/utils/formattingNumbers";
-import { formatUnits } from "ethers/lib/utils";
+import { commify, formatUnits } from "ethers/lib/utils";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { useState } from "react";
@@ -60,6 +60,8 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         props.bridgeIn
       )
     : ["select token", true];
+
+  console.log(amount);
 
   return (
     <Styled>
@@ -146,7 +148,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         <div className="center-element">
           <div className="network-selector">
             <DropDown
-              title="select bridge"
+              title="select network"
               label="Network"
               items={props.allNetworks
                 .filter((network) => !(network.isCanto && props.bridgeIn))
@@ -275,9 +277,16 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
               formatUnits(currentTokenBalance, props.selectedToken?.decimals),
               6
             )} `}
-            value={amount}
+            value={
+              amount && !isNaN(Number(amount))
+                ? amount.slice(-1) === "."
+                  ? commify(amount.slice(0, -1)) + "."
+                  : commify(amount)
+                : amount
+            }
             onChange={(val) => {
-              setAmount(val.target.value);
+              //remove all commas before setting value
+              setAmount(val.target.value.replace(/,/g, ""));
             }}
           />
           <button

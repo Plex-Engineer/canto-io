@@ -35,7 +35,7 @@ const TokenModal = (props: Props) => {
     <Styled>
       <div className="modal-title">
         <Text type="title" align="left" size="title3">
-          choose token
+          select token
         </Text>
       </div>
       <div className="search">
