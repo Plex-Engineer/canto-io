@@ -138,7 +138,7 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
         get().updateTx(details.txId, {
           status: "Fail",
           currentMessage: details.messages.error,
-          errorReason: (e as Error).message ? (e as Error).message : "",
+          errorReason: (e as Error).message ?? "",
         });
       }
       return false;
@@ -190,7 +190,7 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
         get().updateTx(details.txId, {
           status: "Fail",
           currentMessage: details.messages.error,
-          errorReason: (e as Error).message ? (e as Error).message : "",
+          errorReason: (e as Error).message ?? "",
         });
       }
       return false;

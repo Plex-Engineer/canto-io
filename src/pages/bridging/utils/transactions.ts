@@ -444,34 +444,22 @@ async function oftTransferTx(
   }
 
   //need to get gas here
-  const adapterParams = ethers.utils.solidityPack(
-    ["uint16", "uint256"],
+  const gas = await estimateOFTSendGasFee(
+    chainId,
+    toLZChainId,
+    tokenAddress,
+    account,
+    amount,
     [1, 200000]
   );
+  if (gas.isZero()) {
+    txStore.setStatus({ error: "error fetching gas price" });
+    return false;
+  }
   const toAddressBytes = ethers.utils.defaultAbiCoder.encode(
     ["address"],
     [account]
   );
-
-  const oftContract = new Contract(
-    tokenAddress,
-    OFTAbi,
-    getCurrentProvider(chainId)
-  );
-
-  let gas;
-  try {
-    gas = await oftContract.estimateSendFee(
-      toLZChainId,
-      toAddressBytes,
-      amount,
-      false,
-      adapterParams
-    );
-  } catch (e) {
-    txStore.setStatus({ error: "error fetching gas price" });
-    return false;
-  }
 
   allTxs.push(
     _oftTransferTx(
@@ -483,7 +471,7 @@ async function oftTransferTx(
       toLZChainId,
       amount,
       "0x",
-      gas[0],
+      gas,
       extraProps
     )
   );
@@ -641,3 +629,43 @@ const _oftDepositOrWithdrawTx = (
   value: deposit ? amount : "0",
   extraDetails,
 });
+
+/**
+ * TRANSACTION HELPERS
+ */
+
+export async function estimateOFTSendGasFee(
+  chainId: number,
+  toLZChainId: number,
+  oftAddress: string,
+  account: string,
+  amount: BigNumber,
+  adapterParams: number[]
+): Promise<BigNumber> {
+  const formattedAdapterParams = ethers.utils.solidityPack(
+    ["uint16", "uint256"],
+    adapterParams
+  );
+
+  const oftContract = new Contract(
+    oftAddress,
+    OFTAbi,
+    getCurrentProvider(chainId)
+  );
+  const toAddressBytes = ethers.utils.defaultAbiCoder.encode(
+    ["address"],
+    [account]
+  );
+  try {
+    const gas = await oftContract.estimateSendFee(
+      toLZChainId,
+      toAddressBytes,
+      amount,
+      false,
+      formattedAdapterParams
+    );
+    return gas[0];
+  } catch {
+    return ethers.BigNumber.from(0);
+  }
+}
