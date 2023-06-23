@@ -7,7 +7,7 @@ import {
   convertStringToBigNumber,
   truncateNumber,
 } from "global/utils/formattingNumbers";
-import { commify, formatUnits } from "ethers/lib/utils";
+import { commify, formatUnits, parseUnits } from "ethers/lib/utils";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { useEffect, useState } from "react";
@@ -369,15 +369,36 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
           <button
             className="maxBtn"
             onClick={() => {
-              setAmount(
-                truncateNumber(
-                  formatUnits(
-                    currentTokenBalance,
-                    props.selectedToken?.decimals
-                  ),
-                  6
-                )
-              );
+              if (
+                gasTokenBalance &&
+                gasEstimation &&
+                props.selectedToken?.isOFT &&
+                !props.bridgeIn
+              ) {
+                setAmount(
+                  truncateNumber(
+                    formatUnits(
+                      currentTokenBalance.sub(
+                        gasEstimation.add(
+                          parseUnits("4", props.selectedToken.decimals)
+                        )
+                      ),
+                      props.selectedToken?.decimals
+                    ),
+                    6
+                  )
+                );
+              } else {
+                setAmount(
+                  truncateNumber(
+                    formatUnits(
+                      currentTokenBalance,
+                      props.selectedToken?.decimals
+                    ),
+                    6
+                  )
+                );
+              }
             }}
           >
             <Text>max</Text>
