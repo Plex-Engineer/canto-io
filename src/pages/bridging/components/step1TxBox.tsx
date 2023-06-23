@@ -10,7 +10,7 @@ import {
 import { commify, formatUnits } from "ethers/lib/utils";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import CopyToClipboard from "react-copy-to-clipboard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { copyAddress, formatAddress, getStep1ButtonText } from "../utils/utils";
 import Modal from "global/packages/src/components/molecules/Modal";
 import IBCGuideModal from "./modals/ibcGuideModal";
@@ -23,6 +23,9 @@ import ConfirmTxModal, {
   TokenWithIcon,
 } from "global/components/modals/confirmTxModal";
 import { getBridgeExtraDetails1 } from "./bridgeDetails";
+import { estimateOFTSendGasFee } from "../utils/transactions";
+import { getSupportedNetwork } from "global/utils/getAddressUtils";
+import { useEtherBalance } from "@usedapp/core";
 interface Step1TxBoxProps {
   bridgeIn: boolean;
   //network indo
@@ -60,7 +63,64 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         props.bridgeIn
       )
     : ["select token", true];
+  //oft gas estimation
+  const [gasEstimation, setGasEstimation] = useState(BigNumber.from(0));
+  const [userHasEnoughGas, setUserHasEnoughGas] = useState(true);
+  const gasTokenBalance = useEtherBalance(props.fromAddress ?? "", {
+    chainId: props.fromNetwork.evmChainId,
+  });
+  const gasEstimationText = () =>
+    `${truncateNumber(
+      formatUnits(
+        gasEstimation,
+        getSupportedNetwork(props.fromNetwork.evmChainId).nativeCurrency
+          ?.decimals
+      )
+    )} ${
+      getSupportedNetwork(props.fromNetwork.evmChainId).nativeCurrency?.symbol
+    }`;
 
+  async function getGasOFT() {
+    if (props.selectedToken?.isOFT) {
+      setGasEstimation(
+        await estimateOFTSendGasFee(
+          Number(props.fromNetwork.evmChainId),
+          Number(props.toNetwork["Layer Zero"]?.lzChainId),
+          props.selectedToken.address,
+          props.fromAddress ?? "",
+          convertStringToBigNumber("1", props.selectedToken.decimals),
+          [1, 200000]
+        )
+      );
+    } else {
+      setGasEstimation(BigNumber.from(0));
+      setUserHasEnoughGas(true);
+    }
+  }
+  useEffect(() => {
+    getGasOFT();
+  }, [props.selectedToken]);
+  useEffect(() => {
+    if (
+      gasTokenBalance &&
+      gasEstimation &&
+      props.selectedToken?.isOFT &&
+      !props.bridgeIn
+    ) {
+      setUserHasEnoughGas(
+        gasTokenBalance.gt(
+          gasEstimation.add(
+            convertStringToBigNumber(
+              amount,
+              props.selectedToken?.decimals ?? 18
+            )
+          )
+        )
+      );
+    } else {
+      setUserHasEnoughGas(true);
+    }
+  }, [amount, gasEstimation]);
   return (
     <Styled>
       <Modal
@@ -99,7 +159,16 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
               title: "amount",
               value: truncateNumber(amount) + " " + props.selectedToken?.symbol,
             },
-          ]}
+          ].concat(
+            props.selectedToken?.isOFT
+              ? [
+                  {
+                    title: "gas estimation",
+                    value: gasEstimationText(),
+                  },
+                ]
+              : []
+          )}
           extraInputs={
             props.bridgeIn || props.toNetwork.isEVM
               ? []
@@ -126,14 +195,24 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
                 userInputAddress
               );
           }}
-          extraDetails={getBridgeExtraDetails1(
-            props.bridgeIn,
-            formatAddress(props.fromAddress, 6),
-            props.bridgeIn || props.toNetwork.isEVM
-              ? formatAddress(props.toAddress, 6)
-              : formatAddress(userInputAddress, 6),
-            props.bridgeIn ? props.fromNetwork : props.toNetwork
-          )}
+          extraDetails={
+            <>
+              {props.selectedToken?.isOFT && (
+                <Text color="primaryDark" size="text3">
+                  ** gas is paid on both the sending and receiving chains so
+                  estimates will be higher than other transactions **
+                </Text>
+              )}
+              {getBridgeExtraDetails1(
+                props.bridgeIn,
+                formatAddress(props.fromAddress, 6),
+                props.bridgeIn || props.toNetwork.isEVM
+                  ? formatAddress(props.toAddress, 6)
+                  : formatAddress(userInputAddress, 6),
+                props.bridgeIn ? props.fromNetwork : props.toNetwork
+              )}
+            </>
+          }
           onClose={() => {
             setModalOpen(false);
           }}
@@ -321,13 +400,28 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             formatUnits(currentTokenBalance, props.selectedToken?.decimals)
           )})`}
       </Text>
+      <Text
+        type="text"
+        size="text4"
+        align="center"
+        className="warning"
+        style={{
+          color: "#ff4141",
+          marginTop: "-1rem",
+          paddingBottom: "2rem",
+        }}
+        hidden={buttonDisabled || userHasEnoughGas}
+      >
+        {!(userHasEnoughGas || buttonDisabled) &&
+          `you do not have enough gas to complete the trasaction! (gas estimate: ${gasEstimationText()})`}
+      </Text>
 
       <PrimaryButton
         height="big"
         weight="bold"
         padding="lg"
         filled
-        disabled={buttonDisabled}
+        disabled={buttonDisabled || !userHasEnoughGas}
         onClick={() => {
           setModalOpen(true);
         }}

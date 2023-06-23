@@ -67,13 +67,15 @@ const TokenModal = (props: Props) => {
               <span>
                 <img src={token.icon} alt={token.name} />
                 <Text color="white">
-                  {token.isNative ? token.nativeSymbol + " / " : ""}
+                  {token.isNative && !token.isOFT
+                    ? token.nativeSymbol + " / "
+                    : ""}
                   {token.symbol}
                 </Text>
               </span>
               {token.balance && (
                 <p className="balance">
-                  {token.isNative
+                  {token.isNative && !token.isOFT
                     ? truncateNumber(
                         formatUnits(token.nativeBalance ?? "0", token.decimals)
                       ) +
