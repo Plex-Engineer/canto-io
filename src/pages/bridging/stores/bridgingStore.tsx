@@ -105,7 +105,6 @@ const useBridgingStore = create<BridgingStore>((set, get) => ({
     }
   },
   onTestnet: false,
-  //TODO: THIS MUST KNOW WHAT PAGE YOU ARE ON
   chainIdChanged: async (chainId, bridgeIn) => {
     const isOnTestnet = onTestnet(chainId);
     if (isOnTestnet !== get().onTestnet) {

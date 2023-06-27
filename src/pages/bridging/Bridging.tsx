@@ -59,16 +59,22 @@ const Bridging = () => {
     return () => clearTimeout(setNetworks);
   }, [networkInfo.chainId, tabSelected]);
 
-  //get new data every 10 seconds
+  //get new data every 6 seconds
   useEffect(() => {
     const interval = setInterval(async () => {
       await bridgeStore.syncTokens();
     }, 6000);
     return () => clearInterval(interval);
   }, [networkInfo.account]);
+
   useEffect(() => {
-    bridgeStore.syncTokens();
-  }, [networkInfo.account]);
+    //wait 1 second so user can switch tabs before loading in
+    const initTokens = setTimeout(
+      async () => await bridgeStore.syncTokens(),
+      1000
+    );
+    return () => clearTimeout(initTokens);
+  }, [networkInfo.account, tabSelected]);
 
   const NotConnectedTabs = () => {
     const tabs = [];
