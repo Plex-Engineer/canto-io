@@ -1,16 +1,18 @@
 import { TransactionState } from "@usedapp/core";
 import { BigNumber } from "ethers";
-import { parseUnits } from "ethers/lib/utils";
 import { toastHandler } from "global/utils/toastHandler";
-import { truncateNumber } from "global/utils/utils";
-import { NativeTransaction, UserNativeToken } from "../config/interfaces";
+import {
+  NativeTransaction,
+  UserNativeToken,
+} from "../config/bridgingInterfaces";
 import { TransactionHistoryEvent } from "./bridgeTxHistory";
 import { getNetworkFromTokenName } from "./findTokens";
 
 export function createConvertTransactions(
   pendingIn: TransactionHistoryEvent[],
   nativeTokens: UserNativeToken[],
-  bridgeIn: boolean
+  bridgeIn: boolean,
+  chainId?: number
 ): NativeTransaction[] {
   const allConverts: NativeTransaction[] = [];
   for (const pending of pendingIn) {
@@ -26,7 +28,7 @@ export function createConvertTransactions(
   for (const native of nativeTokens) {
     if (native.nativeBalance.gt(0)) {
       allConverts.push({
-        origin: getNetworkFromTokenName(native.ibcDenom, bridgeIn),
+        origin: getNetworkFromTokenName(native.ibcDenom, bridgeIn, chainId),
         timeLeft: "0",
         amount: native.nativeBalance,
         token: native,
@@ -60,13 +62,6 @@ export function convertSecondsToString(seconds: string) {
   return minutes + " min";
 }
 
-export function convertStringToBigNumber(amount: string, decimals: number) {
-  if (!amount || isNaN(Number(amount)) || Number(amount) < 0) {
-    return BigNumber.from(0);
-  }
-  return parseUnits(truncateNumber(amount, decimals), decimals);
-}
-
 export function formatAddress(address: string | undefined, show: number) {
   return !address
     ? ""
@@ -79,13 +74,10 @@ export function formatAddress(address: string | undefined, show: number) {
 export function getStep1ButtonText(
   amount: BigNumber,
   max: BigNumber,
-  currentAllowance: BigNumber,
   bridgeIn: boolean
 ): [string, boolean] {
   const bText = bridgeIn ? "bridge in" : "bridge out";
-  if (currentAllowance.lt(max) || currentAllowance.isZero()) {
-    return ["approve", false];
-  } else if (amount.isZero()) {
+  if (amount.isZero()) {
     return [bText, true];
   } else if (amount.gt(max)) {
     return [bText, true];

@@ -1,62 +1,18 @@
 import { BigNumber } from "ethers";
 import { CantoTransactionType } from "global/config/interfaces/transactionTypes";
-import { InputState } from "../components/reactiveButton";
+import { createTransactionMessges } from "global/utils/formatTxDetails";
 
-export function showText(transactionType: CantoTransactionType) {
-  switch (transactionType) {
-    case CantoTransactionType.SUPPLY:
-      return "supply";
-    case CantoTransactionType.BORROW:
-      return "borrow";
-    case CantoTransactionType.REPAY:
-      return "repay";
-    case CantoTransactionType.WITHDRAW:
-      return "withdraw";
-    case CantoTransactionType.ENABLE:
-      return "enable";
-    default:
-      return "enable";
-  }
-}
-//returns text for the button and if it is disabled
-export function getReactiveButtonText(
-  inputState: InputState,
-  transactionType: CantoTransactionType,
-  amount: BigNumber,
-  liquidity: BigNumber,
-  borrowCap: BigNumber,
-  tokenSymbol: string
+export function getButtonText(
+  BNValue: BigNumber,
+  max: BigNumber,
+  transactionType: CantoTransactionType
 ): [string, boolean] {
-  switch (inputState) {
-    case InputState.ENABLE:
-      return ["enable", false];
-    case InputState.INCREASE_ALLOWANCE:
-      return ["increase allowance", false];
-    case InputState.ENTERAMOUNT:
-      return ["enter amount", true];
-    case InputState.CONFIRM:
-      if (
-        (transactionType == CantoTransactionType.BORROW ||
-          transactionType == CantoTransactionType.WITHDRAW) &&
-        liquidity.lt(amount)
-      ) {
-        return [`no ${tokenSymbol} left`, true];
-      }
-      if (
-        transactionType == CantoTransactionType.BORROW &&
-        borrowCap.lt(amount)
-      ) {
-        return ["borrow cap reached", true];
-      }
-      return [showText(transactionType), false];
-
-    case InputState.NOFUNDS:
-      return ["no funds", true];
-    case InputState.INVALID:
-      return ["enter valid value", true];
-    default:
-      return ["enable", false];
+  if (BNValue.isZero()) {
+    return ["enter amount", true];
+  } else if (BNValue.gt(max)) {
+    return ["insufficient balance", true];
   }
+  return [createTransactionMessges(transactionType).short, false];
 }
 
 //returns text for the button, modalText, if it is disabled, and if the user needs to authorize

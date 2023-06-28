@@ -13,6 +13,8 @@ import Note from "assets/icons/note.svg";
 import WSTETH from "assets/icons/wstETH.svg";
 import { Token, TokenGroups, CTOKEN } from "./interfaces/tokens";
 
+export const noteSymbol = "Ꞥ";
+
 const icons = {
   Note,
   CANTO,
@@ -567,6 +569,8 @@ export const TOKENS: FullTokenList = {
       isLP: false,
       icon: icons.ETH,
       tokenGroups: [TokenGroups.DEX_TOKENS],
+      isNative: true,
+      nativeSymbol: "ETH",
     },
     WSTETH: {
       symbol: "wstETH",

@@ -1,11 +1,8 @@
-import { useEtherBalance } from "@usedapp/core";
 import { BigNumber } from "ethers";
-import { parseUnits } from "ethers/lib/utils";
 import { GenPubKey } from "global/components/genPubKey";
 import { PageObject } from "global/config/pageList";
-import { useNetworkInfo } from "global/stores/networkInfo";
 import { ReactNode } from "react";
-import { addNetwork } from "./walletConnect/addCantoToWallet";
+import { switchNetwork } from "./walletConnect/addCantoToWallet";
 
 export function ShowAlerts(
   openAlert: (
@@ -35,7 +32,8 @@ export function ShowAlerts(
     return;
   } else if (
     (chainId == undefined || !currentPageObj.networks.includes(chainId)) &&
-    !currentPageObj.walletNotRequired
+    !currentPageObj.walletNotRequired &&
+    currentPageObj.networks.length > 0
   ) {
     openAlert(
       "Failure",
@@ -46,7 +44,7 @@ export function ShowAlerts(
         <span
           role="button"
           tabIndex={0}
-          onClick={addNetwork}
+          onClick={() => switchNetwork(currentPageObj.networks[0])}
           style={{
             cursor: "pointer",
             border: "1px solid",

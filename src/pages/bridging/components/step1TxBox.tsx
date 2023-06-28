@@ -1,66 +1,126 @@
 import styled from "@emotion/styled";
 import { PrimaryButton, Text } from "global/packages/src";
-import ethIcon from "assets/icons/ETH.svg";
-import bridgeIcon from "assets/icons/canto-bridge.svg";
-import cantoIcon from "assets/icons/canto-evm.svg";
 import CopyIcon from "assets/copy.svg";
-import {
-  EMPTY_NATIVE_TOKEN,
-  NativeToken,
-  Step1TokenGroups,
-  UserERC20BridgeToken,
-} from "../config/interfaces";
+import { EMPTY_NATIVE_TOKEN, NativeToken } from "../config/bridgingInterfaces";
 import LoadingBlip from "./LoadingBlip";
-import { truncateNumber } from "global/utils/utils";
-import { formatUnits } from "ethers/lib/utils";
-import { CInput } from "global/packages/src/components/atoms/Input";
-import CopyToClipboard from "react-copy-to-clipboard";
-import { BridgeTransaction } from "../hooks/useBridgingTransactions";
-import { useEffect, useState } from "react";
 import {
   convertStringToBigNumber,
-  copyAddress,
-  formatAddress,
-  getStep1ButtonText,
-  toastBridgeTx,
-} from "../utils/utils";
+  truncateNumber,
+} from "global/utils/formattingNumbers";
+import { commify, formatUnits, parseUnits } from "ethers/lib/utils";
+import { CInput } from "global/packages/src/components/atoms/Input";
+import CopyToClipboard from "react-copy-to-clipboard";
+import { useEffect, useState } from "react";
+import { copyAddress, formatAddress, getStep1ButtonText } from "../utils/utils";
 import Modal from "global/packages/src/components/molecules/Modal";
-import { CantoMainnet, ETHMainnet } from "global/config/networks";
-import { TokenWallet } from "./tokenSelect";
 import IBCGuideModal from "./modals/ibcGuideModal";
-import { TokenGroups } from "global/config/interfaces/tokens";
+import { Token, TokenGroups } from "global/config/interfaces/tokens";
+import { BigNumber } from "ethers";
+import DropDown from "./dropDown";
+import { BridgingNetwork, IBCNetwork } from "../config/bridgingInterfaces";
+import { TokenWallet } from "./tokenSelect";
 import ConfirmTxModal, {
   TokenWithIcon,
 } from "global/components/modals/confirmTxModal";
-import { getBridgeExtraDetails } from "./bridgeDetails";
-
+import { getBridgeExtraDetails1 } from "./bridgeDetails";
+import { estimateOFTSendGasFee } from "../utils/transactions";
+import { getSupportedNetwork } from "global/utils/getAddressUtils";
+import { useEtherBalance } from "@usedapp/core";
 interface Step1TxBoxProps {
+  bridgeIn: boolean;
+  //network indo
+  allNetworks: BridgingNetwork[];
+  fromNetwork: BridgingNetwork;
+  toNetwork: BridgingNetwork;
+  selectNetwork: (network: BridgingNetwork) => void;
+  //addresses
   fromAddress?: string;
   toAddress?: string;
-  bridgeIn: boolean;
-  tokenGroups: Step1TokenGroups[];
-  selectedToken: UserERC20BridgeToken;
-  selectToken: (tokenAddress: string) => void;
-  txHook: () => BridgeTransaction;
+  //tokens
+  allTokens: Token[];
+  selectedToken?: Token;
+  selectToken: (token?: Token) => void;
+  //tx
+  tx: (amount: BigNumber, toAddress: string) => Promise<boolean>;
 }
 const Step1TxBox = (props: Step1TxBoxProps) => {
+  //regular confirmation modal
   const [isModalOpen, setModalOpen] = useState(false);
+  //ibc in modal
   const [isIBCModalOpen, setisIBCModalOpen] = useState(false);
   const [selectedIBCToken, setSelectedIBCToken] =
     useState<NativeToken>(EMPTY_NATIVE_TOKEN);
-  const [amount, setAmount] = useState("");
-  const txProps = props.txHook();
+  //ibc out modal
+  const [userInputAddress, setUserInputAddress] = useState("");
 
-  const currentTokenBalance = props.selectedToken.erc20Balance;
-  const [buttonText, buttonDisabled] = getStep1ButtonText(
-    convertStringToBigNumber(amount, props.selectedToken.decimals),
-    currentTokenBalance,
-    props.selectedToken.allowance,
-    props.bridgeIn
-  );
+  //general
+  const [amount, setAmount] = useState("");
+  const currentTokenBalance = props.selectedToken?.balance ?? BigNumber.from(0);
+  const [buttonText, buttonDisabled] = props.selectedToken
+    ? getStep1ButtonText(
+        convertStringToBigNumber(amount, props.selectedToken.decimals),
+        currentTokenBalance,
+        props.bridgeIn
+      )
+    : ["select token", true];
+  //oft gas estimation
+  const [gasEstimation, setGasEstimation] = useState(BigNumber.from(0));
+  const [userHasEnoughGas, setUserHasEnoughGas] = useState(true);
+  const gasTokenBalance = useEtherBalance(props.fromAddress ?? "", {
+    chainId: props.fromNetwork.evmChainId,
+  });
+  const gasEstimationText = () =>
+    `${truncateNumber(
+      formatUnits(
+        gasEstimation,
+        getSupportedNetwork(props.fromNetwork.evmChainId).nativeCurrency
+          ?.decimals
+      )
+    )} ${
+      getSupportedNetwork(props.fromNetwork.evmChainId).nativeCurrency?.symbol
+    }`;
+
+  async function getGasOFT() {
+    if (props.selectedToken?.isOFT) {
+      setGasEstimation(
+        await estimateOFTSendGasFee(
+          Number(props.fromNetwork.evmChainId),
+          Number(props.toNetwork["Layer Zero"]?.lzChainId),
+          props.selectedToken.address,
+          props.fromAddress ?? "",
+          convertStringToBigNumber("1", props.selectedToken.decimals),
+          [1, 200000]
+        )
+      );
+    } else {
+      setGasEstimation(BigNumber.from(0));
+      setUserHasEnoughGas(true);
+    }
+  }
   useEffect(() => {
-    toastBridgeTx(txProps.state, txProps.txName);
-  }, [txProps.state]);
+    getGasOFT();
+  }, [props.selectedToken]);
+  useEffect(() => {
+    if (
+      gasTokenBalance &&
+      gasEstimation &&
+      props.selectedToken?.isOFT &&
+      !props.bridgeIn
+    ) {
+      setUserHasEnoughGas(
+        gasTokenBalance.gt(
+          gasEstimation.add(
+            convertStringToBigNumber(
+              amount,
+              props.selectedToken?.decimals ?? 18
+            )
+          )
+        )
+      );
+    } else {
+      setUserHasEnoughGas(true);
+    }
+  }, [amount, gasEstimation]);
   return (
     <Styled>
       <Modal
@@ -69,6 +129,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         onClose={() => setisIBCModalOpen(false)}
       >
         <IBCGuideModal
+          network={props.fromNetwork.IBC as IBCNetwork}
           token={selectedIBCToken}
           cantoAddress={props.toAddress ?? ""}
           onClose={() => setisIBCModalOpen(false)}
@@ -77,50 +138,81 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
       <Modal
         title="confirmation"
         open={isModalOpen}
-        onClose={() => {
-          setModalOpen(false);
-          txProps.resetState();
-        }}
+        onClose={() => setModalOpen(false)}
       >
         <ConfirmTxModal
-          networkId={props.bridgeIn ? ETHMainnet.chainId : CantoMainnet.chainId}
-          title={txProps.txName}
+          title={props.bridgeIn ? "bridge in" : "bridge out"}
           titleIcon={TokenWithIcon({
-            icon: props.selectedToken.icon,
-            name: props.selectedToken.name,
+            icon: props.selectedToken?.icon ?? "",
+            name: props.selectedToken?.name ?? "",
           })}
           confirmationValues={[
             { title: "from", value: formatAddress(props.fromAddress, 6) },
-            { title: "to", value: formatAddress(props.toAddress, 6) },
+            {
+              title: "to",
+              value:
+                props.bridgeIn || props.toNetwork.isEVM
+                  ? formatAddress(props.toAddress, 6)
+                  : formatAddress(userInputAddress, 6),
+            },
             {
               title: "amount",
-              value: truncateNumber(amount) + " " + props.selectedToken.symbol,
+              value: truncateNumber(amount) + " " + props.selectedToken?.symbol,
             },
-          ]}
-          extraInputs={[]}
-          disableConfirm={false}
-          onConfirm={() => {
-            txProps.send(
-              convertStringToBigNumber(
-                amount,
-                props.selectedToken.decimals
-              ).toString()
-            );
-          }}
-          loadingProps={{
-            transactionType: txProps.txType,
-            status: txProps.state,
-            tokenName: props.selectedToken.name,
-            onClose: () => {
-              setModalOpen(false);
-            },
-          }}
-          extraDetails={getBridgeExtraDetails(
-            props.bridgeIn,
-            false,
-            formatAddress(props.fromAddress, 6),
-            formatAddress(props.toAddress, 6)
+          ].concat(
+            props.selectedToken?.isOFT
+              ? [
+                  {
+                    title: "gas estimation",
+                    value: gasEstimationText(),
+                  },
+                ]
+              : []
           )}
+          extraInputs={
+            props.bridgeIn || props.toNetwork.isEVM
+              ? []
+              : [
+                  {
+                    header: "address",
+                    placeholder: "",
+                    value: userInputAddress,
+                    setValue: setUserInputAddress,
+                  },
+                ]
+          }
+          disableConfirm={
+            !(
+              props.bridgeIn ||
+              props.toNetwork.IBC?.checkAddress(userInputAddress) ||
+              props.toNetwork.isEVM
+            )
+          }
+          onConfirm={() => {
+            if (props.selectedToken)
+              props.tx(
+                convertStringToBigNumber(amount, props.selectedToken.decimals),
+                userInputAddress
+              );
+          }}
+          extraDetails={
+            <>
+              {props.selectedToken?.isOFT && (
+                <Text color="primaryDark" size="text3">
+                  ** gas is paid on both the sending and receiving chains so
+                  estimates will be higher than other transactions **
+                </Text>
+              )}
+              {getBridgeExtraDetails1(
+                props.bridgeIn,
+                formatAddress(props.fromAddress, 6),
+                props.bridgeIn || props.toNetwork.isEVM
+                  ? formatAddress(props.toAddress, 6)
+                  : formatAddress(userInputAddress, 6),
+                props.bridgeIn ? props.fromNetwork : props.toNetwork
+              )}
+            </>
+          }
           onClose={() => {
             setModalOpen(false);
           }}
@@ -131,13 +223,29 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
       </Text>
       <div className="icons-indicator">
         <div className="center-element">
-          <img
-            src={props.bridgeIn ? ethIcon : cantoIcon}
-            alt={props.bridgeIn ? "ethereum" : "canto"}
-            height={42}
-            style={{ marginBottom: "10px" }}
-          />
-          <Text type="title">{props.bridgeIn ? "Ethereum" : "Canto"}</Text>
+          <div className="network-selector">
+            <DropDown
+              title="select network"
+              label="Network"
+              items={props.allNetworks
+                .filter((network) => !(network.isCanto && props.bridgeIn))
+                .map((network) => ({
+                  primaryText: network.name,
+                  icon: network.icon,
+                  id: network.id,
+                }))}
+              disabled={!props.bridgeIn}
+              onSelect={(id) => {
+                const network = props.allNetworks.find(
+                  (network) => network.id === id
+                );
+                if (network) {
+                  props.selectNetwork(network);
+                }
+              }}
+              selectedId={props.fromNetwork.id}
+            />
+          </div>
           <CopyToClipboard text={props.fromAddress ?? ""} onCopy={copyAddress}>
             <Text
               type="text"
@@ -163,17 +271,33 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             </Text>
           </CopyToClipboard>
         </div>
+
         <div className="loading">
           <LoadingBlip active />
+          <div style={{ height: 26 }}></div>
         </div>
         <div className="center-element">
-          <img
-            src={props.bridgeIn ? cantoIcon : bridgeIcon}
-            alt={props.bridgeIn ? "canto" : "bridge"}
-            height={42}
-            style={{ marginBottom: "10px" }}
+          <DropDown
+            title="select network"
+            label="Network"
+            items={props.allNetworks
+              .filter((network) => !(network.isCanto && !props.bridgeIn))
+              .map((network) => ({
+                primaryText: network.name,
+                icon: network.icon,
+                id: network.id,
+              }))}
+            disabled={props.bridgeIn}
+            onSelect={(id) => {
+              const network = props.allNetworks.find(
+                (network) => network.id === id
+              );
+              if (network) {
+                props.selectNetwork(network);
+              }
+            }}
+            selectedId={props.toNetwork.id}
           />
-          <Text type="title">{props.bridgeIn ? "Canto" : "Bridge"}</Text>
           <CopyToClipboard text={props.toAddress ?? ""} onCopy={copyAddress}>
             <Text
               type="text"
@@ -204,30 +328,22 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
       <div className="amount-box">
         <div className="token-box">
           <TokenWallet
-            tokenGroups={props.tokenGroups}
+            allTokens={props.allTokens}
             activeToken={props.selectedToken}
-            onSelect={(value) => {
+            onSelect={(token) => {
               if (
-                value?.tokenGroups.includes(TokenGroups.IBC_TOKENS) &&
+                token?.tokenGroups.includes(TokenGroups.IBC_TOKENS) &&
                 props.bridgeIn
               ) {
-                setSelectedIBCToken(value as NativeToken);
                 setisIBCModalOpen(true);
+                setSelectedIBCToken(token as NativeToken);
+                return;
               }
-              props.selectToken(value?.address ?? props.selectedToken.address);
+              props.selectToken(token);
             }}
           />
         </div>
         <div className="amount">
-          {/* <Text
-            style={{
-              color: "#848484",
-              width: "180px",
-              marginLeft: "6px",
-            }}
-          >
-            amount :
-          </Text> */}
           <CInput
             style={{
               backgroundColor: "transparent",
@@ -235,26 +351,54 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
               height: "54px",
             }}
             placeholder={`amount :  ${truncateNumber(
-              formatUnits(currentTokenBalance, props.selectedToken.decimals),
+              formatUnits(currentTokenBalance, props.selectedToken?.decimals),
               6
             )} `}
-            value={amount}
+            value={
+              amount && !isNaN(Number(amount))
+                ? amount.slice(-1) === "."
+                  ? commify(amount.slice(0, -1)) + "."
+                  : commify(amount)
+                : amount
+            }
             onChange={(val) => {
-              setAmount(val.target.value);
+              //remove all commas before setting value
+              setAmount(val.target.value.replace(/,/g, ""));
             }}
           />
           <button
             className="maxBtn"
             onClick={() => {
-              setAmount(
-                truncateNumber(
-                  formatUnits(
-                    currentTokenBalance,
-                    props.selectedToken.decimals
-                  ),
-                  6
-                )
-              );
+              if (
+                gasTokenBalance &&
+                gasEstimation &&
+                props.selectedToken?.isOFT &&
+                !props.bridgeIn
+              ) {
+                setAmount(
+                  truncateNumber(
+                    formatUnits(
+                      currentTokenBalance.sub(
+                        gasEstimation.add(
+                          parseUnits("4", props.selectedToken.decimals)
+                        )
+                      ),
+                      props.selectedToken?.decimals
+                    ),
+                    6
+                  )
+                );
+              } else {
+                setAmount(
+                  truncateNumber(
+                    formatUnits(
+                      currentTokenBalance,
+                      props.selectedToken?.decimals
+                    ),
+                    6
+                  )
+                );
+              }
             }}
           >
             <Text>max</Text>
@@ -269,12 +413,28 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         style={{ color: "#ff4141" }}
       >
         {buttonDisabled &&
-          convertStringToBigNumber(amount, props.selectedToken.decimals).gt(
-            currentTokenBalance
-          ) &&
+          convertStringToBigNumber(
+            amount,
+            props.selectedToken?.decimals ?? 0
+          ).gt(currentTokenBalance) &&
           `you have exceeded the maximum amount! (current balance: ${truncateNumber(
-            formatUnits(currentTokenBalance, props.selectedToken.decimals)
+            formatUnits(currentTokenBalance, props.selectedToken?.decimals)
           )})`}
+      </Text>
+      <Text
+        type="text"
+        size="text4"
+        align="center"
+        className="warning"
+        style={{
+          color: "#ff4141",
+          marginTop: "-1rem",
+          paddingBottom: "2rem",
+        }}
+        hidden={buttonDisabled || userHasEnoughGas}
+      >
+        {!(userHasEnoughGas || buttonDisabled) &&
+          `you do not have enough gas to complete the trasaction! (gas estimate: ${gasEstimationText()})`}
       </Text>
 
       <PrimaryButton
@@ -282,7 +442,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
         weight="bold"
         padding="lg"
         filled
-        disabled={buttonDisabled}
+        disabled={buttonDisabled || !userHasEnoughGas}
         onClick={() => {
           setModalOpen(true);
         }}
@@ -294,7 +454,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
 };
 
 const Styled = styled.div`
-  background: #090909;
+  background: #181818;
   border: 1px solid #3a3a3a;
   border-radius: 4px;
   width: 600px;
@@ -329,8 +489,7 @@ const Styled = styled.div`
   .icons-indicator {
     height: 140px;
     width: 100%;
-    border: 1px solid #252525;
-    border-radius: 4px;
+
     margin: 1rem 0;
     display: flex;
     justify-content: space-around;

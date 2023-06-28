@@ -1,17 +1,17 @@
 import { TransactionState } from "@usedapp/core";
 import { BigNumber } from "ethers";
 import {
-  BridgeOutNetworks,
+  CantoMainBridgeOutNetworks,
   UserERC20BridgeToken,
   UserNativeToken,
-} from "pages/bridging/config/interfaces";
+} from "pages/bridging/walkthrough/config/interfaces";
 import { TransactionHistoryEvent } from "pages/bridging/utils/bridgeTxHistory";
 import {
   BridgeInStep,
   BridgeInWalkthroughSteps,
   BridgeOutStep,
   BridgeOutWalkthroughSteps,
-} from "../config/interfaces";
+} from "../config/interfacesSteps";
 
 export function didPassBridgeOutWalkthroughCheck(
   currentStep: BridgeOutStep,
@@ -20,7 +20,7 @@ export function didPassBridgeOutWalkthroughCheck(
   convertOutAmount: BigNumber,
   maxConvertOutAmount: BigNumber,
   convertTxState: TransactionState,
-  bridgeOutNetwork: BridgeOutNetworks,
+  bridgeOutNetwork: CantoMainBridgeOutNetworks,
   bridgeOutToken: UserNativeToken,
   bridgeOutStatus: TransactionState,
   bridgeOutSendAddress: string

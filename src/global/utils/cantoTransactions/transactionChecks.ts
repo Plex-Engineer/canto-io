@@ -1,7 +1,10 @@
-import { CantoMainnet } from "global/config/networks";
+import { CallResult } from "@usedapp/core";
+import { Contract } from "ethers";
+import { getCosmosAPIEndpoint } from "../getAddressUtils";
 
 export async function checkCosmosTxConfirmation(
-  txHash: string
+  txHash: string,
+  chainId?: number
 ): Promise<boolean> {
   const fetchOptions = {
     method: "GET",
@@ -13,7 +16,7 @@ export async function checkCosmosTxConfirmation(
   while (numberOfBlocksChecked < 5) {
     const tx = await (
       await fetch(
-        CantoMainnet.cosmosAPIEndpoint + "/cosmos/tx/v1beta1/txs/" + txHash,
+        getCosmosAPIEndpoint(chainId) + "/cosmos/tx/v1beta1/txs/" + txHash,
         fetchOptions
       )
     ).json();
@@ -29,4 +32,16 @@ export async function checkCosmosTxConfirmation(
 }
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+//check to make sure that the multicall values are accetable
+export function checkMultiCallForUndefined(
+  results: CallResult<Contract, string>[]
+) {
+  for (const result of results) {
+    if (!result || !result?.value || result?.error) {
+      return false;
+    }
+  }
+  return true;
 }

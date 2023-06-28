@@ -1,6 +1,4 @@
 import { OutlinedButton, Text } from "global/packages/src";
-import cantoIMG from "assets/logo.svg";
-import ethIMG from "assets/icons/ETH.svg";
 import { formatBigNumber } from "../../utils/formatNumbers";
 import Popup from "reactjs-popup";
 import WalletModal from "./WalletModal";
@@ -13,9 +11,10 @@ interface Props {
   currency: string;
   account: string;
   chainId: number;
+  currencyIcon: string;
   onClick: () => void;
 }
-const ConnectWallet = ({ balance, currency, onClick }: Props) => {
+const ConnectWallet = ({ balance, currency, onClick, currencyIcon }: Props) => {
   const { account } = useEthers();
   return (
     <div className="wallet">
@@ -37,8 +36,7 @@ const ConnectWallet = ({ balance, currency, onClick }: Props) => {
                 }}
               >
                 <span className="center ">
-                  {currency == "CANTO" && <img src={cantoIMG} height={14} />}
-                  {currency == "ETH" && <img src={ethIMG} height={14} />}
+                  <img src={currencyIcon} height={14} />
                   {formatBigNumber(balance)}&nbsp;
                 </span>
                 <span
@@ -68,7 +66,12 @@ const ConnectWallet = ({ balance, currency, onClick }: Props) => {
             </div>
           }
         >
-          <WalletModal />
+          <WalletModal
+            account={account}
+            balance={balance}
+            currency={currency}
+            icon={currencyIcon}
+          />
         </Popup>
       ) : (
         <OutlinedButton

@@ -15,13 +15,14 @@ interface Props {
   balance: string;
   isConnected: boolean;
   currency: string;
-  logo: string;
+  siteLogo: string;
+  currencyIcon: string;
   pageList: PageObject[];
   currentPage?: string;
 }
 
 export const NavBar = (props: Props) => {
-  const { chainId, logo, currentPage, pageList } = props;
+  const { chainId, siteLogo: logo, currentPage, pageList } = props;
 
   const [onScroll, setOnScroll] = useState(false);
 
@@ -41,11 +42,7 @@ export const NavBar = (props: Props) => {
       <Alert />
       <nav className={onScroll ? "scroll" : ""}>
         <div className="menu">
-          <MenuBar
-            chainId={chainId}
-            currentPage={currentPage}
-            pageList={pageList}
-          />
+          <MenuBar currentPage={currentPage} pageList={pageList} />
           <a id="logo" href="/">
             <img src={logo} />
             <div

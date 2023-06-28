@@ -1,15 +1,15 @@
 import { generateEndpointAccount } from "@tharsis/provider";
 import { createMessageSend } from "@tharsis/transactions";
-import { CantoMainnet } from "global/config/networks";
-import { chain, pubKeyFee, memo } from "global/config/cosmosConstants";
+import { pubKeyFee } from "global/config/cosmosConstants";
 import { getCantoAddressFromMetaMask } from "../walletConnect/addCantoToWallet";
 import {
   checkCantoBalance,
   getSenderObj,
   signAndBroadcastTxMsg,
 } from "./helpers";
+import { getCosmosAPIEndpoint, getCosmosChainObj } from "../getAddressUtils";
 
-export async function checkPubKey(bech32Address: string) {
+export async function checkPubKey(bech32Address: string, chainId?: number) {
   const endPointAccount = generateEndpointAccount(bech32Address);
   const options = {
     method: "GET",
@@ -17,7 +17,7 @@ export async function checkPubKey(bech32Address: string) {
   };
   try {
     const addressRawData = await fetch(
-      CantoMainnet.cosmosAPIEndpoint + endPointAccount,
+      getCosmosAPIEndpoint(chainId) + endPointAccount,
       options
     );
     const addressData = await addressRawData.json();
@@ -29,7 +29,8 @@ export async function checkPubKey(bech32Address: string) {
 
 export async function generatePubKey(
   hexAddress: string | undefined,
-  setIsSuccess: (s: string) => void
+  setIsSuccess: (s: string) => void,
+  chainId?: number
 ) {
   const botAddress = "canto1efrhdukv096tmjs7r80m8pqkr3udp9g0uadjfv";
   if (hexAddress === undefined) {
@@ -38,10 +39,10 @@ export async function generatePubKey(
   }
   setIsSuccess("please wait...");
 
-  const bech32Address = await getCantoAddressFromMetaMask(hexAddress);
-  const hasCanto = await checkCantoBalance(bech32Address);
+  const bech32Address = await getCantoAddressFromMetaMask(hexAddress, chainId);
+  const hasCanto = await checkCantoBalance(bech32Address, chainId);
 
-  const hasPubKey = await checkPubKey(bech32Address);
+  const hasPubKey = await checkPubKey(bech32Address, chainId);
   if (hasPubKey) {
     setIsSuccess("user already has a public key for account: " + hexAddress);
     return;
@@ -61,10 +62,16 @@ export async function generatePubKey(
   }
   // await generate pub key
   setIsSuccess("waiting for the metamask transaction to be signed...");
-  const response = await txSend(botAddress, hexAddress, bech32Address, "1"); // await txSend to bot
+  const response = await txSend(
+    botAddress,
+    hexAddress,
+    bech32Address,
+    "1",
+    chainId
+  ); // await txSend to bot
   setIsSuccess("generating account...");
   const wrapper = async () => {
-    const hasPubKey = await checkPubKey(bech32Address);
+    const hasPubKey = await checkPubKey(bech32Address, chainId);
     if (hasPubKey) {
       setIsSuccess("account successfully generated!");
       window.location.reload();
@@ -92,27 +99,34 @@ async function callBot(cantoAddress: string, hexAddress: string) {
 
   return await fetch(CANTO_BOT_URL, options);
 }
-export async function txSend(
+async function txSend(
   destinationBech32: string,
   senderHexAddress: string,
   senderBech32address: string,
-  amount: string
+  amount: string,
+  chainId?: number
 ) {
   const senderObj = await getSenderObj(
     senderHexAddress,
-    CantoMainnet.cosmosAPIEndpoint
+    getCosmosAPIEndpoint(chainId)
   );
   const params = {
     destinationAddress: destinationBech32,
     amount: amount,
     denom: "acanto",
   };
-  const msg = createMessageSend(chain, senderObj, pubKeyFee, memo, params);
+  const msg = createMessageSend(
+    getCosmosChainObj(chainId),
+    senderObj,
+    pubKeyFee,
+    "",
+    params
+  );
   return signAndBroadcastTxMsg(
     msg,
     senderObj,
-    chain,
-    CantoMainnet.cosmosAPIEndpoint,
+    getCosmosChainObj(chainId),
+    getCosmosAPIEndpoint(chainId),
     senderHexAddress
   );
 }

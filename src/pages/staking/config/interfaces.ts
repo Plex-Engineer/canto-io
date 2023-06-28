@@ -74,7 +74,6 @@ export interface AllStakingProps {
   validators: Validator[];
 }
 export enum StakingTransactionType {
-  NONE = "NONE",
   DELEGATE = "DELEGATE",
   UNDELEGATE = "UNDELEGATE",
   REDELEGATE = "REDELEGATE",

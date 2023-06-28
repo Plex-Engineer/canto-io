@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
-import { FilledButton, PrimaryButton, Text } from "global/packages/src";
-import React from "react";
+import { PrimaryButton, Text } from "global/packages/src";
 import { useNavigate } from "react-router-dom";
 
 const PageNotFound = () => {

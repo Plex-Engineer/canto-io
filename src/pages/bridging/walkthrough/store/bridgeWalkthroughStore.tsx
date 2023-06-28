@@ -4,7 +4,7 @@ import {
   BridgeInWalkthroughSteps,
   BridgeOutStep,
   BridgeOutWalkthroughSteps,
-} from "../config/interfaces";
+} from "../config/interfacesSteps";
 
 interface BridgeWalkthroughStoreProps {
   currentBridgeType: "IN" | "OUT" | "NONE";

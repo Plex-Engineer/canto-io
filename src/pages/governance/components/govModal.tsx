@@ -148,7 +148,6 @@ const GovRadioStyle = styled.div`
   &:hover {
     border: 1px solid #06fc9aac;
     color: #06fc9aac;
-    background-color: #06fc9a2;
     .unchecked {
       border: 1px solid #06fc9aac;
     }

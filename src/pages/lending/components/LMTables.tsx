@@ -1,5 +1,5 @@
 import { formatEther, formatUnits } from "ethers/lib/utils";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import { useState } from "react";
 import { UserLMPosition, UserLMTokenDetails } from "../config/interfaces";
 import { BorrowRow, SupplyRow } from "./lendingRow";

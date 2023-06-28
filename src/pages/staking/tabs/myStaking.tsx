@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { formatEther } from "ethers/lib/utils";
 import { Text } from "global/packages/src";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import InfoBar from "../components/InfoBar";
 import { ValidatorTable } from "../components/stakingTable";
 import { UndelegatingTable } from "../components/undelegatingTable";

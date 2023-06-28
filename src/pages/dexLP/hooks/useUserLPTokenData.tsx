@@ -1,26 +1,21 @@
 import { CallResult, useCalls, useEtherBalance } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
-import { CantoTestnet, CantoMainnet } from "global/config/networks";
 import { cERC20Abi, ERC20Abi, routerAbi } from "global/config/abi";
 import { LPPairInfo, UserLPPairInfo } from "../config/interfaces";
-import { getSupplyBalanceFromCTokens } from "pages/lending/utils/utils";
+import { getSupplyBalanceFromCTokens } from "pages/lending/utils/supplyWithdrawLimits";
 import { formatUnits } from "ethers/lib/utils";
-import { ADDRESSES } from "global/config/addresses";
 import { checkForCantoInPair } from "../utils/pairCheck";
-import { checkMultiCallForUndefined } from "global/utils/utils";
-
+import { checkMultiCallForUndefined } from "global/utils/cantoTransactions/transactionChecks";
+import {
+  getAddressesForCantoNetwork,
+  onCantoNetwork,
+} from "global/utils/getAddressUtils";
 const useUserLPTokenInfo = (
   LPTokens: LPPairInfo[],
   account: string | undefined,
   chainId: number | undefined
 ): UserLPPairInfo[] => {
-  const onCanto =
-    Number(chainId) == CantoMainnet.chainId ||
-    Number(chainId) == CantoTestnet.chainId;
-  const routerAddress =
-    chainId == CantoTestnet.chainId
-      ? ADDRESSES.testnet.PriceFeed
-      : ADDRESSES.cantoMainnet.PriceFeed;
+  const routerAddress = getAddressesForCantoNetwork(chainId).Router;
   const RouterContract = new Contract(routerAddress, routerAbi);
   const CANTOBalance = useEtherBalance(account) ?? BigNumber.from(0);
 
@@ -89,7 +84,9 @@ const useUserLPTokenInfo = (
   });
 
   const results =
-    useCalls(LPTokens && onCanto && account ? calls.flat() : []) ?? {};
+    useCalls(
+      LPTokens && onCantoNetwork(chainId) && account ? calls.flat() : []
+    ) ?? {};
 
   const chuckSize = !LPTokens ? 0 : results.length / LPTokens.length;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

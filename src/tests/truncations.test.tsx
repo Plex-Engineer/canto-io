@@ -2,7 +2,7 @@ import {
   truncateNumber,
   removeLeadingZeros,
   convertFromScientificNotation,
-} from "global/utils/utils";
+} from "global/utils/formattingNumbers";
 
 describe("Testing Truncation Helpers", () => {
   it("should remove leading zeros correctly", () => {

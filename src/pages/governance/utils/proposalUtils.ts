@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
-import { nodeURL } from "global/utils/cantoTransactions/helpers";
 import { emptyProposal, Tally } from "../config/interfaces";
+import { getCosmosAPIEndpoint } from "global/utils/getAddressUtils";
 
 const fetchOptions = {
   method: "GET",
@@ -15,7 +15,7 @@ export async function getSingleProposalData(id: string, chainId: number) {
   }
   const proposalData = await (
     await fetch(
-      nodeURL(chainId) + "/cosmos/gov/v1beta1/proposals/" + id,
+      getCosmosAPIEndpoint(chainId) + "/cosmos/gov/v1beta1/proposals/" + id,
       fetchOptions
     )
   ).json();
@@ -28,7 +28,10 @@ export async function getSingleProposalData(id: string, chainId: number) {
 
 export async function getTotalCantoStaked(chainId: number): Promise<BigNumber> {
   const stakingData = await (
-    await fetch(nodeURL(chainId) + "/cosmos/staking/v1beta1/pool", fetchOptions)
+    await fetch(
+      getCosmosAPIEndpoint(chainId) + "/cosmos/staking/v1beta1/pool",
+      fetchOptions
+    )
   ).json();
   return BigNumber.from(stakingData.pool?.bonded_tokens ?? 0);
 }

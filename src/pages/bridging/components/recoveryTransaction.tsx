@@ -2,44 +2,38 @@ import styled from "@emotion/styled";
 import { formatUnits } from "ethers/lib/utils";
 import { PrimaryButton, Text } from "global/packages/src";
 import Modal from "global/packages/src/components/molecules/Modal";
-import { CantoMainnet } from "global/providers";
-import { getShortTxStatusFromState, truncateNumber } from "global/utils/utils";
-import { useEffect, useState } from "react";
-import { ALL_BRIDGE_OUT_NETWORKS } from "../config/bridgeOutNetworks";
-import {
-  BridgeOutNetworkInfo,
-  RecoveryTransaction,
-} from "../config/interfaces";
-import { BridgeTransaction } from "../hooks/useBridgingTransactions";
-import { formatAddress, toastBridgeTx } from "../utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
+import { useState } from "react";
+import { formatAddress } from "../utils/utils";
 import acronIcon from "assets/acron.svg";
 import ConfirmTxModal, {
   TokenWithIcon,
 } from "global/components/modals/confirmTxModal";
 import rightArrow from "assets/next.svg";
 import { getBridgeExtraDetails } from "./bridgeDetails";
+import { ibcOutTx } from "../utils/transactions";
+import { TransactionStore } from "global/stores/transactionStore";
+import { CantoMainnet } from "global/config/networks";
+import { MAINNET_IBC_NETWORKS } from "../config/networks.ts/cosmos";
+import { IBCNetwork, RecoveryTransaction } from "../config/bridgingInterfaces";
 
 interface Props {
   transaction: RecoveryTransaction;
-  txFactory: () => BridgeTransaction;
   cantoAddress: string;
+  txStore: TransactionStore;
 }
 const RecoveryTransactionBox = ({
   transaction,
-  txFactory,
   cantoAddress,
+  txStore,
 }: Props) => {
-  const txStats = txFactory();
   const [isModalOpen, setModalOpen] = useState(false);
   const [isNetworkSelectModalOpen, setNetworkSelectModalOpen] = useState(false);
-  const [selectedNetwork, setSelectedNetwork] = useState<BridgeOutNetworkInfo>(
-    transaction.defaultNetwork
+  const [selectedNetwork, setSelectedNetwork] = useState<IBCNetwork>(
+    transaction.defaultNetwork ?? MAINNET_IBC_NETWORKS.Cosmos_Hub
   );
   const [userInputAddress, setUserInputAddress] = useState("");
-
-  useEffect(() => {
-    toastBridgeTx(txStats.state, txStats.txName);
-  }, [txStats.state]);
+  const bridgeOutNetworks = MAINNET_IBC_NETWORKS;
 
   return (
     <Styled>
@@ -51,8 +45,7 @@ const RecoveryTransactionBox = ({
         }}
       >
         <ConfirmTxModal
-          networkId={CantoMainnet.chainId}
-          title={txStats.txName}
+          title={"CONFIRM"}
           titleIcon={
             <div style={{ display: "flex", flexDirection: "row", gap: "1rem" }}>
               {TokenWithIcon({
@@ -89,19 +82,21 @@ const RecoveryTransactionBox = ({
           ]}
           disableConfirm={!selectedNetwork.checkAddress(userInputAddress)}
           onConfirm={() => {
-            txStats.send(
-              transaction.amount.toString(),
+            ibcOutTx(
+              CantoMainnet.chainId,
+              txStore,
+              selectedNetwork,
               userInputAddress,
-              selectedNetwork
+              transaction.token.ibcDenom,
+              transaction.amount.toString(),
+              {
+                symbol: `${transaction.token.symbol} to ${selectedNetwork.name}`,
+                amount: formatUnits(
+                  transaction.amount,
+                  transaction.token.decimals
+                ),
+              }
             );
-          }}
-          loadingProps={{
-            transactionType: txStats.txType,
-            status: txStats.state,
-            tokenName: transaction.token.name,
-            onClose: () => {
-              false;
-            },
           }}
           extraDetails={getBridgeExtraDetails(
             false,
@@ -142,15 +137,9 @@ const RecoveryTransactionBox = ({
           height="normal"
           weight="bold"
           filled
-          onClick={() => {
-            if (txStats.state == "Exception" || txStats.state == "Fail")
-              txStats.resetState();
-            setModalOpen(true);
-          }}
+          onClick={() => setModalOpen(true)}
         >
-          {getShortTxStatusFromState(txStats.state) == "complete"
-            ? "recover"
-            : getShortTxStatusFromState(txStats.state)}
+          recover
         </PrimaryButton>
       </div>
 
@@ -180,7 +169,8 @@ const RecoveryTransactionBox = ({
           channel id
         </Text>
         <Text type="title" align="left">
-          {selectedNetwork.cantoChannel.replace("channel-", "")}
+          {selectedNetwork.channelFromCanto.replace("channel-", "")}
+          {/* 5 */}
         </Text>
       </div>
       <div
@@ -200,31 +190,29 @@ const RecoveryTransactionBox = ({
           >
             <ChooseNetwork>
               <div className="network-list">
-                {Object.entries(ALL_BRIDGE_OUT_NETWORKS).map(
-                  ([key, network]) => (
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      key={key}
-                      className="network-item"
-                      onClick={() => {
-                        setNetworkSelectModalOpen(false);
-                        setSelectedNetwork(network);
-                      }}
-                      style={{
-                        background:
-                          selectedNetwork.chainId === network.chainId
-                            ? "#1d1d1d"
-                            : "",
-                      }}
-                    >
-                      <span>
-                        <img src={network.icon} />
-                        <Text>{network.name}</Text>
-                      </span>
-                    </div>
-                  )
-                )}
+                {Object.entries(bridgeOutNetworks).map(([key, network]) => (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    key={key}
+                    className="network-item"
+                    onClick={() => {
+                      setNetworkSelectModalOpen(false);
+                      setSelectedNetwork(network);
+                    }}
+                    style={{
+                      background:
+                        selectedNetwork.chainId === network.chainId
+                          ? "#1d1d1d"
+                          : "",
+                    }}
+                  >
+                    <span>
+                      <img src={network.icon} />
+                      <Text>{network.name}</Text>
+                    </span>
+                  </div>
+                ))}
               </div>
             </ChooseNetwork>
           </Modal>
@@ -300,14 +288,12 @@ const Styled = styled.div`
     max-width: 6rem;
   }
 `;
-const ChooseNetwork = styled.div`
+export const ChooseNetwork = styled.div`
   width: 30rem;
   height: 34rem;
   overflow-y: auto;
   padding: 0 2rem;
   .network-list {
-    scrollbar-color: var(--primary-color);
-    scroll-behavior: smooth;
     padding: 8px;
     display: flex;
     flex-direction: column;

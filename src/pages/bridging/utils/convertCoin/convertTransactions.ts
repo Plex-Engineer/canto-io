@@ -7,9 +7,9 @@ import { createTxMsgConvertCoin } from "./createMessages/msgConvertCoin";
 import { createTxMsgConvertERC20 } from "./createMessages/msgConvertERC20";
 
 export async function txConvertERC20(
+  receiverCantoAddress: string,
   erc20ContractAddress: string,
   amount: string,
-  receiverCantoAddress: string,
   nodeAddressIP: string,
   fee: Fee,
   chain: Chain,

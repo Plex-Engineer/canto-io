@@ -4,7 +4,7 @@ import bridgeInIcon from "assets/bridge-in.svg";
 import bridgeOutIcon from "assets/bridge-out.svg";
 import { Mixpanel } from "mixpanel";
 import { TransactionHistoryEvent } from "../utils/bridgeTxHistory";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import { formatUnits } from "ethers/lib/utils";
 import { convertSecondsToString } from "../utils/utils";
 

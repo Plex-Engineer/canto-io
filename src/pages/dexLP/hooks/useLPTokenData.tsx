@@ -1,31 +1,23 @@
 import { CallResult, useCalls } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
-import { PAIR, TESTPAIRS, MAINPAIRS } from "../config/pairs";
-import { CantoMainnet, CantoTestnet } from "global/config/networks";
+import { CantoMainnet } from "global/config/networks";
 import { ERC20Abi, routerAbi } from "global/config/abi";
 import { LPPairInfo } from "../config/interfaces";
 import { getLPPairRatio } from "../utils/utils";
-import { ADDRESSES } from "global/config/addresses";
-import { CTOKENS } from "global/config/tokenInfo";
-import { checkMultiCallForUndefined } from "global/utils/utils";
-
+import { checkMultiCallForUndefined } from "global/utils/cantoTransactions/transactionChecks";
+import {
+  getAddressesForCantoNetwork,
+  onCantoNetwork,
+} from "global/utils/getAddressUtils";
+import { getPairsForChainId } from "../config/pairs";
+import { getCTokensForChainId } from "pages/lending/config/lendingMarketTokens";
 const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
-  const onCanto =
-    Number(chainId) == CantoMainnet.chainId ||
-    Number(chainId) == CantoTestnet.chainId;
-  const routerAddress =
-    chainId == CantoTestnet.chainId
-      ? ADDRESSES.testnet.PriceFeed
-      : ADDRESSES.cantoMainnet.PriceFeed;
+  const routerAddress = getAddressesForCantoNetwork(chainId).Router;
   const RouterContract = new Contract(routerAddress, routerAbi);
 
-  const PAIRS: PAIR[] = chainId == CantoTestnet.chainId ? TESTPAIRS : MAINPAIRS;
+  const PAIRS = getPairsForChainId(chainId);
   //ctokens to look for underlying price from lending market
-  const cTokens =
-    chainId == CantoTestnet.chainId
-      ? CTOKENS.cantoTestnet
-      : CTOKENS.cantoMainnet;
-
+  const cTokens = getCTokensForChainId(chainId);
   const calls = PAIRS.map((pair) => {
     const ERC20Contract = new Contract(pair.address, ERC20Abi);
     const cTokenAddress = (underlyingAddress: string) => {
@@ -34,7 +26,7 @@ const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
           return tokenObj.address;
         }
       }
-      return cTokens.CNOTE.address;
+      return "";
     };
 
     return [
@@ -73,7 +65,7 @@ const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
 
   const results =
     useCalls(!PAIRS ? [] : calls.flat(), {
-      chainId: onCanto ? Number(chainId) : CantoMainnet.chainId,
+      chainId: onCantoNetwork(chainId) ? chainId : CantoMainnet.chainId,
     }) ?? {};
 
   const chuckSize = !PAIRS ? 0 : results.length / PAIRS.length;

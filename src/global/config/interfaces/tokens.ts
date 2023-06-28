@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 export enum TokenGroups {
   DEX_TOKENS = "DEX_TOKENS",
   IBC_TOKENS = "IBC_TOKENS",
@@ -13,6 +15,13 @@ export interface Token {
   isLP: boolean;
   icon: string;
   tokenGroups: TokenGroups[];
+  balance?: BigNumber;
+  //this will check if we should just grab native balance for this token instead of balanceOf
+  isNative?: boolean;
+  nativeBalance?: BigNumber;
+  nativeSymbol?: string;
+  //bridging props
+  isOFT?: boolean;
 }
 
 export interface CTOKEN {

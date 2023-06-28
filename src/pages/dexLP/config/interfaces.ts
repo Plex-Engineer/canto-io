@@ -1,6 +1,16 @@
 import { BigNumber } from "ethers";
-import { MAINPAIRS, PAIR } from "./pairs";
+import { getPairsForChainId } from "./pairs";
+import { Token } from "global/config/interfaces/tokens";
 
+export interface PAIR {
+  address: string;
+  cLPaddress: string;
+  token1: Token;
+  token2: Token;
+  decimals: number;
+  cDecimals: number;
+  stable: boolean;
+}
 export interface LPPairInfo {
   basePairInfo: PAIR;
   totalSupply: {
@@ -60,7 +70,7 @@ export const EmptyUserLPPairInfo = {
   },
 };
 export const EmptySelectedLPToken = {
-  basePairInfo: MAINPAIRS[0],
+  basePairInfo: getPairsForChainId()[0],
   totalSupply: {
     totalLP: BigNumber.from(0),
     tvl: BigNumber.from(0),
@@ -81,3 +91,11 @@ export const EmptySelectedLPToken = {
   },
   ...EmptyUserLPPairInfo,
 };
+
+export enum LPTransaction {
+  ADD_LIQUIDITY = "Add Liquidity",
+  REMOVE_LIQUIDITY = "Remove Liquidity",
+  STAKE = "Stake",
+  ADD_LIQUIDITY_AND_STAKE = "Add Liquidity and Stake",
+  REMOVE_LIQUIDITY_AND_UNSTAKE = "Remove Liquidity and Unstake",
+}

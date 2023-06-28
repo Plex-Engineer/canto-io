@@ -226,6 +226,7 @@ export const ToolTipL = styled.div`
 
 export const SupplyBorrowContainer = styled.div`
   display: flex;
+  width: 30rem;
   flex-direction: column;
   position: relative;
   .title {
@@ -233,7 +234,7 @@ export const SupplyBorrowContainer = styled.div`
     justify-content: center;
     align-items: center;
     gap: 1rem;
-    margin: 1rem;
+    margin-top: 1rem;
   }
   .tabs {
     margin: 16px;
@@ -268,20 +269,11 @@ export const SupplyBorrowContainer = styled.div`
     border-radius: 1px;
     color: var(--primary-color);
   }
-
+  button {
+    margin-top: 4rem;
+  }
   @media (max-width: 1000px) {
     width: 100%;
-  }
-`;
-export const SupplyBorrowLoadingOverlay = styled.div`
-  position: absolute;
-  top: 0%;
-  bottom: 0%;
-  width: 400px;
-  max-height: 45.6rem;
-  background-color: black;
-  @media (max-width: 1000px) {
-    width: 99vw;
   }
 `;
 
@@ -354,24 +346,5 @@ export const RewardsContainer = styled.div`
 
   @media (max-width: 1000px) {
     width: 100%;
-  }
-`;
-
-export const ModalWallet = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin: 2rem 0 1.3rem 0;
-  border-top: 1px solid #222;
-  padding-top: 1rem;
-  width: 30rem;
-  p:first-of-type {
-    font-weight: 300;
-    font-size: 16px;
-    color: #dfdfdf;
-  }
-  p:last-child {
-    font-weight: 300;
-    font-size: 16px;
-    color: var(--primary-color);
   }
 `;

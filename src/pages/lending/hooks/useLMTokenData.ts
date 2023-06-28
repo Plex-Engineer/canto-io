@@ -2,28 +2,24 @@ import { formatEther } from "@ethersproject/units";
 import { CallResult, useCalls } from "@usedapp/core";
 import { BigNumber, Contract } from "ethers";
 import { ethers } from "ethers";
-import { CantoTestnet, CantoMainnet } from "global/config/networks";
-import { cTokensBase, mainnetBasecTokens } from "../config/lendingMarketTokens";
+import { CantoMainnet } from "global/config/networks";
+import { getCTokensForChainId } from "../config/lendingMarketTokens";
 import { LMTokenDetails } from "../config/interfaces";
 import { cERC20Abi, comptrollerAbi, routerAbi } from "global/config/abi";
 import { CTOKENS } from "global/config/tokenInfo";
-import { ADDRESSES } from "global/config/addresses";
-import { checkMultiCallForUndefined } from "global/utils/utils";
+import { checkMultiCallForUndefined } from "global/utils/cantoTransactions/transactionChecks";
 import { CTOKEN } from "global/config/interfaces/tokens";
+import {
+  getAddressesForCantoNetwork,
+  onCantoNetwork,
+} from "global/utils/getAddressUtils";
 
 const formatUnits = ethers.utils.formatUnits;
 const parseUnits = ethers.utils.parseUnits;
 
-export function useLMTokenData(chainId?: string): LMTokenDetails[] {
-  const onCanto =
-    Number(chainId) == CantoMainnet.chainId ||
-    Number(chainId) == CantoTestnet.chainId;
-  const tokens: CTOKEN[] =
-    Number(chainId) == CantoTestnet.chainId ? cTokensBase : mainnetBasecTokens;
-  const address =
-    Number(chainId) == CantoTestnet.chainId
-      ? ADDRESSES.testnet
-      : ADDRESSES.cantoMainnet;
+export function useLMTokenData(chainId?: number): LMTokenDetails[] {
+  const tokens: CTOKEN[] = getCTokensForChainId(chainId);
+  const coreContracts = getAddressesForCantoNetwork(chainId);
 
   const secondsPerBlock = 5.8;
   const blocksPerDay = 86400 / secondsPerBlock;
@@ -53,9 +49,9 @@ export function useLMTokenData(chainId?: string): LMTokenDetails[] {
   }
 
   //comptroller contract
-  const comptroller = new Contract(address?.Comptroller, comptrollerAbi);
+  const comptroller = new Contract(coreContracts?.Comptroller, comptrollerAbi);
   //canto contract
-  const priceFeedContract = new Contract(address?.PriceFeed, routerAbi);
+  const priceFeedContract = new Contract(coreContracts?.Router, routerAbi);
   const calls =
     tokens?.map((token) => {
       //canto contract
@@ -123,7 +119,7 @@ export function useLMTokenData(chainId?: string): LMTokenDetails[] {
 
   const results =
     useCalls(typeof tokens == typeof CTOKENS ? globalCalls : [], {
-      chainId: onCanto ? Number(chainId) : CantoMainnet.chainId,
+      chainId: onCantoNetwork(chainId) ? chainId : CantoMainnet.chainId,
     }) ?? {};
 
   const chuckSize = !tokens ? 0 : (results.length - 1) / tokens.length;

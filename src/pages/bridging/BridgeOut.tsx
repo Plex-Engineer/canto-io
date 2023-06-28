@@ -1,20 +1,27 @@
-import { BigNumberish } from "ethers";
-import { formatUnits } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
 import { BridgeStyled } from "./BridgeIn";
 import QBoxList from "./components/QBoxList";
 import Step1TxBox from "./components/step1TxBox";
-import Step2TxBox from "./components/step2TxBox";
-import { NativeTransaction, UserERC20BridgeToken } from "./config/interfaces";
-import { BridgingTransactionsSelector } from "./hooks/useBridgingTransactions";
-
+import { TransactionStore } from "global/stores/transactionStore";
+import { Token } from "global/config/interfaces/tokens";
+import { BridgingNetwork } from "./config/bridgingInterfaces";
 interface BridgeOutProps {
+  //tokens
+  bridgeTokens: Token[];
+  selectedToken?: Token;
+  selectToken: (token?: Token) => void;
+  //networks
+  chainId: number;
+  allNetworks: BridgingNetwork[];
+  fromNetwork: BridgingNetwork;
+  toNetwork: BridgingNetwork;
+  selectNetwork: (network: BridgingNetwork, isFrom: boolean) => void;
+  //addresses
   ethAddress?: string;
   cantoAddress?: string;
-  bridgeOutTokens: UserERC20BridgeToken[];
-  selectedBridgeOutToken: UserERC20BridgeToken;
-  selectToken: (tokenAddress: string) => void;
-  step2Transactions: NativeTransaction[];
-  txSelector: BridgingTransactionsSelector;
+  //tx
+  tx: (amount: BigNumber, toChainAddress?: string) => Promise<boolean>;
+  txStore: TransactionStore;
 }
 const BridgeOut = (props: BridgeOutProps) => {
   return (
@@ -31,17 +38,10 @@ const BridgeOut = (props: BridgeOutProps) => {
           QA={[
             {
               question: "Step 1: Send Funds from Canto",
-              answer:
-                "This first step initiates bridging out, select the token and the amount you want to bridge out to add a transaction to the bridging queue. This first step usually completes in a few seconds.",
-            },
-            {
-              question: "Step 2: Complete Queued Transactions",
               answer: (
                 <>
-                  After completing the first step, the token you want to bridge
-                  out will appear in the queue. Click the “Complete” button to
-                  bridge the tokens out to their native chain. You’ll need the
-                  address you want to send tokens to.{" "}
+                  To bridge out of canto, select the network and token you want
+                  to bridge out.{" "}
                   <a
                     role="button"
                     tabIndex={0}
@@ -70,40 +70,28 @@ const BridgeOut = (props: BridgeOutProps) => {
             {
               question: "Where are my tokens?",
               answer:
-                "If you can’t find your tokens, first check to see if the queued transaction is complete at the bottom half of the page. If the transaction is complete, you can click the “Balances” button to see a table of your token balances that are either queued or on Ethereum or Canto.",
+                "If you cannot find your token on the receiving network, check on the 'bridge in' page to see if your token is on the native canto network. If the token is shown, click 'complete' on the box to move this token back to Canto's EVM. Then retry bridging out.",
             },
           ]}
         />
       </div>
       <div className="center">
         <Step1TxBox
+          bridgeIn={false}
+          allNetworks={props.allNetworks}
+          fromNetwork={props.fromNetwork}
+          toNetwork={props.toNetwork}
+          selectNetwork={(network) => props.selectNetwork(network, false)}
           fromAddress={props.ethAddress}
-          toAddress={props.cantoAddress}
-          bridgeIn={false}
-          tokenGroups={[
-            {
-              groupName: "bridge out tokens",
-              tokens: props.bridgeOutTokens,
-              getBalance: (token) =>
-                formatUnits(token.erc20Balance as BigNumberish, token.decimals),
-            },
-          ]}
-          selectedToken={props.selectedBridgeOutToken}
-          selectToken={props.selectToken}
-          txHook={() =>
-            props.txSelector.convertCoin.convertTx(
-              props.selectedBridgeOutToken.address,
-              props.cantoAddress ?? "",
-              false
-            )
+          toAddress={
+            props.toNetwork.isEVM ? props.ethAddress : props.cantoAddress
           }
-        />
-        <Step2TxBox
-          bridgeIn={false}
-          transactions={props.step2Transactions}
-          txHook={(tokenName) => props.txSelector.bridgeOut.ibcOut(tokenName)}
-          cantoAddress={props.cantoAddress ?? ""}
-          ethAddress={props.ethAddress ?? ""}
+          allTokens={props.bridgeTokens}
+          selectedToken={props.selectedToken}
+          selectToken={props.selectToken}
+          tx={async (amount: BigNumber, toAddress?: string) =>
+            await props.tx(amount, toAddress)
+          }
         />
       </div>
       <div className="right"></div>

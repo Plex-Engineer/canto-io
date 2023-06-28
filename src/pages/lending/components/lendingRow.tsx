@@ -1,9 +1,8 @@
 import styled from "@emotion/styled";
 import LendingSwitch from "./lendingSwitch";
-import { noteSymbol } from "global/utils/utils";
-import { ToolTip } from "./Tooltip";
+import { noteSymbol } from "global/config/tokenInfo";
 import React from "react";
-import { formatLiquidity } from "../utils/utils";
+import { formatLiquidity } from "global/utils/formattingNumbers";
 import cantoIcon from "assets/logo.svg";
 import Popup from "reactjs-popup";
 import { ToolTipL } from "./Styled";

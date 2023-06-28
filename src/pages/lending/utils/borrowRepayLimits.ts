@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { convertBigNumberRatioIntoPercentage } from "global/utils/utils";
+import { convertBigNumberRatioIntoPercentage } from "global/utils/formattingNumbers";
 
 //percent of limit will give how much, in terms of underlying can be borrowed to stay under this limit
 export function maxBorrowInUnderlying(

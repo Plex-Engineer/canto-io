@@ -7,14 +7,16 @@ import TokenTable from "./tokenTable";
 import { formatTokensAmountsbyChain } from "../../utils/utils";
 import Modal from "global/packages/src/components/molecules/Modal";
 import {
-  UserERC20BridgeToken,
+  NativeToken,
   UserNativeToken,
-} from "pages/bridging/config/interfaces";
+  UserERC20BridgeToken,
+} from "pages/bridging/config/bridgingInterfaces";
 
 interface Props {
   ethTokens: UserERC20BridgeToken[];
   cantoTokens: UserERC20BridgeToken[];
   nativeTokens: UserNativeToken[];
+  allConvertCoinTokens: NativeToken[];
 }
 const BalanceTableModal = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -49,7 +51,8 @@ const BalanceTableModal = (props: Props) => {
             tokens={formatTokensAmountsbyChain(
               props.ethTokens,
               props.cantoTokens,
-              props.nativeTokens
+              props.nativeTokens,
+              props.allConvertCoinTokens
             )}
             onClose={() => {
               setIsOpen(false);

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import { useState } from "react";
 import { FieldContainer } from "./Styled";
 

@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 import { commify, formatEther } from "ethers/lib/utils";
-import { truncateNumber } from "global/utils/utils";
+import { truncateNumber } from "global/utils/formattingNumbers";
 import cantoIcon from "assets/logo.svg";
 import cantoJailedIcon from "assets/jailed/logo.svg";
 import { MasterValidatorProps } from "../config/interfaces";
@@ -9,11 +9,11 @@ import useValidatorModalStore, {
 } from "../stores/validatorModalStore";
 import Table from "./table";
 import FadeIn from "react-fade-in";
-import { levenshteinDistance } from "../utils/utils";
+import { levenshteinDistance } from "global/utils/search";
 import jailedSymbol from "assets/lock.svg";
 import { ToolTipL } from "pages/lending/components/Styled";
 import Popup from "reactjs-popup";
-import { formatLiquidity } from "pages/lending/utils/utils";
+import { formatLiquidity } from "global/utils/formattingNumbers";
 import { formatPercent } from "global/packages/src/utils/formatNumbers";
 import { useState } from "react";
 import { sortColumnsByType } from "pages/lending/components/LMTables";

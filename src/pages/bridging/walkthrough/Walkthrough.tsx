@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useBridgeWalkthroughStore } from "./store/bridgeWalkthroughStore";
 import { useCustomWalkthrough } from "./store/customUseWalkthrough";
 import { useEthers } from "@usedapp/core";
-import { BridgeInStep, BridgeOutStep } from "./config/interfaces";
+import { BridgeInStep, BridgeOutStep } from "./config/interfacesSteps";
 import { GenPubKeyWalkthrough } from "./components/pages/genPubKey";
 import BalanceTableModal from "./components/modals/BalanceTableModal";
 import LoadingWalkthrough from "./components/pages/LoadingWalkthrough";
@@ -15,8 +15,9 @@ import NoFunds from "./components/pages/noFunds";
 import IntroPage from "./components/pages/intro";
 import { BridgeInManager } from "./managers/BridgeInManager";
 import { BridgeOutManager } from "./managers/BridgeOutManager";
-import { CantoMainnet } from "global/providers";
 import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
+import { CANTO_MAIN_CONVERT_COIN_TOKENS } from "../config/tokens.ts/bridgingTokens";
+import { CantoMainnet } from "global/config/networks";
 
 const Walkthrough = () => {
   const walkthrough = useBridgeWalkthroughStore();
@@ -83,6 +84,7 @@ const Walkthrough = () => {
         ethTokens={tokens.allUserTokens.userBridgeInTokens}
         nativeTokens={tokens.allUserTokens.userNativeTokens}
         cantoTokens={tokens.allUserTokens.userBridgeOutTokens}
+        allConvertCoinTokens={CANTO_MAIN_CONVERT_COIN_TOKENS}
       />
       <LoadingWalkthrough delay={2500} />
       {!hasFunds && <NoFunds />}
