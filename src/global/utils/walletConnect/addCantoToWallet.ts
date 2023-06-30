@@ -1,4 +1,4 @@
-import { getCosmosAPIEndpoint, getETHNetwork } from "../getAddressUtils";
+import { getCosmosAPIEndpoint, getSupportedNetwork } from "../getAddressUtils";
 
 export async function switchNetwork(chainId: number): Promise<boolean> {
   //@ts-ignore
@@ -19,7 +19,7 @@ export async function switchNetwork(chainId: number): Promise<boolean> {
 }
 
 export async function addNetwork(chainId?: number) {
-  const network = getETHNetwork(chainId);
+  const network = getSupportedNetwork(chainId);
   //@ts-ignore
   if (window.ethereum) {
     try {

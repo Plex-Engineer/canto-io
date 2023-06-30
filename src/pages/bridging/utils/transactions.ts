@@ -32,6 +32,9 @@ import {
 import { Token } from "global/config/interfaces/tokens";
 import { getAllowance, getTokenBalance } from "global/utils/api/tokenBalances";
 import { CANTO_IBC_NETWORK } from "../config/networks.ts/cosmos";
+import { checkPubKey } from "global/utils/cantoTransactions/publicKey";
+import { CantoMainnet, onTestnet } from "global/config/networks";
+import { CantoTestnet } from "@usedapp/core";
 
 const doesMethodSupportToken = (
   network: BridgingNetwork,
@@ -148,6 +151,7 @@ export async function bridgeTxRouter(
 }
 
 //will take care of wrapping ETH for WETH before bridging
+//need public key to perform this tx
 async function sendToComsosTx(
   chainId: number | undefined,
   txStore: TransactionStore,
@@ -171,6 +175,18 @@ async function sendToComsosTx(
   } else {
     //add loading since allowance and balance checks will be done
     txStore.setStatus({ loading: true });
+  }
+  //must check public key information before performing this tx
+  //if no public key exists, the tx will succeed, but the tokens will not be received on canto
+  const hasPubKey = await checkPubKey(
+    cantoAddress,
+    onTestnet(chainId) ? CantoTestnet.chainId : CantoMainnet.chainId
+  );
+
+  if (!hasPubKey) {
+    // since this must be done on the canto network, return the error
+    // ongoingTxModal will deal with public key generation before transactions
+    txStore.setStatus({ error: "public key" });
   }
   //must check if we need to wrap any ETH before sending to cosmos
   let amountToWrap = BigNumber.from(0);
@@ -225,11 +241,15 @@ async function sendToComsosTx(
       extraDetails
     )
   );
-  return await txStore.addTransactionList(allTxs, {
-    title: "Bridge Into Canto",
-    txListMethod: TxMethod.EVM,
-    chainId,
-  });
+  return await txStore.addTransactionList(
+    allTxs,
+    {
+      title: "Bridge Into Canto",
+      txListMethod: TxMethod.EVM,
+      chainId,
+    },
+    hasPubKey
+  );
 }
 /**
  * @notice If convertIn, tokenAddress must be its IBC denom

@@ -282,11 +282,17 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             label="Network"
             items={props.allNetworks
               .filter((network) => !(network.isCanto && !props.bridgeIn))
-              .map((network) => ({
-                primaryText: network.name,
-                icon: network.icon,
-                id: network.id,
-              }))}
+              .map((network) => {
+                let networkName = network.name;
+                if (network.name === "Ethereum") networkName = "Ethereum (LZ)";
+                if (network.name === "gravity bridge")
+                  networkName = "Ethereum / gravity bridge";
+                return {
+                  primaryText: networkName,
+                  icon: network.icon,
+                  id: network.id,
+                };
+              })}
             disabled={props.bridgeIn}
             onSelect={(id) => {
               const network = props.allNetworks.find(

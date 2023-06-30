@@ -26,7 +26,8 @@ export interface TransactionStore {
   modalOpen: boolean;
   addTransactionList: (
     txList: EVMTx[] | CosmosTx[],
-    txListProps: TransactionListProps
+    txListProps: TransactionListProps,
+    perform?: boolean
   ) => Promise<boolean>;
   setModalOpen: (modalOpen: boolean) => void;
   generateTxId: () => string;
@@ -51,7 +52,7 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
   transactions: [],
   txListProps: null,
   modalOpen: false,
-  addTransactionList: async (txList, txListProps) => {
+  addTransactionList: async (txList, txListProps, perform = true) => {
     set({
       transactions: txList.map((tx) => ({
         tx,
@@ -64,7 +65,7 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
       txListProps: txListProps,
     });
     //on adding txs, we will go ahead and start performing them as well if on the correct network
-    return await get().performTxList();
+    return perform ? await get().performTxList() : true;
   },
   setModalOpen: (modalOpen) => set({ modalOpen: modalOpen }),
   generateTxId: () =>

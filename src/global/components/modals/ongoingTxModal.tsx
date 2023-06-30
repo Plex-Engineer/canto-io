@@ -9,7 +9,8 @@ import { useTransactionStore } from "global/stores/transactionStore";
 import { useNetworkInfo } from "global/stores/networkInfo";
 import { useEthers } from "@usedapp/core";
 import OutsideAlerter from "./modalUtils";
-
+import { GenPubKeyWalkthrough } from "pages/bridging/walkthrough/components/pages/genPubKey";
+import { useEffect, useState } from "react";
 interface LoadingProps {
   onClose: () => void;
 }
@@ -17,6 +18,17 @@ const OngoingTxModal = (props: LoadingProps) => {
   const transactionStore = useTransactionStore();
   const { switchNetwork } = useEthers();
   const chainId = useNetworkInfo((state) => state.chainId);
+  //only if we need pub key
+  const [pubKeySuccess, setPubKeySuccess] = useState("None");
+  useEffect(() => {
+    //check if the error was pub key
+    if (
+      transactionStore.status.error == "public key" &&
+      pubKeySuccess == "Success"
+    ) {
+      transactionStore.performTxList();
+    }
+  }, [pubKeySuccess]);
 
   //   useEffect(() => {
   //     if (props.status == "PendingSignature" && !txLogged) {
@@ -75,7 +87,20 @@ const OngoingTxModal = (props: LoadingProps) => {
             }}
           />
         </div>
+        {transactionStore.status?.error && (
+          <div className="network-change">
+            {transactionStore.status?.error == "public key" ? (
+              <GenPubKeyWalkthrough
+                pubKeySuccess={pubKeySuccess}
+                setPubKeySuccess={setPubKeySuccess}
+              />
+            ) : (
+              <Text type="title">{transactionStore.status?.error}</Text>
+            )}
+          </div>
+        )}
         {chainId != transactionStore.txListProps?.chainId &&
+          !transactionStore.status?.error &&
           transactionStore.txListProps?.chainId && (
             <div className="network-change">
               <Text type="title">Oops, you seem to be on a wrong network.</Text>
@@ -88,11 +113,6 @@ const OngoingTxModal = (props: LoadingProps) => {
               </PrimaryButton>
             </div>
           )}
-        {transactionStore.status?.error && (
-          <div className="network-change">
-            <Text type="title">{transactionStore.status?.error}</Text>
-          </div>
-        )}
         {transactionStore.status.loading && (
           <div className="network-change">
             <Text type="title">loading</Text>
