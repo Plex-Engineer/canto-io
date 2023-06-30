@@ -169,18 +169,6 @@ const Bridging = () => {
                     chainId={Number(networkInfo.chainId)}
                     txStore={txStore}
                   />
-                ) : !canPubKey ? (
-                  <PubKeyStyled>
-                    <NotConnected
-                      title="you don’t have enough Canto or ETH to generate a public key"
-                      subtext="In order to generate a public key, you must have at least 0.5 CANTO or 0.01 ETH on mainnet"
-                      buttonText="Home"
-                      onClick={() => {
-                        navigate("/");
-                      }}
-                      icon={warningRedIcon}
-                    />
-                  </PubKeyStyled>
                 ) : (
                   <GenPubKeyWalkthrough
                     txGenPubKey={() => {
