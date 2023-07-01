@@ -175,7 +175,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
               : [
                   {
                     header: "address",
-                    placeholder: "",
+                    placeholder: props.toNetwork.IBC?.addressBeginning ?? "",
                     value: userInputAddress,
                     setValue: setUserInputAddress,
                   },
@@ -284,7 +284,8 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
               .filter((network) => !(network.isCanto && !props.bridgeIn))
               .map((network) => {
                 let networkName = network.name;
-                if (network.name === "Ethereum") networkName = "Ethereum (LZ)";
+                if (network.name === "Ethereum")
+                  networkName = "Ethereum / layer zero";
                 if (network.name === "gravity bridge")
                   networkName = "Ethereum / gravity bridge";
                 return {
