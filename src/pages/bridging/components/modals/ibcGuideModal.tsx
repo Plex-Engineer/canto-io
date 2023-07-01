@@ -16,6 +16,8 @@ import { CantoTransactionType } from "global/config/interfaces/transactionTypes"
 import { truncateNumber } from "global/utils/formattingNumbers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { IBCNetwork } from "pages/bridging/config/bridgingInterfaces";
+import { useNetworkInfo } from "global/stores/networkInfo";
+import { GenPubKeyWalkthrough } from "pages/bridging/walkthrough/components/pages/genPubKey";
 
 interface IBCGuideModalProps {
   token: NativeToken;
@@ -31,6 +33,10 @@ declare global {
 }
 
 const IBCGuideModal = (props: IBCGuideModalProps) => {
+  //check for pubkey
+  const hasPubKey = useNetworkInfo((state) => state.hasPubKey);
+  const [pubKeySuccess, setPubKeySuccess] = useState("None");
+
   const [userKeplrAddress, setUserKeplrAddress] = useState("");
   const [balance, setBalance] = useState("0");
   const [gasBalance, setGasBalance] = useState("0");
@@ -115,6 +121,12 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
 
   return (
     <Styled>
+      {!hasPubKey && (
+        <GenPubKeyWalkthrough
+          pubKeySuccess={pubKeySuccess}
+          setPubKeySuccess={setPubKeySuccess}
+        />
+      )}
       {txStatus != "None" && (
         <GlobalLoadingModal
           onClose={() => {
@@ -136,60 +148,28 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
           }
         />
       )}
-      <div>
-        <img height={50} src={props.token.icon} alt={props.token.name} />
-        <Text type="title" size="title3">
-          {props.token.name}
-        </Text>
-      </div>
-      <Text size="text3" align="center" color="primaryDark">
-        To bridge {props.token.name} from the {props.network.name} network into
-        Canto, you will need to do an IBC transfer to Canto Mainnet.
-      </Text>
-      <div className="values">
-        <ConfirmationRow
-          title="network"
-          value={<Text type="title">{props.network.name} </Text>}
-        />
-        <ConfirmationRow
-          title="channel"
-          value={<Text type="title">{props.network.channelToCanto} </Text>}
-        />
-        <ConfirmationRow
-          title="balance"
-          value={
-            <Text type="title">
-              {userKeplrAddress.length > 10
-                ? truncateNumber(
-                    formatUnits(balance, props.token.decimals),
-                    6
-                  ) +
-                  " " +
-                  props.token.nativeName
-                : "..."}
+      {hasPubKey && (
+        <>
+          {" "}
+          <div>
+            <img height={50} src={props.token.icon} alt={props.token.name} />
+            <Text type="title" size="title3">
+              {props.token.name}
             </Text>
-          }
-        />
-        {props.network.nativeCurrency.denom !== props.token.nativeName && (
-          <ConfirmationRow
-            title="gas balance"
-            value={
-              <Text type="title">
-                {userKeplrAddress.length > 10
-                  ? truncateNumber(
-                      formatUnits(gasBalance, props.token.decimals),
-                      6
-                    ) +
-                    " " +
-                    props.network.nativeCurrency.denom
-                  : "..."}
-              </Text>
-            }
-          />
-        )}
-        {canIBC && (
-          <>
-            {" "}
+          </div>
+          <Text size="text3" align="center" color="primaryDark">
+            To bridge {props.token.name} from the {props.network.name} network
+            into Canto, you will need to do an IBC transfer to Canto Mainnet.
+          </Text>
+          <div className="values">
+            <ConfirmationRow
+              title="network"
+              value={<Text type="title">{props.network.name} </Text>}
+            />
+            <ConfirmationRow
+              title="channel"
+              value={<Text type="title">{props.network.channelToCanto} </Text>}
+            />
             <ConfirmationRow
               title="balance"
               value={
@@ -198,17 +178,77 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
                     ? truncateNumber(
                         formatUnits(balance, props.token.decimals),
                         6
-                      )
+                      ) +
+                      " " +
+                      props.token.nativeName
                     : "..."}
                 </Text>
               }
             />
+            {props.network.nativeCurrency.denom !== props.token.nativeName && (
+              <ConfirmationRow
+                title="gas balance"
+                value={
+                  <Text type="title">
+                    {userKeplrAddress.length > 10
+                      ? truncateNumber(
+                          formatUnits(gasBalance, props.token.decimals),
+                          6
+                        ) +
+                        " " +
+                        props.network.nativeCurrency.denom
+                      : "..."}
+                  </Text>
+                }
+              />
+            )}
+            {canIBC && (
+              <>
+                {" "}
+                <ConfirmationRow
+                  title="balance"
+                  value={
+                    <Text type="title">
+                      {userKeplrAddress.length > 10
+                        ? truncateNumber(
+                            formatUnits(balance, props.token.decimals),
+                            6
+                          )
+                        : "..."}
+                    </Text>
+                  }
+                />
+                <ConfirmationRow
+                  title="from"
+                  value={
+                    <CopyToClipboard
+                      text={userKeplrAddress}
+                      onCopy={copyAddress}
+                    >
+                      <Text type="title" style={{ cursor: "pointer" }}>
+                        {formatAddress(userKeplrAddress, 6)}
+                        <img
+                          src={CopyIcon}
+                          style={{
+                            height: "18px",
+                            position: "relative",
+                            top: "5px",
+                            left: "4px",
+                          }}
+                        />
+                      </Text>
+                    </CopyToClipboard>
+                  }
+                />
+              </>
+            )}
+
             <ConfirmationRow
-              title="from"
+              title="to"
               value={
-                <CopyToClipboard text={userKeplrAddress} onCopy={copyAddress}>
+                <CopyToClipboard text={props.cantoAddress} onCopy={copyAddress}>
                   <Text type="title" style={{ cursor: "pointer" }}>
-                    {formatAddress(userKeplrAddress, 6)}
+                    {formatAddress(props.cantoAddress, 6)}
                     <img
                       src={CopyIcon}
                       style={{
@@ -222,128 +262,110 @@ const IBCGuideModal = (props: IBCGuideModalProps) => {
                 </CopyToClipboard>
               }
             />
-          </>
-        )}
-
-        <ConfirmationRow
-          title="to"
-          value={
-            <CopyToClipboard text={props.cantoAddress} onCopy={copyAddress}>
-              <Text type="title" style={{ cursor: "pointer" }}>
-                {formatAddress(props.cantoAddress, 6)}
-                <img
-                  src={CopyIcon}
-                  style={{
-                    height: "18px",
-                    position: "relative",
-                    top: "5px",
-                    left: "4px",
-                  }}
-                />
-              </Text>
-            </CopyToClipboard>
-          }
-        />
-      </div>
-      <Text size="text3" align="center" color="primaryDark">
-        To learn more about the ibc process, please read{" "}
-        <a
-          role="button"
-          tabIndex={0}
-          onClick={() =>
-            window.open(
-              "https://docs.canto.io/user-guides/bridging-assets/to-canto#from-cosmos-hub-or-other-ibc-enabled-chain",
-              "_blank"
-            )
-          }
-          style={{
-            cursor: "pointer",
-            textDecoration: "underline",
-          }}
-        >
-          here
-        </a>
-      </Text>
-
-      {canIBC && (
-        <>
-          {" "}
-          <div className="expand"></div>
-          <div className="amount">
-            <CInput
+          </div>
+          <Text size="text3" align="center" color="primaryDark">
+            To learn more about the ibc process, please read{" "}
+            <a
+              role="button"
+              tabIndex={0}
+              onClick={() =>
+                window.open(
+                  "https://docs.canto.io/user-guides/bridging-assets/to-canto#from-cosmos-hub-or-other-ibc-enabled-chain",
+                  "_blank"
+                )
+              }
               style={{
-                backgroundColor: "transparent",
-                width: "100%",
-                height: "54px",
-              }}
-              placeholder={`amount :  ${truncateNumber(
-                formatUnits(balance, props.token.decimals),
-                6
-              )} `}
-              value={amount}
-              onChange={(val) => {
-                setAmount(val.target.value);
-              }}
-            />
-            <button
-              className="maxBtn"
-              onClick={() => {
-                setAmount(
-                  truncateNumber(formatUnits(balance, props.token.decimals), 6)
-                );
+                cursor: "pointer",
+                textDecoration: "underline",
               }}
             >
-              <Text>max</Text>
-            </button>
-          </div>
-          {
-            //if keplr plugin exists
-            window.keplr ? (
-              //if we have keplr address
-              userKeplrAddress.length > 10 ? (
-                <PrimaryButton
-                  disabled={
-                    Number(amount) <= 0 ||
-                    Number(amount) >
-                      Number(formatUnits(balance, props.token.decimals))
-                  }
-                  onClick={createIBCMsg}
-                  filled
-                  height="big"
-                  weight="bold"
+              here
+            </a>
+          </Text>
+          {canIBC && (
+            <>
+              {" "}
+              <div className="expand"></div>
+              <div className="amount">
+                <CInput
+                  style={{
+                    backgroundColor: "transparent",
+                    width: "100%",
+                    height: "54px",
+                  }}
+                  placeholder={`amount :  ${truncateNumber(
+                    formatUnits(balance, props.token.decimals),
+                    6
+                  )} `}
+                  value={amount}
+                  onChange={(val) => {
+                    setAmount(val.target.value);
+                  }}
+                />
+                <button
+                  className="maxBtn"
+                  onClick={() => {
+                    setAmount(
+                      truncateNumber(
+                        formatUnits(balance, props.token.decimals),
+                        6
+                      )
+                    );
+                  }}
                 >
-                  {Number(amount) <= 0
-                    ? "Enter Amount "
-                    : Number(amount) >
-                      Number(formatUnits(balance, props.token.decimals))
-                    ? "Amount Exceeds Max"
-                    : "IBC IN"}
-                </PrimaryButton>
-              ) : (
-                //if keplr address doesn't exist, connect and retrive it
-                <PrimaryButton
-                  onClick={setKeplrAddressAndBalance}
-                  filled
-                  height="big"
-                  weight="bold"
-                >
-                  Connect to keplr
-                </PrimaryButton>
-              )
-            ) : (
-              //if keplr wallet doesn't exist
-              <PrimaryButton
-                filled
-                height="big"
-                weight="bold"
-                onClick={() => {
-                  window.open("https://www.keplr.app/download", "_blank");
-                }}
-              >
-                install keplr
-              </PrimaryButton>
-            )
-          }
+                  <Text>max</Text>
+                </button>
+              </div>
+              {
+                //if keplr plugin exists
+                window.keplr ? (
+                  //if we have keplr address
+                  userKeplrAddress.length > 10 ? (
+                    <PrimaryButton
+                      disabled={
+                        Number(amount) <= 0 ||
+                        Number(amount) >
+                          Number(formatUnits(balance, props.token.decimals))
+                      }
+                      onClick={createIBCMsg}
+                      filled
+                      height="big"
+                      weight="bold"
+                    >
+                      {Number(amount) <= 0
+                        ? "Enter Amount "
+                        : Number(amount) >
+                          Number(formatUnits(balance, props.token.decimals))
+                        ? "Amount Exceeds Max"
+                        : "IBC IN"}
+                    </PrimaryButton>
+                  ) : (
+                    //if keplr address doesn't exist, connect and retrive it
+                    <PrimaryButton
+                      onClick={setKeplrAddressAndBalance}
+                      filled
+                      height="big"
+                      weight="bold"
+                    >
+                      Connect to keplr
+                    </PrimaryButton>
+                  )
+                ) : (
+                  //if keplr wallet doesn't exist
+                  <PrimaryButton
+                    filled
+                    height="big"
+                    weight="bold"
+                    onClick={() => {
+                      window.open("https://www.keplr.app/download", "_blank");
+                    }}
+                  >
+                    install keplr
+                  </PrimaryButton>
+                )
+              }
+            </>
+          )}
         </>
       )}
     </Styled>

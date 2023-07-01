@@ -12,15 +12,8 @@ import { addNetwork } from "global/utils/walletConnect/addCantoToWallet";
 import NotConnected from "global/packages/src/components/molecules/NotConnected";
 import BalanceTableModal from "./walkthrough/components/modals/BalanceTableModal";
 import styled from "@emotion/styled";
-import { useNavigate } from "react-router-dom";
-import { GenPubKeyWalkthrough } from "./walkthrough/components/pages/genPubKey";
 import { useEffect, useState } from "react";
-import { generatePubKey } from "global/utils/cantoTransactions/publicKey";
-import { PubKeyStyled } from "./walkthrough/Walkthrough";
-import warningRedIcon from "assets/warning_red.svg";
-import { parseUnits } from "ethers/lib/utils";
 import RecoveryPage from "./Recovery";
-import { onCantoNetwork } from "global/utils/getAddressUtils";
 import { useTransactionStore } from "global/stores/transactionStore";
 import useBridgingStore from "./stores/bridgingStore";
 import { CANTO_MAIN_CONVERT_COIN_TOKENS } from "./config/tokens.ts/bridgingTokens";
@@ -33,18 +26,10 @@ const Bridging = () => {
 
   const bridgingTokens = useBridgeTokenInfo();
   const { activateBrowserWallet } = useEthers();
-  const navigate = useNavigate();
-  const [pubKeySuccess, setPubKeySuccess] = useState("None");
   const hasRecoveryToken = bridgingTokens.unkownIBCTokens.length > 0;
 
   //keep track if we need to swap networks on bridging
   const [tabSelected, setTabSelected] = useState<"in" | "out">("in");
-
-  //checks balance on ethMainnet before dusting
-  const canPubKey =
-    (bridgingTokens.ethMainBalance?.gte(parseUnits("0.01")) ||
-      networkInfo.balance?.gte(parseUnits("0.5"))) ??
-    false;
 
   //chainId change to show testnet networks
   useEffect(() => {
@@ -104,22 +89,6 @@ const Bridging = () => {
           nativeTokens={bridgingTokens.userNativeTokens}
           allConvertCoinTokens={CANTO_MAIN_CONVERT_COIN_TOKENS}
         />
-        {/* <Tooltip
-          position="bottom right"
-          trigger={
-            <div
-              role={"button"}
-              tabIndex={-2}
-              className="walkthrough"
-              onClick={() => {
-                navigate("/bridge/walkthrough");
-              }}
-            >
-              <img src={guideImg} height={20} alt="" />
-            </div>
-          }
-          content={<Text size="text4">Click here for a walkthrough.</Text>}
-        /> */}
       </div>
 
       <CantoTabs
@@ -147,56 +116,28 @@ const Bridging = () => {
           !networkInfo.account
             ? NotConnectedTabs()
             : [
-                networkInfo.hasPubKey ? (
-                  <BridgeIn
-                    key={"in"}
-                    bridgeTokens={bridgeStore.allTokens}
-                    selectedToken={bridgeStore.selectedToken}
-                    selectToken={bridgeStore.setToken}
-                    allNetworks={bridgeStore.allNetworks}
-                    fromNetwork={bridgeStore.fromNetwork}
-                    toNetwork={bridgeStore.toNetwork}
-                    selectNetwork={bridgeStore.setNetwork}
-                    ethAddress={networkInfo.account}
-                    cantoAddress={networkInfo.cantoAddress}
-                    tx={bridgeStore.bridgeTx}
-                    step2Transactions={createConvertTransactions(
-                      bridgingHistory.pendingBridgeInTransactions,
-                      bridgingTokens.userNativeTokens,
-                      true,
-                      Number(networkInfo.chainId)
-                    )}
-                    chainId={Number(networkInfo.chainId)}
-                    txStore={txStore}
-                  />
-                ) : !canPubKey ? (
-                  <PubKeyStyled>
-                    <NotConnected
-                      title="you don’t have enough Canto or ETH to generate a public key"
-                      subtext="In order to generate a public key, you must have at least 0.5 CANTO or 0.01 ETH on mainnet"
-                      buttonText="Home"
-                      onClick={() => {
-                        navigate("/");
-                      }}
-                      icon={warningRedIcon}
-                    />
-                  </PubKeyStyled>
-                ) : (
-                  <GenPubKeyWalkthrough
-                    txGenPubKey={() => {
-                      if (!onCantoNetwork(Number(networkInfo.chainId))) {
-                        addNetwork(Number(networkInfo.chainId));
-                      } else {
-                        generatePubKey(
-                          networkInfo.account,
-                          setPubKeySuccess,
-                          Number(networkInfo.chainId)
-                        );
-                      }
-                    }}
-                    txStatus={pubKeySuccess}
-                  />
-                ),
+                <BridgeIn
+                  key={"in"}
+                  bridgeTokens={bridgeStore.allTokens}
+                  selectedToken={bridgeStore.selectedToken}
+                  selectToken={bridgeStore.setToken}
+                  allNetworks={bridgeStore.allNetworks}
+                  fromNetwork={bridgeStore.fromNetwork}
+                  toNetwork={bridgeStore.toNetwork}
+                  selectNetwork={bridgeStore.setNetwork}
+                  ethAddress={networkInfo.account}
+                  cantoAddress={networkInfo.cantoAddress}
+                  tx={bridgeStore.bridgeTx}
+                  step2Transactions={createConvertTransactions(
+                    bridgingHistory.pendingBridgeInTransactions,
+                    bridgingTokens.userNativeTokens,
+                    true,
+                    Number(networkInfo.chainId)
+                  )}
+                  chainId={Number(networkInfo.chainId)}
+                  txStore={txStore}
+                />,
+
                 <BridgeOut
                   key={"out"}
                   bridgeTokens={bridgeStore.allTokens}

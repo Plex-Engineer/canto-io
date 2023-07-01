@@ -27,9 +27,6 @@ export function ShowAlerts(
   } else if (!account && !currentPageObj.walletNotRequired) {
     openAlert("Warning", <p> please connect your wallet to use canto</p>);
     return;
-  } else if (!hasPubKey && canPubKey && currentPageObj.pageTitle != "bridge") {
-    openAlert("Failure", <GenPubKey />);
-    return;
   } else if (
     (chainId == undefined || !currentPageObj.networks.includes(chainId)) &&
     !currentPageObj.walletNotRequired &&

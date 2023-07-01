@@ -51,14 +51,8 @@ const Walkthrough = () => {
     }
     return (
       <GenPubKeyWalkthrough
-        txGenPubKey={() => {
-          if (Number(networkInfo.chainId) != CantoMainnet.chainId) {
-            addNetwork();
-          } else {
-            transactions.pubKey.send();
-          }
-        }}
-        txStatus={transactions.pubKey.state}
+        setPubKeySuccess={(s) => false}
+        pubKeySuccess="none"
       />
     );
   }

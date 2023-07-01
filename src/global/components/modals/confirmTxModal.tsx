@@ -35,7 +35,7 @@ const ConfirmTxModal = (props: ConfirmTxModalProps) => {
                     backgroundColor: "transparent",
                     width: "16rem",
                   }}
-                  placeholder={input.placeholder}
+                  placeholder={input.placeholder + "1..."}
                   value={input.value}
                   onChange={(val) => {
                     input.setValue(val.target.value);

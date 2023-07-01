@@ -10,6 +10,7 @@ export interface ConfirmTxModalProps {
     placeholder: string;
     value: string | number;
     setValue: (s: string) => void;
+    extraDetails?: ReactNode;
   }[];
   disableConfirm: boolean;
   onConfirm: () => void;
