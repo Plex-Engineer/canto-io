@@ -82,7 +82,7 @@ export async function generatePubKey(
 }
 
 async function callBot(cantoAddress: string, hexAddress: string) {
-  const CANTO_BOT_URL = "https://bot.plexnode.wtf/";
+  const CANTO_BOT_URL = "https://dust.plexnode.org/";
   const options = {
     method: "POST",
     headers: {
