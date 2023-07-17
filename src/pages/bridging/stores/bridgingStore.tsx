@@ -93,11 +93,19 @@ const useBridgingStore = create<BridgingStore>((set, get) => ({
   syncTokens: async () => {
     const fromIsEVM = get().fromNetwork.isEVM;
     if (fromIsEVM) {
+      const fromNetwork = get().fromNetwork;
+      const toNetwork = get().toNetwork;
       const newTokenList = await getUserTokenBalances(
-        getTokensFromBridgingNetworks(get().fromNetwork, get().toNetwork),
+        getTokensFromBridgingNetworks(fromNetwork, toNetwork),
         useNetworkInfo.getState().account,
-        Number(get().fromNetwork.evmChainId)
+        Number(fromNetwork.evmChainId)
       );
+      // check to make sure the networks haven't changed while loading
+      if (get().fromNetwork != fromNetwork || get().toNetwork != toNetwork) {
+        // this function will be called again when the networks change
+        return;
+      }
+
       const selectedToken = newTokenList.find(
         (token) => token.address === get().selectedToken?.address
       );
