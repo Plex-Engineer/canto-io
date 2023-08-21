@@ -39,9 +39,7 @@ const Homepage = () => {
             ) : null;
           })}
         </ul>
-        <div className="right">
-          <Banner />
-        </div>
+        <div className="right">{/* <Banner /> */}</div>
         {/* <div className="bg"> </div> */}
       </Styled>
     </>
