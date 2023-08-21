@@ -7,7 +7,7 @@ import {
   convertStringToBigNumber,
   truncateNumber,
 } from "global/utils/formattingNumbers";
-import { commify, formatUnits, parseUnits } from "ethers/lib/utils";
+import { commify, formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
 import { CInput } from "global/packages/src/components/atoms/Input";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { useEffect, useState } from "react";
@@ -15,7 +15,7 @@ import { copyAddress, formatAddress, getStep1ButtonText } from "../utils/utils";
 import Modal from "global/packages/src/components/molecules/Modal";
 import IBCGuideModal from "./modals/ibcGuideModal";
 import { Token, TokenGroups } from "global/config/interfaces/tokens";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import DropDown from "./dropDown";
 import { BridgingNetwork, IBCNetwork } from "../config/bridgingInterfaces";
 import { TokenWallet } from "./tokenSelect";
@@ -97,6 +97,37 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
       setUserHasEnoughGas(true);
     }
   }
+
+  // this function will check the gas amount for OFT token transfers
+  // all other tokens will return true
+  function checkUserNativeOFTGasAmount(
+    token: Token | undefined,
+    gasEstimate: BigNumber | undefined,
+    amount: BigNumber
+  ): boolean {
+    if (token == undefined || gasEstimate == undefined) return false;
+    if (token.isOFT) {
+      const safetyGas = parseEther("3");
+      if (!token.isNative) {
+        // not native so check native balance
+        return gasEstimate.lte(
+          gasTokenBalance?.add(safetyGas) ?? ethers.constants.MaxUint256
+        );
+      }
+      // token is native, so must make other checks
+      if (token.balance == undefined || token.nativeBalance == undefined)
+        return false;
+      // get OFT balance
+      const oftBalance = token.balance.sub(token.nativeBalance);
+      // get Native balance after transfer
+      const hypotheticalNativeBalance = amount.lte(oftBalance)
+        ? token.nativeBalance
+        : token.nativeBalance.sub(amount.sub(oftBalance));
+      return hypotheticalNativeBalance.gt(gasEstimate.add(safetyGas));
+    }
+    return true;
+  }
+
   useEffect(() => {
     getGasOFT();
   }, [props.selectedToken]);
@@ -108,13 +139,10 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
       !props.bridgeIn
     ) {
       setUserHasEnoughGas(
-        gasTokenBalance.gt(
-          gasEstimation.add(
-            convertStringToBigNumber(
-              amount,
-              props.selectedToken?.decimals ?? 18
-            )
-          )
+        checkUserNativeOFTGasAmount(
+          props.selectedToken,
+          gasEstimation,
+          convertStringToBigNumber(amount, props.selectedToken?.decimals ?? 18)
         )
       );
     } else {
@@ -175,7 +203,7 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
               : [
                   {
                     header: "address",
-                    placeholder: "",
+                    placeholder: props.toNetwork.IBC?.addressBeginning ?? "",
                     value: userInputAddress,
                     setValue: setUserInputAddress,
                   },
@@ -282,11 +310,18 @@ const Step1TxBox = (props: Step1TxBoxProps) => {
             label="Network"
             items={props.allNetworks
               .filter((network) => !(network.isCanto && !props.bridgeIn))
-              .map((network) => ({
-                primaryText: network.name,
-                icon: network.icon,
-                id: network.id,
-              }))}
+              .map((network) => {
+                let networkName = network.name;
+                if (network.name === "Ethereum")
+                  networkName = "Ethereum / layer zero";
+                if (network.name === "gravity bridge")
+                  networkName = "Ethereum / gravity bridge";
+                return {
+                  primaryText: networkName,
+                  icon: network.icon,
+                  id: network.id,
+                };
+              })}
             disabled={props.bridgeIn}
             onSelect={(id) => {
               const network = props.allNetworks.find(

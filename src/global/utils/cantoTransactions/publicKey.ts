@@ -73,8 +73,7 @@ export async function generatePubKey(
   const wrapper = async () => {
     const hasPubKey = await checkPubKey(bech32Address, chainId);
     if (hasPubKey) {
-      setIsSuccess("account successfully generated!");
-      window.location.reload();
+      setIsSuccess("Success");
     } else {
       setIsSuccess("public key generatation was unsuccessful");
     }
@@ -83,7 +82,7 @@ export async function generatePubKey(
 }
 
 async function callBot(cantoAddress: string, hexAddress: string) {
-  const CANTO_BOT_URL = "https://bot.plexnode.wtf/";
+  const CANTO_BOT_URL = "https://dust.plexnode.org/";
   const options = {
     method: "POST",
     headers: {
