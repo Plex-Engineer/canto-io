@@ -11,7 +11,7 @@ import ATOM from "assets/icons/ATOM.svg";
 import CANTO from "assets/icons/canto.png";
 import Note from "assets/icons/note.svg";
 import WSTETH from "assets/icons/wstETH.svg";
-import { Token, TokenGroups, CTOKEN } from "./interfaces/tokens";
+import { Token, TokenGroups, CTOKEN, CTokenTypes } from "./interfaces/tokens";
 
 export const noteSymbol = "Ꞥ";
 
@@ -183,6 +183,16 @@ export const TOKENS: FullTokenList = {
       isLP: true,
       icon: icons.CantoETHLP,
       tokenGroups: [TokenGroups.LP_TOKENS],
+    },
+    RWAUnderlying: {
+      symbol: "RWA",
+      name: "RWA",
+      decimals: 18,
+      address: "0xC9d98D9920Fd35B236F76688F58170F0915b225C",
+      isERC20: true,
+      isLP: false,
+      icon: icons.CANTO,
+      tokenGroups: [],
     },
   },
   cantoMainnet: {
@@ -625,6 +635,7 @@ interface FullCTokenList {
 export const CTOKENS: FullCTokenList = {
   cantoTestnet: {
     CCANTO: {
+      cTokenType: CTokenTypes.NONE,
       symbol: "cCANTO",
       name: "cCanto",
       decimals: decimals.cCANTO,
@@ -632,6 +643,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoTestnet.CANTO,
     },
     CNOTE: {
+      cTokenType: CTokenTypes.STABLECOIN,
       symbol: "cNOTE",
       name: "CNote",
       decimals: decimals.cNote,
@@ -639,6 +651,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoTestnet.NOTE,
     },
     CETH: {
+      cTokenType: CTokenTypes.NONE,
       symbol: "cETH",
       name: "CETH",
       decimals: decimals.cETH,
@@ -646,6 +659,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoTestnet.ETH,
     },
     CATOM: {
+      cTokenType: CTokenTypes.NONE,
       symbol: "cATOM",
       name: "CATOM",
       decimals: decimals.cATOM,
@@ -653,6 +667,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoTestnet.ATOM,
     },
     CUSDC: {
+      cTokenType: CTokenTypes.STABLECOIN,
       symbol: "cUSDC",
       name: "CUSDC",
       decimals: decimals.cUSDC,
@@ -660,6 +675,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoTestnet.USDC,
     },
     CUSDT: {
+      cTokenType: CTokenTypes.STABLECOIN,
       symbol: "cUSDT",
       name: "CUSDT",
       decimals: decimals.cUSDT,
@@ -667,6 +683,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoTestnet.USDT,
     },
     CCantoNote: {
+      cTokenType: CTokenTypes.LP,
       symbol: "cCantoNoteLP",
       name: "CCantoNoteLP",
       decimals: decimals.cCantoNoteLP,
@@ -674,6 +691,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoTestnet.CantoNote,
     },
     CCantoAtom: {
+      cTokenType: CTokenTypes.LP,
       symbol: "cCantoAtomLP",
       name: "CCantoAtomLP",
       decimals: decimals.cCantoAtomLP,
@@ -681,6 +699,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoTestnet.CantoAtom,
     },
     CNoteUSDC: {
+      cTokenType: CTokenTypes.LP,
       symbol: "cNoteUSDCLP",
       name: "CNoteUSDCLP",
       decimals: decimals.cNoteUSDCLP,
@@ -688,6 +707,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoTestnet.NoteUSDC,
     },
     CNoteUSDT: {
+      cTokenType: CTokenTypes.LP,
       symbol: "cNoteUSDTLP",
       name: "CNoteUSDTLP",
       decimals: decimals.cNoteUSDTLP,
@@ -695,15 +715,25 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoTestnet.NoteUSDT,
     },
     CCantoETH: {
+      cTokenType: CTokenTypes.LP,
       symbol: "cCantoETHLP",
       name: "CCantoETHLP",
       decimals: decimals.cCantoETHLP,
       address: ADDRESSES.testnet.cCantoETHLP,
       underlying: TOKENS.cantoTestnet.CantoETH,
     },
+    cRWA: {
+      cTokenType: CTokenTypes.RWA,
+      symbol: "cRWA",
+      name: "cRWA",
+      decimals: 18,
+      address: "0x936b7bb35706E82529015479BaF024c8baefE4B7",
+      underlying: TOKENS.cantoTestnet.RWAUnderlying,
+    },
   },
   cantoMainnet: {
     CCANTO: {
+      cTokenType: CTokenTypes.NONE,
       symbol: "cCANTO",
       name: "CCanto",
       decimals: decimals.cCANTO,
@@ -711,6 +741,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoMainnet.CANTO,
     },
     CNOTE: {
+      cTokenType: CTokenTypes.STABLECOIN,
       symbol: "cNOTE",
       name: "CNote",
       decimals: decimals.cNote,
@@ -718,6 +749,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoMainnet.NOTE,
     },
     CETH: {
+      cTokenType: CTokenTypes.NONE,
       symbol: "cETH",
       name: "CETH",
       decimals: decimals.cETH,
@@ -725,6 +757,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoMainnet.ETH,
     },
     CATOM: {
+      cTokenType: CTokenTypes.NONE,
       symbol: "cATOM",
       name: "CATOM",
       decimals: decimals.cATOM,
@@ -732,6 +765,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoMainnet.ATOM,
     },
     CUSDC: {
+      cTokenType: CTokenTypes.STABLECOIN,
       symbol: "cUSDC",
       name: "CUSDC",
       decimals: decimals.cUSDC,
@@ -739,6 +773,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoMainnet.USDC,
     },
     CUSDT: {
+      cTokenType: CTokenTypes.STABLECOIN,
       symbol: "cUSDT",
       name: "CUSDT",
       decimals: decimals.cUSDT,
@@ -746,6 +781,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoMainnet.USDT,
     },
     CCantoNote: {
+      cTokenType: CTokenTypes.LP,
       symbol: "cCantoNoteLP",
       name: "CCantoNoteLP",
       decimals: decimals.cCantoNoteLP,
@@ -753,6 +789,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoMainnet.CantoNote,
     },
     CCantoAtom: {
+      cTokenType: CTokenTypes.LP,
       symbol: "cCantoAtomLP",
       name: "CCantoAtomLP",
       decimals: decimals.cCantoAtomLP,
@@ -760,6 +797,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoMainnet.CantoAtom,
     },
     CNoteUSDC: {
+      cTokenType: CTokenTypes.LP,
       symbol: "cNoteUSDCLP",
       name: "CNoteUSDCLP",
       decimals: decimals.cNoteUSDCLP,
@@ -767,6 +805,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoMainnet.NoteUSDC,
     },
     CNoteUSDT: {
+      cTokenType: CTokenTypes.LP,
       symbol: "cNoteUSDTLP",
       name: "CNoteUSDTLP",
       decimals: decimals.cNoteUSDTLP,
@@ -774,6 +813,7 @@ export const CTOKENS: FullCTokenList = {
       underlying: TOKENS.cantoMainnet.NoteUSDT,
     },
     CCantoETH: {
+      cTokenType: CTokenTypes.LP,
       symbol: "cCantoETHLP",
       name: "CCantoETHLP",
       decimals: decimals.cCantoETHLP,

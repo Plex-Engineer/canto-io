@@ -6,6 +6,13 @@ export enum TokenGroups {
   LP_TOKENS = "LP_TOKENS",
 }
 
+export enum CTokenTypes {
+  NONE = "NONE",
+  STABLECOIN = "STABLECOIN",
+  LP = "LP",
+  RWA = "RWA",
+}
+
 export interface Token {
   symbol: string;
   name: string;
@@ -30,4 +37,5 @@ export interface CTOKEN {
   decimals: number;
   address: string;
   underlying: Token;
+  cTokenType: CTokenTypes;
 }

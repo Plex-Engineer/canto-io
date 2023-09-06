@@ -51,7 +51,7 @@ export function useLMTokenData(chainId?: number): LMTokenDetails[] {
   //comptroller contract
   const comptroller = new Contract(coreContracts?.Comptroller, comptrollerAbi);
   //canto contract
-  const priceFeedContract = new Contract(coreContracts?.Router, routerAbi);
+  const priceFeedContract = new Contract(coreContracts?.PriceOracle, routerAbi);
   const calls =
     tokens?.map((token) => {
       //canto contract

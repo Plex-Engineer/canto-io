@@ -34,6 +34,7 @@ export interface CantoNetwork extends Network {
     Comptroller: string;
     Reservoir: string;
     WCANTO: string;
+    PriceOracle: string;
   };
   cosmosBlockExplorerUrl: string;
   cosmosAPIEndpoint: string;

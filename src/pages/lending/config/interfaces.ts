@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { CTOKEN } from "global/config/interfaces/tokens";
+import { CTOKEN, CTokenTypes } from "global/config/interfaces/tokens";
 
 export interface LMTokenDetails {
   data: CTOKEN;
@@ -50,6 +50,7 @@ export const EmptyActiveLMToken: UserLMTokenDetails = {
     name: "",
     decimals: 0,
     address: "",
+    cTokenType: CTokenTypes.NONE,
     underlying: {
       symbol: "",
       name: "",

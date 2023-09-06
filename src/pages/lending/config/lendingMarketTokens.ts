@@ -25,6 +25,7 @@ const CANTO_TEST_C_TOKENS: CTOKEN[] = [
   CTOKENS.cantoTestnet.CNoteUSDC,
   CTOKENS.cantoTestnet.CNoteUSDT,
   CTOKENS.cantoTestnet.CCantoETH,
+  CTOKENS.cantoTestnet.cRWA,
 ];
 
 const CANTO_MAIN_C_TOKENS = [

@@ -12,8 +12,12 @@ import {
 import { getPairsForChainId } from "../config/pairs";
 import { getCTokensForChainId } from "pages/lending/config/lendingMarketTokens";
 const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
-  const routerAddress = getAddressesForCantoNetwork(chainId).Router;
-  const RouterContract = new Contract(routerAddress, routerAbi);
+  const coreAddresses = getAddressesForCantoNetwork(chainId);
+  const RouterContract = new Contract(coreAddresses.Router, routerAbi);
+  const PriceOracleContract = new Contract(
+    coreAddresses.PriceOracle,
+    routerAbi
+  );
 
   const PAIRS = getPairsForChainId(chainId);
   //ctokens to look for underlying price from lending market
@@ -44,19 +48,19 @@ const useLPTokenData = (chainId: number | undefined): LPPairInfo[] => {
       },
       //2
       {
-        contract: RouterContract,
+        contract: PriceOracleContract,
         method: "getUnderlyingPrice",
         args: [cTokenAddress(pair.token1.address)],
       },
       //3
       {
-        contract: RouterContract,
+        contract: PriceOracleContract,
         method: "getUnderlyingPrice",
         args: [cTokenAddress(pair.token2.address)],
       },
       //4
       {
-        contract: RouterContract,
+        contract: PriceOracleContract,
         method: "getUnderlyingPrice",
         args: [pair.cLPaddress],
       },

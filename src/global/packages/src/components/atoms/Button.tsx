@@ -106,6 +106,7 @@ const HighlightButton = styled(FilledButton)<Props>`
 `;
 
 interface HybridProps {
+  onClick?: () => void;
   size?: "x-sm" | "sm" | "md" | "lg" | "x-lg";
   padding?: "x-sm" | "sm" | "md" | "lg" | "x-lg";
   type: "primary" | "filled" | "highlight" | "outlined";
@@ -115,26 +116,42 @@ const HybirdButton = (props: HybridProps) => {
   switch (props.type) {
     case "outlined":
       return (
-        <OutlinedButton size={props.size} padding={props.padding}>
+        <OutlinedButton
+          size={props.size}
+          padding={props.padding}
+          onClick={props.onClick}
+        >
           {props.children}
         </OutlinedButton>
       );
     case "filled":
       return (
-        <FilledButton size={props.size} padding={props.padding}>
+        <FilledButton
+          size={props.size}
+          padding={props.padding}
+          onClick={props.onClick}
+        >
           {props.children}
         </FilledButton>
       );
     case "highlight":
       return (
-        <HighlightButton size={props.size} padding={props.padding}>
+        <HighlightButton
+          size={props.size}
+          padding={props.padding}
+          onClick={props.onClick}
+        >
           {props.children}
         </HighlightButton>
       );
     case "primary":
     default:
       return (
-        <PrimaryButton size={props.size} padding={props.padding}>
+        <PrimaryButton
+          size={props.size}
+          padding={props.padding}
+          onClick={props.onClick}
+        >
           {props.children}
         </PrimaryButton>
       );
