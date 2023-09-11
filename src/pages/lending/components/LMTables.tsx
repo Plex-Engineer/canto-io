@@ -4,7 +4,8 @@ import { useState } from "react";
 import { UserLMPosition, UserLMTokenDetails } from "../config/interfaces";
 import { BorrowRow, SupplyRow } from "./lendingRow";
 import LendingTable from "./table";
-import { Text } from "global/packages/src";
+import { HybirdButton, Text } from "global/packages/src";
+import { CTokenTypes } from "global/config/interfaces/tokens";
 
 export function sortColumnsByType(value1: unknown, value2: unknown) {
   if (typeof value1 === "string") {
@@ -34,14 +35,65 @@ export const SupplyTable = ({
   const columns = supplying
     ? ["asset", "apr", "rewards", "balance", "collateral"]
     : ["asset", "apr", "wallet", "collateral"];
+
+  const [currentTokenType, setCurrentTokenType] = useState<CTokenTypes>(
+    CTokenTypes.NONE
+  );
+
+  const filterByTokenType = (tokens: UserLMTokenDetails[]) => {
+    if (currentTokenType === CTokenTypes.NONE) {
+      return tokens;
+    } else {
+      return tokens.filter(
+        (token) => token.data.cTokenType === currentTokenType
+      );
+    }
+  };
+
   //this should prevent the table from showing up if there are not items to be displayed
   if (userLMTokens.length == 0 || !visible) return null;
 
   return (
     <div className="left">
-      <Text type="title" size="title3" align="left">
-        {supplying ? "supplying" : "supply market"}
-      </Text>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: "5px",
+        }}
+      >
+        <Text type="title" size="title3" align="left">
+          {supplying ? "supplying" : "supply market"}
+        </Text>
+        <div style={{ width: "15px" }}></div>
+        <HybirdButton
+          type={currentTokenType === CTokenTypes.NONE ? "primary" : "outlined"}
+          onClick={() => setCurrentTokenType(CTokenTypes.NONE)}
+        >
+          ALL
+        </HybirdButton>
+        <HybirdButton
+          type={
+            currentTokenType === CTokenTypes.STABLECOIN ? "primary" : "outlined"
+          }
+          onClick={() => setCurrentTokenType(CTokenTypes.STABLECOIN)}
+        >
+          StableCoins
+        </HybirdButton>
+        <HybirdButton
+          type={currentTokenType === CTokenTypes.LP ? "primary" : "outlined"}
+          onClick={() => setCurrentTokenType(CTokenTypes.LP)}
+        >
+          LPs
+        </HybirdButton>
+        <HybirdButton
+          type={currentTokenType === CTokenTypes.RWA ? "primary" : "outlined"}
+          onClick={() => setCurrentTokenType(CTokenTypes.RWA)}
+        >
+          RWAs
+        </HybirdButton>
+      </div>
 
       <LendingTable
         columns={columns}
@@ -49,7 +101,7 @@ export const SupplyTable = ({
         onColumnClicked={(column) => setColumnClicked(column)}
         columnClicked={columnClicked}
       >
-        {userLMTokens
+        {[...(!supplying ? filterByTokenType(userLMTokens) : userLMTokens)]
           .map((token) => {
             const amount = supplying ? token.supplyBalance : token.balanceOf;
             return (

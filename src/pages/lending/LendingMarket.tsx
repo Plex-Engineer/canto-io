@@ -54,20 +54,6 @@ const LendingMarket = () => {
   const ongoingTransactions = useTransactionStore().transactions.filter(
     (filterItem) => filterItem.details.status === "Mining"
   );
-
-  const [currentTokenType, setCurrentTokenType] = useState<CTokenTypes>(
-    CTokenTypes.NONE
-  );
-  const filterByTokenType = (tokens: UserLMTokenDetails[]) => {
-    if (currentTokenType === CTokenTypes.NONE) {
-      return tokens;
-    } else {
-      return tokens.filter(
-        (token) => token.data.cTokenType === currentTokenType
-      );
-    }
-  };
-
   return (
     <>
       <HelmetSEO
@@ -109,42 +95,6 @@ const LendingMarket = () => {
         ) : null}
 
         <div className="tables-container">
-          <div style={{ display: "flex", flexDirection: "row" }}>
-            <HybirdButton
-              type={
-                currentTokenType === CTokenTypes.NONE ? "primary" : "outlined"
-              }
-              onClick={() => setCurrentTokenType(CTokenTypes.NONE)}
-            >
-              ALL
-            </HybirdButton>
-            <HybirdButton
-              type={
-                currentTokenType === CTokenTypes.STABLECOIN
-                  ? "primary"
-                  : "outlined"
-              }
-              onClick={() => setCurrentTokenType(CTokenTypes.STABLECOIN)}
-            >
-              StableCoins
-            </HybirdButton>
-            <HybirdButton
-              type={
-                currentTokenType === CTokenTypes.LP ? "primary" : "outlined"
-              }
-              onClick={() => setCurrentTokenType(CTokenTypes.LP)}
-            >
-              LPs
-            </HybirdButton>
-            <HybirdButton
-              type={
-                currentTokenType === CTokenTypes.RWA ? "primary" : "outlined"
-              }
-              onClick={() => setCurrentTokenType(CTokenTypes.RWA)}
-            >
-              RWAs
-            </HybirdButton>
-          </div>
           <div className="tables">
             <SupplyTable
               visible={!isMobile || onLeftTab}
@@ -206,7 +156,7 @@ const LendingMarket = () => {
               <SupplyTable
                 visible={!isMobile || onLeftTab}
                 supplying={false}
-                userLMTokens={filterByTokenType(userLMTokens).filter(
+                userLMTokens={userLMTokens.filter(
                   (token) => !token.inSupplyMarket
                 )}
                 onClick={(token) => {

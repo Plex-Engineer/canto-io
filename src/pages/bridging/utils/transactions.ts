@@ -480,6 +480,7 @@ async function oftTransferTx(
     ["address"],
     [account]
   );
+  console.log(toAddressBytes)
 
   allTxs.push(
     _oftTransferTx(
