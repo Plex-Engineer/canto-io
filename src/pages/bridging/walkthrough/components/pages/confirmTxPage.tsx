@@ -99,7 +99,7 @@ export const ConfirmTransactionPage = (props: ConfirmationProps) => {
             you do not have enough canto to perform this transaction you must
             have at leat 3 Canto in your Metamask wallet. If necessary, you can
             request a drip from the #social-faucet on the{" "}
-            <a href="https://discord.gg/ucRX6XCFbr"> Canto discord</a>
+            <a href="https://discord.gg/63GmEXZsVf"> Canto discord</a>
           </Text>
         )}
         {props.canContinue && props.txCompletedDesc && (
