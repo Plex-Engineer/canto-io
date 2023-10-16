@@ -780,5 +780,21 @@ export const CTOKENS: FullCTokenList = {
       address: ADDRESSES.cantoMainnet.cCantoETHLP,
       underlying: TOKENS.cantoMainnet.CantoETH,
     },
+    CUSYC: {
+      symbol: "cUSYC",
+      name: "cUSDYC",
+      decimals: 6,
+      address: "0x0355E393cF0cf5486D9CAefB64407b7B1033C2f1",
+      underlying: {
+        symbol: "USYC",
+        name: "USYC",
+        decimals: 6,
+        address: "0xFb8255f0De21AcEBf490F1DF6F0BDd48CC1df03B",
+        isERC20: true,
+        isLP: false,
+        icon: "https://raw.githubusercontent.com/Plex-Engineer/public-assets/main/icons/tokens/USYC.svg",
+        tokenGroups: [TokenGroups.DEX_TOKENS],
+      },
+    },
   },
 };
