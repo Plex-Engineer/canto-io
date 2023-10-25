@@ -193,7 +193,7 @@ function methodFromLMTxType(txType: CantoTransactionType, isCanto: boolean) {
     case CantoTransactionType.BORROW:
       return "borrow";
     case CantoTransactionType.WITHDRAW:
-      return "redeem";
+      return "redeemUnderlying";
     default:
       return "";
   }
