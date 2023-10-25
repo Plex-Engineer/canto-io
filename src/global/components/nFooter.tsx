@@ -33,7 +33,7 @@ const Footer = () => {
             alt="discord"
             height={40}
             onClick={() => {
-              window.open("https://discord.gg/ucRX6XCFbr");
+              window.open("https://discord.gg/63GmEXZsVf");
             }}
           />
           <ImageButton

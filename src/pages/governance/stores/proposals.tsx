@@ -24,7 +24,9 @@ export const useProposals = create<ProposalProps>()(
     proposals: [],
     initProposals: async (chainId: number) => {
       const allProposalData = await fetch(
-        getCosmosAPIEndpoint(Number(chainId)) + generateEndpointProposals(),
+        getCosmosAPIEndpoint(Number(chainId)) +
+          generateEndpointProposals() +
+          "?pagination.limit=200",
         fetchOptions
       ).then(function (response) {
         return response.json();
