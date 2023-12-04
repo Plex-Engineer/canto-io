@@ -40,4 +40,6 @@ const CANTO_MAIN_C_TOKENS = [
   CTOKENS.cantoMainnet.CNoteUSDT,
   CTOKENS.cantoMainnet.CCantoETH,
   CTOKENS.cantoMainnet.CUSYC,
+  CTOKENS.cantoMainnet.CFBill,
+  CTOKENS.cantoMainnet.CIFBill,
 ];
