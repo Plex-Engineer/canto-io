@@ -38,8 +38,6 @@ const LendingMarket = () => {
     Number(networkInfo.chainId)
   );
 
-  console.log(userLMTokens);
-
   const [onLeftTab, setOnLeftTab] = useState(true);
   function handleWindowSizeChange() {
     setIsMobile(window.innerWidth <= 1000);
