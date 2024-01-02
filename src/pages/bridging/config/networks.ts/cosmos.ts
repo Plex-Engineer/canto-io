@@ -122,6 +122,7 @@ const MAINNET_IBC_NETWORKS: CosmosIBCNetworkData = {
     channelToCanto: "channel-550",
     restEndpoint: "https://lcd.osmosis.zone",
     rpcEndpoint: "https://rpc.osmosis.zone",
+    latestBlockEndpoint: blockEndpoint,
     addressBeginning: "osmo",
     checkAddress: function (address) {
       return addressCheck(address, this.addressBeginning);
